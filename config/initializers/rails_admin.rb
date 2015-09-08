@@ -46,4 +46,8 @@ RailsAdmin.config do |config|
     end
   end
 
+  config.model 'UserFollowBct' do
+    visible false
+  end
+
 end
