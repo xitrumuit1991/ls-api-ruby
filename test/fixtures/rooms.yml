@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  broadcaster_id: 
+  room_type_id: 
+  title: MyString
+  slug: MyString
+  thumb: MyString
+  background: MyString
+  is_privated: false
+
+two:
+  broadcaster_id: 
+  room_type_id: 
+  title: MyString
+  slug: MyString
+  thumb: MyString
+  background: MyString
+  is_privated: false

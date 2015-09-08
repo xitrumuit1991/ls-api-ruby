@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  bct_type_id: 
+  broadcaster_level_id: 
+  fullname: MyString
+  fb_link: MyString
+  twitter_link: MyString
+  instagram_link: MyString
+  description: MyText
+  broadcaster_exp: 1
+  recived_heart: 1
+
+two:
+  user_id: 
+  bct_type_id: 
+  broadcaster_level_id: 
+  fullname: MyString
+  fb_link: MyString
+  twitter_link: MyString
+  instagram_link: MyString
+  description: MyText
+  broadcaster_exp: 1
+  recived_heart: 1

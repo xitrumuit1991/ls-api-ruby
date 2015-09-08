@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  code: MyString
+  image: MyString
+  weight: 1
+  no_char: 1
+  screen_text_time: 1
+  screen_text_effect: MyString
+  kick_level: 1
+  clock_kick: 1
+  clock_ads: false
+  exp_bonus: 1.5
+
+two:
+  name: MyString
+  code: MyString
+  image: MyString
+  weight: 1
+  no_char: 1
+  screen_text_time: 1
+  screen_text_effect: MyString
+  kick_level: 1
+  clock_kick: 1
+  clock_ads: false
+  exp_bonus: 1.5

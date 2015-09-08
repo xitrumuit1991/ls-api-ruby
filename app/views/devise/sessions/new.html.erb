@@ -1,0 +1,33 @@
+<div id="loginModal" class="modal show" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h1 class="text-center">Admin control panel</h1>
+    </div>
+    <div class="modal-body">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), :html => {:class => "form col-md-12 center-block"}) do |f| %>
+        <div class="form-group">
+          <%= f.email_field :email, autofocus: true, :placeholder => "Email", class: 'form-control input-lg' %>
+        </div>
+        <div class="form-group">
+          <%= f.password_field :password, autocomplete: "off", :placeholder => "Password", class: 'form-control input-lg' %>
+        </div>
+<!--         <div class="form-group">
+          <div class="col-md-12">
+            <% if devise_mapping.rememberable? -%>
+                <%= f.check_box :remember_me %>
+                <%= f.label :remember_me %>
+            <% end -%>
+          </div>       
+        </div> -->
+        <div class="form-group">
+          <%= f.submit "Log in", class: 'btn btn-primary btn-lg btn-block' %>
+        </div>
+      <% end %>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+  </div>
+</div>

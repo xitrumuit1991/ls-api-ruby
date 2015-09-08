@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  vip_id: 
+  name: MyString
+  code: MyString
+  no_day: MyString
+  price: 1
+  discount: 1.5
+
+two:
+  vip_id: 
+  name: MyString
+  code: MyString
+  no_day: MyString
+  price: 1
+  discount: 1.5
