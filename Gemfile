@@ -37,6 +37,8 @@ group :development, :test do
   gem 'byebug'
   # Pry
   gem 'pry'
+
+  gem 'faker', '~> 1.4.3'
 end
 
 group :development do
@@ -52,3 +54,6 @@ gem 'rails_admin'
 
 # Devise
 gem 'devise'
+
+# Carrierwave Upload
+gem 'carrierwave'
