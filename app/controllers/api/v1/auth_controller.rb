@@ -3,7 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :fbRegister, :register, :resetPassword, :verifyToken]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :resetPassword, :verifyToken]
 
   def show
   end
@@ -40,7 +40,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           end
         else
           password = SecureRandom.hex(5)
-          user = registerParams(profile['name'], params[:username], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+          user = registerParams(profile['name'], profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
           user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
           user.password           = password
           user.fb_id              = profile['id']
@@ -51,7 +51,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           token = JWT.encode payload, Settings.hmac_secret, 'HS256'
 
           # update token
-          user.update(last_login: Time.now, token: token)
+          activeCode = SecureRandom.hex(3).upcase
+          user.update(last_login: Time.now, token: token, active_code: activeCode)
           data[:token] = token
         end
         render json: data, status: 200
@@ -59,6 +60,53 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         return head 400
       end
     rescue Koala::Facebook::APIError => exc
+      return head 401
+    end
+  end
+
+  def gpRegister
+    data = Hash.new
+    begin
+      res = RestClient::Request.execute(
+         :method => :get,
+         :content_type => :json,
+         :accept => :json,
+         :url => 'https://www.googleapis.com/oauth2/v2/userinfo',
+         :headers => {'Authorization' => "Bearer #{params[:access_token]}"}
+      )
+      profile = JSON.parse(res)
+ 
+      if profile['email'] == params[:email]
+        user = User.find_by_email(params[:email])
+        if user.present?
+          if user.gp_id.blank?
+            user.gp_id  = profile['id']
+            user.save
+          end
+        else
+          name = profile['family_name'] + profile['given_name']
+          password = SecureRandom.hex(5)
+          user = registerParams(name, profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+          user.remote_avatar_url  = profile['picture']
+          user.password           = password
+          user.gp_id              = profile['id']
+          user.save
+        end
+ 
+        # create token
+        payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
+        token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+ 
+        # update token & activecode
+        activeCode = SecureRandom.hex(3).upcase
+        user.update(last_login: Time.now, token: token, active_code: activeCode)
+      else
+        return head 400
+      end
+ 
+      data[:token] = token
+      render json: data
+    rescue RestClient::Exception => e
       return head 401
     end
   end
@@ -87,6 +135,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.password = params[:password]
     if user.valid?
       if user.save
+        activeCode = SecureRandom.hex(3).upcase
+        user.update_attributes active_code: activeCode
+        SendCodeJob.perform_later(user, activeCode)
         return head 201
       else
         render plain: 'System error !', status: 400

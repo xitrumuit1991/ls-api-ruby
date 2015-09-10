@@ -20,5 +20,23 @@ class Api::V1::UserController < Api::V1::ApplicationController
       return head 404
     end
   end
-  
+
+  def activeByID 
+    user = User.find_by_email(params[:email])
+    if user.present?
+      if params[:id].blank? || params[:id] == ""
+        return head 400
+      else
+        if user.fb_id == params[:id] || user.gp_id == params[:id]
+          user.update(active_date: Time.now, actived: true)
+          return head 200
+        else 
+          return head 400
+        end
+      end
+    else
+      return head 404
+    end
+  end
+
 end

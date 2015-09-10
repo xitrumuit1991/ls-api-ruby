@@ -66,3 +66,6 @@ gem 'config'
 
 # Koala FB API
 gem "koala", "~> 2.0"
+
+# Rest Client
+gem 'rest-client'
