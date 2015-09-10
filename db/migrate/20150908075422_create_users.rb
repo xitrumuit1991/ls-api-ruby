@@ -21,6 +21,8 @@ class CreateUsers < ActiveRecord::Migration
       t.boolean :is_broadcaster
       t.integer :no_heart
       t.boolean :is_banned
+      t.string :token
+      t.datetime :last_login
       t.references :user_level, index: true, foreign_key: true
 
       t.timestamps null: false

@@ -57,3 +57,12 @@ gem 'devise'
 
 # Carrierwave Upload
 gem 'carrierwave'
+
+# Json Web Token
+gem 'jwt'
+
+# Config
+gem 'config'
+
+# Koala FB API
+gem "koala", "~> 2.0"

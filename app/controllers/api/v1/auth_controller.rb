@@ -3,7 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :loginFB, :register, :resetPassword, :verifyToken]
+  before_action :authenticate, except: [:login, :fbRegister, :register, :resetPassword, :verifyToken]
 
   def show
   end
@@ -18,14 +18,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       data[:token] = token
       # update token
       @user.update(last_login: Time.now, token: token)
-
       render json: data, status: 200
     else
       return head 401
     end
   end
 
-  def loginFB
+  def fbRegister
     data = Hash.new
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
@@ -36,36 +35,29 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           if user.fb_id.blank?
             user.fb_id  = profile['id']
             user.save
+            data[:token] = user.token
+            user.update(last_login: Time.now)
           end
         else
-          user = User.new
           password = SecureRandom.hex(5)
-          user.name                   = profile['name']
-          user.email                  = profile['email']
-          user.password               = password
-          user.gender                 = profile['gender']
-          user.remote_avatar_url      = graph.get_picture(profile['id'], type: :large)
-          user.fb_id                  = profile['id']
-          user.timezone               = profile['timezone'].to_s
-          user.dob                    = params['dob']
-          user.tob                    = params['tob']
-
+          user = registerParams(profile['name'], params[:username], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+          user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
+          user.password           = password
+          user.fb_id              = profile['id']
           user.save
+
+          # create token
+          payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
+          token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+
+          # update token
+          user.update(last_login: Time.now, token: token)
+          data[:token] = token
         end
-
-        # create token
-        payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
-        token = JWT.encode payload, Settings.hmac_secret, 'HS256'
-
-        # update token
-        user.update(last_login: Time.now, token: token)
-
-        data[:token] = token
         render json: data, status: 200
       else
         return head 400
       end
-
     rescue Koala::Facebook::APIError => exc
       return head 401
     end
@@ -91,15 +83,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
-    user = User.new
-    user.name                   = params[:name]
-    user.email                  = params[:email]
-    user.password               = params[:password]
-    user.dob                    = params[:dob]
-    user.timezone               = params[:timezone]
-    user.tob                    = params[:tob]
-    user.gender                 = params[:gender]
-
+    user = registerParams(params[:name], params[:username], params[:email], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+    user.password = params[:password]
     if user.valid?
       if user.save
         return head 201
@@ -145,7 +130,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           @user.update(last_login: Time.now, token: token)
 
           data[:token] = token
-          render json: data
+          render json: data, status: 200
         else
           render plain: 'System error !', status: 400
         end
@@ -157,4 +142,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  private
+  def registerParams(name, username, email, birthday, gender, address, phone, cover)
+    user = User.new
+    user.name                   = name
+    user.username               = username
+    user.email                  = email
+    user.birthday               = birthday
+    user.gender                 = gender
+    user.address                = address
+    user.phone                  = phone
+    user.cover                  = cover
+    user.actived                = false
+    user
+  end
+  
 end

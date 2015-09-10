@@ -179,6 +179,8 @@ ActiveRecord::Schema.define(version: 20150908082640) do
     t.boolean  "is_broadcaster"
     t.integer  "no_heart",        limit: 4
     t.boolean  "is_banned"
+    t.string   "token",           limit: 255
+    t.datetime "last_login"
     t.integer  "user_level_id",   limit: 4
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
