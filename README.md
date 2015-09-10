@@ -235,7 +235,7 @@
 ``Base URL: /rooms``
 
 ### Get room details
-- URI: **/**
+- URI: **/:id**
 - Method: **GET**
 - Response:
 	+ status: **200**, **400**,  **401**
