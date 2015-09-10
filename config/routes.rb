@@ -19,6 +19,11 @@ Rails.application.routes.draw do
           post '/change'          => 'auth#changePassword'
         end
 
+        # users
+        scope '/users' do
+          post '/active'          => 'user#active'
+        end
+
 	    end
   	end
 end

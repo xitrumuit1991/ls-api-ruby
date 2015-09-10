@@ -113,3 +113,20 @@
 	+ status: **200**, **400**
 
 
+## **User**
+``Base URL: /users``
+
+### Active user
+- URI: **/active**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Request:
+```
+{
+	"email": "peter@gmail.com",
+	"active_code": "AAAAAAA"
+}
+```
+- Response:
+	+ status: **200** *(OK)*, **400** *(Bad request)*

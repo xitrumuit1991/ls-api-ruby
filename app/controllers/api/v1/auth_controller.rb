@@ -99,9 +99,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def resetPassword
     user = User.find_by_email(params[:email])
     if user.present?
-      new_password  = SecureRandom.hex(5)
-      user.password               = new_password
-      user.token                  = ''
+      new_password    = SecureRandom.hex(5)
+      user.password   = new_password
+      user.token      = ''
       if user.save
         UserMailer.reset_password(user, new_password).deliver_now
         return head 200
@@ -117,16 +117,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     data = Hash.new
     user = User.find_by(email: @user[:email]).try(:authenticate, params[:old_password])
     if user.present?
-      # update password
       user.password = params[:password]
-
       if user.valid?
         if user.save
-          # create token
           payload = {id: @user.id, email: @user.email, exp: Time.now.to_i + 24 * 3600}
           token = JWT.encode payload, Settings.hmac_secret, 'HS256'
 
-          # update token
           @user.update(last_login: Time.now, token: token)
 
           data[:token] = token

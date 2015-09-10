@@ -1,43 +1,20 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate
+  before_action :authenticate, except: [:active]
   
-  def getProfile
-    if @user.present?
-      @horo = Horo.find_by_id(@user.horo_id)
-    else
-      return head 404
-    end
-  end
-
-  def update
-    @user.name                 = params[:name]
-    @user.dob                  = params[:dob]
-    @user.tob                  = params[:tob]
-    @user.timezone             = params[:timezone]
-
-    if @user.valid?
-      if @user.save
-        FindHoroscopeJob.perform_later(@user)
-        return head 200
+  def active
+    user = User.find_by_email(params[:email])
+    if user.present?
+      if params[:active_code].blank? || params[:active_code] == ""
+        return head 400
       else
-        render plain: 'System error !', status: 400
-      end
-    else
-      render json: @user.errors.messages, status: 400
-    end
-  end
-
-  def updateAvatar
-  end
-
-  def uploadAvatar
-    if @user.present?
-      if @user.update(avatar: params[:avatar])
-        return head 201
-      else
-        return head 401
+        if params[:active_code] == user.active_code
+          user.update(active_date: Time.now, actived: true)
+          return head 200
+        else
+          return head 400
+        end
       end
     else
       return head 404

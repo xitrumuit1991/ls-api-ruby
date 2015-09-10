@@ -81,7 +81,7 @@ puts "Seed sample DB for User"
                cover: Faker::Lorem.sentence,
                money: Random.rand(10000000),
                user_exp: Random.rand(10000000),
-               active_code: Faker::Address.zip_code,
+               active_code: SecureRandom.hex(3).upcase,
                actived: [true, false].sample,
                active_date: Faker::Time.between(DateTime.now - 260000, DateTime.now),
                is_broadcaster: true,
