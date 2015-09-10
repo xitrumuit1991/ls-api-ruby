@@ -237,12 +237,6 @@
 ### Get room details
 - URI: **/**
 - Method: **GET**
-- Request:
-```
-{
-	"room_id": "AAAAAAA"
-}
-```
 - Response:
 	+ status: **200**, **400**,  **401**
 	+ body:  for status 200 only
