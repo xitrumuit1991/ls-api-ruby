@@ -152,7 +152,7 @@
 	+ status: **200** *(OK)*, **400** *(Bad request)*
 
 
-### Active user who regitered by facebook, google plus
+### Active user who registered by facebook, google plus
 - URI: **/active-fb-gp**
 - Method: **POST**
 - Header:
