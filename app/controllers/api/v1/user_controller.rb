@@ -39,4 +39,42 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def getProfile
+    if !@user.present?
+      return head 404
+    end
+  end
+
+  def update
+    @user.name                 = params[:name]
+    @user.username             = params[:username]
+    @user.birthday             = params[:birthday]
+    @user.gender               = params[:gender]
+    @user.address              = params[:address]
+    @user.phone                = params[:phone]
+    @user.cover                = params[:cover]
+    if @user.valid?
+      if @user.save
+        return head 200
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      render json: @user.errors.messages, status: 400
+    end
+  end
+
+  def uploadAvatar
+    if @user.present?
+      return head 400 if params[:avatar].nil?
+      if @user.update(avatar: params[:avatar])
+        return head 201
+      else
+        return head 401
+      end
+    else
+      return head 404
+    end
+  end
+
 end

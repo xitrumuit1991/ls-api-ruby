@@ -166,3 +166,95 @@
 ```
 - Response:
 	+ status: **200** *(OK)*, **400** *(Bad request)*
+
+### Get user's profile
+- URI: **/**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**,  **401**
+	+ body:  for status 200 only
+```
+{
+	"name": "Grant",
+    "username": "Grant",
+    "email": "grant@douglaauer.name",
+    "birthday": "2014-01-23",
+    "gender": "nu",
+    "address": "306 Carroll Causeway",
+    "phone": "471.717.3910",
+    "avatar": null,
+    "cover": "Eos cumque et odio earum inventore fugit dolores.",
+    "money": 9737154,
+    "user_exp": 1636621
+}
+```
+### Update profile
+- URI: **/**
+- Method: **PUT**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**,  **401**
+	+ body:  for status 200 only
+```
+{
+	"name": "Grant",
+    "username": "Grant",
+    "email": "grant@douglaauer.name",
+    "birthday": "2014-01-23",
+    "gender": "nu",
+    "address": "306 Carroll Causeway",
+    "phone": "471.717.3910",
+    "cover": "Eos cumque et odio earum inventore fugit dolores."
+}
+```
+
+### Update avatar
+- URI: **/avatar**
+- Method: **PUT** *(for update)*
+- Header:
+	+ Content-Type: **multipart/form-data**
+	+ Authorization: Token token="this-is-jwt-token"
+- Request: ```avatar:file```
+- Response:
+	+ status **201** *(OK)*, **401** *(Unauthorize)*, **400** *(Bad request)*,  **404** *(Not found)*
+
+
+## **Room**
+``Base URL: /rooms``
+
+### Get room details
+- URI: **/**
+- Method: **GET**
+- Request:
+```
+{
+	"room_id": "AAAAAAA"
+}
+```
+- Response:
+	+ status: **200**, **400**,  **401**
+	+ body:  for status 200 only
+```
+{
+    "title": "Dynamic Metrics Supervisor",
+    "slug": "non",
+    "thumb": null,
+    "background": null,
+    "is_privated": true,
+    "broadcaster": {
+        "id": 5,
+        "fullname": "Ms. Ada Funk"
+    },
+    "room": {
+        "id": 11,
+        "title": "Principal Metrics Analyst",
+        "slug": "cupiditate",
+        "description": "Ea facere."
+    }
+}
+```

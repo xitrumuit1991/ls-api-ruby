@@ -5,8 +5,8 @@ Rails.application.routes.draw do
 
     namespace :api, defaults: { format: :json} do
 	    namespace :v1 do
-	      # root
-	      get '/' => 'index#index'
+      	# root
+      	get '/' => 'index#index'
 
         # auth
         scope '/auth' do
@@ -24,8 +24,15 @@ Rails.application.routes.draw do
         scope '/users' do
           post '/active'          => 'user#active'
           post '/active-fb-gp'    => 'user#activeByID'
+          get '/'                 => 'user#getProfile'
+          put '/'                 => 'user#update'
+          put '/avatar'           => 'user#uploadAvatar'
         end
 
+        # rooms
+        scope 'rooms' do
+          get '/'                 => 'room#roomDetails'
+        end
 	    end
   	end
 end
