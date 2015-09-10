@@ -35,8 +35,7 @@
 	"address": "address_here",
 	"email": "peter@gmail.com",
 	"phone": "09090909090",
-	"password": "*********",
-	"cover": "cover_here"
+	"password": "*********"
 }
 ```
 
@@ -53,7 +52,6 @@
 	"address": "address_here",
 	"email": "peter@gmail.com",
 	"phone": "09090909090",
-	"cover": "cover_here",
 	"access_token": "this-is-facebook-access-token"
 }
 ```
@@ -74,7 +72,6 @@
 	"address": "address_here",
 	"email": "peter@gmail.com",
 	"phone": "09090909090",
-	"cover": "cover_here",
 	"access_token": "this-is-facebook-access-token"
 }
 ```
@@ -215,6 +212,16 @@
 
 ### Update avatar
 - URI: **/avatar**
+- Method: **PUT** *(for update)*
+- Header:
+	+ Content-Type: **multipart/form-data**
+	+ Authorization: Token token="this-is-jwt-token"
+- Request: ```avatar:file```
+- Response:
+	+ status **201** *(OK)*, **401** *(Unauthorize)*, **400** *(Bad request)*,  **404** *(Not found)*
+
+### Update cover
+- URI: **/cover**
 - Method: **PUT** *(for update)*
 - Header:
 	+ Content-Type: **multipart/form-data**

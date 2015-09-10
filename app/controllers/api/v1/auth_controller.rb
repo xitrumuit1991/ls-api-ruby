@@ -40,7 +40,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           end
         else
           password = SecureRandom.hex(5)
-          user = registerParams(profile['name'], profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+          user = registerParams(profile['name'], profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone])
           user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
           user.password           = password
           user.fb_id              = profile['id']
@@ -86,7 +86,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         else
           name = profile['family_name'] + profile['given_name']
           password = SecureRandom.hex(5)
-          user = registerParams(name, profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+          user = registerParams(name, profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone])
           user.remote_avatar_url  = profile['picture']
           user.password           = password
           user.gp_id              = profile['id']
@@ -131,7 +131,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
-    user = registerParams(params[:name], params[:username], params[:email], params[:birthday], params[:gender], params[:address], params[:phone], params[:cover])
+    user = registerParams(params[:name], params[:username], params[:email], params[:birthday], params[:gender], params[:address], params[:phone])
     user.password = params[:password]
     if user.valid?
       if user.save
@@ -190,7 +190,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   private
-  def registerParams(name, username, email, birthday, gender, address, phone, cover)
+  def registerParams(name, username, email, birthday, gender, address, phone)
     user = User.new
     user.name                   = name
     user.username               = username
@@ -199,7 +199,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.gender                 = gender
     user.address                = address
     user.phone                  = phone
-    user.cover                  = cover
     user.actived                = false
     user
   end

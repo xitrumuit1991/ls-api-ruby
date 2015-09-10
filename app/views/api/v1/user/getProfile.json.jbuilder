@@ -6,6 +6,6 @@ json.gender 		@user.gender
 json.address 		@user.address
 json.phone 			@user.phone	
 json.avatar 		@user.avatar.url
-json.cover 			@user.cover
+json.cover 			@user.cover.url
 json.money 			@user.money
 json.user_exp 		@user.user_exp

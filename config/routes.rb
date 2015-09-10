@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           get '/'                 => 'user#getProfile'
           put '/'                 => 'user#update'
           put '/avatar'           => 'user#uploadAvatar'
+          put '/cover'            => 'user#uploadCover'
         end
 
         # rooms

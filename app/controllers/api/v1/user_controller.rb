@@ -52,7 +52,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @user.gender               = params[:gender]
     @user.address              = params[:address]
     @user.phone                = params[:phone]
-    @user.cover                = params[:cover]
     if @user.valid?
       if @user.save
         return head 200
@@ -68,6 +67,19 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if @user.present?
       return head 400 if params[:avatar].nil?
       if @user.update(avatar: params[:avatar])
+        return head 201
+      else
+        return head 401
+      end
+    else
+      return head 404
+    end
+  end
+
+  def uploadCover
+    if @user.present?
+      return head 400 if params[:cover].nil?
+      if @user.update(cover: params[:cover])
         return head 201
       else
         return head 401

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class AvatarUploader < CarrierWave::Uploader::Base
+class CoverUploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
@@ -45,7 +45,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   def filename
-    "Avatar_#{@model.id}.#{file.extension}" if original_filename
+    "Cover_#{@model.id}.#{file.extension}" if original_filename
   end
 
 end
