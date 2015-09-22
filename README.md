@@ -234,14 +234,8 @@
 ``Base URL: /rooms``
 
 ### Get room details
-- URI: **/**
+- URI: **/:id**
 - Method: **GET**
-- Request:
-```
-{
-	"room_id": "AAAAAAA"
-}
-```
 - Response:
 	+ status: **200**, **400**,  **401**
 	+ body:  for status 200 only

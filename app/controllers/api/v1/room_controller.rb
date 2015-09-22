@@ -4,6 +4,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   before_action :authenticate, except: [:roomDetails]
   
   def roomDetails
-    @room = Room.find(params[:room_id])
+  	return head 400 if params[:id].blank? || params[:id] == ""
+  	begin
+    	@room = Room.find(params[:id])
+    rescue
+    	return head 404
+    end
   end
 end

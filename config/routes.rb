@@ -32,7 +32,7 @@ Rails.application.routes.draw do
 
         # rooms
         scope 'rooms' do
-          get '/'                 => 'room#roomDetails'
+          get '/:id'                 => 'room#roomDetails'
         end
 	    end
   	end
