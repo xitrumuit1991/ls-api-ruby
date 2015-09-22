@@ -89,11 +89,10 @@
 
 ### Forgot password (reset password)
 - URI: **/forgot**
-- Method: **POST**
+- Method: **POST**token
 - Header:
 	+ Content-Type: application/json
-- Request:
-```{ "email": "alex@email.com" }```
+- Request: ```{ "email": "alex@email.com" }```
 - Response:
 	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
 
