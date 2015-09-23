@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150908082640) do
+ActiveRecord::Schema.define(version: 20150923111342) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "name",       limit: 45
@@ -174,7 +174,7 @@ ActiveRecord::Schema.define(version: 20150908082640) do
     t.integer  "money",           limit: 4
     t.integer  "user_exp",        limit: 4
     t.string   "active_code",     limit: 10
-    t.boolean  "actived"
+    t.boolean  "actived",                     default: false
     t.datetime "active_date"
     t.boolean  "is_broadcaster"
     t.integer  "no_heart",        limit: 4
@@ -182,8 +182,8 @@ ActiveRecord::Schema.define(version: 20150908082640) do
     t.string   "token",           limit: 255
     t.datetime "last_login"
     t.integer  "user_level_id",   limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
   end
 
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree

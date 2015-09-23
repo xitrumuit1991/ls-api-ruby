@@ -3,29 +3,52 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :resetPassword, :verifyToken]
-
-  def show
-  end
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken]
 
   def login
-    data = Hash.new
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
       # create token
       payload = {id: @user.id, email: @user.email, exp: Time.now.to_i + 24 * 3600 * 30}
       token = JWT.encode payload, Settings.hmac_secret, 'HS256'
-      data[:token] = token
+
       # update token
       @user.update(last_login: Time.now, token: token)
-      render json: data, status: 200
+
+      render json: {token: token}, status: 200
     else
       return head 401
     end
   end
 
+  def logout
+    @user.update(token: '')
+    return head 200
+  end
+
+  def register
+    user = User.new
+    split_email   = params[:email].split("@")
+    user.email    = params[:email]
+    user.password = params[:password]
+    user.username = split_email[0]
+    user.name     = split_email[0]
+
+    if user.valid?
+      if user.save
+        activeCode = SecureRandom.hex(3).upcase
+        user.update_attributes active_code: activeCode
+        SendCodeJob.perform_later(user, activeCode)
+        return head 201
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      render json: user.errors.messages, status: 400
+    end
+  end
+
   def fbRegister
-    data = Hash.new
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me")
@@ -35,27 +58,27 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           if user.fb_id.blank?
             user.fb_id  = profile['id']
             user.save
-            data[:token] = user.token
-            user.update(last_login: Time.now)
           end
         else
-          password = SecureRandom.hex(5)
-          user = registerParams(profile['name'], profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone])
+          user = User.new
+          user.name               = profile['name']
+          user.username           = profile['name']
+          user.email              = profile['email']
+          user.gender             = profile['gender']
           user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
-          user.password           = password
+          user.password           = SecureRandom.hex(5)
           user.fb_id              = profile['id']
           user.save
-
-          # create token
-          payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
-          token = JWT.encode payload, Settings.hmac_secret, 'HS256'
-
-          # update token
-          activeCode = SecureRandom.hex(3).upcase
-          user.update(last_login: Time.now, token: token, active_code: activeCode)
-          data[:token] = token
         end
-        render json: data, status: 200
+
+        # create token
+        payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
+        token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+
+        # update token
+        user.update(last_login: Time.now, token: token)
+
+        render json: {token: token}, status: 200
       else
         return head 400
       end
@@ -65,7 +88,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def gpRegister
-    data = Hash.new
     begin
       res = RestClient::Request.execute(
          :method => :get,
@@ -75,7 +97,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
          :headers => {'Authorization' => "Bearer #{params[:access_token]}"}
       )
       profile = JSON.parse(res)
- 
+
       if profile['email'] == params[:email]
         user = User.find_by_email(params[:email])
         if user.present?
@@ -84,36 +106,30 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             user.save
           end
         else
-          name = profile['family_name'] + profile['given_name']
-          password = SecureRandom.hex(5)
-          user = registerParams(name, profile['email'], profile['email'], params[:birthday], params[:gender], params[:address], params[:phone])
+          user = User.new
+          user.name               = profile['family_name'] + profile['given_name']
+          user.username           = profile['name']
+          user.email              = profile['email']
           user.remote_avatar_url  = profile['picture']
-          user.password           = password
+          user.password           = SecureRandom.hex(5)
           user.gp_id              = profile['id']
           user.save
         end
- 
+
         # create token
         payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
         token = JWT.encode payload, Settings.hmac_secret, 'HS256'
- 
-        # update token & activecode
-        activeCode = SecureRandom.hex(3).upcase
-        user.update(last_login: Time.now, token: token, active_code: activeCode)
+
+        # update token
+        user.update(last_login: Time.now, token: token)
+
+        render json: {token: token}, status: 200
       else
         return head 400
       end
- 
-      data[:token] = token
-      render json: data
     rescue RestClient::Exception => e
       return head 401
     end
-  end
-
-  def logout
-    @user.update(token: '')
-    return head 200
   end
 
   def verifyToken
@@ -130,24 +146,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  def register
-    user = registerParams(params[:name], params[:username], params[:email], params[:birthday], params[:gender], params[:address], params[:phone])
-    user.password = params[:password]
-    if user.valid?
-      if user.save
-        activeCode = SecureRandom.hex(3).upcase
-        user.update_attributes active_code: activeCode
-        SendCodeJob.perform_later(user, activeCode)
-        return head 201
-      else
-        render plain: 'System error !', status: 400
-      end
-    else
-      render json: user.errors.messages, status: 400
-    end
-  end
-
-  def resetPassword
+  def forgotPassword
     user = User.find_by_email(params[:email])
     if user.present?
       new_password    = SecureRandom.hex(5)
@@ -165,19 +164,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def changePassword
-    data = Hash.new
     user = User.find_by(email: @user[:email]).try(:authenticate, params[:old_password])
     if user.present?
       user.password = params[:password]
       if user.valid?
         if user.save
+          # create token
           payload = {id: @user.id, email: @user.email, exp: Time.now.to_i + 24 * 3600}
           token = JWT.encode payload, Settings.hmac_secret, 'HS256'
 
+          # update token
           @user.update(last_login: Time.now, token: token)
 
-          data[:token] = token
-          render json: data, status: 200
+          render json: {token: token}, status: 200
         else
           render plain: 'System error !', status: 400
         end
@@ -189,18 +188,4 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  private
-  def registerParams(name, username, email, birthday, gender, address, phone)
-    user = User.new
-    user.name                   = name
-    user.username               = username
-    user.email                  = email
-    user.birthday               = birthday
-    user.gender                 = gender
-    user.address                = address
-    user.phone                  = phone
-    user.actived                = false
-    user
-  end
-  
 end
