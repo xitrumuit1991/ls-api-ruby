@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150923111342) do
+ActiveRecord::Schema.define(version: 20150924114117) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "name",       limit: 45
@@ -61,6 +61,7 @@ ActiveRecord::Schema.define(version: 20150923111342) do
   create_table "bct_videos", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.string   "video",          limit: 255
+    t.string   "thumb",          limit: 255
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end
@@ -80,9 +81,6 @@ ActiveRecord::Schema.define(version: 20150923111342) do
     t.integer  "bct_type_id",          limit: 4
     t.integer  "broadcaster_level_id", limit: 4
     t.string   "fullname",             limit: 255
-    t.string   "fb_link",              limit: 2048
-    t.string   "twitter_link",         limit: 2048
-    t.string   "instagram_link",       limit: 2048
     t.text     "description",          limit: 65535
     t.integer  "broadcaster_exp",      limit: 4
     t.integer  "recived_heart",        limit: 4
@@ -118,13 +116,23 @@ ActiveRecord::Schema.define(version: 20150923111342) do
     t.string   "slug",           limit: 255
     t.string   "thumb",          limit: 512
     t.string   "background",     limit: 512
+    t.boolean  "on_air",                     default: false
     t.boolean  "is_privated"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
   end
 
   add_index "rooms", ["broadcaster_id"], name: "index_rooms_on_broadcaster_id", using: :btree
   add_index "rooms", ["room_type_id"], name: "index_rooms_on_room_type_id", using: :btree
+
+  create_table "statuses", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.text     "content",    limit: 65535
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "statuses", ["user_id"], name: "index_statuses_on_user_id", using: :btree
 
   create_table "user_follow_bcts", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -171,6 +179,9 @@ ActiveRecord::Schema.define(version: 20150923111342) do
     t.string   "gp_id",           limit: 128
     t.string   "avatar",          limit: 512
     t.string   "cover",           limit: 512
+    t.string   "facebook_link",   limit: 255
+    t.string   "twitter_link",    limit: 255
+    t.string   "instagram_link",  limit: 255
     t.integer  "money",           limit: 4
     t.integer  "user_exp",        limit: 4
     t.string   "active_code",     limit: 10
@@ -224,6 +235,7 @@ ActiveRecord::Schema.define(version: 20150923111342) do
   add_foreign_key "broadcasters", "users"
   add_foreign_key "rooms", "broadcasters"
   add_foreign_key "rooms", "room_types"
+  add_foreign_key "statuses", "users"
   add_foreign_key "user_follow_bcts", "broadcasters"
   add_foreign_key "user_follow_bcts", "users"
   add_foreign_key "user_has_vip_packages", "users"

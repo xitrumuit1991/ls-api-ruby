@@ -23,11 +23,21 @@ Rails.application.routes.draw do
       # users
       scope '/users' do
         post  '/active'           => 'user#active'
-        post  '/active-fb-gp'     => 'user#activeByID'
-        get   '/'                 => 'user#getProfile'
+        post  '/active-fb-gp'     => 'user#activeFBGP'
+        get   '/'                 => 'user#profile'
         put   '/'                 => 'user#update'
         put   '/avatar'           => 'user#uploadAvatar'
         put   '/cover'            => 'user#uploadCover'
+      end
+
+      # broadcasters
+      scope '/broadcasters' do
+        get   '/'                 => 'broadcasters#profile'
+        post  '/status'           => 'broadcasters#status'
+        post  '/active-fb-gp'     => 'broadcasters#activeFBGP'
+        put   '/'                 => 'broadcasters#update'
+        put   '/avatar'           => 'broadcasters#uploadAvatar'
+        put   '/cover'            => 'broadcasters#uploadCover'
       end
 
       # rooms
