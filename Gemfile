@@ -69,3 +69,12 @@ gem "koala", "~> 2.0"
 
 # Rest Client
 gem 'rest-client'
+
+# CORS
+gem 'rack-cors', :require => 'rack/cors'
+
+# Redis client
+gem "redis"
+
+# SocketIO emitter
+gem 'socket.io-emitter'

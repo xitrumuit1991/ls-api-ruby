@@ -9,6 +9,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     	@room = Room.find(params[:id])
     rescue
     	return head 404
+      require "redis"
+
+redis = Redis.new
     end
   end
 end
