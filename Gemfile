@@ -69,3 +69,6 @@ gem "koala", "~> 2.0"
 
 # Rest Client
 gem 'rest-client'
+
+# CORS
+gem 'rack-cors', :require => 'rack/cors'
