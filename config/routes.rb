@@ -37,8 +37,9 @@ Rails.application.routes.draw do
 
 			# Live functions
 			scope 'live' do
-				get '/userlist'						=> 'live#getUserList'
-				get '/send-message'				=> 'live#sendMessage'
+				get		'/userlist'					=> 'live#getUserList'
+				post	'/send-message'				=> 'live#sendMessage'
+				post	'/send-screentext'			=> 'live#sendScreenText'
 			end
 		end
 	end
