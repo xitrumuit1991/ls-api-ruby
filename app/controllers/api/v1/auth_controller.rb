@@ -62,7 +62,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         else
           user = User.new
           user.name               = profile['name']
-          user.username           = profile['name']
           user.email              = profile['email']
           user.gender             = profile['gender']
           user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
@@ -108,7 +107,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         else
           user = User.new
           user.name               = profile['family_name'] + profile['given_name']
-          user.username           = profile['name']
           user.email              = profile['email']
           user.remote_avatar_url  = profile['picture']
           user.password           = SecureRandom.hex(5)

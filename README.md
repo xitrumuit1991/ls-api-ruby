@@ -233,6 +233,12 @@
 ## **Room**
 ``Base URL: /rooms``
 
+### Start room
+
+
+### End room
+
+
 ### Get room details
 - URI: **/:id**
 - Method: **GET**
