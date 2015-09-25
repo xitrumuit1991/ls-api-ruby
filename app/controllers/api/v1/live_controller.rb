@@ -131,4 +131,5 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				render json: {error: "You don\'t has permission to access this function"}, status: 403
 			end
 		end
+
 end

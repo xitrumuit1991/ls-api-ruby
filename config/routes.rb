@@ -32,37 +32,41 @@ Rails.application.routes.draw do
 
 			# broadcasters
 			scope '/broadcasters' do
-				get   	'/'                 => 'broadcasters#profile'
-				post  	'/status'           => 'broadcasters#status'
-				post  	'/active-fb-gp'     => 'broadcasters#activeFBGP'
+				get     '/'                 => 'broadcasters#profile'
+				post    '/status'           => 'broadcasters#status'
+				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
 				delete  '/pictures'         => 'broadcasters#delete_pictures'
-        		post    '/pictures'         => 'broadcasters#pictures'
-				put   	'/'                 => 'broadcasters#update'
-				put   	'/avatar'           => 'broadcasters#uploadAvatar'
-				put   	'/cover'            => 'broadcasters#uploadCover'
+				post    '/pictures'         => 'broadcasters#pictures'
+				put     '/'                 => 'broadcasters#update'
+				put     '/avatar'           => 'broadcasters#uploadAvatar'
+				put     '/cover'            => 'broadcasters#uploadCover'
 			end
 
 			# rooms
 			scope 'rooms' do
-				get   '/:id'              => 'room#roomDetails'
+				get   '/on-air'           => 'room#onair'
+				get   '/coming-soon'      => 'room#comingSoon'
+				get   '/:id'              => 'room#detail'
+				put   '/'                 => 'room#updateSettings'
+				post  '/thumb'            => 'room#uploadThumb'
+				put   '/thumb'            => 'room#uploadThumb'
 			end
 
 			# Live functions
 			scope 'live' do
-				get		'/userlist'					=> 'live#getUserList'
-				post	'/send-message'				=> 'live#sendMessage'
-				post	'/send-screentext'			=> 'live#sendScreenText'
-				post	'/send-hearts'				=> 'live#sendHearts'
-				post	'/vote-action'				=> 'live#voteAction'
-				get		'/get-action-status'		=> 'live#getActionStatus'
-				post	'/buy-gifts'				=> 'live#buyGifts'
-				get		'/get-lounge-status'		=> 'live#getLoungeStatus'
-				post	'/buy-lounge'				=> 'live#buyLounge'
-				post	'/start-room'				=> 'live#startRoom'
-				post	'/end-room'					=> 'live#endRoom'
-				post	'/kick-user'				=> 'live#kickUser'
+				get   '/userlist'           => 'live#getUserList'
+				post  '/send-message'       => 'live#sendMessage'
+				post  '/send-screentext'    => 'live#sendScreenText'
+				post  '/send-hearts'        => 'live#sendHearts'
+				post  '/vote-action'        => 'live#voteAction'
+				get   '/get-action-status'  => 'live#getActionStatus'
+				post  '/buy-gifts'          => 'live#buyGifts'
+				get   '/get-lounge-status'  => 'live#getLoungeStatus'
+				post  '/buy-lounge'         => 'live#buyLounge'
+				post  '/start-room'         => 'live#startRoom'
+				post  '/end-room'           => 'live#endRoom'
+				post  '/kick-user'          => 'live#kickUser'
 			end
-
 		end
 	end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150924114117) do
+ActiveRecord::Schema.define(version: 20150925044923) do
 
   create_table "actions", force: :cascade do |t|
     t.string   "name",       limit: 45
@@ -125,6 +125,17 @@ ActiveRecord::Schema.define(version: 20150924114117) do
   add_index "rooms", ["broadcaster_id"], name: "index_rooms_on_broadcaster_id", using: :btree
   add_index "rooms", ["room_type_id"], name: "index_rooms_on_room_type_id", using: :btree
 
+  create_table "schedules", force: :cascade do |t|
+    t.integer  "room_id",    limit: 4
+    t.date     "date"
+    t.string   "start",      limit: 255
+    t.string   "end",        limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "schedules", ["room_id"], name: "index_schedules_on_room_id", using: :btree
+
   create_table "statuses", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.text     "content",    limit: 65535
@@ -235,6 +246,7 @@ ActiveRecord::Schema.define(version: 20150924114117) do
   add_foreign_key "broadcasters", "users"
   add_foreign_key "rooms", "broadcasters"
   add_foreign_key "rooms", "room_types"
+  add_foreign_key "schedules", "rooms"
   add_foreign_key "statuses", "users"
   add_foreign_key "user_follow_bcts", "broadcasters"
   add_foreign_key "user_follow_bcts", "users"
