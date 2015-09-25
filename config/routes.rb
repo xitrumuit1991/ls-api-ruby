@@ -42,7 +42,12 @@ Rails.application.routes.draw do
 
       # rooms
       scope 'rooms' do
-        get   '/:id'              => 'room#roomDetails'
+        get   '/on-air'           => 'room#onair'
+        get   '/coming-soon'      => 'room#comingSoon'
+        get   '/:id'              => 'room#detail'
+        put   '/'                 => 'room#updateSettings'
+        post  '/thumb'            => 'room#uploadThumb'
+        put   '/thumb'            => 'room#uploadThumb'
       end
 
       # Live functions
