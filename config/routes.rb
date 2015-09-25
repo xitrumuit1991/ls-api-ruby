@@ -32,12 +32,14 @@ Rails.application.routes.draw do
 
       # broadcasters
       scope '/broadcasters' do
-        get   '/'                 => 'broadcasters#profile'
-        post  '/status'           => 'broadcasters#status'
-        post  '/active-fb-gp'     => 'broadcasters#activeFBGP'
-        put   '/'                 => 'broadcasters#update'
-        put   '/avatar'           => 'broadcasters#uploadAvatar'
-        put   '/cover'            => 'broadcasters#uploadCover'
+        get     '/'                 => 'broadcasters#profile'
+        delete  '/pictures'         => 'broadcasters#delete_pictures'
+        post    '/pictures'         => 'broadcasters#pictures'
+        post    '/status'           => 'broadcasters#status'
+        post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
+        put     '/'                 => 'broadcasters#update'
+        put     '/avatar'           => 'broadcasters#uploadAvatar'
+        put     '/cover'            => 'broadcasters#uploadCover'
       end
 
       # rooms

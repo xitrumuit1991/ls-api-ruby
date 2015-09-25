@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   belongs_to :user_level
   has_one :broadcaster
   has_many :statuses
+  has_many :user_follow_bcts
 
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
