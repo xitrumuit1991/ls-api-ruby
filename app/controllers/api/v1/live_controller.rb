@@ -1,19 +1,67 @@
+require 'socket.io-emitter'
+require "redis"
+
 class Api::V1::LiveController < Api::V1::ApplicationController
 	include Api::V1::Authorize
 
-	before_action :authenticate, except: [:getUserList, :sendMessage]
+	before_action :authenticate
+	before_action :isSubscribed
 
 	def getUserList
-		require "redis"
-		redis = Redis.new
-		list = redis.hgetall("123456789")
-		render json: list
+		render json: @userlist
 	end
 
 	def sendMessage
-		require 'socket.io-emitter'
+		message = params[:message]
 		emitter = SocketIO::Emitter.new
-		emitter.of("/room").in("123456789").emit('message', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages.");
+		emitter.of("/room").in(@room_id).emit('message', message);
 		return head 200
 	end
+
+	def sendScreenText
+		message = params[:message]
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room_id).emit('screen text', message);
+		return head 200
+	end
+
+	def voteAction
+	end
+
+	def buyGift
+	end
+
+	def sendHear
+	end
+
+	def startRoom
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room_id).emit("room on-air")
+	end
+
+	def endRoom
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room_id).emit("room off")
+	end
+
+	private
+		def getUsers
+			redis = Redis.new
+			@userlist = redis.hgetall(@room_id)
+			@userlist.each do |key, val|
+				@userlist[key] = eval(val)
+			end
+		end
+
+		def isSubscribed
+			if(params.has_key?(:room_id)) then
+				@room_id = params[:room_id]
+				getUsers
+				if(!@userlist.has_key?(@user.email)) then
+					render json: {error: "You are not subscribe to this room"}, status: 400
+				end
+			else
+				render json: {error: "Missing room_id parameter"}, status: 400
+			end
+		end
 end
