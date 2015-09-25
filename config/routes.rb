@@ -52,6 +52,15 @@ Rails.application.routes.draw do
 				get		'/userlist'					=> 'live#getUserList'
 				post	'/send-message'				=> 'live#sendMessage'
 				post	'/send-screentext'			=> 'live#sendScreenText'
+				post	'/send-hearts'				=> 'live#sendHearts'
+				post	'/vote-action'				=> 'live#voteAction'
+				get		'/get-action-status'		=> 'live#getActionStatus'
+				post	'/buy-gifts'				=> 'live#buyGifts'
+				get		'/get-lounge-status'		=> 'live#getLoungeStatus'
+				post	'/buy-lounge'				=> 'live#buyLounge'
+				post	'/start-room'				=> 'live#startRoom'
+				post	'/end-room'					=> 'live#endRoom'
+				post	'/kick-user'				=> 'live#kickUser'
 			end
 
 		end
