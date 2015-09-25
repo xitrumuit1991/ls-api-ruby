@@ -15,21 +15,26 @@ json.heart				@user.broadcaster.recived_heart
 json.user_exp			@user.user_exp
 json.broadcaster_exp	@user.broadcaster.broadcaster_exp
 json.description		@user.broadcaster.description
-json.status				@user.statuses[0].content
+if defined? @user.statuses[0].content
+	json.status				@user.statuses[0].content
+else
+	json.status				nil	
+end
 
-json.photos @user.broadcaster.photos do |photo|
+json.photos @user.broadcaster.bct_images do |photo|
 	json.id		photo.id
 	json.link	photo.image
 end
 
-json.videos @user.broadcaster.videos do |video|
+json.videos @user.broadcaster.bct_videos do |video|
 	json.id		video.id
 	json.link	video.video
 	json.thumb	video.thumb
 end
 
-json.fans @user.followers do |follower|
-	json.id		follower.id
-	json.name	follower.user.username
+json.fans @user.user_follow_bcts do |follower|
+	json.id		follower.user.id
+	json.name	follower.user.name
+	json.vip 	nil
 	json.heart	follower.user.no_heart
 end

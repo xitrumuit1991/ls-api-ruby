@@ -32,12 +32,14 @@ Rails.application.routes.draw do
 
       # broadcasters
       scope '/broadcasters' do
-        get   '/'                 => 'broadcasters#profile'
-        post  '/status'           => 'broadcasters#status'
-        post  '/active-fb-gp'     => 'broadcasters#activeFBGP'
-        put   '/'                 => 'broadcasters#update'
-        put   '/avatar'           => 'broadcasters#uploadAvatar'
-        put   '/cover'            => 'broadcasters#uploadCover'
+        get     '/'                 => 'broadcasters#profile'
+        post    '/status'           => 'broadcasters#status'
+        post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
+        delete  '/pictures'         => 'broadcasters#delete_pictures'
+        post    '/pictures'         => 'broadcasters#pictures'
+        put     '/'                 => 'broadcasters#update'
+        put     '/avatar'           => 'broadcasters#uploadAvatar'
+        put     '/cover'            => 'broadcasters#uploadCover'
       end
 
       # rooms
@@ -52,8 +54,9 @@ Rails.application.routes.draw do
 
       # Live functions
       scope 'live' do
-        get '/userlist'           => 'live#getUserList'
-        get '/send-message'       => 'live#sendMessage'
+        get   '/userlist'         => 'live#getUserList'
+        post  '/send-message'       => 'live#sendMessage'
+        post  '/send-screentext'      => 'live#sendScreenText'
       end
 
     end
