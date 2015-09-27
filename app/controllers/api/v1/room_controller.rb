@@ -22,7 +22,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def detailBySlug
-
+    return head 400 if params[:slug].nil?
+    @room = Room.find_by_slug(params[:slug])
   end
 
   def updateSettings
@@ -43,6 +44,42 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     if @user.is_broadcaster
       if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
         room.thumb = params[:thumb]
+        if room.save
+          return head 200
+        else
+          render plain: 'System error !', status: 400
+        end
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      return head 400
+    end
+  end
+
+  def uploadBackground
+    return head 400 if params[:background].nil?
+    if @user.is_broadcaster
+      if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+        room.background = params[:background]
+        if room.save
+          return head 200
+        else
+          render plain: 'System error !', status: 400
+        end
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      return head 400
+    end
+  end
+
+  def changeBackground
+    return head 400 if params[:background].nil?
+    if @user.is_broadcaster
+      if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+        room.remote_background_url = params[:background]
         if room.save
           return head 200
         else

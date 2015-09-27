@@ -47,9 +47,12 @@ Rails.application.routes.draw do
 				get   '/on-air'           => 'room#onair'
 				get   '/coming-soon'      => 'room#comingSoon'
 				get   '/:id'              => 'room#detail'
+				get   '/slug/:slug'       => 'room#detailBySlug'
 				put   '/'                 => 'room#updateSettings'
 				post  '/thumb'            => 'room#uploadThumb'
 				put   '/thumb'            => 'room#uploadThumb'
+				post  '/background'       => 'room#uploadBackground'
+				put   '/background'       => 'room#changeBackground'
 			end
 
 			# Live functions
