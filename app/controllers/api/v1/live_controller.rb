@@ -49,9 +49,37 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getActionStatus
+
 	end
 
-	def buyGifts
+	def sendGifts
+		gift_id = params[:gift].to_i
+		quantity = params[:quantity].to_i
+		dbGift = Gift.find(gift_id)
+		if dbGift then
+			if quantity >= 1 then
+				total = dbGift.price * quantity
+				if @user.money >= total then
+					@user.money -= total
+					@user.user_exp += total
+					@room.broadcaster.broadcaster_exp += total
+					if @user.save && @room.broadcaster.save then
+						user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+						emitter = SocketIO::Emitter.new
+						emitter.of("/room").in(@room.id).emit("gifts recived", {gift: gift_id, quantity:quantity, total: total, sender: user})
+						return head 201
+					else
+						render json: {error: "can\'t send gift, please try again later"}, status: 400
+					end
+				else
+					render json: {error: "You don\'t have enough money"}, status: 403
+				end
+			else
+				render json: {error: "Quantity must larger than 1"}, status: 400
+			end
+		else
+			return head 404
+		end
 	end
 
 	def getLoungeStatus
@@ -62,10 +90,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	def sendHearts
 		emitter = SocketIO::Emitter.new
-		hearts = Integer(params[:hearts])
+		hearts = params[:hearts].to_i
 		if(hearts > 0 && @user.no_heart >= hearts) then
 			@user.no_heart -= hearts
 			@room.broadcaster.recived_heart += hearts
+			@user.exp += hearts
+			@room.broadcaster.exp += hearts
 			if @user.save then
 				if @room.broadcaster.save then
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}

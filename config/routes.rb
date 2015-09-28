@@ -63,7 +63,7 @@ Rails.application.routes.draw do
 				post  '/send-hearts'        => 'live#sendHearts'
 				post  '/vote-action'        => 'live#voteAction'
 				get   '/get-action-status'  => 'live#getActionStatus'
-				post  '/buy-gifts'          => 'live#buyGifts'
+				post  '/send-gifts'          => 'live#sendGifts'
 				get   '/get-lounge-status'  => 'live#getLoungeStatus'
 				post  '/buy-lounge'         => 'live#buyLounge'
 				post  '/start-room'         => 'live#startRoom'
