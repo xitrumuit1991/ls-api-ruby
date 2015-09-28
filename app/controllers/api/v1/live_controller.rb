@@ -38,14 +38,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def voteAction
-		# redis = Redis.new
-		# action_id = params[:action]
-		# dbAction = Action.find(action_id)
-		# rAction = Integer(redis.get("#{@room.id}_#{action_id}"))
+		redis = Redis.new
+		action_id = params[:action_id]
+		dbAction = Action.find(action_id)
+		rAction = redis.get("#{@room.id}_#{action_id}").to_i
+		puts "========================="
+		puts rAction
+		puts "========================="
 		# # todo
 		# new_action_val = 123;
 		# redis.set("#{@room.id}_#{action_id}", new_action_val);
-		# return head 201
+		return head 201
 	end
 
 	def getActionStatus
