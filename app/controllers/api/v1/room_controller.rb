@@ -56,11 +56,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
-  def start
+  def doneAction
 
   end
 
-  def end
-
-  end
+  #khi action full
 end
