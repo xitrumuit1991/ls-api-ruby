@@ -62,20 +62,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		if dbGift then
 			if quantity >= 1 then
 				total = dbGift.price * quantity
-				if @user.money >= total then
-					@user.money -= total
-					@user.user_exp += total
-					@room.broadcaster.broadcaster_exp += total
-					if @user.save && @room.broadcaster.save then
-						user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-						emitter = SocketIO::Emitter.new
-						emitter.of("/room").in(@room.id).emit("gifts recived", {gift: gift_id, quantity:quantity, total: total, sender: user})
-						return head 201
-					else
-						render json: {error: "can\'t send gift, please try again later"}, status: 400
-					end
-				else
-					render json: {error: "You don\'t have enough money"}, status: 403
+				begin
+					@user.decreaseMoney(total)
+					@user.increaseExp(total)
+					@room.broadcaster.increaseExp(total)
+					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+					emitter = SocketIO::Emitter.new
+					emitter.of("/room").in(@room.id).emit("gifts recived", {gift: gift_id, quantity:quantity, total: total, sender: user})
+					return head 201
+				rescue => e
+					render json: {error: e.message}, status: 400
 				end
 			else
 				render json: {error: "Quantity must larger than 1"}, status: 400
