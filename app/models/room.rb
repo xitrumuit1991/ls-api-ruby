@@ -6,4 +6,5 @@ class Room < ActiveRecord::Base
   validates :title, presence: true
   validates :room_type_id, presence: true
   mount_uploader :thumb, RoomThumbUploader
+  mount_uploader :background, RoomBackgroundUploader
 end
