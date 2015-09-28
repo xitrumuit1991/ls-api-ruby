@@ -21,16 +21,19 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def sendScreenText
-		cost = 10
+		cost = 1
 		message = params[:message]
 		if @user.money >= cost then
-			@user.money -= cost
-			if @user.save then
+			begin
+				@user.decreaseMoney(cost)
+				@user.increaseExp(cost)
+				@room.broadcaster.increaseExp(cost)
+				user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 				emitter = SocketIO::Emitter.new
-				emitter.of("/room").in(@room.id).emit('screen text', message);
+				emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 				return head 201
-			else
-				render json: {error: "Can\'t not send screen text, please try angain later"}, status: 400
+			rescue => e
+				render json: {error: e.message}, status: 400
 			end
 		else
 			render json: {error: "You don\'t have enough mone"}, status: 403
@@ -71,13 +74,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	def getActionStatus
 		redis = Redis.new
-		keys = redis.keys("actions:1:*")
+		keys = redis.keys("actions:#{@room.id}:*")
 		result = {}
 		keys.each do |key|
 			split = key.split(':')
 			result[split[2]] = redis.get(key).to_i
 		end
 		render json: result, status: 200
+	end
+
+	def doneAction
+		
 	end
 
 	def sendGifts
@@ -110,6 +117,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def buyLounge
+		redis = Redis.new
+
 	end
 
 	def sendHearts
