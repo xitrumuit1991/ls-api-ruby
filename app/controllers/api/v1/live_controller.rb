@@ -42,9 +42,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		action_id = params[:action_id]
 		dbAction = Action.find(action_id)
 		if dbAction
-			rAction = redis.get("#{@room.id}_#{action_id}").to_i
+			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
 			if rAction < dbAction.max_vote
-				redis.set("#{@room.id}_#{action_id}", rAction + 1);
+				redis.set("actions:#{@room.id}:#{action_id}", rAction + 1);
 				begin
 					@user.decreaseMoney(dbAction.price)
 					@user.increaseExp(dbAction.price)
@@ -70,7 +70,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getActionStatus
-
+		redis = Redis.new
+		keys = redis.keys("actions:1:*")
+		result = {}
+		keys.each do |key|
+			split = key.split(':')
+			result[split[2]] = redis.get(key).to_i
+		end
+		render json: result, status: 200
 	end
 
 	def sendGifts
