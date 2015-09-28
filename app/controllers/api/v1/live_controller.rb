@@ -41,14 +41,32 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		redis = Redis.new
 		action_id = params[:action_id]
 		dbAction = Action.find(action_id)
-		rAction = redis.get("#{@room.id}_#{action_id}").to_i
-		puts "========================="
-		puts rAction
-		puts "========================="
-		# # todo
-		# new_action_val = 123;
-		# redis.set("#{@room.id}_#{action_id}", new_action_val);
-		return head 201
+		if dbAction
+			rAction = redis.get("#{@room.id}_#{action_id}").to_i
+			if rAction < dbAction.max_vote
+				redis.set("#{@room.id}_#{action_id}", rAction + 1);
+				begin
+					@user.decreaseMoney(dbAction.price)
+					@user.increaseExp(dbAction.price)
+					@room.broadcaster.increaseExp(dbAction.price)
+					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+					emitter = SocketIO::Emitter.new
+					if dbAction.max_vote == rAction + 1
+						emitter.of("/room").in(@room.id).emit("action full", {action: action_id, total: dbAction.price, sender: user})
+					else
+						emitter.of("/room").in(@room.id).emit("action recived", {action: action_id, total: dbAction.price, sender: user})
+					end
+					return head 201
+				rescue => e
+					render json: {error: e.message}, status: 400
+				end
+				return head 201
+			else
+				render json: {error: "This action has been full"}, status: 403
+			end
+		else
+			render json: {error: "Action doesn\'t exist"}, status: 404
+		end
 	end
 
 	def getActionStatus
@@ -56,7 +74,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def sendGifts
-		gift_id = params[:gift].to_i
+		gift_id = params[:gift_id].to_i
 		quantity = params[:quantity].to_i
 		dbGift = Gift.find(gift_id)
 		if dbGift then

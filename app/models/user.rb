@@ -15,7 +15,6 @@ class User < ActiveRecord::Base
 		if self.money >= money then
 			value = self.money - money
 			self.update(money: value)
-			puts "User #{self.name} decrease #{money} money"
 		else
 			raise "You don\'t have enough money"
 		end
