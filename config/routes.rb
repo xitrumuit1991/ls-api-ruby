@@ -46,7 +46,6 @@ Rails.application.routes.draw do
 			scope 'rooms' do
 				get   '/on-air'           => 'room#onair'
 				get   '/coming-soon'      => 'room#comingSoon'
-				get   '/:id'              => 'room#detail'
 				get   '/slug/:slug'       => 'room#detailBySlug'
 				put   '/'                 => 'room#updateSettings'
 				post  '/thumb'            => 'room#uploadThumb'
@@ -54,6 +53,9 @@ Rails.application.routes.draw do
 				post  '/background'       => 'room#uploadBackground'
 				put   '/background'       => 'room#changeBackground'
 				post  '/schedule'					=> 'room#updateSchedule'
+				get		'/actions'					=> 'room#getActions'
+				get		'/gifts'						=> 'room#getGifts'
+				get   '/:id'              => 'room#detail'
 			end
 
 			# Live functions
