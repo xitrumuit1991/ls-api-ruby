@@ -133,21 +133,37 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getLoungeStatus
+		redis = Redis.new
+		keys = redis.keys("lounges:#{@room.id}:*")
+		status = {}
+		keys.each do |key|
+			split = key.split(':')
+			status[split[2]] = eval(redis.get(key))
+		end
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room.id).emit("lounge status", { status: status })
+		return head 200
 	end
 
 	def buyLounge
 		redis = Redis.new
-		cost = params[:cost]
+		cost = params[:cost].to_i
 		lounge = params[:lounge].to_i
 		if lounge > 0 && lounge <= 12
 			if @user.money >= cost then
 				begin
+					if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
+						current_lounge = eval(current_lounge)
+						if current_lounge[:cost].to_i >= cost
+							render json: {error: "You don\'t have enough money to buy this lounge"}, status: 403 and return
+						end
+					end
 					@user.decreaseMoney(cost)
 					@user.increaseExp(cost)
 					@room.broadcaster.increaseExp(cost)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 					lounge_info = {user: user, cost: cost}
-					redis.set("lounges:#{@room.id}:#{lounge}", lounge_info);
+					redis.set("lounges:#{@room.id}:#{lounge}", lounge_info.to_json);
 					emitter = SocketIO::Emitter.new
 					emitter.of("/room").in(@room.id).emit('buy lounge', { num: lounge, lounge: lounge_info });
 					return head 201
