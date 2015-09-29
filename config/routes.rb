@@ -36,11 +36,15 @@ Rails.application.routes.draw do
 				get     '/'                 => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
-				delete  '/pictures'         => 'broadcasters#deletePictures'
-				post    '/pictures'         => 'broadcasters#pictures'
 				put     '/'                 => 'broadcasters#update'
 				put     '/avatar'           => 'broadcasters#uploadAvatar'
 				put     '/cover'            => 'broadcasters#uploadCover'
+				post    '/pictures'         => 'broadcasters#pictures'
+				delete  '/pictures'         => 'broadcasters#deletePictures'
+				post    '/videos'         	=> 'broadcasters#videos'
+				delete  '/videos'         	=> 'broadcasters#deleteVideos'
+				get  		'/followed'       	=> 'broadcasters#followed'
+				put  		'/:id/follow'       => 'broadcasters#follow'
 			end
 
 			# rooms
