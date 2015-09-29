@@ -1,7 +1,8 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:roomDetails]
+  before_action :authenticate
+  before_action :checkIsBroadcaster, except: [:onair, :comingSoon, :detail, :detailBySlug]
 
   def onair
     @rooms = Room.where(on_air: true)
@@ -28,69 +29,73 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def updateSettings
     return head 400 if params[:title].nil? || params[:cat].nil?
-    if @user.is_broadcaster
-      if Room.where("broadcaster_id = #{@user.broadcaster.id}").update_all(title: params[:title], room_type_id: params[:cat])
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    if Room.where("broadcaster_id = #{@user.broadcaster.id}").update_all(title: params[:title], room_type_id: params[:cat])
+      return head 200
     else
-      return head 400
+      render plain: 'System error !', status: 400
     end
   end
 
   def uploadThumb
     return head 400 if params[:thumb].nil?
-    if @user.is_broadcaster
-      if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-        room.thumb = params[:thumb]
-        if room.save
-          return head 200
-        else
-          render plain: 'System error !', status: 400
-        end
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+      room.thumb = params[:thumb]
+      if room.save
+        return head 200
       else
         render plain: 'System error !', status: 400
       end
     else
-      return head 400
+      render plain: 'System error !', status: 400
     end
   end
 
   def uploadBackground
     return head 400 if params[:background].nil?
-    if @user.is_broadcaster
-      if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-        room.background = params[:background]
-        if room.save
-          return head 200
-        else
-          render plain: 'System error !', status: 400
-        end
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+      room.background = params[:background]
+      if room.save
+        return head 200
       else
         render plain: 'System error !', status: 400
       end
     else
-      return head 400
+      render plain: 'System error !', status: 400
     end
   end
 
   def changeBackground
     return head 400 if params[:background].nil?
-    if @user.is_broadcaster
-      if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-        room.remote_background_url = params[:background]
-        if room.save
-          return head 200
-        else
-          render plain: 'System error !', status: 400
-        end
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+      room.remote_background_url = params[:background]
+      if room.save
+        return head 200
       else
         render plain: 'System error !', status: 400
       end
     else
-      return head 400
+      render plain: 'System error !', status: 400
     end
   end
+
+  def updateSchedule
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+      schedules = JSON.parse(params[:schedule].to_json)
+      if room.schedules.create(schedules)
+        return head 201
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      render plain: 'System error !', status: 400
+    end
+  end
+
+  private
+    def checkIsBroadcaster
+      unless @user.is_broadcaster
+        return head 400
+      end
+    end
 
 end

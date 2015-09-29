@@ -53,6 +53,7 @@ Rails.application.routes.draw do
 				put   '/thumb'            => 'room#uploadThumb'
 				post  '/background'       => 'room#uploadBackground'
 				put   '/background'       => 'room#changeBackground'
+				post  '/schedule'					=> 'room#updateSchedule'
 			end
 
 			# Live functions
