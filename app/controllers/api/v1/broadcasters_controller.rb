@@ -27,8 +27,16 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     return head errors
   end
 
-  def delete_pictures
-    
+  def deletePictures
+    if @user.broadcaster.images.present?
+      puts '========================='
+      puts params[:pictures]
+      puts '========================='
+      # if @user.broadcaster.images.where(:id => params[:]).destroy_all
+      return head 200
+    else
+      return head 400
+    end
   end
 
   private

@@ -35,7 +35,7 @@ Rails.application.routes.draw do
 				get     '/'                 => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
-				delete  '/pictures'         => 'broadcasters#delete_pictures'
+				delete  '/pictures'         => 'broadcasters#deletePictures'
 				post    '/pictures'         => 'broadcasters#pictures'
 				put     '/'                 => 'broadcasters#update'
 				put     '/avatar'           => 'broadcasters#uploadAvatar'
