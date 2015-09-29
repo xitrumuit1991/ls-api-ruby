@@ -1,7 +1,7 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:active, :activeFBGP]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar]
 
   def profile
   end
@@ -84,26 +84,25 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def avatar
+  def getAvatar
     begin
-      horo = Horo.find(params[:id])
-      if !horo.nil? && !horo.sign.url.nil?
-        img_url = 'public' + horo.sign.url
-        if FileTest.exist?(img_url)
-          send_file img_url, type: 'image/png', disposition: 'inline'
+      @u = User.find(params[:id])
+      if @u
+        file_url = "public#{@u.avatar_url}"
+        if FileTest.exist?(file_url)
+          send_file file_url, type: 'image/png', disposition: 'inline'
         else
-          send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
         end
       else
-        send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+        send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
       end
     rescue
-      send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+      send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
     end
   end
 
   def payments
-    
   end
 
 end

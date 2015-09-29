@@ -16,7 +16,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def sendMessage
 		message = params[:message]
 		emitter = SocketIO::Emitter.new
-		emitter.of("/room").in(@room.id).emit('message', message);
+		user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+		emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
 		return head 201
 	end
 

@@ -8,6 +8,7 @@ json.is_privated		@room.is_privated
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
+	json.avatar			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/avatar"
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp
@@ -19,7 +20,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
-	json.id				schedule.date
-	json.from			schedule.start
-	json.to				schedule.end
+	json.date		schedule.date.strftime("%d/%m/%Y")
+	json.start		schedule.start
+	json.end		schedule.end
 end
