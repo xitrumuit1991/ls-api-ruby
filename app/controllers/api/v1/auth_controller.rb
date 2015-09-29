@@ -184,7 +184,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   private
     def createToken(user)
-      payload = {id: @user.id, email: @user.email, name: @user.name, avatar: user.avatar_url, exp: Time.now.to_i + 24 * 3600}
+      payload = {id: @user.id, email: @user.email, name: @user.name, exp: Time.now.to_i + 24 * 3600}
       token = JWT.encode payload, Settings.hmac_secret, 'HS256'
     end
 end
