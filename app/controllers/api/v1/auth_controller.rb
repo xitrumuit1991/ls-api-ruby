@@ -9,8 +9,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
       # create token
-      payload = {id: @user.id, email: @user.email, exp: Time.now.to_i + 24 * 3600 * 30}
-      token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+      token = createToken(@user)
 
       # update token
       @user.update(last_login: Time.now, token: token)
@@ -71,8 +70,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         end
 
         # create token
-        payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
-        token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+        token = createToken(@user)
 
         # update token
         user.update(last_login: Time.now, token: token)
@@ -115,8 +113,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         end
 
         # create token
-        payload = {id: user.id, email: user.email, exp: Time.now.to_i + 24 * 3600}
-        token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+        token = createToken(@user)
 
         # update token
         user.update(last_login: Time.now, token: token)
@@ -168,8 +165,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       if user.valid?
         if user.save
           # create token
-          payload = {id: @user.id, email: @user.email, exp: Time.now.to_i + 24 * 3600}
-          token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+          token = createToken(@user)
 
           # update token
           @user.update(last_login: Time.now, token: token)
@@ -186,4 +182,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  private
+    def createToken(user)
+      payload = {id: @user.id, email: @user.email, name: @user.name, avatar: user.avatar_url, exp: Time.now.to_i + 24 * 3600}
+      token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+    end
 end
