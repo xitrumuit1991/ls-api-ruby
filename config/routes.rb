@@ -53,6 +53,7 @@ Rails.application.routes.draw do
 				put   '/thumb'            => 'room#uploadThumb'
 				post  '/background'       => 'room#uploadBackground'
 				put   '/background'       => 'room#changeBackground'
+				post  '/schedule'					=> 'room#updateSchedule'
 			end
 
 			# Live functions
@@ -62,8 +63,9 @@ Rails.application.routes.draw do
 				post  '/send-screentext'    => 'live#sendScreenText'
 				post  '/send-hearts'        => 'live#sendHearts'
 				post  '/vote-action'        => 'live#voteAction'
+				post  '/done-action'        => 'live#doneAction'
 				get   '/get-action-status'  => 'live#getActionStatus'
-				post  '/send-gifts'          => 'live#sendGifts'
+				post  '/send-gifts'         => 'live#sendGifts'
 				get   '/get-lounge-status'  => 'live#getLoungeStatus'
 				post  '/buy-lounge'         => 'live#buyLounge'
 				post  '/start-room'         => 'live#startRoom'

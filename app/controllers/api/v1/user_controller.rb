@@ -84,6 +84,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def avatar
+    
+  end
+
   def payments
     
   end

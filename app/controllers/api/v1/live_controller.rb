@@ -22,26 +22,29 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def sendScreenText
-		cost = 10
+		cost = 1
 		message = params[:message]
 		if @user.money >= cost then
-			@user.money -= cost
-			if @user.save then
+			begin
+				@user.decreaseMoney(cost)
+				@user.increaseExp(cost)
+				@room.broadcaster.increaseExp(cost)
+				user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 				emitter = SocketIO::Emitter.new
-				emitter.of("/room").in(@room.id).emit('screen text', message);
+				emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 				return head 201
-			else
-				render json: {error: "Can\'t not send screen text, please try angain later"}, status: 400
+			rescue => e
+				render json: {error: e.message}, status: 400
 			end
 		else
-			render json: {error: "You don\'t have enough mone"}, status: 403
+			render json: {error: "You don\'t have enough money"}, status: 403
 		end
 	end
 
 	def voteAction
 		redis = Redis.new
 		action_id = params[:action_id]
-		dbAction = Action.find(action_id)
+		dbAction = RoomAction.find(action_id)
 		if dbAction
 			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
 			if rAction < dbAction.max_vote
@@ -72,13 +75,36 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	def getActionStatus
 		redis = Redis.new
-		keys = redis.keys("actions:1:*")
-		result = {}
+		keys = redis.keys("actions:#{@room.id}:*")
+		status = {}
 		keys.each do |key|
 			split = key.split(':')
-			result[split[2]] = redis.get(key).to_i
+			status[split[2]] = redis.get(key).to_i
 		end
-		render json: result, status: 200
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room.id).emit("action status", { status: status })
+		return head 200
+	end
+
+	def doneAction
+		redis = Redis.new
+		action_id = params[:action_id]
+		dbAction = RoomAction.find(action_id)
+		if dbAction
+			keys = redis.keys("actions:#{@room.id}:*")
+			keys.each do |key|
+				split = key.split(':')
+				point = redis.get(key).to_i
+				if action_id == split[2].to_i && point == dbAction.max_vote
+					redis.del(key)
+					emitter = SocketIO::Emitter.new
+					emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
+				end
+			end
+			return head 200
+		else
+			render json: {error: "Action doesn\'t exist"}, status: 404
+		end
 	end
 
 	def sendGifts
@@ -108,9 +134,49 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getLoungeStatus
+		redis = Redis.new
+		keys = redis.keys("lounges:#{@room.id}:*")
+		status = {}
+		keys.each do |key|
+			split = key.split(':')
+			status[split[2]] = eval(redis.get(key))
+		end
+		emitter = SocketIO::Emitter.new
+		emitter.of("/room").in(@room.id).emit("lounge status", { status: status })
+		return head 200
 	end
 
 	def buyLounge
+		redis = Redis.new
+		cost = params[:cost].to_i
+		lounge = params[:lounge].to_i
+		if lounge > 0 && lounge <= 12
+			if @user.money >= cost then
+				begin
+					if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
+						current_lounge = eval(current_lounge)
+						if current_lounge[:cost].to_i >= cost
+							render json: {error: "You don\'t have enough money to buy this lounge"}, status: 403 and return
+						end
+					end
+					@user.decreaseMoney(cost)
+					@user.increaseExp(cost)
+					@room.broadcaster.increaseExp(cost)
+					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+					lounge_info = {user: user, cost: cost}
+					redis.set("lounges:#{@room.id}:#{lounge}", lounge_info.to_json);
+					emitter = SocketIO::Emitter.new
+					emitter.of("/room").in(@room.id).emit('buy lounge', { num: lounge, lounge: lounge_info });
+					return head 201
+				rescue => e
+					render json: {error: e.message}, status: 400
+				end
+			else
+				render json: {error: "You don\'t have enough money"}, status: 403
+			end
+		else
+			render json: {error: "This lounge doesn\'t exist"}, status: 400
+		end
 	end
 
 	def sendHearts

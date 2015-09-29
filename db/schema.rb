@@ -11,17 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150925044923) do
-
-  create_table "actions", force: :cascade do |t|
-    t.string   "name",       limit: 45
-    t.string   "image",      limit: 512
-    t.integer  "price",      limit: 8
-    t.integer  "max_vote",   limit: 4
-    t.float    "discount",   limit: 24
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
+ActiveRecord::Schema.define(version: 20150929082543) do
 
   create_table "admins", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
@@ -99,6 +89,16 @@ ActiveRecord::Schema.define(version: 20150925044923) do
     t.float    "discount",   limit: 24
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
+  end
+
+  create_table "room_actions", force: :cascade do |t|
+    t.string   "name",       limit: 45
+    t.string   "image",      limit: 512
+    t.integer  "price",      limit: 8
+    t.integer  "max_vote",   limit: 4
+    t.float    "discount",   limit: 24
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "room_types", force: :cascade do |t|
