@@ -91,6 +91,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
+  def getActions
+    @actions = RoomAction.all
+  end
+
+  def getGifts
+    @gifts = Gift.all
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
