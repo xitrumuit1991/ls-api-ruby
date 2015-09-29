@@ -43,7 +43,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def voteAction
 		redis = Redis.new
 		action_id = params[:action_id]
-		dbAction = Action.find(action_id)
+		dbAction = RoomAction.find(action_id)
 		if dbAction
 			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
 			if rAction < dbAction.max_vote
@@ -88,7 +88,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def doneAction
 		redis = Redis.new
 		action_id = params[:action_id]
-		dbAction = Action.find(action_id)
+		dbAction = RoomAction.find(action_id)
 		if dbAction
 			keys = redis.keys("actions:#{@room.id}:*")
 			keys.each do |key|
