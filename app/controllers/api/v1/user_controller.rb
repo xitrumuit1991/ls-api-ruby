@@ -85,7 +85,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def avatar
-    
+    begin
+      horo = Horo.find(params[:id])
+      if !horo.nil? && !horo.sign.url.nil?
+        img_url = 'public' + horo.sign.url
+        if FileTest.exist?(img_url)
+          send_file img_url, type: 'image/png', disposition: 'inline'
+        else
+          send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/no_image_available.png', type: 'image/png', disposition: 'inline'
+    end
   end
 
   def payments
