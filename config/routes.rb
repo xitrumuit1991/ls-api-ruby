@@ -41,10 +41,10 @@ Rails.application.routes.draw do
 				put     '/cover'            => 'broadcasters#uploadCover'
 				post    '/pictures'         => 'broadcasters#pictures'
 				delete  '/pictures'         => 'broadcasters#deletePictures'
-				post    '/videos'         	=> 'broadcasters#videos'
-				delete  '/videos'         	=> 'broadcasters#deleteVideos'
-				get  		'/followed'       	=> 'broadcasters#followed'
-				put  		'/:id/follow'       => 'broadcasters#follow'
+				post    '/videos'						=> 'broadcasters#videos'
+				delete  '/videos'						=> 'broadcasters#deleteVideos'
+				get			'/followed'					=> 'broadcasters#followed'
+				put			'/:id/follow'       => 'broadcasters#follow'
 			end
 
 			# rooms
