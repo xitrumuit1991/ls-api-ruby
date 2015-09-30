@@ -12,6 +12,7 @@ json.broadcaster do
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp
+	json.percent		@room.broadcaster.percent
 	json.level			@room.broadcaster.broadcaster_level.level
 	json.facebook		@room.broadcaster.user.facebook_link
 	json.twitter		@room.broadcaster.user.twitter_link

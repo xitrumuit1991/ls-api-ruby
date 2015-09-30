@@ -23,13 +23,39 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseExp(exp)
-		new_value = self.user_exp + exp
-		next_level = UserLevel.where("min_exp <= ?", new_value).last
+		old_value = self.user_exp
+		new_value = old_value + exp
 		self.user_exp = new_value
-		if new_value >= next_level.min_exp then
-			self.user_level = next_level
+		# next_level = UserLevel.where("min_exp <= ?", new_value).last
+		next_level = self.user_level.next
+		percent = self.percent
+		if next_level
+			if new_value >= next_level.min_exp then
+				self.user_level = next_level
+				if next_level.next
+					all = next_level.next.min_exp - next_level.min_exp
+					percent = (new_value - next_level.min_exp) * 100 / all
+				else
+					percent = 100
+				end
+				NotificationLevelUpJob.perform_later(self.email, self.user_level.level)
+			end
 		end
 		self.save
+		NotificationChangeExpJob.perform_later(self.email, old_value, new_value, percent)
+	end
+
+	def percent
+		percent = 0
+
+		if user_level.next
+			all = user_level.next.min_exp - user_level.min_exp
+			curent = user_exp - user_level.min_exp
+			percent = curent * 100 / all
+		else
+			percent = 100
+		end
+		return percent
 	end
 
 end

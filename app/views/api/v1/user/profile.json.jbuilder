@@ -14,3 +14,5 @@ json.instagram	@user.instagram_link
 json.heart		@user.no_heart
 json.money		@user.money
 json.user_exp	@user.user_exp
+json.percent	@user.percent
+json.user_level	@user.user_level.level
