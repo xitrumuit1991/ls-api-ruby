@@ -64,7 +64,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				rescue => e
 					render json: {error: e.message}, status: 400
 				end
-				return head 201
 			else
 				render json: {error: "This action has been full"}, status: 403
 			end
