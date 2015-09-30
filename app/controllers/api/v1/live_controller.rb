@@ -184,20 +184,24 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		emitter = SocketIO::Emitter.new
 		hearts = params[:hearts].to_i
 		if(hearts > 0 && @user.no_heart >= hearts) then
-			@user.no_heart -= hearts
-			@room.broadcaster.recived_heart += hearts
-			@user.exp += hearts
-			@room.broadcaster.exp += hearts
-			if @user.save then
-				if @room.broadcaster.save then
-					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-					emitter.of("/room").in(@room.id).emit("hearts recived", {hearts: hearts, sender: user})
-					return head 201
+			begin
+				@user.no_heart -= hearts
+				@room.broadcaster.recived_heart += hearts
+				@user.increaseExp(hearts)
+				@room.broadcaster.increaseExp(hearts)
+				if @user.save then
+					if @room.broadcaster.save then
+						user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+						emitter.of("/room").in(@room.id).emit("hearts recived", {hearts: hearts, sender: user})
+						return head 201
+					else
+						render json: {error: "Heart already send, but broadcaster can\'t recive, please contact supporter!"}, status: 400
+					end
 				else
-					render json: {error: "Heart already send, but broadcaster can\'t recive, please contact supporter!"}, status: 400
+					render json: {error: "can\'t send heart, please try again later"}, status: 400
 				end
-			else
-				render json: {error: "can\'t send heart, please try again later"}, status: 400
+			rescue => e
+				render json: {error: e.message}, status: 400
 			end
 		else
 			render json: {error: "You don\'t have enough hearts"}, status: 403
