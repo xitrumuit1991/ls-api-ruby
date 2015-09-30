@@ -92,6 +92,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getActions
+    redis = Redis.new
+    keys = redis.keys("actions:#{params[:room_id]}:*")
+    @status = {}
+    keys.each do |key|
+      split = key.split(':')
+      @status[split[2].to_i] = redis.get(key).to_i
+    end
     @actions = RoomAction.all
   end
 

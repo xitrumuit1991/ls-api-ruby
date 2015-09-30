@@ -48,17 +48,19 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		if dbAction
 			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
 			if rAction < dbAction.max_vote
-				redis.set("actions:#{@room.id}:#{action_id}", rAction + 1);
+				new_value = rAction + 1
+				percent = new_value * 100 / dbAction.max_vote
+				redis.set("actions:#{@room.id}:#{action_id}", new_value);
 				begin
 					@user.decreaseMoney(dbAction.price)
 					@user.increaseExp(dbAction.price)
 					@room.broadcaster.increaseExp(dbAction.price)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 					emitter = SocketIO::Emitter.new
-					if dbAction.max_vote == rAction + 1
-						emitter.of("/room").in(@room.id).emit("action full", {action: action_id, total: dbAction.price, sender: user})
+					if dbAction.max_vote == new_value
+						emitter.of("/room").in(@room.id).emit("action full", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
 					else
-						emitter.of("/room").in(@room.id).emit("action recived", {action: action_id, total: dbAction.price, sender: user})
+						emitter.of("/room").in(@room.id).emit("action recived", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
 					end
 					return head 201
 				rescue => e
@@ -78,7 +80,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		status = {}
 		keys.each do |key|
 			split = key.split(':')
-			status[split[2]] = redis.get(key).to_i
+			status[split[2].to_i] = redis.get(key).to_i
 		end
 		emitter = SocketIO::Emitter.new
 		emitter.of("/room").in(@room.id).emit("action status", { status: status })

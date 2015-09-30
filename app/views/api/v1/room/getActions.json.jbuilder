@@ -4,5 +4,7 @@ json.array! @actions do |action|
 	json.image		"#{request.base_url}/#{action.image.url}"
 	json.price		action.price
 	json.max_vote	action.max_vote
+	json.voted		@status[action.id].nil? ? 0 : @status[action.id]
+	json.percent	(@status[action.id].nil? ? 0 : @status[action.id]) * 100 / action.max_vote
 	json.discount	action.discount
 end

@@ -13,8 +13,10 @@ class User < ActiveRecord::Base
 
 	def decreaseMoney(money)
 		if self.money >= money then
+			old = self.money
 			value = self.money - money
 			self.update(money: value)
+			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else
 			raise "You don\'t have enough money"
 		end
