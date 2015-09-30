@@ -274,8 +274,8 @@
 ```
 {
 	schedule: [
-		{ date: "08/11/2015", from: "08:30", to: "09:30"},
-		{ date: "08/11/2015", time: "16:00", to: "17:00"},
+		{ date: "08/11/2015", start: "08:30", end: "09:30"},
+		{ date: "08/11/2015", start: "16:00", end: "17:00"},
 		...
 	]
 }
@@ -354,7 +354,7 @@
 - Header:
 	+ Content-Type: application/json
 	+ Authorization: Token token="this-is-jwt-token"
-- Request:	```[ 123654, 654123 ]```
+- Request:	```{ id :[ 123654, 654123 ] }```
 - Response:
 	+ status: **200**, **400**, **401**
 
@@ -364,7 +364,7 @@
 - Header:
 	+ Content-Type: application/json
 	+ Authorization: Token token="this-is-jwt-token"
-- Request: ```[{ path: "http://youtube.com/AbcXyZ" }, ...]```
+- Request: ```[{ video: "http://youtube.com/AbcXyZ" }, ...]```
 - Response:
 	+ status: **201**, **400**, **401**
 
@@ -374,7 +374,7 @@
 - Header:
 	+ Content-Type: application/json
 	+ Authorization: Token token="this-is-jwt-token"
-- Request:	```[ 123654, 654123 ]```
+- Request:	```{ id :[ 123654, 654123 ] }```
 - Response:
 	+ status: **200**, **400**, **401**
 

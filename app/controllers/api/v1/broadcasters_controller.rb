@@ -2,7 +2,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster
+  before_action :checkIsBroadcaster, except: [:onair]
 
   def profile
   end
@@ -27,8 +27,57 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     return head errors
   end
 
-  def delete_pictures
-    
+  def deletePictures
+    if @user.broadcaster.images.present?
+      if @user.broadcaster.images.where(:id => params[:pictures]).destroy_all
+        return head 200
+      else
+        return head 400
+      end
+    else
+      return head 400
+    end
+  end
+
+  def videos
+    videos = JSON.parse(params[:videos].to_json)
+    if @user.broadcaster.videos.create(videos)
+      return head 201
+    else
+      render plain: 'System error !', status: 400
+    end
+  end
+
+  def deleteVideos
+    if @user.broadcaster.videos.present?
+      if @user.broadcaster.videos.where(:id => params[:videos]).destroy_all
+        return head 200
+      else
+        return head 400
+      end
+    else
+      return head 400
+    end
+  end
+
+  def followed
+    @users_followed = UserFollowBct.where(broadcaster_id: @user.broadcaster.id)
+  end
+
+  def follow
+    if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i)
+      if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
+        return head 200
+      else
+        return head 400
+      end
+    else
+      if @user.user_follow_bcts.create(broadcaster_id: params[:id].to_i)
+        return head 201
+      else
+        return head 400
+      end
+    end    
   end
 
   private
