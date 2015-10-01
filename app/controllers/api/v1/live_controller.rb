@@ -15,7 +15,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	def sendMessage
 		message = params[:message]
-		emitter = SocketIO::Emitter.new
+		emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 		user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 		emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
 		return head 201
@@ -30,7 +30,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				@user.increaseExp(cost)
 				@room.broadcaster.increaseExp(cost)
 				user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-				emitter = SocketIO::Emitter.new
+				emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 				emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 				return head 201
 			rescue => e
@@ -56,7 +56,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					@user.increaseExp(dbAction.price)
 					@room.broadcaster.increaseExp(dbAction.price)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-					emitter = SocketIO::Emitter.new
+					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 					if dbAction.max_vote == new_value
 						emitter.of("/room").in(@room.id).emit("action full", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
 					else
@@ -82,7 +82,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 			split = key.split(':')
 			status[split[2].to_i] = redis.get(key).to_i
 		end
-		emitter = SocketIO::Emitter.new
+		emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 		emitter.of("/room").in(@room.id).emit("action status", { status: status })
 		return head 200
 	end
@@ -98,7 +98,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				point = redis.get(key).to_i
 				if action_id == split[2].to_i && point == dbAction.max_vote
 					redis.del(key)
-					emitter = SocketIO::Emitter.new
+					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))_value
 					emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
 				end
 			end
@@ -120,7 +120,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					@user.increaseExp(total)
 					@room.broadcaster.increaseExp(total)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-					emitter = SocketIO::Emitter.new
+					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 					emitter.of("/room").in(@room.id).emit("gifts recived", {gift: gift_id, quantity:quantity, total: total, sender: user})
 					return head 201
 				rescue => e
@@ -142,7 +142,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 			split = key.split(':')
 			status[split[2]] = eval(redis.get(key))
 		end
-		emitter = SocketIO::Emitter.new
+		emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 		emitter.of("/room").in(@room.id).emit("lounge status", { status: status })
 		return head 200
 	end
@@ -166,7 +166,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 					lounge_info = {user: user, cost: cost}
 					redis.set("lounges:#{@room.id}:#{lounge}", lounge_info.to_json);
-					emitter = SocketIO::Emitter.new
+					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 					emitter.of("/room").in(@room.id).emit('buy lounge', { num: lounge, lounge: lounge_info });
 					return head 201
 				rescue => e
@@ -181,7 +181,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def sendHearts
-		emitter = SocketIO::Emitter.new
+		emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 		hearts = params[:hearts].to_i
 		if(hearts > 0 && @user.no_heart >= hearts) then
 			begin
@@ -211,7 +211,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def startRoom
 		@room.on_air = true
 		if @room.save then
-			emitter = SocketIO::Emitter.new
+			emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 			emitter.of("/room").in(@room.id).emit("room on-air")
 			return head 200
 		else
@@ -222,7 +222,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def endRoom
 		@room.on_air = false
 		if @room.save then
-			emitter = SocketIO::Emitter.new
+			emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 			emitter.of("/room").in(@room.id).emit("room off")
 			return head 200
 		else
