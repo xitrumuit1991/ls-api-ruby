@@ -48,7 +48,10 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
   database: livestar_production
-  username: livestar
-  password: <%= ENV['LIVESTAR_DATABASE_PASSWORD'] %>
+  username: root
+  password: asdwsx!@#
+  host: 203.162.53.68

@@ -92,7 +92,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getActions
-    redis = Redis.new
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     keys = redis.keys("actions:#{params[:room_id]}:*")
     @status = {}
     keys.each do |key|

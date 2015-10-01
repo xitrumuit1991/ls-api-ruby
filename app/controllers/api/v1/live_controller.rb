@@ -42,7 +42,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def voteAction
-		redis = Redis.new
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		action_id = params[:action_id]
 		dbAction = RoomAction.find(action_id)
 		if dbAction
@@ -75,7 +75,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getActionStatus
-		redis = Redis.new
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		keys = redis.keys("actions:#{@room.id}:*")
 		status = {}
 		keys.each do |key|
@@ -88,7 +88,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def doneAction
-		redis = Redis.new
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		action_id = params[:action_id]
 		dbAction = RoomAction.find(action_id)
 		if dbAction
@@ -135,7 +135,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def getLoungeStatus
-		redis = Redis.new
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		keys = redis.keys("lounges:#{@room.id}:*")
 		status = {}
 		keys.each do |key|
@@ -148,7 +148,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def buyLounge
-		redis = Redis.new
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		cost = params[:cost].to_i
 		lounge = params[:lounge].to_i
 		if lounge > 0 && lounge <= 12
@@ -235,7 +235,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	private
 		def getUsers
-			redis = Redis.new
+			redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 			@userlist = redis.hgetall(@room.id)
 			@userlist.each do |key, val|
 				@userlist[key] = eval(val)
