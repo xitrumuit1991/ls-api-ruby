@@ -37,8 +37,6 @@ group :development, :test do
   gem 'byebug'
   # Pry
   gem 'pry'
-
-  gem 'faker', '~> 1.4.3'
 end
 
 group :development do
@@ -48,6 +46,8 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 end
+
+gem 'faker', '~> 1.4.3'
 
 # Rails Admin
 gem 'rails_admin'
