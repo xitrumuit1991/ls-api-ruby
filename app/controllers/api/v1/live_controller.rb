@@ -98,7 +98,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				point = redis.get(key).to_i
 				if action_id == split[2].to_i && point == dbAction.max_vote
 					redis.del(key)
-					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))_value
+					emitter = SocketIO::Emitter.new(Redis.new(:host => Settings.redis_host, :port => Settings.redis_port))
 					emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
 				end
 			end
