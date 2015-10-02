@@ -140,11 +140,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		status = {}
 		keys.each do |key|
 			split = key.split(':')
-			status[split[2]] = eval(redis.get(key))
+			status[split[2].to_i] = eval(redis.get(key))
 		end
-		emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-		emitter.of("/room").in(@room.id).emit("lounge status", { status: status })
-		return head 200
+		render json: status, status: 200
 	end
 
 	def buyLounge
@@ -157,17 +155,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
 						current_lounge = eval(current_lounge)
 						if current_lounge[:cost].to_i >= cost
-							render json: {error: "You don\'t have enough money to buy this lounge"}, status: 403 and return
+							render json: {error: "Your bit must larger than curent cost"}, status: 403 and return
 						end
 					end
 					@user.decreaseMoney(cost)
 					@user.increaseExp(cost)
 					@room.broadcaster.increaseExp(cost)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-					lounge_info = {user: user, cost: cost}
-					redis.set("lounges:#{@room.id}:#{lounge}", lounge_info.to_json);
+					redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
 					emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-					emitter.of("/room").in(@room.id).emit('buy lounge', { num: lounge, lounge: lounge_info });
+					emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
 					return head 201
 				rescue => e
 					render json: {error: e.message}, status: 400
@@ -243,15 +240,15 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		end
 
 		def checkSubscribed
-			if(params.has_key?(:room_id)) then
+			# if(params.has_key?(:room_id)) then
 				@room = Room.find(params[:room_id])
-				getUsers
-				if(!@userlist.has_key?(@user.email)) then
-					render json: {error: "You are not subscribe to this room"}, status: 403
-				end
-			else
-				render json: {error: "Missing room_id parameter"}, status: 404
-			end
+			# 	getUsers
+			# 	if(!@userlist.has_key?(@user.email)) then
+			# 		render json: {error: "You are not subscribe to this room"}, status: 403
+			# 	end
+			# else
+			# 	render json: {error: "Missing room_id parameter"}, status: 404
+			# end
 		end
 
 		def checkStarted
