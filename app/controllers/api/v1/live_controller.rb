@@ -138,6 +138,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		keys = redis.keys("lounges:#{@room.id}:*")
 		status = []
+		0..11.each do |key|
+			status[key] = {user: {id: 0, name: ''}, cost: 0}
+		end
 		keys.each do |key|
 			split = key.split(':')
 			status[split[2].to_i] = eval(redis.get(key))
