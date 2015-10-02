@@ -121,7 +121,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					@room.broadcaster.increaseExp(total)
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 					emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-					emitter.of("/room").in(@room.id).emit("gifts recived", {gift: gift_id, quantity:quantity, total: total, sender: user})
+					emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
 					return head 201
 				rescue => e
 					render json: {error: e.message}, status: 400
