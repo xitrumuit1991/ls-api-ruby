@@ -137,7 +137,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def getLoungeStatus
 		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		keys = redis.keys("lounges:#{@room.id}:*")
-		status = {}
+		status = []
 		keys.each do |key|
 			split = key.split(':')
 			status[split[2].to_i] = eval(redis.get(key))
