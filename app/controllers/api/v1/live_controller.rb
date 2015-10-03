@@ -195,8 +195,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		@room.on_air = false
 		if @room.save then
 			# Delete actions and lounges
-			rActions = redis.key("actions:#{@room.id}:*")
-			rLounges = redis.key("lounges:#{@room.id}:*")
+			rActions = redis.keys("actions:#{@room.id}:*")
+			rLounges = redis.keys("lounges:#{@room.id}:*")
 			redis.del(rActions)
 			redis.del(rLounges)
 
