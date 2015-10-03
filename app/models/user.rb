@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
 		#next_level = self.user_level.next
 		percent = self.percent
 		if next_level
-			if new_value >= next_level.min_exp then
+			if self.user_level.level < next_level.level then
 				self.user_level = next_level
 				if next_level.next
 					all = next_level.next.min_exp - next_level.min_exp
