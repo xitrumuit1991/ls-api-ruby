@@ -81,7 +81,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		if dbAction
 			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
 			if dbAction.max_vote <= rAction
-				redis.get("actions:#{@room.id}:#{action_id}", 0)
+				redis.set("actions:#{@room.id}:#{action_id}", 0)
 				emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
 				emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
 				return head 200
