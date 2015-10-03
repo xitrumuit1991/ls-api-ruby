@@ -26,8 +26,8 @@ class User < ActiveRecord::Base
 		old_value = self.user_exp
 		new_value = old_value + exp
 		self.user_exp = new_value
-		# next_level = UserLevel.where("min_exp <= ?", new_value).last
-		next_level = self.user_level.next
+		next_level = UserLevel.where("min_exp <= ?", new_value).last
+		#next_level = self.user_level.next
 		percent = self.percent
 		if next_level
 			if new_value >= next_level.min_exp then
