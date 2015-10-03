@@ -197,8 +197,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 			# Delete actions and lounges
 			rActions = redis.keys("actions:#{@room.id}:*")
 			rLounges = redis.keys("lounges:#{@room.id}:*")
-			redis.del(rActions)
-			redis.del(rLounges)
+			redis.del rActions if !rActions.empty?
+			redis.del rLounges if !rLounges.empty?
 
 			# Broadcast to room
 			emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
