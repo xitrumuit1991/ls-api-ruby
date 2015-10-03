@@ -6,8 +6,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 	before_action :authenticate
 	before_action :checkSubscribed
-	before_action :checkStarted, only: [:voteAction, :getActionStatus, :sendScreenText, :buyGift, :getLoungeStatus]
-	before_action :checkPermission, only: [:startRoom, :endRoom]
+	before_action :checkStarted, only: [:voteAction, :getActionStatus, :sendScreenText, :buyGift, :buyLounge, :endRoom]
+	before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction]
 
 	def getUserList
 		render json: @userlist
