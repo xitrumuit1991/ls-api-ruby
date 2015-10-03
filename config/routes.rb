@@ -59,7 +59,8 @@ Rails.application.routes.draw do
 				put   '/background'       => 'room#changeBackground'
 				post  '/schedule'					=> 'room#updateSchedule'
 				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'						=> 'room#getGifts'
+				get		'/gifts'					=> 'room#getGifts'
+				get		'/lounges'					=> 'room#getLounges'
 				get   '/:id'              => 'room#detail'
 			end
 
@@ -71,9 +72,7 @@ Rails.application.routes.draw do
 				post  '/send-hearts'        => 'live#sendHearts'
 				post  '/vote-action'        => 'live#voteAction'
 				post  '/done-action'        => 'live#doneAction'
-				get   '/get-action-status'  => 'live#getActionStatus'
 				post  '/send-gifts'         => 'live#sendGifts'
-				get   '/get-lounge-status'  => 'live#getLoungeStatus'
 				post  '/buy-lounge'         => 'live#buyLounge'
 				post  '/start-room'         => 'live#startRoom'
 				post  '/end-room'           => 'live#endRoom'

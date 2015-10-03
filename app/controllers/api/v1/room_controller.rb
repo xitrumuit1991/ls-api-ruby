@@ -106,6 +106,20 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @gifts = Gift.all
   end
 
+  def getLounges
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+    keys = redis.keys("lounges:#{params[:room_id]}:*")
+    status = []
+    12.times do |n|
+      status[n] = {user: {id: 0, name: ''}, cost: 0}
+    end
+    keys.each do |key|
+      split = key.split(':')
+      status[split[2].to_i] = eval(redis.get(key))
+    end
+    render json: status, status: 200
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster

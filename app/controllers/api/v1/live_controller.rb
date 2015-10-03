@@ -74,19 +74,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		end
 	end
 
-	def getActionStatus
-		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-		keys = redis.keys("actions:#{@room.id}:*")
-		status = {}
-		keys.each do |key|
-			split = key.split(':')
-			status[split[2].to_i] = redis.get(key).to_i
-		end
-		emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-		emitter.of("/room").in(@room.id).emit("action status", { status: status })
-		return head 200
-	end
-
 	def doneAction
 		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		action_id = params[:action_id]
@@ -130,20 +117,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		else
 			return head 404
 		end
-	end
-
-	def getLoungeStatus
-		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-		keys = redis.keys("lounges:#{@room.id}:*")
-		status = []
-		12.times do |n|
-			status[n] = {user: {id: 0, name: ''}, cost: 0}
-		end
-		keys.each do |key|
-			split = key.split(':')
-			status[split[2].to_i] = eval(redis.get(key))
-		end
-		render json: status, status: 200
 	end
 
 	def buyLounge
