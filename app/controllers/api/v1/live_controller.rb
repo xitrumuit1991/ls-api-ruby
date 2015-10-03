@@ -152,7 +152,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		cost = params[:cost].to_i
 		lounge = params[:lounge].to_i
-		if lounge > 0 && lounge <= 12
+		if lounge >= 0 && lounge <= 11
 			if @user.money >= cost then
 				begin
 					if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
