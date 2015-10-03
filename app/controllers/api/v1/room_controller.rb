@@ -2,7 +2,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts]
+  before_action :checkIsBroadcaster, except: [:onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
 
   def onair
     @rooms = Room.where(on_air: true)
