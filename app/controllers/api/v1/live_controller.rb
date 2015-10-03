@@ -226,22 +226,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				@room = Room.find(params[:room_id])
 				getUsers
 				if(!@userlist.has_key?(@user.email)) then
-					render json: {error: "You are not subscribe to this room"}, status: 403
+					render json: {error: "You are not subscribe to this room"}, status: 403 and return
 				end
 			else
-				render json: {error: "Missing room_id parameter"}, status: 404
+				render json: {error: "Missing room_id parameter"}, status: 404 and return
 			end
 		end
 
 		def checkStarted
 			if !@room.on_air then
-				render json: {error: "This room is off"}, status: 403
+				render json: {error: "This room is off"}, status: 403  and return
 			end
 		end
 
 		def checkPermission
 			if @user.email != @room.broadcaster.user.email then
-				render json: {error: "You don\'t has permission to access this function"}, status: 403
+				render json: {error: "You don\'t has permission to access this function"}, status: 403 and return
 			end
 		end
 
