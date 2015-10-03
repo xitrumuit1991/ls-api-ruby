@@ -92,17 +92,15 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		action_id = params[:action_id]
 		dbAction = RoomAction.find(action_id)
 		if dbAction
-			keys = redis.keys("actions:#{@room.id}:*")
-			keys.each do |key|
-				split = key.split(':')
-				point = redis.get(key).to_i
-				if action_id == split[2].to_i && point == dbAction.max_vote
-					redis.del(key)
-					emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-					emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
-				end
-			end
-			return head 200
+			rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
+			if dbAction.max_vote <= rAction
+				redis.get("actions:#{@room.id}:#{action_id}", 0)
+				emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+				emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
+				return head 200
+			else
+				render json: {error: "This action must be full before set to done"}, status: 400
+			end			
 		else
 			render json: {error: "Action doesn\'t exist"}, status: 404
 		end
@@ -220,8 +218,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	end
 
 	def endRoom
+		redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
 		@room.on_air = false
 		if @room.save then
+			# Delete actions and lounges
+			rActions = redis.key("actions:#{@room.id}:*")
+			rLounges = redis.key("lounges:#{@room.id}:*")
+			redis.del(rActions)
+			redis.del(rLounges)
+
+			# Broadcast to room
 			emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
 			emitter.of("/room").in(@room.id).emit("room off")
 			return head 200
@@ -243,15 +249,15 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 		end
 
 		def checkSubscribed
-			# if(params.has_key?(:room_id)) then
+			if(params.has_key?(:room_id)) then
 				@room = Room.find(params[:room_id])
-			# 	getUsers
-			# 	if(!@userlist.has_key?(@user.email)) then
-			# 		render json: {error: "You are not subscribe to this room"}, status: 403
-			# 	end
-			# else
-			# 	render json: {error: "Missing room_id parameter"}, status: 404
-			# end
+				getUsers
+				if(!@userlist.has_key?(@user.email)) then
+					render json: {error: "You are not subscribe to this room"}, status: 403
+				end
+			else
+				render json: {error: "Missing room_id parameter"}, status: 404
+			end
 		end
 
 		def checkStarted
