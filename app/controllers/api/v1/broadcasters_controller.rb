@@ -4,7 +4,11 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   before_action :authenticate
   before_action :checkIsBroadcaster, except: [:onair]
 
+  def myProfile
+  end
+
   def profile
+    @user = User.find(params[:id])
   end
 
   def status

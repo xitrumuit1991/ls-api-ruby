@@ -33,7 +33,8 @@ Rails.application.routes.draw do
 
 			# broadcasters
 			scope '/broadcasters' do
-				get     '/'                 => 'broadcasters#profile'
+				get     '/'                 => 'broadcasters#myProfile'
+				get     '/:id'                 => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
 				put     '/'                 => 'broadcasters#update'
