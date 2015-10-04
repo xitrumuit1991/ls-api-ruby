@@ -21,12 +21,12 @@ else
 	json.status				nil	
 end
 
-json.photos @user.broadcaster.bct_images do |photo|
+json.photos @user.broadcaster.images do |photo|
 	json.id		photo.id
-	json.link	photo.image
+	json.link	"#{request.base_url}#{photo.image}"
 end
 
-json.videos @user.broadcaster.bct_videos do |video|
+json.videos @user.broadcaster.videos do |video|
 	json.id		video.id
 	json.link	video.video
 	json.thumb	video.thumb
