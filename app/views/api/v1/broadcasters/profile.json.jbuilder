@@ -6,8 +6,8 @@ json.birthday			@user.birthday
 json.gender				@user.gender
 json.address			@user.address
 json.phone				@user.phone
-json.avatar				@user.avatar.url
-json.cover				@user.cover.url
+json.avatar				"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
+json.cover				"#{request.base_url}#{@user.cover.url}"
 json.facebook			@user.facebook_link
 json.twitter			@user.twitter_link
 json.instagram			@user.instagram_link
