@@ -4,7 +4,7 @@ class Broadcaster < ActiveRecord::Base
 	belongs_to :broadcaster_level
 
 	has_many :user_follow_bcts
-	has_many :followers, through: :user_follow_bcts
+	has_many :followers, class_name: "User", through: :user_follow_bcts
 
 	has_many :rooms
 	has_many :images, class_name:'BctImage'
