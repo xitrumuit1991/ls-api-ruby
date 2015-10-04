@@ -2,7 +2,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair]
+  before_action :checkIsBroadcaster, except: [:onair, :profile]
 
   def myProfile
   end
