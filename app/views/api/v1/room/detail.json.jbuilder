@@ -18,6 +18,7 @@ json.broadcaster do
 	json.twitter		@room.broadcaster.user.twitter_link
 	json.instagram		@room.broadcaster.user.instagram_link
 	json.status			@room.broadcaster.user.statuses.blank? ? nil : @room.broadcaster.user.statuses[0].content
+	json.isFollow		!@user.broadcasters.where(id: @room.broadcaster.id).empty?
 end
 
 json.schedules @room.schedules do |schedule|
