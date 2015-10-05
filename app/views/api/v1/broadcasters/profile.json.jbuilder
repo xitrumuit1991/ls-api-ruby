@@ -34,8 +34,8 @@ json.videos @user.broadcaster.videos do |video|
 end
 
 json.fans @user.broadcaster.users do |follower|
-	json.id		follower.user.id
-	json.name	follower.user.name
+	json.id		follower.id
+	json.name	follower.name
 	json.vip 	nil
-	json.heart	follower.user.no_heart
+	json.heart	follower.no_heart
 end
