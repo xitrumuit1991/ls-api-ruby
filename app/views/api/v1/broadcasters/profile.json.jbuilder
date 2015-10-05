@@ -1,5 +1,6 @@
 json.id					@user.id
 json.name				@user.name
+json.fullname			@user.broadcaster.fullname
 json.username			@user.username
 json.email				@user.email
 json.birthday			@user.birthday
@@ -32,7 +33,7 @@ json.videos @user.broadcaster.videos do |video|
 	json.thumb	video.thumb
 end
 
-json.fans @user.user_follow_bcts do |follower|
+json.fans @user.broadcaster.users do |follower|
 	json.id		follower.user.id
 	json.name	follower.user.name
 	json.vip 	nil
