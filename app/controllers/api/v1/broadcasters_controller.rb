@@ -8,7 +8,9 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def profile
-    @user = User.find(params[:id])
+    @broadcaster = Broadcaster.find(params[:id])
+    @followers = @broadcaster.users
+    @user = @broadcaster.user
   end
 
   def status
