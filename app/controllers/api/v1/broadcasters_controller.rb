@@ -2,7 +2,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed]
 
   def myProfile
   end
@@ -65,7 +65,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def followed
-    @users_followed = UserFollowBct.where(broadcaster_id: @user.broadcaster.id)
+    @users_followed = @user.broadcasters
   end
 
   def follow
