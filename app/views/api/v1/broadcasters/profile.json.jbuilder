@@ -24,7 +24,7 @@ end
 
 json.photos @broadcaster.images do |photo|
 	json.id		photo.id
-	json.link	"#{request.base_url}#{photo.image}"
+	json.link	"#{request.base_url}#{photo.image_url}"
 end
 
 json.videos @broadcaster.videos do |video|
