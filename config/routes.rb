@@ -34,7 +34,6 @@ Rails.application.routes.draw do
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'                 => 'broadcasters#myProfile'
-				get     '/:id'                 => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
 				put     '/'                 => 'broadcasters#update'
@@ -45,6 +44,7 @@ Rails.application.routes.draw do
 				post    '/videos'						=> 'broadcasters#videos'
 				delete  '/videos'						=> 'broadcasters#deleteVideos'
 				get			'/followed'					=> 'broadcasters#followed'
+				get     '/:id'              => 'broadcasters#profile'
 				put			'/:id/follow'       => 'broadcasters#follow'
 			end
 

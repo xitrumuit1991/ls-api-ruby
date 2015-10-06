@@ -24,6 +24,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 	def sendScreenText
 		cost = 1
 		message = params[:message]
+
 		if @user.money >= cost then
 			begin
 				@user.decreaseMoney(cost)
@@ -34,7 +35,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 
 				# insert log
-				@user.statuses.create(room_id: @room.id, content: message, cost: cost)
+				@user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
 
 				return head 201
 			rescue => e
