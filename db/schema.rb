@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150929082543) do
+ActiveRecord::Schema.define(version: 20151005041554) do
 
   create_table "admins", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
@@ -136,6 +136,18 @@ ActiveRecord::Schema.define(version: 20150929082543) do
 
   add_index "schedules", ["room_id"], name: "index_schedules_on_room_id", using: :btree
 
+  create_table "screen_text_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.text     "content",    limit: 65535
+    t.float    "cost",       limit: 24
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "screen_text_logs", ["room_id"], name: "index_screen_text_logs_on_room_id", using: :btree
+  add_index "screen_text_logs", ["user_id"], name: "index_screen_text_logs_on_user_id", using: :btree
+
   create_table "statuses", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.text     "content",    limit: 65535
@@ -247,6 +259,8 @@ ActiveRecord::Schema.define(version: 20150929082543) do
   add_foreign_key "rooms", "broadcasters"
   add_foreign_key "rooms", "room_types"
   add_foreign_key "schedules", "rooms"
+  add_foreign_key "screen_text_logs", "rooms"
+  add_foreign_key "screen_text_logs", "users"
   add_foreign_key "statuses", "users"
   add_foreign_key "user_follow_bcts", "broadcasters"
   add_foreign_key "user_follow_bcts", "users"

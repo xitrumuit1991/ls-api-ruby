@@ -32,6 +32,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 				emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
 				emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
+
+				# insert log
+				@user.statuses.create(room_id: @room.id, content: message, cost: cost)
+
 				return head 201
 			rescue => e
 				render json: {error: e.message}, status: 400

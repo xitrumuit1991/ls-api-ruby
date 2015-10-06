@@ -4,6 +4,7 @@ class User < ActiveRecord::Base
 	has_many :statuses
 	has_many :user_follow_bcts
 	has_many :broadcasters, through: :user_follow_bcts
+	has_many :screen_text_logs
 
 	validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
