@@ -67,6 +67,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					else
 						emitter.of("/room").in(@room.id).emit("action recived", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
 					end
+
+					# insert log
+					@user.action_logs.create(room_id: @room.id, room_action_id: action_id, cost: dbAction.price)
+
 					return head 201
 				rescue => e
 					render json: {error: e.message}, status: 400
@@ -92,7 +96,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 				return head 200
 			else
 				render json: {error: "This action must be full before set to done"}, status: 400
-			end			
+			end
 		else
 			render json: {error: "Action doesn\'t exist"}, status: 404
 		end
@@ -112,6 +116,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 					emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
 					emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
+
+					# insert log
+					@user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
+
 					return head 201
 				rescue => e
 					render json: {error: e.message}, status: 400
@@ -144,6 +152,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
 					emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
 					emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
+
+					# insert log
+					@user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
+
 					return head 201
 				rescue => e
 					render json: {error: e.message}, status: 400
