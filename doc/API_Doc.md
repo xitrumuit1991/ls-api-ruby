@@ -731,7 +731,7 @@
 ```
 
 ### Get top user send gift
-- URI: **/top-gift-broadcaster**
+- URI: **/top-gift-user**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
