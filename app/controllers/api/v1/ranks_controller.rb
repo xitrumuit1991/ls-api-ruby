@@ -7,11 +7,23 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	end
 
 	def topGiftBroadcaster
-		
+		if params[:range] == "month"
+			@top_gift_broadcasters = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(updated_at: 1.month.ago..DateTime.now , user_id: nil).group(:room_id).order('quantity desc').limit(10)
+		elsif params[:range] == "all"
+			@top_gift_broadcasters = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(user_id: nil).group(:room_id).order('quantity desc').limit(10)
+		else
+			@top_gift_broadcasters = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(updated_at: 1.week.ago..DateTime.now , user_id: nil).group(:room_id).order('quantity desc').limit(10)
+		end
 	end
 
-	def topGiftBroadcaster
-
+	def topGiftUser
+		if params[:range] == "month"
+			@top_gift_users = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(updated_at: 1.month.ago..DateTime.now , room_id: nil).group(:user_id).order('quantity desc').limit(10)
+		elsif params[:range] == "all"
+			@top_gift_users = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(room_id: nil).group(:user_id).order('quantity desc').limit(10)
+		else
+			@top_gift_users = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(updated_at: 1.week.ago..DateTime.now , room_id: nil).group(:user_id).order('quantity desc').limit(10)
+		end
 	end
 
 	def topHeartBroadcaster
