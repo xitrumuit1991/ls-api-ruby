@@ -48,6 +48,16 @@ Rails.application.routes.draw do
 				put			'/:id/follow'       => 'broadcasters#follow'
 			end
 
+			# ranks
+			scope '/ranks' do
+				get     '/featured-broadcaster'                 => 'ranks#getFeaturedBroadcasters'
+				get     '/top-heart-broadcaster'                => 'ranks#topHeartBroadcaster'
+				get     '/top-level-grow-broadcaster'			=> 'ranks#topLevelGrowBroadcaster'
+				get     '/top-level-grow-user'					=> 'ranks#topLevelGrowUser'
+				get     '/top-gift-broadcaster'					=> 'ranks#topGiftBroadcaster'
+				get     '/top-gift-user'						=> 'ranks#topGiftUser'
+			end
+
 			# rooms
 			scope 'rooms' do
 				get   '/on-air'           => 'room#onair'
