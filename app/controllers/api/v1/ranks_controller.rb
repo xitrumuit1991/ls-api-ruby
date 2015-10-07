@@ -3,7 +3,15 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	before_action :authenticate
 
 	def getFeaturedBroadcasters
-		
+		@featured = Featured.order(weight: :asc).limit(6)
+	end
+
+	def homeGetFeaturedBroadcasters
+		@featured = HomeFeatured.order(weight: :asc).limit(5)
+	end
+
+	def roomGetFeaturedBroadcasters
+		@featured = RoomFeatured.order(weight: :asc).limit(10)
 	end
 
 	def topGiftBroadcaster

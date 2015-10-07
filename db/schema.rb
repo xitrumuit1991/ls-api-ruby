@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151007083806) do
+ActiveRecord::Schema.define(version: 20151007101727) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -95,6 +95,15 @@ ActiveRecord::Schema.define(version: 20151007083806) do
   add_index "broadcasters", ["broadcaster_level_id"], name: "index_broadcasters_on_broadcaster_level_id", using: :btree
   add_index "broadcasters", ["user_id"], name: "index_broadcasters_on_user_id", using: :btree
 
+  create_table "featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "featureds", ["broadcaster_id"], name: "index_featureds_on_broadcaster_id", using: :btree
+
   create_table "gift_logs", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.integer  "room_id",    limit: 4
@@ -118,6 +127,15 @@ ActiveRecord::Schema.define(version: 20151007083806) do
     t.datetime "updated_at",            null: false
   end
 
+  create_table "home_featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "home_featureds", ["broadcaster_id"], name: "index_home_featureds_on_broadcaster_id", using: :btree
+
   create_table "lounge_logs", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.integer  "room_id",    limit: 4
@@ -139,6 +157,15 @@ ActiveRecord::Schema.define(version: 20151007083806) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "room_featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "room_featureds", ["broadcaster_id"], name: "index_room_featureds_on_broadcaster_id", using: :btree
 
   create_table "room_types", force: :cascade do |t|
     t.string   "title",       limit: 255
@@ -298,11 +325,14 @@ ActiveRecord::Schema.define(version: 20151007083806) do
   add_foreign_key "broadcasters", "bct_types"
   add_foreign_key "broadcasters", "broadcaster_levels"
   add_foreign_key "broadcasters", "users"
+  add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"
   add_foreign_key "gift_logs", "rooms"
   add_foreign_key "gift_logs", "users"
+  add_foreign_key "home_featureds", "broadcasters"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
+  add_foreign_key "room_featureds", "broadcasters"
   add_foreign_key "rooms", "broadcasters"
   add_foreign_key "rooms", "room_types"
   add_foreign_key "schedules", "rooms"
