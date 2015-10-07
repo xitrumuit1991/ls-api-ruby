@@ -34,7 +34,6 @@ Rails.application.routes.draw do
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'                 => 'broadcasters#myProfile'
-				get     '/:id'                 => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
 				put     '/'                 => 'broadcasters#update'
@@ -45,7 +44,20 @@ Rails.application.routes.draw do
 				post    '/videos'						=> 'broadcasters#videos'
 				delete  '/videos'						=> 'broadcasters#deleteVideos'
 				get			'/followed'					=> 'broadcasters#followed'
+				get     '/:id'              => 'broadcasters#profile'
 				put			'/:id/follow'       => 'broadcasters#follow'
+			end
+
+			# ranks
+			scope '/ranks' do
+				get     '/featured-broadcaster'                 => 'ranks#getFeaturedBroadcasters'
+				get     '/home-featured-broadcaster'            => 'ranks#homeGetFeaturedBroadcasters'
+				get     '/room-featured-broadcaster'            => 'ranks#roomGetFeaturedBroadcasters'
+				get     '/top-heart-broadcaster'                => 'ranks#topHeartBroadcaster'
+				get     '/top-level-grow-broadcaster'			=> 'ranks#topLevelGrowBroadcaster'
+				get     '/top-level-grow-user'					=> 'ranks#topLevelGrowUser'
+				get     '/top-gift-broadcaster'					=> 'ranks#topGiftBroadcaster'
+				get     '/top-gift-user'						=> 'ranks#topGiftUser'
 			end
 
 			# rooms

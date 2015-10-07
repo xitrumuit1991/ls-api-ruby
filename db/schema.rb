@@ -11,7 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150929082543) do
+ActiveRecord::Schema.define(version: 20151007101727) do
+
+  create_table "action_logs", force: :cascade do |t|
+    t.integer  "user_id",        limit: 4
+    t.integer  "room_id",        limit: 4
+    t.integer  "room_action_id", limit: 4
+    t.float    "cost",           limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  add_index "action_logs", ["room_action_id"], name: "index_action_logs_on_room_action_id", using: :btree
+  add_index "action_logs", ["room_id"], name: "index_action_logs_on_room_id", using: :btree
+  add_index "action_logs", ["user_id"], name: "index_action_logs_on_user_id", using: :btree
 
   create_table "admins", force: :cascade do |t|
     t.string   "email",                  limit: 255, default: "", null: false
@@ -82,6 +95,29 @@ ActiveRecord::Schema.define(version: 20150929082543) do
   add_index "broadcasters", ["broadcaster_level_id"], name: "index_broadcasters_on_broadcaster_level_id", using: :btree
   add_index "broadcasters", ["user_id"], name: "index_broadcasters_on_user_id", using: :btree
 
+  create_table "featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "featureds", ["broadcaster_id"], name: "index_featureds_on_broadcaster_id", using: :btree
+
+  create_table "gift_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.integer  "gift_id",    limit: 4
+    t.integer  "quantity",   limit: 4
+    t.float    "cost",       limit: 24
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "gift_logs", ["gift_id"], name: "index_gift_logs_on_gift_id", using: :btree
+  add_index "gift_logs", ["room_id"], name: "index_gift_logs_on_room_id", using: :btree
+  add_index "gift_logs", ["user_id"], name: "index_gift_logs_on_user_id", using: :btree
+
   create_table "gifts", force: :cascade do |t|
     t.string   "name",       limit: 45
     t.string   "image",      limit: 45
@@ -90,6 +126,27 @@ ActiveRecord::Schema.define(version: 20150929082543) do
     t.datetime "created_at",            null: false
     t.datetime "updated_at",            null: false
   end
+
+  create_table "home_featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "home_featureds", ["broadcaster_id"], name: "index_home_featureds_on_broadcaster_id", using: :btree
+
+  create_table "lounge_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.integer  "lounge",     limit: 4
+    t.float    "cost",       limit: 24
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
+  add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
 
   create_table "room_actions", force: :cascade do |t|
     t.string   "name",       limit: 45
@@ -100,6 +157,15 @@ ActiveRecord::Schema.define(version: 20150929082543) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "room_featureds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.integer  "weight",         limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "room_featureds", ["broadcaster_id"], name: "index_room_featureds_on_broadcaster_id", using: :btree
 
   create_table "room_types", force: :cascade do |t|
     t.string   "title",       limit: 255
@@ -135,6 +201,18 @@ ActiveRecord::Schema.define(version: 20150929082543) do
   end
 
   add_index "schedules", ["room_id"], name: "index_schedules_on_room_id", using: :btree
+
+  create_table "screen_text_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.text     "content",    limit: 65535
+    t.float    "cost",       limit: 24
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "screen_text_logs", ["room_id"], name: "index_screen_text_logs_on_room_id", using: :btree
+  add_index "screen_text_logs", ["user_id"], name: "index_screen_text_logs_on_user_id", using: :btree
 
   create_table "statuses", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -239,14 +317,27 @@ ActiveRecord::Schema.define(version: 20150929082543) do
     t.datetime "updated_at",                     null: false
   end
 
+  add_foreign_key "action_logs", "room_actions"
+  add_foreign_key "action_logs", "rooms"
+  add_foreign_key "action_logs", "users"
   add_foreign_key "bct_images", "broadcasters"
   add_foreign_key "bct_videos", "broadcasters"
   add_foreign_key "broadcasters", "bct_types"
   add_foreign_key "broadcasters", "broadcaster_levels"
   add_foreign_key "broadcasters", "users"
+  add_foreign_key "featureds", "broadcasters"
+  add_foreign_key "gift_logs", "gifts"
+  add_foreign_key "gift_logs", "rooms"
+  add_foreign_key "gift_logs", "users"
+  add_foreign_key "home_featureds", "broadcasters"
+  add_foreign_key "lounge_logs", "rooms"
+  add_foreign_key "lounge_logs", "users"
+  add_foreign_key "room_featureds", "broadcasters"
   add_foreign_key "rooms", "broadcasters"
   add_foreign_key "rooms", "room_types"
   add_foreign_key "schedules", "rooms"
+  add_foreign_key "screen_text_logs", "rooms"
+  add_foreign_key "screen_text_logs", "users"
   add_foreign_key "statuses", "users"
   add_foreign_key "user_follow_bcts", "broadcasters"
   add_foreign_key "user_follow_bcts", "users"

@@ -632,6 +632,54 @@
 ]
 ```
 
+### Home Get featured broadcasters
+- URI: **/home-featured-broadcaster**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+[
+	{
+		id: 321,
+		name: "Rainie Bui",
+		nickname: "Zit",
+		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+		heart: 1020,
+		exp: 1231231,
+		level: 10
+	},
+	...
+]
+```
+
+### Room Get featured broadcasters
+- URI: **/room-featured-broadcaster**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+[
+	{
+		id: 321,
+		name: "Rainie Bui",
+		nickname: "Zit",
+		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+		heart: 1020,
+		exp: 1231231,
+		level: 10
+	},
+	...
+]
+```
+
 ### Get top broadcaster revcived heart
 - URI: **/top-heart-broadcaster**
 - Method: **GET**
@@ -731,7 +779,7 @@
 ```
 
 ### Get top user send gift
-- URI: **/top-gift-broadcaster**
+- URI: **/top-gift-user**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
