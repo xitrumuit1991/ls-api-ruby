@@ -34,25 +34,26 @@ Rails.application.routes.draw do
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'                 => 'broadcasters#myProfile'
+				get		'/followed'			=> 'broadcasters#followed'
+				get     '/featured'         => 'broadcasters#getFeatured'
+				get     '/home-featured'    => 'broadcasters#getHomeFeatured'
+				get     '/room-featured'    => 'broadcasters#getRoomFeatured'
+				get     '/:id'              => 'broadcasters#profile'
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
+				post    '/pictures'         => 'broadcasters#pictures'
+				post    '/videos'			=> 'broadcasters#videos'
 				put     '/'                 => 'broadcasters#update'
 				put     '/avatar'           => 'broadcasters#uploadAvatar'
 				put     '/cover'            => 'broadcasters#uploadCover'
-				post    '/pictures'         => 'broadcasters#pictures'
+				put		'/:id/follow'   	=> 'broadcasters#follow'
 				delete  '/pictures'         => 'broadcasters#deletePictures'
-				post    '/videos'						=> 'broadcasters#videos'
-				delete  '/videos'						=> 'broadcasters#deleteVideos'
-				get			'/followed'					=> 'broadcasters#followed'
-				get     '/:id'              => 'broadcasters#profile'
-				put			'/:id/follow'       => 'broadcasters#follow'
+				delete  '/videos'			=> 'broadcasters#deleteVideos'
+
 			end
 
 			# ranks
 			scope '/ranks' do
-				get     '/featured-broadcaster'                 => 'ranks#getFeaturedBroadcasters'
-				get     '/home-featured-broadcaster'            => 'ranks#homeGetFeaturedBroadcasters'
-				get     '/room-featured-broadcaster'            => 'ranks#roomGetFeaturedBroadcasters'
 				get     '/top-heart-broadcaster'                => 'ranks#topHeartBroadcaster'
 				get     '/top-level-grow-broadcaster'			=> 'ranks#topLevelGrowBroadcaster'
 				get     '/top-level-grow-user'					=> 'ranks#topLevelGrowUser'
@@ -65,16 +66,16 @@ Rails.application.routes.draw do
 				get   '/on-air'           => 'room#onair'
 				get   '/coming-soon'      => 'room#comingSoon'
 				get   '/slug/:slug'       => 'room#detailBySlug'
-				put   '/'                 => 'room#updateSettings'
-				post  '/thumb'            => 'room#uploadThumb'
-				put   '/thumb'            => 'room#uploadThumb'
-				post  '/background'       => 'room#uploadBackground'
-				put   '/background'       => 'room#changeBackground'
-				post  '/schedule'					=> 'room#updateSchedule'
-				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'					=> 'room#getGifts'
-				get		'/lounges'					=> 'room#getLounges'
+				get   '/actions'          => 'room#getActions'
+				get   '/gifts'            => 'room#getGifts'
+				get   '/lounges'          => 'room#getLounges'
 				get   '/:id'              => 'room#detail'
+				put   '/'                 => 'room#updateSettings'
+				put   '/thumb'            => 'room#uploadThumb'
+				put   '/background'       => 'room#changeBackground'
+				post  '/thumb'            => 'room#uploadThumb'
+				post  '/background'       => 'room#uploadBackground'
+				post  '/schedule'         => 'room#updateSchedule'
 			end
 
 			# Live functions

@@ -86,6 +86,18 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end    
   end
 
+  def getfeatured
+    @featured = Featured.order(weight: :asc).limit(6)
+  end
+
+  def getHomeFeatured
+    @featured = HomeFeatured.order(weight: :asc).limit(5)
+  end
+
+  def getRoomFeatured
+    @featured = RoomFeatured.order(weight: :asc).limit(10)
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
