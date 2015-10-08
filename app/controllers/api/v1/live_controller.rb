@@ -185,6 +185,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 						# insert log
 						@user.heart_logs.create(room_id: @room.id, quantity: hearts)
 
+						# Delayed::Job.enqueue TestJob.new('Test delay job', 1, 10.minutes.from_now)
+						# Delayed::Job.enqueue(TestJob.new('Test delay job', 1))
+
 						return head 201
 					else
 						render json: {error: "Heart already send, but broadcaster can\'t recive, please contact supporter!"}, status: 400

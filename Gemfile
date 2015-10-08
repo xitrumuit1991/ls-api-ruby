@@ -78,3 +78,8 @@ gem "redis"
 
 # SocketIO emitter
 gem 'socket.io-emitter'
+
+# Delayed job
+gem 'delayed_job_active_record'
+
+gem "daemons"
