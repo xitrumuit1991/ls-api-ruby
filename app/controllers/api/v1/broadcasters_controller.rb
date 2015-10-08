@@ -2,7 +2,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getfeatured, :getHomeFeatured, :getRoomFeatured]
 
   def myProfile
   end
@@ -83,7 +83,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
       else
         return head 400
       end
-    end    
+    end
   end
 
   def getfeatured

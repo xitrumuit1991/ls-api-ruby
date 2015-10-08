@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
 	has_many :user_follow_bcts
 	has_many :broadcasters, through: :user_follow_bcts
 	has_many :screen_text_logs
+	has_many :heart_logs
 	has_many :action_logs
 	has_many :gift_logs
 	has_many :lounge_logs

@@ -181,6 +181,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 					if @room.broadcaster.save then
 						user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
 						emitter.of("/room").in(@room.id).emit("hearts recived", {hearts: hearts, sender: user})
+
+						# insert log
+						@user.heart_logs.create(room_id: @room.id, quantity: hearts)
+
 						return head 201
 					else
 						render json: {error: "Heart already send, but broadcaster can\'t recive, please contact supporter!"}, status: 400
