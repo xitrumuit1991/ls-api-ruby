@@ -50,14 +50,14 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/featured-broadcaster'                 => 'ranks#getFeaturedBroadcasters'
-				get     '/home-featured-broadcaster'            => 'ranks#homeGetFeaturedBroadcasters'
-				get     '/room-featured-broadcaster'            => 'ranks#roomGetFeaturedBroadcasters'
-				get     '/top-heart-broadcaster'                => 'ranks#topHeartBroadcaster'
+				get     '/featured-broadcaster'           => 'ranks#getFeaturedBroadcasters'
+				get     '/home-featured-broadcaster'      => 'ranks#homeGetFeaturedBroadcasters'
+				get     '/room-featured-broadcaster'      => 'ranks#roomGetFeaturedBroadcasters'
+				get     '/top-heart-broadcaster'          => 'ranks#topHeartBroadcaster'
 				get     '/top-level-grow-broadcaster'			=> 'ranks#topLevelGrowBroadcaster'
-				get     '/top-level-grow-user'					=> 'ranks#topLevelGrowUser'
-				get     '/top-gift-broadcaster'					=> 'ranks#topGiftBroadcaster'
-				get     '/top-gift-user'						=> 'ranks#topGiftUser'
+				get     '/top-level-grow-user'						=> 'ranks#topLevelGrowUser'
+				get     '/top-gift-broadcaster'						=> 'ranks#topGiftBroadcaster'
+				get     '/top-gift-user'									=> 'ranks#topGiftUser'
 			end
 
 			# rooms
@@ -72,7 +72,7 @@ Rails.application.routes.draw do
 				put   '/background'       => 'room#changeBackground'
 				post  '/schedule'					=> 'room#updateSchedule'
 				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'					=> 'room#getGifts'
+				get		'/gifts'						=> 'room#getGifts'
 				get		'/lounges'					=> 'room#getLounges'
 				get   '/:id'              => 'room#detail'
 			end
