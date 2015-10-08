@@ -2,13 +2,15 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed]
 
   def myProfile
   end
 
   def profile
-    @user = User.find(params[:id])
+    @broadcaster = Broadcaster.find(params[:id])
+    @followers = @broadcaster.users
+    @user = @broadcaster.user
   end
 
   def status
@@ -65,7 +67,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def followed
-    @users_followed = UserFollowBct.where(broadcaster_id: @user.broadcaster.id)
+    @users_followed = @user.broadcasters
   end
 
   def follow
@@ -82,6 +84,18 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
         return head 400
       end
     end    
+  end
+
+  def getfeatured
+    @featured = Featured.order(weight: :asc).limit(6)
+  end
+
+  def getHomeFeatured
+    @featured = HomeFeatured.order(weight: :asc).limit(5)
+  end
+
+  def getRoomFeatured
+    @featured = RoomFeatured.order(weight: :asc).limit(10)
   end
 
   private

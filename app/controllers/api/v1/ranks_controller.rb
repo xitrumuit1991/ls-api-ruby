@@ -2,18 +2,6 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	include Api::V1::Authorize
 	before_action :authenticate
 
-	def getFeaturedBroadcasters
-		@featured = Featured.order(weight: :asc).limit(6)
-	end
-
-	def homeGetFeaturedBroadcasters
-		@featured = HomeFeatured.order(weight: :asc).limit(5)
-	end
-
-	def roomGetFeaturedBroadcasters
-		@featured = RoomFeatured.order(weight: :asc).limit(10)
-	end
-
 	def topGiftBroadcaster
 		if params[:range] == "month"
 			@top_gift_broadcasters = GiftLog.select('*,sum(quantity) as quantity , sum(cost) as total_money').where(updated_at: 1.month.ago..DateTime.now , user_id: nil).group(:room_id).order('quantity desc').limit(10)
