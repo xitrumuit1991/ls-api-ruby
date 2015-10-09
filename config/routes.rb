@@ -54,14 +54,14 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/featured-broadcaster'           => 'ranks#getFeaturedBroadcasters'
-				get     '/home-featured-broadcaster'      => 'ranks#homeGetFeaturedBroadcasters'
-				get     '/room-featured-broadcaster'      => 'ranks#roomGetFeaturedBroadcasters'
-				get     '/top-heart-broadcaster'          => 'ranks#topBroadcasterRevcivedHeart'
-				get     '/top-level-grow-broadcaster'			=> 'ranks#topLevelGrowBroadcaster'
-				get     '/top-level-grow-user'						=> 'ranks#topLevelGrowUser'
-				get     '/top-gift-broadcaster'						=> 'ranks#topGiftBroadcaster'
-				get     '/top-gift-user'									=> 'ranks#topGiftUser'
+				get     '/featured-broadcaster'				=> 'ranks#getFeaturedBroadcasters'
+				get     '/home-featured-broadcaster'  => 'ranks#homeGetFeaturedBroadcasters'
+				get     '/room-featured-broadcaster'  => 'ranks#roomGetFeaturedBroadcasters'
+				get     '/top-heart-broadcaster'      => 'ranks#topBroadcasterRevcivedHeart'
+				get     '/top-level-grow-broadcaster'	=> 'ranks#topBroadcasterLevelGrow'
+				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
+				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
+				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
 			end
 
 			# rooms
