@@ -187,8 +187,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
 						# Delayed::Job.enqueue TestJob.new('Test delay job', 1, 10.minutes.from_now)
 						# Delayed::Job.enqueue DemoJob.new('Test delay job')
-						Delayed::Job.enqueue GiftJob.new('Test delay job', 1)
+						# Delayed::Job.enqueue GiftJob.new('Test delay job', 1)
 						# Delayed::Job.enqueue(TestJob.new('Test delay job', 1))
+						test = TestJob.new
+						test.demo
 
 						return head 201
 					else

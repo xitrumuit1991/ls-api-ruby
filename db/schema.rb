@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151008080720) do
+ActiveRecord::Schema.define(version: 20151009040322) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -187,8 +187,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "monthly_top_bct_received_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "monthly_top_bct_received_gifts", ["broadcaster_id"], name: "index_monthly_top_bct_received_gifts_on_broadcaster_id", using: :btree
@@ -214,8 +215,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "monthly_top_user_send_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "monthly_top_user_send_gifts", ["broadcaster_id"], name: "index_monthly_top_user_send_gifts_on_broadcaster_id", using: :btree
@@ -307,8 +309,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "top_bct_received_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "top_bct_received_gifts", ["broadcaster_id"], name: "index_top_bct_received_gifts_on_broadcaster_id", using: :btree
@@ -334,8 +337,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "top_user_send_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "top_user_send_gifts", ["broadcaster_id"], name: "index_top_user_send_gifts_on_broadcaster_id", using: :btree
@@ -446,8 +450,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "weekly_top_bct_received_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "weekly_top_bct_received_gifts", ["broadcaster_id"], name: "index_weekly_top_bct_received_gifts_on_broadcaster_id", using: :btree
@@ -473,8 +478,9 @@ ActiveRecord::Schema.define(version: 20151008080720) do
   create_table "weekly_top_user_send_gifts", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "quantity",       limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "weekly_top_user_send_gifts", ["broadcaster_id"], name: "index_weekly_top_user_send_gifts_on_broadcaster_id", using: :btree

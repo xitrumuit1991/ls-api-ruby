@@ -34,7 +34,7 @@ Rails.application.routes.draw do
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'                 => 'broadcasters#myProfile'
-				get		'/followed'			=> 'broadcasters#followed'
+				get			'/followed'					=> 'broadcasters#followed'
 				get     '/featured'         => 'broadcasters#getFeatured'
 				get     '/home-featured'    => 'broadcasters#getHomeFeatured'
 				get     '/room-featured'    => 'broadcasters#getRoomFeatured'
@@ -42,13 +42,13 @@ Rails.application.routes.draw do
 				post    '/status'           => 'broadcasters#status'
 				post    '/active-fb-gp'     => 'broadcasters#activeFBGP'
 				post    '/pictures'         => 'broadcasters#pictures'
-				post    '/videos'			=> 'broadcasters#videos'
+				post    '/videos'						=> 'broadcasters#videos'
 				put     '/'                 => 'broadcasters#update'
 				put     '/avatar'           => 'broadcasters#uploadAvatar'
 				put     '/cover'            => 'broadcasters#uploadCover'
-				put		'/:id/follow'   	=> 'broadcasters#follow'
+				put			'/:id/follow'				=> 'broadcasters#follow'
 				delete  '/pictures'         => 'broadcasters#deletePictures'
-				delete  '/videos'			=> 'broadcasters#deleteVideos'
+				delete  '/videos'						=> 'broadcasters#deleteVideos'
 
 			end
 
