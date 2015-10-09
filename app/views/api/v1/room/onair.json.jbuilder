@@ -1,7 +1,7 @@
 json.array! @rooms do |room|
 	json.id		room.id
 	json.title	room.title
-	json.thumb	room.thumb
+	json.thumb	"#{request.base_url}#{room.thumb.url}}"
 	json.broadcaster do
 		json.id		room.broadcaster.user.id
 		json.name	room.broadcaster.user.name
