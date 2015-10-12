@@ -52,7 +52,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topUserLevelGrow
 		if params[:range] == nil or params[:range] == "week"
-			@top_user_level = WeeklyTopUserLevelUp.select('*,sum(times) as level').where(created_at: Time.now.prev_week.all_week).group(:broadcaster_id).order('times desc').limit(5)
+			@top_user_level = WeeklyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_week.all_week).group(:broadcaster_id).order('times desc').limit(5)
 		elsif params[:range] == "all"
 			@top_user_level = TopUserLevelUp.select('*,sum(times) as level').group(:broadcaster_id).order('times desc').limit(5)
 		elsif params[:range] == "month"
@@ -62,4 +62,18 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		end
 	end
 
+	def updateCreatedAtBroadcaster
+		WeeklyTopBctReceivedHeart.update_all({:created_at => DateTime.now.prev_week}, {:updated_at => DateTime.now.prev_week})
+		MonthlyTopBctReceivedHeart.update_all({:created_at => DateTime.now.prev_month}, {:updated_at => DateTime.now.prev_month})
+
+		WeeklyTopBctReceivedGift.update_all({:created_at => DateTime.now.prev_week}, {:updated_at => DateTime.now.prev_week})
+		MonthlyTopBctReceivedGift.update_all({:created_at => DateTime.now.prev_month}, {:updated_at => DateTime.now.prev_month})
+
+		WeeklyTopBctLevelUp.update_all({:created_at => DateTime.now.prev_week}, {:updated_at => DateTime.now.prev_week})
+		MonthlyTopBctLevelUp.update_all({:created_at => DateTime.now.prev_month}, {:updated_at => DateTime.now.prev_month})
+
+		WeeklyTopUserLevelUp.update_all({:created_at => DateTime.now.prev_week}, {:updated_at => DateTime.now.prev_week})
+		MonthlyTopUserLevelUp.update_all({:created_at => DateTime.now.prev_month}, {:updated_at => DateTime.now.prev_month})
+		render plain: 'Done !', status: 200
+	end
 end

@@ -62,6 +62,7 @@ Rails.application.routes.draw do
 				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
 				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
 				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
+				get     '/update-datatime-top'							=> 'ranks#updateCreatedAtBroadcaster'
 			end
 
 			# rooms
