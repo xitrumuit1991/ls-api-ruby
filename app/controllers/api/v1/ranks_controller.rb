@@ -74,6 +74,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		
 		WeeklyTopUserLevelUp.update_all(:created_at => DateTime.now.prev_week)
 		MonthlyTopUserLevelUp.update_all(:created_at => DateTime.now.prev_month)
+
+		WeeklyTopUserSendGift.update_all(:created_at => DateTime.now.prev_week)
 		render plain: 'Done !', status: 200
 	end
 end

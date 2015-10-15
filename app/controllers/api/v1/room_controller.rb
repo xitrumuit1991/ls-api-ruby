@@ -121,7 +121,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def topUserSendGift
-    @top_gift_users = WeeklyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(created_at: DateTime.now.prev_week.all_week).group(:broadcaster_id).order('quantity desc').limit(3)
+    if params[:room] != nil and (params[:range] == nil or params[:range] == "week")
+      @top_gift_users = WeeklyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(room_id: params[:room].to_i, created_at: DateTime.now.prev_week.all_week).group(:user_id).order('quantity desc').limit(3)
+    end
   end
 
   private
