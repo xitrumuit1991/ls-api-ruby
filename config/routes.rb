@@ -38,9 +38,6 @@ Rails.application.routes.draw do
 				get     '/featured'										=> 'broadcasters#getFeatured'
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
-				get     '/featured-broadcaster'				=> 'broadcasters#getfeatured'
-				get     '/home-featured-broadcaster'  => 'broadcasters#getHomeFeatured'
-				get     '/room-featured-broadcaster'  => 'broadcasters#getRoomFeatured'
 				get     '/:id'												=> 'broadcasters#profile'
 				post    '/status'											=> 'broadcasters#status'
 				post    '/active-fb-gp'								=> 'broadcasters#activeFBGP'
@@ -82,6 +79,7 @@ Rails.application.routes.draw do
 				get		'/actions'					=> 'room#getActions'
 				get		'/gifts'						=> 'room#getGifts'
 				get		'/lounges'					=> 'room#getLounges'
+				get		'/top-gift-user'		=> 'room#topUserSendGift'
 				get   '/:id'              => 'room#detail'
 			end
 
