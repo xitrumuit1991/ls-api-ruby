@@ -1,8 +1,8 @@
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getfeatured, :getHomeFeatured, :getRoomFeatured]
+  before_action :authenticate, except: [:getFeatured, :getHomeFeatured]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :getRoomFeatured]
 
   def myProfile
   end
@@ -86,7 +86,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  def getfeatured
+  def getFeatured
     @featured = Featured.order(weight: :asc).limit(6)
   end
 

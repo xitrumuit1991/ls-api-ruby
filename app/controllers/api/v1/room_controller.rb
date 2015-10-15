@@ -11,9 +11,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def comingSoon
     offset = params[:page].nil? ? 0 : params[:page] * 10
     if params[:category_id].nil?
-      @schedules = Schedule.where('date > ? OR (date = ? AND end >= ?)', Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
+      @schedules = Schedule.where('date > ? OR (date = ? AND start >= ?)', Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
     else
-      @schedules = Schedule.joins(:room).where('rooms.room_type_id = ? AND date >= ? AND end >= ?', params[:category_id], Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.room_type_id = ? AND date > ? OR (date = ? AND start >= ?)', params[:category_id], Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
     end
   end
 
