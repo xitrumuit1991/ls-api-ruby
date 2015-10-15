@@ -1,9 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  broadcaster_id: 
+  user_id: 
+  room_id: 
   quantity: 1
+  money: 1.5
 
 two:
-  broadcaster_id: 
+  user_id: 
+  room_id: 
   quantity: 1
+  money: 1.5

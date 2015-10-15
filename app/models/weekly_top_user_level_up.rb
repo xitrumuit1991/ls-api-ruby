@@ -1,3 +1,3 @@
 class WeeklyTopUserLevelUp < ActiveRecord::Base
-  belongs_to :broadcaster
+  belongs_to :user
 end
