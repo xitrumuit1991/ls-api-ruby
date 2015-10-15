@@ -120,12 +120,6 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     render json: status, status: 200
   end
 
-  def topUserSendGift
-    if params[:room] != nil and (params[:range] == nil or params[:range] == "week")
-      @top_gift_users = WeeklyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(room_id: params[:room].to_i, created_at: DateTime.now.prev_week.all_week).group(:user_id).order('quantity desc').limit(3)
-    end
-  end
-
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster

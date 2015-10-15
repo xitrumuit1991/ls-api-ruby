@@ -60,6 +60,7 @@ Rails.application.routes.draw do
 				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
 				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
 				get     '/update-datatime-top'							=> 'ranks#updateCreatedAtBroadcaster'
+				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
 			end
 
 			# rooms
@@ -79,7 +80,6 @@ Rails.application.routes.draw do
 				get		'/actions'					=> 'room#getActions'
 				get		'/gifts'						=> 'room#getGifts'
 				get		'/lounges'					=> 'room#getLounges'
-				get		'/top-gift-user'		=> 'room#topUserSendGift'
 				get   '/:id'              => 'room#detail'
 			end
 
