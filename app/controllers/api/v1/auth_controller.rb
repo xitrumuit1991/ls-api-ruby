@@ -51,8 +51,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me")
-      if profile['email'] == params[:email]
-        user = User.find_by_email(params[:email])
+      # if profile['email'] == params[:email]
+        user = User.find_by_email(profile['email'])
         if user.present?
           if user.fb_id.blank?
             user.fb_id  = profile['id']
@@ -70,15 +70,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         end
 
         # create token
-        token = createToken(@user)
+        token = createToken(user)
 
         # update token
         user.update(last_login: Time.now, token: token)
 
         render json: {token: token}, status: 200
-      else
-        return head 400
-      end
+      # else
+      #   return head 400
+      # end
     rescue Koala::Facebook::APIError => exc
       return head 401
     end
@@ -113,7 +113,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         end
 
         # create token
-        token = createToken(@user)
+        token = createToken(user)
 
         # update token
         user.update(last_login: Time.now, token: token)
@@ -184,7 +184,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   private
     def createToken(user)
-      payload = {id: @user.id, email: @user.email, name: @user.name, exp: Time.now.to_i + 24 * 3600}
+      payload = {id: user.id, email: user.email, name: user.name, exp: Time.now.to_i + 24 * 3600}
       token = JWT.encode payload, Settings.hmac_secret, 'HS256'
     end
 end
