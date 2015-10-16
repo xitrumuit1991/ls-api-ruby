@@ -68,6 +68,10 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	    end
 	end
 
+	def topUserFollowBroadcaster
+		@top_fans = Broadcaster.find(params[:id]).users.order('users.money desc').limit(10)
+	end
+
 	def updateCreatedAtBroadcaster
 		WeeklyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_week)
 		MonthlyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_month)
