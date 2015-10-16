@@ -68,6 +68,14 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	    end
 	end
 
+	def topUserFollowBroadcaster
+		# @top_fans = UserFollowBct.where(broadcaster_id: params[:id]).joins('LEFT JOIN user on artists.id = artist_artisttag_associations.artist_id')
+		@top_fans = Broadcaster.find(params[:id]).users.order('users.money desc')
+		puts "++++++++++++++++++++++++++++"
+		puts @top_fans[0]
+		puts "++++++++++++++++++++++++++++"
+	end
+
 	def updateCreatedAtBroadcaster
 		WeeklyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_week)
 		MonthlyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_month)

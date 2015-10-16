@@ -61,6 +61,7 @@ Rails.application.routes.draw do
 				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
 				get     '/update-datatime-top'							=> 'ranks#updateCreatedAtBroadcaster'
 				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
+				get		'/:id/top-fans'		=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms

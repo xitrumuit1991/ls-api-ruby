@@ -801,6 +801,30 @@
 ]
 ```
 
+### Get top user follow broadcaster
+- URI: **/:id/top-fans**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ body:
+```
+[
+	{
+		id: 123,
+		name: "Peter Nguyen",
+		username: "Peter Nguyen",
+		avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
+		heart: 250,
+		money: 20000,
+		user_exp: 123456,
+		level: 19
+	},
+	...
+]
+```
+
 ## Live functions
 - Namespace URL: **/live**
 
