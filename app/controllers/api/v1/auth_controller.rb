@@ -50,7 +50,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def fbRegister
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
-      profile = graph.get_object("me")
+      profile = graph.get_object("me?fields=id,name,email,birthday,gender")
       # if profile['email'] == params[:email]
         user = User.find_by_email(profile['email'])
         if user.present?
