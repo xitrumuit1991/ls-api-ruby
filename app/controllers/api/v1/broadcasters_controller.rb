@@ -9,7 +9,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def profile
     @broadcaster = Broadcaster.find(params[:id])
-    @followers = @broadcaster.users
+    @followers = @broadcaster.users.order('users.money desc').limit(10)
     @user = @broadcaster.user
   end
 

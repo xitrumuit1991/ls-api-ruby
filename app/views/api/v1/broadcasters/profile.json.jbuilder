@@ -30,12 +30,17 @@ end
 json.videos @broadcaster.videos do |video|
 	json.id		video.id
 	json.link	video.video
-	json.thumb	video.thumb
+	json.thumb	"#{request.base_url}#{video.thumb.url}"
 end
 
 json.fans @followers do |follower|
-	json.id		follower.id
-	json.name	follower.name
-	json.vip 	nil
-	json.heart	follower.no_heart
+	json.id			follower.id
+	json.name		follower.name
+	json.vip 		nil
+	json.username	follower.username
+	json.avatar		"#{request.base_url}/api/v1/users/#{follower.id}/avatar"
+	json.heart		follower.no_heart
+	json.money		follower.money
+	json.user_exp	follower.user_exp
+	json.level		follower.user_level.level
 end
