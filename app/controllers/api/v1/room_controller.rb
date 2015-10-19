@@ -5,7 +5,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   before_action :checkIsBroadcaster, except: [:onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
 
   def onair
-    @rooms = Room.where(on_air: true)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    @rooms = Room.where(on_air: true).limit(6).offset(offset)
   end
 
   def comingSoon
