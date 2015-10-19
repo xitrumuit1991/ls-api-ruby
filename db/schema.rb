@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151015094025) do
+ActiveRecord::Schema.define(version: 20151019064107) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -213,14 +213,16 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_index "monthly_top_user_level_ups", ["user_id"], name: "index_monthly_top_user_level_ups_on_user_id", using: :btree
 
   create_table "monthly_top_user_send_gifts", force: :cascade do |t|
-    t.integer  "user_id",    limit: 4
-    t.integer  "room_id",    limit: 4
-    t.integer  "quantity",   limit: 4
-    t.float    "money",      limit: 24
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "user_id",        limit: 4
+    t.integer  "room_id",        limit: 4
+    t.integer  "quantity",       limit: 4
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "broadcaster_id", limit: 4
   end
 
+  add_index "monthly_top_user_send_gifts", ["broadcaster_id"], name: "index_monthly_top_user_send_gifts_on_broadcaster_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["room_id"], name: "index_monthly_top_user_send_gifts_on_room_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["user_id"], name: "index_monthly_top_user_send_gifts_on_user_id", using: :btree
 
@@ -337,14 +339,16 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_index "top_user_level_ups", ["user_id"], name: "index_top_user_level_ups_on_user_id", using: :btree
 
   create_table "top_user_send_gifts", force: :cascade do |t|
-    t.integer  "user_id",    limit: 4
-    t.integer  "room_id",    limit: 4
-    t.integer  "quantity",   limit: 4
-    t.float    "money",      limit: 24
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "user_id",        limit: 4
+    t.integer  "room_id",        limit: 4
+    t.integer  "quantity",       limit: 4
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "broadcaster_id", limit: 4
   end
 
+  add_index "top_user_send_gifts", ["broadcaster_id"], name: "index_top_user_send_gifts_on_broadcaster_id", using: :btree
   add_index "top_user_send_gifts", ["room_id"], name: "index_top_user_send_gifts_on_room_id", using: :btree
   add_index "top_user_send_gifts", ["user_id"], name: "index_top_user_send_gifts_on_user_id", using: :btree
 
@@ -480,14 +484,16 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_index "weekly_top_user_level_ups", ["user_id"], name: "index_weekly_top_user_level_ups_on_user_id", using: :btree
 
   create_table "weekly_top_user_send_gifts", force: :cascade do |t|
-    t.integer  "user_id",    limit: 4
-    t.integer  "room_id",    limit: 4
-    t.integer  "quantity",   limit: 4
-    t.float    "money",      limit: 24
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.integer  "user_id",        limit: 4
+    t.integer  "room_id",        limit: 4
+    t.integer  "quantity",       limit: 4
+    t.float    "money",          limit: 24
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "broadcaster_id", limit: 4
   end
 
+  add_index "weekly_top_user_send_gifts", ["broadcaster_id"], name: "index_weekly_top_user_send_gifts_on_broadcaster_id", using: :btree
   add_index "weekly_top_user_send_gifts", ["room_id"], name: "index_weekly_top_user_send_gifts_on_room_id", using: :btree
   add_index "weekly_top_user_send_gifts", ["user_id"], name: "index_weekly_top_user_send_gifts_on_user_id", using: :btree
 
@@ -512,6 +518,7 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_foreign_key "monthly_top_bct_received_gifts", "broadcasters"
   add_foreign_key "monthly_top_bct_received_hearts", "broadcasters"
   add_foreign_key "monthly_top_user_level_ups", "users"
+  add_foreign_key "monthly_top_user_send_gifts", "broadcasters"
   add_foreign_key "monthly_top_user_send_gifts", "rooms"
   add_foreign_key "monthly_top_user_send_gifts", "users"
   add_foreign_key "room_featureds", "broadcasters"
@@ -525,6 +532,7 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_foreign_key "top_bct_received_gifts", "broadcasters"
   add_foreign_key "top_bct_received_hearts", "broadcasters"
   add_foreign_key "top_user_level_ups", "users"
+  add_foreign_key "top_user_send_gifts", "broadcasters"
   add_foreign_key "top_user_send_gifts", "rooms"
   add_foreign_key "top_user_send_gifts", "users"
   add_foreign_key "user_follow_bcts", "broadcasters"
@@ -537,6 +545,7 @@ ActiveRecord::Schema.define(version: 20151015094025) do
   add_foreign_key "weekly_top_bct_received_gifts", "broadcasters"
   add_foreign_key "weekly_top_bct_received_hearts", "broadcasters"
   add_foreign_key "weekly_top_user_level_ups", "users"
+  add_foreign_key "weekly_top_user_send_gifts", "broadcasters"
   add_foreign_key "weekly_top_user_send_gifts", "rooms"
   add_foreign_key "weekly_top_user_send_gifts", "users"
 end
