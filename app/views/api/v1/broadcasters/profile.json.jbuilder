@@ -34,13 +34,13 @@ json.videos @broadcaster.videos do |video|
 end
 
 json.fans @followers do |follower|
-	json.id			follower.id
+	json.id			follower.user_id
 	json.name		follower.name
 	json.vip 		nil
 	json.username	follower.username
-	json.avatar		"#{request.base_url}/api/v1/users/#{follower.id}/avatar"
+	json.avatar		"#{request.base_url}/api/v1/users/#{follower.user_id}/avatar"
 	json.heart		follower.no_heart
-	json.money		follower.money
+	json.money		follower.total_money
 	json.user_exp	follower.user_exp
-	json.level		follower.user_level.level
+	json.level		UserLevel.find(follower.user_level_id).level
 end
