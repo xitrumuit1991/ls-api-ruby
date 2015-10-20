@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151019064107) do
+ActiveRecord::Schema.define(version: 20151020032013) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -270,12 +270,11 @@ ActiveRecord::Schema.define(version: 20151019064107) do
   add_index "rooms", ["room_type_id"], name: "index_rooms_on_room_type_id", using: :btree
 
   create_table "schedules", force: :cascade do |t|
+    t.datetime "start"
+    t.datetime "end"
     t.integer  "room_id",    limit: 4
-    t.date     "date"
-    t.string   "start",      limit: 255
-    t.string   "end",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   add_index "schedules", ["room_id"], name: "index_schedules_on_room_id", using: :btree
