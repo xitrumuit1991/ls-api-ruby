@@ -2,8 +2,8 @@ json.array! @schedules do |schedule|
 	json.id		schedule.room.id
 	json.title	schedule.room.title
 	json.thumb	"#{request.base_url}#{schedule.room.thumb.url}"
-	json.date	schedule.date.strftime('%d/%m')
-	json.start	schedule.start
+	json.date	schedule.start.strftime('%d/%m')
+	json.start	schedule.start.strftime('%H:%M')
 	json.broadcaster do
 		json.id		schedule.room.broadcaster.user.id
 		json.name	schedule.room.broadcaster.user.name
