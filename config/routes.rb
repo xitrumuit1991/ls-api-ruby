@@ -68,7 +68,7 @@ Rails.application.routes.draw do
 			scope 'rooms' do
 				get   	'/on-air'           => 'room#onair'
 				get   	'/coming-soon'      => 'room#comingSoon'
-				get   	'/rooms-type'       => 'room#roomType'
+				get   	'/room-type'        => 'room#roomType'
 				get   	'/slug/:slug'       => 'room#detailBySlug'
 				get   	'/actions'          => 'room#getActions'
 				get   	'/gifts'            => 'room#getGifts'
