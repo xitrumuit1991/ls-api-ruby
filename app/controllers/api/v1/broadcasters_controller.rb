@@ -9,8 +9,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def profile
     @broadcaster = Broadcaster.find(params[:id])
-    @followers = @broadcaster.users.order('users.money desc').limit(10)
     @user = @broadcaster.user
+    @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
   end
 
   def status
