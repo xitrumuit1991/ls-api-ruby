@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151020032013) do
+ActiveRecord::Schema.define(version: 20151021044824) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -226,6 +226,16 @@ ActiveRecord::Schema.define(version: 20151020032013) do
   add_index "monthly_top_user_send_gifts", ["room_id"], name: "index_monthly_top_user_send_gifts_on_room_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["user_id"], name: "index_monthly_top_user_send_gifts_on_user_id", using: :btree
 
+  create_table "posters", force: :cascade do |t|
+    t.string   "title",      limit: 255
+    t.string   "sub_title",  limit: 255
+    t.string   "thumb",      limit: 255
+    t.string   "link",       limit: 255
+    t.integer  "weight",     limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "room_actions", force: :cascade do |t|
     t.string   "name",       limit: 45
     t.string   "image",      limit: 512
@@ -290,6 +300,19 @@ ActiveRecord::Schema.define(version: 20151020032013) do
 
   add_index "screen_text_logs", ["room_id"], name: "index_screen_text_logs_on_room_id", using: :btree
   add_index "screen_text_logs", ["user_id"], name: "index_screen_text_logs_on_user_id", using: :btree
+
+  create_table "slides", force: :cascade do |t|
+    t.string   "title",           limit: 255
+    t.string   "description",     limit: 255
+    t.string   "sub_description", limit: 255
+    t.datetime "start_time"
+    t.integer  "weight",          limit: 4
+    t.string   "link",            limit: 255
+    t.string   "banner",          limit: 255
+    t.string   "thumb",           limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
 
   create_table "statuses", force: :cascade do |t|
     t.integer  "user_id",    limit: 4

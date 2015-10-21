@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyString
+  sub_description: MyString
+  start_time: 2015-10-21 11:48:24
+  weight: 1
+  link: MyString
+  banner: MyString
+  thumb: MyString
+
+two:
+  title: MyString
+  description: MyString
+  sub_description: MyString
+  start_time: 2015-10-21 11:48:24
+  weight: 1
+  link: MyString
+  banner: MyString
+  thumb: MyString
