@@ -99,6 +99,12 @@ Rails.application.routes.draw do
 				post  '/end-room'           => 'live#endRoom'
 				post  '/kick-user'          => 'live#kickUser'
 			end
+
+			# Posters functions
+			scope 'posters' do 
+				get 	'/sliders'			=>	'posters#getSliders'
+				get 	'/posters'			=>	'posters#getPosters'
+			end
 		end
 	end
 end

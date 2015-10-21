@@ -83,3 +83,8 @@ gem 'socket.io-emitter'
 gem 'delayed_job_active_record'
 
 gem "daemons"
+
+gem 'mini_magick'
+
+#jcrop for rails_admin
+gem 'rails_admin_jcrop'

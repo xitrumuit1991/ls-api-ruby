@@ -602,6 +602,53 @@
 ### Send system message (for admin only)
 *under construction*
 
+## Posters
+- Namespace URL: **/slides**
+
+### Get list slide page home
+- URI: **/sliders**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+- Response:
+	+ body:
+```
+[
+	{
+		id: 321,
+		title: "Danh An Co",
+		description: "Danh An Co la la la",
+		sub_description: "Danh An Co +18",
+		start_time: "15:20",
+		link: "http://puresolutions.com.vn/",
+		banner: "http://cdn.domain.com/broadcaters/bct-id/abc.jpg"
+		thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
+	},
+	...
+]
+```
+
+### Get list slide page home
+- URI: **/posters**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+- Response:
+	+ body:
+```
+[
+	{
+		id: 321,
+		title: "Danh An Co",
+		sub_title: "Danh An Co la la la",
+		link: "http://puresolutions.com.vn/",
+		thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
+	},
+	...
+]
+```
+
+
 ## Ranks
 - Namespace URL: **/ranks**
 
