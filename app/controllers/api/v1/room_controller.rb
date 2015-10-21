@@ -1,8 +1,8 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon]
-  before_action :checkIsBroadcaster, except: [:onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType]
+  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
 
   def onair
     offset = params[:page].nil? ? 0 : params[:page].to_i * 6
@@ -10,12 +10,16 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def comingSoon
-    offset = params[:page].nil? ? 0 : params[:page] * 10
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 3
     if params[:category_id].nil?
-      @schedules = Schedule.where('date > ? OR (date = ? AND start >= ?)', Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
+      @schedules = Schedule.where('start < ? AND end > ?', DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).limit(3).offset(offset)
     else
-      @schedules = Schedule.joins(:room).where('rooms.room_type_id = ? AND date > ? OR (date = ? AND start >= ?)', params[:category_id], Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%Y-%m-%d"), Time.now.strftime("%H:%M")).order(date: :asc, start: :asc).limit(10).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.room_type_id = ? AND start < ? AND end > ?', params[:category_id], DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).limit(3).offset(offset)
     end
+  end
+
+  def roomType
+    @room_types = RoomType.all
   end
 
   def detail

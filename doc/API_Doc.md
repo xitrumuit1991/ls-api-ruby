@@ -681,6 +681,26 @@
 ```
 
 ### Get top broadcaster revcived heart
+- URI: **/room-type**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ body:
+```
+[
+	{
+		id:				123
+		title:			"Room ABC"
+		slug:			"room-abc"
+		description:	"Room AbC Room AbC"
+	},
+	...
+]
+```
+
+### Get top broadcaster revcived heart
 - URI: **/top-heart-broadcaster**
 - Method: **GET**
 - Header:
