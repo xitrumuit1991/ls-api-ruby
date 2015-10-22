@@ -1,8 +1,8 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				@room.thumb
-json.background			@room.background
+json.thumb				@room.thumb.thumb
+json.background			@room.background.url
 json.is_privated		@room.is_privated
 
 json.broadcaster do
@@ -18,7 +18,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
-	json.id				schedule.date
-	json.from			schedule.start
-	json.to				schedule.end
+	json.date	schedule.start.strftime('%d/%m/%Y')
+	json.start	schedule.start.strftime('%H:%M')
+	json.end	schedule.end.strftime('%H:%M')
 end

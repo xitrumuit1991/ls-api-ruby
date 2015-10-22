@@ -1,8 +1,8 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				@room.thumb.url.to_s
-json.background			@room.background.url.to_s
+json.thumb				@room.thumb.thumb
+json.background			@room.background.url
 json.is_privated		@room.is_privated
 
 json.broadcaster do

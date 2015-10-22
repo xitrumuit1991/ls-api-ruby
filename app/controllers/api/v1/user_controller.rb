@@ -88,7 +88,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     begin
       @u = User.find(params[:id])
       if @u
-        file_url = "public#{@u.avatar_url}"
+        file_url = "public#{@u.avatar.square}"
         if FileTest.exist?(file_url)
           send_file file_url, type: 'image/png', disposition: 'inline'
         else

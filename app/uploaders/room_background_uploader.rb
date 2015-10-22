@@ -4,7 +4,7 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
-  # include CarrierWave::MiniMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
@@ -42,6 +42,13 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
     %w(jpg jpeg gif png)
   end
 
+  def rails_admin_crop
+    return unless model.rails_admin_cropping?
+    manipulate! do |img|
+      ::RailsAdminJcrop::ImageHelper.crop(img, model.crop_w, model.crop_h, model.crop_x, model.crop_y)
+      img
+    end
+  end
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   # def filename
