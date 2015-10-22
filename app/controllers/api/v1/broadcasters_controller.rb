@@ -70,21 +70,21 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @users_followed = @user.broadcasters
   end
 
-  # def follow
-  #   if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i)
-  #     if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
-  #       return head 200
-  #     else
-  #       return head 400
-  #     end
-  #   else
-  #     if @user.user_follow_bcts.create(broadcaster_id: params[:id].to_i)
-  #       return head 201
-  #     else
-  #       return head 400
-  #     end
-  #   end
-  # end
+  def follow
+    if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i)
+      if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
+        return head 200
+      else
+        return head 400
+      end
+    else
+      if @user.user_follow_bcts.create(broadcaster_id: params[:id].to_i)
+        return head 201
+      else
+        return head 400
+      end
+    end
+  end
 
   def getFeatured
     @featured = Featured.order(weight: :asc).limit(6)
