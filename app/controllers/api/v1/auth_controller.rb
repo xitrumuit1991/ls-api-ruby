@@ -5,6 +5,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken]
 
+  resource_description do
+    short 'Authorization'
+    formats ['json']
+  end
+
+  api! "Get token"
+  param :email, String, :required => true
+  param :password, String, :required => true
+  error :code => 401, :desc => "Wrong email or password"
+  description "Login by email and password to get token"
+  example '{token: "this-is-sample-token"}'
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
@@ -20,6 +31,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  api!
   def logout
     @user.update(token: '')
     return head 200

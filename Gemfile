@@ -88,3 +88,7 @@ gem 'mini_magick'
 
 #jcrop for rails_admin
 gem 'rails_admin_jcrop'
+
+gem 'apipie-rails'
+
+
