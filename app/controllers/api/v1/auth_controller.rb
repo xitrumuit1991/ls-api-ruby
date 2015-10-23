@@ -51,7 +51,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
-      # if profile['email'] == params[:email]
         user = User.find_by_email(profile['email'])
         if user.present?
           if user.fb_id.blank?
@@ -63,22 +62,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.name               = profile['name']
           user.email              = profile['email']
           user.gender             = profile['gender']
-          user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
-          user.password           = SecureRandom.hex(5)
+          user.avatar             = graph.get_picture(profile['id'], type: :large)
+          user.password_digest    = SecureRandom.hex(5)
           user.fb_id              = profile['id']
-          user.save
+          if user.save
+            # create token
+            token = createToken(user)
+
+            # update token
+            user.update(last_login: Time.now, token: token)
+
+            render json: {token: token}, status: 200
+          else
+            render json: user.errors.messages, status: 401
+          end
         end
-
-        # create token
-        token = createToken(user)
-
-        # update token
-        user.update(last_login: Time.now, token: token)
-
-        render json: {token: token}, status: 200
-      # else
-      #   return head 400
-      # end
     rescue Koala::Facebook::APIError => exc
       return head 401
     end
