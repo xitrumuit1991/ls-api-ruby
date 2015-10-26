@@ -49,7 +49,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.username = params[:email].split("@")[0]
     user.email    = params[:email]
     user.password = params[:password].to_s
-    user.user_level_id            = 1
+    user.user_level_id            = UserLevel.first().id
     user.money                    = 0
     user.user_exp                 = 0
     user.actived                  = 0
@@ -99,7 +99,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.username                 = profile['email'].split("@")[0]
           user.email                    = profile['email']
           user.gender                   = profile['gender']
-          user.user_level_id            = 1
+          user.user_level_id            = UserLevel.first().id
           user.money                    = 0
           user.user_exp                 = 0
           user.actived                  = 0
