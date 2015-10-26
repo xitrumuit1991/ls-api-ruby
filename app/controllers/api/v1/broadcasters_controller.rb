@@ -13,7 +13,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   api! "get full profile of broadcaster by their id"
-  param :id, Integer, :desc => "broadcaster's id", :required => true
+  param :id, :number, :desc => "broadcaster's id", :required => true
   error :code => 401, :desc => "Unauthorized"
   example <<-EOS
     {
