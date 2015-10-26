@@ -45,12 +45,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   error :code => 400, :desc => "Invalid input"
   def register
     user = User.new
-    split_email   = params[:email].split("@")
+    user.name     = params[:email].split("@")[0]
+    user.username = params[:email].split("@")[0]
     user.email    = params[:email]
-    user.password = params[:password]
-    user.username = split_email[0]
-    user.name     = split_email[0]
-
+    user.password = params[:password].to_s
+    user.user_level_id            = 1
+    user.money                    = 0
+    user.user_exp                 = 0
+    user.actived                  = 0
+    user.no_heart                 = 0
     if user.valid?
       if user.save
         activeCode = SecureRandom.hex(3).upcase
@@ -78,26 +81,40 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         if user.present?
           if user.fb_id.blank?
             user.fb_id  = profile['id']
-            user.save
+            if user.save
+              token = createToken(user)
+              user.update(last_login: Time.now, token: token)
+              render json: {token: token}, status: 200
+            else
+              render json: user.errors.messages, status: 401
+            end
+          else
+            token = createToken(user)
+            user.update(last_login: Time.now, token: token)
+            render json: {token: token}, status: 200
           end
         else
           user = User.new
-          user.name               = profile['name']
-          user.email              = profile['email']
-          user.gender             = profile['gender']
-          user.avatar             = graph.get_picture(profile['id'], type: :large)
-          user.password_digest    = SecureRandom.hex(5)
-          user.fb_id              = profile['id']
+          user.name                     = profile['name']
+          user.username                 = profile['email'].split("@")[0]
+          user.email                    = profile['email']
+          user.gender                   = profile['gender']
+          user.user_level_id            = 1
+          user.money                    = 0
+          user.user_exp                 = 0
+          user.actived                  = 0
+          user.no_heart                 = 0
+          user.avatar                   = graph.get_picture(profile['id'], type: :large)
+          password                      = SecureRandom.hex(5)
+          user.password                 = password
+          user.fb_id                    = profile['id']
           if user.save
-            # create token
+            user = User.find_by_email(profile['email'])
             token = createToken(user)
-
-            # update token
             user.update(last_login: Time.now, token: token)
-
             render json: {token: token}, status: 200
           else
-            render json: user.errors.messages, status: 400
+            render json: user.errors.messages, status: 401
           end
         end
     rescue Koala::Facebook::APIError => exc
