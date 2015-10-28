@@ -71,7 +71,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
 
     if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6
-      @user.name                  = params[:nameư
+      @user.name                  = params[:name]
       if @user.valid?
         if @user.save
           return head 200
