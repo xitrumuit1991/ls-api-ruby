@@ -66,24 +66,23 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    user = User.find_by_email(params[:email])
-    puts "++++++++++++++++++++++++++++++"
-    puts "++++++++++++++++++++++++++++++"
-    puts "++++++++++++++++++++++++++++++"
-    if user.authenticate(params[:password]) != false
-      user.name                  = params[:name]
-      user.password              = params[:new_password].to_s
-      if user.valid?
-        if user.save
+    if params[:new_password] != nil and params[:new_password].to_s.length >= 6 and @user.authenticate(params[:password]) != false 
+      @user.password              = params[:new_password]
+    end
+
+    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6
+      @user.name                  = params[:nameư
+      if @user.valid?
+        if @user.save
           return head 200
         else
-          render plain: 'System error !', status: 400
+          render plain: 'System error !', status: 402
         end
       else
-        render json: user.errors.messages, status: 400
+        render json: @user.errors.messages, status: 403
       end
     else
-      render plain: 'Current password error !', status: 400
+      render plain: 'Tên Quá Ngắn ...', status: 404
     end
   end
 

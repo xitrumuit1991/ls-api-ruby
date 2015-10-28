@@ -28,7 +28,7 @@ Rails.application.routes.draw do
 				post  '/active-fb-gp'     => 'user#activeFBGP'
 				get   '/'                 => 'user#profile'
 				put   '/'                 => 'user#update'
-				put   '/update-profile'   => 'user#updateProfile'
+				post   '/update-profile'   => 'user#updateProfile'
 				post   '/avatar'           => 'user#uploadAvatar'
 				post   '/cover'            => 'user#uploadCover'
 			end
