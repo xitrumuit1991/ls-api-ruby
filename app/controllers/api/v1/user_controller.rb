@@ -47,7 +47,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def update
     @user.name                 = params[:name]
-    @user.username             = params[:username]
     @user.birthday             = params[:birthday]
     @user.gender               = params[:gender]
     @user.address              = params[:address]
@@ -63,6 +62,28 @@ class Api::V1::UserController < Api::V1::ApplicationController
       end
     else
       render json: @user.errors.messages, status: 400
+    end
+  end
+
+  def updateProfile
+    user = User.find_by_email(params[:email])
+    puts "++++++++++++++++++++++++++++++"
+    puts "++++++++++++++++++++++++++++++"
+    puts "++++++++++++++++++++++++++++++"
+    if user.authenticate(params[:password]) != false
+      user.name                  = params[:name]
+      user.password              = params[:new_password].to_s
+      if user.valid?
+        if user.save
+          return head 200
+        else
+          render plain: 'System error !', status: 400
+        end
+      else
+        render json: user.errors.messages, status: 400
+      end
+    else
+      render plain: 'Current password error !', status: 400
     end
   end
 
