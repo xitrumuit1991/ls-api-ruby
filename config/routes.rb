@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 	devise_for :admins
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
+  root 'index#index'
+
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
