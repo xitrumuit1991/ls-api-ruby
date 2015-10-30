@@ -76,13 +76,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
         if @user.save
           return head 200
         else
-          render plain: 'System error !', status: 402
+          render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
         end
       else
-        render json: @user.errors.messages, status: 403
+        render json: @user.errors.messages, status: 400
       end
     else
-      render plain: 'Tên Quá Ngắn ...', status: 404
+      render plain: 'Tên Quá Ngắn ...', status: 400
     end
   end
 

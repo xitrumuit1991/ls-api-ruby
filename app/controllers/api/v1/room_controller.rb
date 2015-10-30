@@ -22,6 +22,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @room_types = RoomType.all
   end
 
+  def getPublicRoom
+    if @user.is_broadcaster
+      @room = @user.broadcaster.rooms.order("is_privated DESC").first
+    else
+      render plain: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !', status: 400
+    end
+  end
+
   def detail
     return head 400 if params[:id].nil?
     @room = Room.find(params[:id])
