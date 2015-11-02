@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 				post   '/update-profile'   => 'user#updateProfile'
 				post   '/avatar'           => 'user#uploadAvatar'
 				post   '/cover'            => 'user#uploadCover'
-				post   '/room'            => 'room#getPublicRoom'
+				get   '/room'            => 'room#getPublicRoom'
 			end
 
 			# broadcasters
