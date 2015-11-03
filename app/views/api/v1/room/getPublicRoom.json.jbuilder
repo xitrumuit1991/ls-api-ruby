@@ -1,7 +1,8 @@
 json.id					@room.id
+json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				@room.thumb.thumb
+json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
 json.background			@room.background.url
 json.is_privated		@room.is_privated
 
@@ -22,7 +23,8 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
-	json.date	schedule.start.strftime('%d/%m/%Y')
+	json.start_date	schedule.start.strftime('%d/%m/%Y')
+	json.end_date	schedule.end.strftime('%d/%m/%Y')
 	json.start	schedule.start.strftime('%H:%M')
 	json.end	schedule.end.strftime('%H:%M')
 end
