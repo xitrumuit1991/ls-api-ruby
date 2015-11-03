@@ -54,9 +54,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.user_exp                 = 0
     user.actived                  = 0
     user.no_heart                 = 0
+    activeCode                    = SecureRandom.hex(3).upcase
+    user.active_code              = activeCode
     if user.valid?
       if user.save
-        activeCode = SecureRandom.hex(3).upcase
         user.update_attributes active_code: activeCode
         SendCodeJob.perform_later(user, activeCode)
         return head 201
@@ -77,6 +78,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
+        puts "+++++++++++++++++++++++++++++"
+        puts params[:access_token]
+        puts "+++++++++++++++++++++++++++++"
         user = User.find_by_email(profile['email'])
         if user.present?
           if user.fb_id.blank?
