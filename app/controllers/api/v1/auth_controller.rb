@@ -44,6 +44,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   error :code => 400, :desc => "Can't not save user"
   error :code => 400, :desc => "Invalid input"
   def register
+    activeCode = SecureRandom.hex(3).upcase
     user = User.new
     user.name     = params[:email].split("@")[0]
     user.username = params[:email].split("@")[0]
@@ -54,11 +55,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.user_exp                 = 0
     user.actived                  = 0
     user.no_heart                 = 0
-    activeCode                    = SecureRandom.hex(3).upcase
     user.active_code              = activeCode
     if user.valid?
       if user.save
-        user.update_attributes active_code: activeCode
         SendCodeJob.perform_later(user, activeCode)
         return head 201
       else
