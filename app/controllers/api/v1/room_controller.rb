@@ -79,7 +79,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def changeBackground
     return head 400 if params[:background].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
       room.remote_background_url = params[:background]
       if room.save
         return head 200
@@ -92,13 +92,25 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSchedule
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
       schedules = JSON.parse(params[:schedule].to_json)
-      if room.schedules.create(schedules)
-        return head 201
-      else
-        render plain: 'System error !', status: 400
+      test = params[:schedule].to_json
+      puts '=============================='
+      puts params[:schedule]
+      puts '=============================='
+      schedules.each do |schedule|
+        print schedule
       end
+      puts '=============================='
+      return head 201
+      # begin
+        # schedules.each do |schedule|
+        #   room.schedules.create(schedule)
+        # end
+        # return head 201
+      # rescue => e
+      #   render json: {error: e.message}, status: 400
+      # end
     else
       render plain: 'System error !', status: 400
     end
