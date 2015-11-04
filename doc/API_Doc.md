@@ -346,7 +346,13 @@
 - Request:
 	+ pictures (array): image/jpeg
 - Response:
-	+ status: **201**, **400**, **401**
+	+ status: **401**
+	+ body:
+```
+{
+	photos: [ {link: "http://.../photo_1.jpg" }, {link: "http://.../photo_1.jpg" }, ..]
+}
+```
 
 ### Delete pictures
 - URI: **/pictures**
