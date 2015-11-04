@@ -67,11 +67,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def updateProfile
     if params[:new_password] != nil and params[:new_password].to_s.length >= 6 and @user.authenticate(params[:password]) != false 
-      @user.password              = params[:new_password]
+      @user.password          = params[:new_password]
     end
 
     if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6
-      @user.name                  = params[:name]
+      @user.name              = params[:name]
+      @user.facebook_link     = params[:facebook]
+      @user.twitter_link      = params[:twitter]
+      @user.instagram_link    = params[:instagram]
+      @user.birthday    = params[:birthday]
       if @user.valid?
         if @user.save
           return head 200
