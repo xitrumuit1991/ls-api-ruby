@@ -6,7 +6,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   resource_description do
     short 'Broadcaster (idol)'
-    formats ['json']
   end
 
   def myProfile
@@ -66,19 +65,13 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   api! "Upload pictures"
-  param :pictures, File, :desc => "array of pictures", :required => true
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "can't save pictures"
   def pictures
     return head 400 if params.nil?
+    pictures = []
     params[:pictures].each do |picture|
-      if @user.broadcaster.images.create({image: picture})
-        errors = 201
-      else
-        errors = 400
-      end
+      pictures << @user.broadcaster.images.create({image: picture})
     end
-    return head errors
+    render json: pictures, status: 201
   end
 
   api! "Delete pictures"
