@@ -94,23 +94,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def updateSchedule
     if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
       schedules = JSON.parse(params[:schedule].to_json)
-      test = params[:schedule].to_json
-      puts '=============================='
-      puts params[:schedule]
-      puts '=============================='
-      schedules.each do |schedule|
-        print schedule
+      if room.schedules.create(schedules)
+        return head 201
+      else
+        render plain: 'System error !', status: 400
       end
-      puts '=============================='
-      return head 201
-      # begin
-        # schedules.each do |schedule|
-        #   room.schedules.create(schedule)
-        # end
-        # return head 201
-      # rescue => e
-      #   render json: {error: e.message}, status: 400
-      # end
     else
       render plain: 'System error !', status: 400
     end
