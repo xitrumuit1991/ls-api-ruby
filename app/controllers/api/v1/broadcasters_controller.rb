@@ -8,7 +8,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     short 'Broadcaster (idol)'
   end
 
-  def myrofile
+  def myProfile
   end
 
   api! "get full profile of broadcaster by their id"
