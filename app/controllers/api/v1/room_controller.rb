@@ -24,7 +24,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def getPublicRoom
     if @user.is_broadcaster
-      @room = @user.broadcaster.rooms.order("is_privated DESC").first
+      @room = @user.broadcaster.rooms.order("is_privated ASC").first
     else
       render plain: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !', status: 400
     end
@@ -50,17 +50,22 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def uploadThumb
-    return head 400 if params[:thumb].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-      room.thumb = params[:thumb]
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    return head 400 if params[:room_thumb].nil?
+    if @user.broadcaster.rooms.order("is_privated ASC").first.update(thumb: params[:room_thumb])
+      render json: @user.broadcaster.rooms.order("is_privated ASC").first, status: 200
     else
       render plain: 'System error !', status: 400
     end
+    # if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
+    #   room.thumb = params[:thumb]
+    #   if room.save
+    #     return head 200
+    #   else
+    #     render plain: 'System error !', status: 400
+    #   end
+    # else
+    #   render plain: 'System error !', status: 400
+    # end
   end
 
   def uploadBackground

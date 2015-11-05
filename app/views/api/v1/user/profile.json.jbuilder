@@ -6,6 +6,7 @@ json.birthday	@user.birthday
 json.gender		@user.gender
 json.address	@user.address
 json.phone		@user.phone
+json.is_bct		@user.is_broadcaster
 json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
 json.cover		"#{request.base_url}#{@user.cover.banner}"
 json.facebook	@user.facebook_link
