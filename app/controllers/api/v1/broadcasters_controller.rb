@@ -75,12 +75,12 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   api! "Delete pictures"
-  param :pictures, :number, :desc => "array of picture's id", :required => true
+  # param :pictures, :number, :desc => "array of picture's id", :required => true
   error :code => 401, :desc => "Unauthorized"
   error :code => 400, :desc => "can't delete picture"
   def deletePictures
     if @user.broadcaster.images.present?
-      if @user.broadcaster.images.where(:id => params[:pictures]).destroy_all
+      if @user.broadcaster.images.where(:id => params[:image_id]).destroy_all
         return head 200
       else
         return head 400
