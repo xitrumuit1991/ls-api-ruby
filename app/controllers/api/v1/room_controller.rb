@@ -97,13 +97,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSchedule
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
-      schedules = JSON.parse(params[:schedule].to_json)
-      if room.schedules.create(schedules)
-        return head 201
-      else
-        render plain: 'System error !', status: 400
-      end
+    puts '========================================'
+    puts eval(params[:schedule])
+    puts '========================================'
+    return head 400 if params[:schedule].nil?
+    @user.broadcaster.rooms.order("is_privated ASC").first.schedules.destroy_all
+    if room = @user.broadcaster.rooms.order("is_privated ASC").first.schedules.create(eval(params[:schedule]))
+      return head 201
     else
       render plain: 'System error !', status: 400
     end
