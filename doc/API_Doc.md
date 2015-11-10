@@ -505,6 +505,15 @@
 	instagram-link: "...",
 	twitter: "...",
 	description: "too long description..."
+	photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
+	videos: [
+		{
+			id: 321654,
+			thumb: "http://api.youtube.com/thumb/AbcXyZ",
+			link: "http://youtube.com/AbcXyZ"
+		},
+		...
+	]
 }
 ```
 
