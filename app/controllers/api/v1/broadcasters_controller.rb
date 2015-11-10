@@ -134,7 +134,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def followed
-    @users_followed = @user.broadcasters
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 5
+    @users_followed = @user.broadcasters.limit(5).offset(offset)
   end
 
   api! "Follow broadcaster"

@@ -40,7 +40,7 @@ Rails.application.routes.draw do
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'														=> 'broadcasters#myProfile'
-				get			'/followed'										=> 'broadcasters#followed'
+				get		'/followed'										=> 'broadcasters#followed'
 				get     '/featured'										=> 'broadcasters#getFeatured'
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
@@ -52,7 +52,7 @@ Rails.application.routes.draw do
 				put     '/'														=> 'broadcasters#update'
 				put     '/avatar'											=> 'broadcasters#uploadAvatar'
 				put     '/cover'											=> 'broadcasters#uploadCover'
-				put			'/:id/follow'									=> 'broadcasters#follow'
+				put		'/:id/follow'									=> 'broadcasters#follow'
 				delete  '/pictures'										=> 'broadcasters#deletePictures'
 				delete  '/videos'											=> 'broadcasters#deleteVideos'
 

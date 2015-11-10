@@ -18,18 +18,14 @@ json.user_exp	@user.user_exp
 json.percent	@user.percent
 json.user_level	@user.user_level.level
 if @user.is_broadcaster
-	if @user.broadcaster.images.length > 0
-		json.photos @user.broadcaster.images do |photo|
-			json.id		photo.id
-			json.link	"#{request.base_url}#{photo.image_url}"
-			json.link_square	"#{request.base_url}#{photo.image.square}"
-		end
+	json.photos @user.broadcaster.images do |photo|
+		json.id		photo.id
+		json.link	"#{request.base_url}#{photo.image_url}"
+		json.link_square	"#{request.base_url}#{photo.image.square}"
 	end
-	if @user.broadcaster.videos.length > 0
-		json.videos @user.broadcaster.videos do |video|
-			json.id		video.id
-			json.link	video.video
-			json.thumb	"#{request.base_url}#{video.thumb.thumb}"
-		end
+	json.videos @user.broadcaster.videos do |video|
+		json.id		video.id
+		json.link	video.video
+		json.thumb	"#{request.base_url}#{video.thumb.thumb}"
 	end
 end
