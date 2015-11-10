@@ -453,13 +453,41 @@
 	+ status: **200** *(OK)*, **400** *(Bad request)*
 
 ### Get user's profile
-- URI: **/user-id**
+- URI: **/**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
 	+ Authorization: Token token="this-is-jwt-token"
 - Response:
 	+ status: **200**, **400**, **404**, **401**
+	+ body:
+```
+{
+	id: 321,
+	name: "Rainie Bui",
+	nickname: "Zit"
+	birthday: "09/10/1991",
+	email: "rainie@gmail.com",
+	avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
+	cover: "http://cdn.domain.com/user/user-id/cover.jpg",
+	heart: 1020,
+	exp: 1231231,
+	level: 10,
+	facebook-link: "http://fb.me/whatthefuck",
+	instagram-link: "...",
+	twitter: "...",
+	description: "too long description..."
+}
+```
+
+### Get user's public profile
+- URI: **/:id**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**
 	+ body:
 ```
 {
