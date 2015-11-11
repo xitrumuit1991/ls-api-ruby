@@ -742,6 +742,20 @@
 		exp: 1231231,
 		level: 10
 	},
+	room:{
+			id: 321654,
+			name: "room so 1",
+			on_air: "true/false",
+			thumb: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+			thumb_mb: "http://cdn.domain.com/broadcaters/bct-id/mb_avatar.jpg"
+		},
+	videos: [
+		{
+			start: "2015-10-21 03:35:00",
+			end: "2015-10-30 18:35:00"
+		},
+		...
+	]
 	...
 ]
 ```
