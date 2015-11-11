@@ -97,9 +97,6 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSchedule
-    puts '========================================'
-    puts eval(params[:schedule])
-    puts '========================================'
     return head 400 if params[:schedule].nil?
     @user.broadcaster.rooms.order("is_privated ASC").first.schedules.destroy_all
     if room = @user.broadcaster.rooms.order("is_privated ASC").first.schedules.create(eval(params[:schedule]))

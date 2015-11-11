@@ -134,6 +134,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def followed
+    max_page = (Float( @user.broadcasters.count )/5).ceil
+    if (params[:page].to_i + 1) > max_page
+      params[:page] = max_page - 1
+    end
     offset = params[:page].nil? ? 0 : params[:page].to_i * 5
     @users_followed = @user.broadcasters.limit(5).offset(offset)
   end
