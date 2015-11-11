@@ -1,8 +1,8 @@
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:getFeatured, :getHomeFeatured]
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :getRoomFeatured]
+  before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :getRoomFeatured, :search]
 
   resource_description do
     short 'Broadcaster (idol)'
@@ -185,6 +185,12 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "get suggest broadcaster in room"
   def getRoomFeatured
     @featured = RoomFeatured.order(weight: :asc).limit(10)
+  end
+
+  def search
+    return head 400 if params[:keyword].nil?
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 12
+    @users = User.where("is_broadcaster = 1 AND name LIKE '%#{params[:keyword]}%'").limit(12).offset(offset)
   end
 
   private

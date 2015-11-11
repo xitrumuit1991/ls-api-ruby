@@ -29,18 +29,18 @@ Rails.application.routes.draw do
 				post  '/active'           => 'user#active'
 				post  '/active-fb-gp'     => 'user#activeFBGP'
 				get   '/'                 => 'user#profile'
-				get   '/:id'				=> 'user#publicProfile'
+				get   '/:id'							=> 'user#publicProfile'
 				put   '/'                 => 'user#update'
-				post   '/update-profile'   => 'user#updateProfile'
-				post   '/avatar'           => 'user#uploadAvatar'
-				post   '/cover'            => 'user#uploadCover'
-				get   '/room'            => 'room#getPublicRoom'
+				post   '/update-profile'  => 'user#updateProfile'
+				post   '/avatar'          => 'user#uploadAvatar'
+				post   '/cover'           => 'user#uploadCover'
+				get   '/room'							=> 'room#getPublicRoom'
 			end
 
 			# broadcasters
 			scope '/broadcasters' do
 				get     '/'														=> 'broadcasters#myProfile'
-				get		'/followed'										=> 'broadcasters#followed'
+				get			'/followed'										=> 'broadcasters#followed'
 				get     '/featured'										=> 'broadcasters#getFeatured'
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
@@ -49,10 +49,11 @@ Rails.application.routes.draw do
 				post    '/active-fb-gp'								=> 'broadcasters#activeFBGP'
 				post    '/pictures'										=> 'broadcasters#pictures'
 				post    '/videos'											=> 'broadcasters#videos'
+				post    '/search'											=> 'broadcasters#search'
 				put     '/'														=> 'broadcasters#update'
 				put     '/avatar'											=> 'broadcasters#uploadAvatar'
 				put     '/cover'											=> 'broadcasters#uploadCover'
-				put		'/:id/follow'									=> 'broadcasters#follow'
+				put			'/:id/follow'									=> 'broadcasters#follow'
 				delete  '/pictures'										=> 'broadcasters#deletePictures'
 				delete  '/videos'											=> 'broadcasters#deleteVideos'
 
