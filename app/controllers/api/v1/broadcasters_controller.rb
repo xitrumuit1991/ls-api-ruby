@@ -134,10 +134,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def followed
-    max_page = (Float( @user.broadcasters.count )/5).ceil
-    if (params[:page].to_i + 1) > max_page
-      params[:page] = max_page - 1
-    end
     offset = params[:page].nil? ? 0 : params[:page].to_i * 5
     @users_followed = @user.broadcasters.limit(5).offset(offset)
   end
@@ -193,7 +189,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def search
     return head 400 if params[:keyword].nil?
-    
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 12
+    @users = User.where("is_broadcaster = 1 AND name LIKE '%#{params[:keyword]}%'").limit(12).offset(offset)
   end
 
   private
