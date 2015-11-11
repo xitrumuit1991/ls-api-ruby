@@ -1,3 +1,4 @@
+
 json.array! @users_followed do |followed|
 	json.id			followed.id
 	json.name		followed.user.name
