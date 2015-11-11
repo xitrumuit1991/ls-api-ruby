@@ -405,16 +405,73 @@
 	+ body:
 ```
 [
-	{
-		id: 321,
-		name: "Rainie Bui",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 12312,
-		level: 10,
-		status: ""
-	},
-	...
+    {
+        "id": 18,
+        "name": "Wisoky",
+        "username": "Wisoky",
+        "avatar": "http://localhost:3000/api/v1/users/18/avatar",
+        "heart": 88,
+        "user_exp": 8889546,
+        "level": 12,
+        "room_id": 5,
+        "onair": true
+    },
+    {
+        "id": 1,
+        "name": "Danh Nguyen",
+        "username": "vdnguyen",
+        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+        "heart": 99489,
+        "user_exp": 14996585,
+        "level": 19,
+        "room_id": 3,
+        "onair": false,
+        "schedule": {
+            "date": "02/11",
+            "start": "10:00"
+        }
+    },
+    ...
+]
+```
+
+### Search broadcasters
+- URI: **/search**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+[
+    {
+        "id": 18,
+        "name": "Wisoky",
+        "username": "Wisoky",
+        "avatar": "http://localhost:3000/api/v1/users/18/avatar",
+        "heart": 88,
+        "user_exp": 8889546,
+        "level": 12,
+        "room_id": 5,
+        "onair": true
+    },
+    {
+        "id": 1,
+        "name": "Danh Nguyen",
+        "username": "vdnguyen",
+        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+        "heart": 99489,
+        "user_exp": 14996585,
+        "level": 19,
+        "room_id": 3,
+        "onair": false,
+        "schedule": {
+            "date": "02/11",
+            "start": "10:00"
+        }
+    },
+    ...
 ]
 ```
 
