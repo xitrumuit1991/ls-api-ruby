@@ -95,6 +95,17 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def expenseRecords
+    @records = GiftLog.joins("JOIN heart_logs ON heart_logs.user_id = gift_logs.user_id").where('gift_logs.user_id = ? AND heart_logs.user_id = ?', @user.id, @user.id).select('gift_logs.*', 'heart_logs.*')
+    # @records = User.includes(:gift_logs, :heart_logs, :action_logs, :lounge_logs).where(:gift_logs => {user_id: @user.id}).all
+    # @records = User.select('*, gift_logs.gift_id as gift_id, gift_logs.quantity as quantity').joins(:gift_logs, :heart_logs, :action_logs, :lounge_logs).where('gift_logs.user_id = ? OR heart_logs.user_id = ? OR action_logs.user_id = ? OR lounge_logs.user_id = ?', @user.id, @user.id, @user.id, @user.id)
+    # @records = @user.joins(:gift_logs).joins(:heart_logs).joins(:action_logs).joins(:lounge_logs)
+    puts '=============================='
+    puts @records
+    puts @user.id
+    puts '=============================='
+  end
+
   def uploadAvatar
     return head 400 if params[:avatar].nil?
     if @user.update(avatar: params[:avatar])
