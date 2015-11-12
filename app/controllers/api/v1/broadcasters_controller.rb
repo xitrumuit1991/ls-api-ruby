@@ -188,9 +188,9 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def search
-    return head 400 if params[:keyword].nil?
+    return head 400 if params[:q].nil?
     offset = params[:page].nil? ? 0 : params[:page].to_i * 12
-    @users = User.where("is_broadcaster = 1 AND name LIKE '%#{params[:keyword]}%'").limit(12).offset(offset)
+    @users = User.where("is_broadcaster = 1 AND name LIKE '%#{params[:q]}%'").limit(12).offset(offset)
   end
 
   private

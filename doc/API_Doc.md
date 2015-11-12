@@ -436,7 +436,7 @@
 ```
 
 ### Search broadcasters
-- URI: **/search**
+- URI: **/search?q=keyword**
 - Method: **POST**
 - Header:
 	+ Content-Type: application/json
