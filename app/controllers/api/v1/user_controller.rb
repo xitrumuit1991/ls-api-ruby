@@ -96,14 +96,31 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def expenseRecords
-    @records = GiftLog.joins("JOIN heart_logs ON heart_logs.user_id = gift_logs.user_id").where('gift_logs.user_id = ? AND heart_logs.user_id = ?', @user.id, @user.id).select('gift_logs.*', 'heart_logs.*')
-    # @records = User.includes(:gift_logs, :heart_logs, :action_logs, :lounge_logs).where(:gift_logs => {user_id: @user.id}).all
-    # @records = User.select('*, gift_logs.gift_id as gift_id, gift_logs.quantity as quantity').joins(:gift_logs, :heart_logs, :action_logs, :lounge_logs).where('gift_logs.user_id = ? OR heart_logs.user_id = ? OR action_logs.user_id = ? OR lounge_logs.user_id = ?', @user.id, @user.id, @user.id, @user.id)
-    # @records = @user.joins(:gift_logs).joins(:heart_logs).joins(:action_logs).joins(:lounge_logs)
-    puts '=============================='
-    puts @records
-    puts @user.id
-    puts '=============================='
+    giftLogs = @user.gift_logs
+    @records = Array.new
+    giftLogs.each do |giftLog|
+      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image_url}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    heartLogs = @user.heart_logs
+    heartLogs.each do |heartLog|
+      aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    actionLogs = @user.action_logs
+    actionLogs.each do |actionLog|
+      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    loungeLogs = @user.lounge_logs
+    loungeLogs.each do |loungeLog|
+      aryLog = OpenStruct.new({:id => loungeLog.id, :name => "Ghế " + loungeLog.lounge, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => loungeLog.cost.round(0), :total_cost => loungeLog.cost.round(0), :created_at => loungeLog.created_at})
+      @records = @records.push(aryLog)
+    end
+    @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
   end
 
   def uploadAvatar
