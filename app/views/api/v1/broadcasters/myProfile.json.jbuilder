@@ -14,7 +14,7 @@ json.twitter			@user.twitter_link
 json.instagram			@user.instagram_link
 json.heart				@user.broadcaster.recived_heart
 json.user_exp			@user.user_exp
-json.broadcaster_exp	@user.broadcaster.broadcaster_exp
+json.bct_exp	@user.broadcaster.broadcaster_exp
 json.description		@user.broadcaster.description
 if defined? @user.statuses[0].content
 	json.status				@user.statuses[0].content
