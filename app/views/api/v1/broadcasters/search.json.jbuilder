@@ -5,7 +5,9 @@ json.array! @users do |user|
 	json.avatar		"#{request.base_url}/api/v1/users/#{user.id}/avatar"
 	json.heart		user.no_heart
 	json.user_exp	user.user_exp
-	json.level		user.user_level.level
+	if !user.user_level.nil?
+		json.level		user.user_level.level
+	end
 	if !user.public_room.nil?
 		json.room do
 			json.id			user.public_room.id
