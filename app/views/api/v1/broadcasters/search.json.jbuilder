@@ -15,12 +15,18 @@ json.array! @users do |user|
 			json.on_air		user.public_room.on_air
 			json.thumb		"#{request.base_url}#{user.public_room.thumb.thumb}"
 			json.thumb_mb	"#{request.base_url}#{user.public_room.thumb.thumb_mb}"
-		end	
+		end
 		if !user.public_room.on_air and user.public_room.schedules.length > 0
 			json.schedules do
 				json.date user.public_room.schedules.take.start.strftime('%d/%m')
 				json.start user.public_room.schedules.take.start.strftime('%H:%M')
+
 			end
+		else
+			json.schedules nil	
 		end
+	else
+		json.room nil
+		json.schedules nil
 	end
 end
