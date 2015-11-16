@@ -103,23 +103,23 @@ class Api::V1::UserController < Api::V1::ApplicationController
       @records = @records.push(aryLog)
     end
 
-    heartLogs = @user.heart_logs
-    heartLogs.each do |heartLog|
-      aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
-      @records = @records.push(aryLog)
-    end
+    # heartLogs = @user.heart_logs
+    # heartLogs.each do |heartLog|
+    #   aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
+    #   @records = @records.push(aryLog)
+    # end
 
-    actionLogs = @user.action_logs
-    actionLogs.each do |actionLog|
-      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
-      @records = @records.push(aryLog)
-    end
+    # actionLogs = @user.action_logs
+    # actionLogs.each do |actionLog|
+    #   aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+    #   @records = @records.push(aryLog)
+    # end
 
-    loungeLogs = @user.lounge_logs
-    loungeLogs.each do |loungeLog|
-      aryLog = OpenStruct.new({:id => loungeLog.id, :name => "Ghế " + loungeLog.lounge, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => loungeLog.cost.round(0), :total_cost => loungeLog.cost.round(0), :created_at => loungeLog.created_at})
-      @records = @records.push(aryLog)
-    end
+    # loungeLogs = @user.lounge_logs
+    # loungeLogs.each do |loungeLog|
+    #   aryLog = OpenStruct.new({:id => loungeLog.id, :name => "Ghế " + loungeLog.lounge, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => loungeLog.cost.round(0), :total_cost => loungeLog.cost.round(0), :created_at => loungeLog.created_at})
+    #   @records = @records.push(aryLog)
+    # end
     @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
   end
 
