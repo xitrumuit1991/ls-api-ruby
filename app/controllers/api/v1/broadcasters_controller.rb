@@ -51,6 +51,30 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
   end
 
+  def broadcasterRevcivedItems
+    return head 400 if !@user.is_broadcaster
+    giftLogs = @user.broadcaster.rooms.order("is_privated ASC").first.gift_logs
+    @records = Array.new
+    giftLogs.each do |giftLog|
+      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image_url}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    heartLogs = @user.broadcaster.rooms.order("is_privated ASC").first.heart_logs
+    heartLogs.each do |heartLog|
+      aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    actionLogs = @user.broadcaster.rooms.order("is_privated ASC").first.action_logs
+    actionLogs.each do |actionLog|
+      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+      @records = @records.push(aryLog)
+    end
+
+    @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
+  end
+
   api! "post status"
   description "Broadcaster can post status to their timeline and latest status will display in room"
   param :status, String, :required => true

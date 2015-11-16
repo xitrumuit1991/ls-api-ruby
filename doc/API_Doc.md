@@ -286,6 +286,27 @@
 ## Broadcasters
 - Namespace URL: **/broadcasters**
 
+### Broadcaster Revcived Items,
+- URI: **/revcived-items**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**
+	+ body:
+```
+{
+	id: 321,
+	name: "abc",
+	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+	quantity: 1000,
+	cost: 100,
+	total_cost: 100000,
+	created_at: "2015-10-06 00:00:00"
+}
+```
+
 ### Get profile
 - URI: **/broadcaster-id**
 - Method: **GET**

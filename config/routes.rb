@@ -46,6 +46,7 @@ Rails.application.routes.draw do
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
 				get     '/search'									=> 'broadcasters#search'
+				get     '/revcived-items'							=> 'broadcasters#broadcasterRevcivedItems'
 				get     '/:id'										=> 'broadcasters#profile'
 				post    '/status'									=> 'broadcasters#status'
 				post    '/active-fb-gp'								=> 'broadcasters#activeFBGP'
