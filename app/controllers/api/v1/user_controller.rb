@@ -117,7 +117,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
     loungeLogs = @user.lounge_logs
     loungeLogs.each do |loungeLog|
-      aryLog = OpenStruct.new({:id => loungeLog.id, :name => "Ghế " + loungeLog.lounge, :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => 1, :cost => loungeLog.cost.round(0), :total_cost => loungeLog.cost.round(0), :created_at => loungeLog.created_at})
+      aryLog = OpenStruct.new({:id => loungeLog.id, :name => "Ghế " + loungeLog.lounge.to_s, :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => 1, :cost => loungeLog.cost.round(0), :total_cost => loungeLog.cost.round(0), :created_at => loungeLog.created_at})
       @records = @records.push(aryLog)
     end
     @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
