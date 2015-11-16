@@ -1,7 +1,7 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts]
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
 
   def onair
@@ -56,16 +56,6 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     else
       render plain: 'System error !', status: 400
     end
-    # if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-    #   room.thumb = params[:thumb]
-    #   if room.save
-    #     return head 200
-    #   else
-    #     render plain: 'System error !', status: 400
-    #   end
-    # else
-    #   render plain: 'System error !', status: 400
-    # end
   end
 
   def uploadBackground
