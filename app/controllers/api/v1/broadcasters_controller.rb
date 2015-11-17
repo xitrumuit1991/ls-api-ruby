@@ -1,8 +1,8 @@
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search]
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :getRoomFeatured, :search]
+  before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :search, :getRoomFeatured]
 
   resource_description do
     short 'Broadcaster (idol)'
