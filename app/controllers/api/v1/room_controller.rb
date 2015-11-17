@@ -32,11 +32,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def detail
     return head 400 if params[:id].nil?
+    @user = check_authenticate
     @room = Room.find(params[:id])
   end
 
   def detailBySlug
-    return head 400 if params[:slug].nil?
+    return head 400 ? params[:slug].nil? : nil
     @room = Room.find_by_slug(params[:slug])
   end
 

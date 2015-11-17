@@ -6,6 +6,17 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     authenticate_token || render_unauthorized
   end
 
+  def check_authenticate
+    authenticate_with_http_token do |token, options|
+      begin
+        decoded_token = JWT.decode token, Settings.hmac_secret, true
+        return User.find_by(token: token)
+      rescue => ex # or rescue Exception
+        return nil
+      end
+    end
+  end
+
   private
     def authenticate_token
       authenticate_with_http_token do |token, options|
