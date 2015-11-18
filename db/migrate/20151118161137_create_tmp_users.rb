@@ -3,7 +3,7 @@ class CreateTmpUsers < ActiveRecord::Migration
     create_table :tmp_users do |t|
       t.string :name
       t.string :email
-      t.datetime :exp
+      t.string :exp
       t.text :token
 
       t.timestamps null: false

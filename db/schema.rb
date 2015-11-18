@@ -326,7 +326,7 @@ ActiveRecord::Schema.define(version: 20151118161137) do
   create_table "tmp_users", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.string   "email",      limit: 255
-    t.datetime "exp"
+    t.string   "exp",        limit: 255
     t.text     "token",      limit: 65535
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
