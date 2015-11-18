@@ -23,7 +23,7 @@ class RoomThumbUploader < CarrierWave::Uploader::Base
 
   version :thumb_mb do
     process :rails_admin_crop
-    process resize_to_fill: [640, 360]
+    process resize_to_fill: [1080, 607]
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
