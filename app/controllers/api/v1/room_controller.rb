@@ -33,6 +33,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detail
     return head 400 if params[:id].nil?
     @user = check_authenticate
+    if @user.nil?
+      @tmp_token = create_tmp_token
+    end
     @room = Room.find(params[:id])
   end
 
@@ -131,6 +134,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       unless @user.is_broadcaster
         return head 400
       end
+    end
+
+    def create_tmp_token
+      name = Faker::Name.name
+      email = Faker::Internet.email(name)
+      @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
+      token = JWT.encode @tmp_user, Settings.hmac_secret, 'HS256'
+      @tmp_user.token = token
+      @tmp_user.save
     end
 
 end

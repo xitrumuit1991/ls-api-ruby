@@ -47,7 +47,7 @@ group :development do
   gem 'spring'
 end
 
-gem 'faker', '~> 1.4.3'
+gem 'faker', git: "https://github.com/stympy/faker.git"
 
 # Rails Admin
 gem 'rails_admin'
