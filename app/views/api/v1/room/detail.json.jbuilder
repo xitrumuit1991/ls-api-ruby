@@ -2,7 +2,7 @@ json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
 json.thumb				@room.thumb.thumb.url
-json.thumb_mb				@room.thumb.thumb_mb.url
+json.thumb_mb			@room.thumb.thumb_mb.url
 json.background			@room.background.url
 json.is_privated		@room.is_privated
 
