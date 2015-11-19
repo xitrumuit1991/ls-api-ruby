@@ -5,6 +5,8 @@ json.thumb				@room.thumb.thumb.url
 json.thumb_mb			@room.thumb.thumb_mb.url
 json.background			@room.background.url
 json.is_privated		@room.is_privated
+json.on_air				@room.on_air
+json.link_stream		"rtmp://210.245.18.154:80/livemix/android/playlist.m3u8"
 
 if !@tmp_token.nil?
 	json.tmp_token @tmp_token
