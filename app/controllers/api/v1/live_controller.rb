@@ -206,7 +206,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   api! "send heart"
-  param :params, :number, :desc => "number of heart", :required => true
+  param :hearts, :number, :desc => "number of heart", :required => true
   error :code => 403, :desc => "Maybe you miss subscribe room or room not started or dont have enough heart"
   error :code => 400, :desc => "Bad request"
   def sendHearts

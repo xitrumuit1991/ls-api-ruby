@@ -1,7 +1,7 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
 
   def onair
@@ -33,6 +33,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detail
     return head 400 if params[:id].nil?
     @user = check_authenticate
+    if @user.nil?
+      create_tmp_token
+    end
     @room = Room.find(params[:id])
   end
 
@@ -131,6 +134,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       unless @user.is_broadcaster
         return head 400
       end
+    end
+
+    def create_tmp_token
+      name = Faker::Name.name
+      email = Faker::Internet.email(name)
+      @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
+      @tmp_token = JWT.encode @tmp_user, Settings.hmac_secret, 'HS256'
+      @tmp_user.token = @tmp_token
+      @tmp_user.save
     end
 
 end

@@ -6,6 +6,14 @@ json.thumb_mb				@room.thumb.thumb_mb.url
 json.background			@room.background.url
 json.is_privated		@room.is_privated
 
+if !@tmp_token.nil?
+	json.tmp_token @tmp_token
+end
+
+if !@tmp_user.nil?
+	json.tmp_user @tmp_user
+end
+
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id

@@ -183,7 +183,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         return head 400
       end
     else
-      return head 400
+      tmp_user = TmpUser.find_by(email: params[:email], token: params[:token])
+      if tmp_user.present?
+        begin
+          decoded_token = JWT.decode params[:token], Settings.hmac_secret
+          return head 200
+        rescue Exception => e
+          return head 400 
+        end
+      else
+        return head 401
+      end
     end
   end
 
