@@ -30,12 +30,12 @@ Rails.application.routes.draw do
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
+				get  '/room'				=> 'room#getPublicRoom'
 				get  '/:id'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
-				get  '/room'				=> 'room#getPublicRoom'
 			end
 
 			# broadcasters
