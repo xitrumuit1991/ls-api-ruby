@@ -131,19 +131,21 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-		id: 123,
-		title: "room's title",
-		thumb: "http://cdn.domain.com/rooms/room-id/thumb.jpg"
-		broadcater: {
-			id: 321,
-			name: "Rainie Bui",
-			heart: 1020,
-			exp: 12312,
-			level: 10
-		},
-		...
-	}
+	[
+      {
+        "id": 10,
+        "title": "Rosanna Paucek",
+        "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
+        "broadcaster": {
+          "id": 10,
+          "name": "Rosanna Paucek",
+          "avatar": "http://localhost:3000/api/v1/users/10/avatar",
+          "heart": 0,
+          "exp": 0,
+          "level": 0
+        }
+      }
+    ]
 ```
 
 ### Get coming soon rooms
@@ -155,25 +157,30 @@
 - Request
 	+ cat: room category id
 	+ page: page number
-- Resoponse
+- Response
 	+ status: **200**, **400**,  **401**
 	+ errors:
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-		id: 123,
-		title: "room's title",
-		thumb: "http://cdn.domain.com/rooms/room-id/thumb.jpg"
-		broadcater: {
-			id: 321,
-			name: "Rainie Bui",
-			heart: 1020,
-			exp: 12312,
-			level: 10
-		},
-		...
-	}
+	[
+      {
+        "id": 1,
+        "title": "new room title",
+        "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
+        "date": "25/11",
+        "start": "13:46",
+        "broadcaster": {
+          "id": 1,
+          "name": "Ansley Morissette",
+          "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+          "heart": 0,
+          "exp": 0,
+          "level": 0
+        }
+      },
+      ....
+      ....
 ```
 
 ### Get room detail
@@ -182,37 +189,47 @@
 - Header
 	+ Content-Type: application/json
 	+ Authorization: Token token="this-is-jwt-token"
-- Resoponse
+- Response
 	+ status: **200**, **400**, **404**, **401**
 	+ errors:
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
 	{
-		id: 123,
-		title: "room's title",
-		thumb: "http://cdn.domain.com/rooms/room-id/thumb.jpg",
-		background: "http://cdn.domain.com/rooms/room-id/background.jpg",
-		youtube-video: "http://youtube.com/ABcXyZ",
-		stream-link: "http://cache.streaming-server.com/room-id.rtmp",
-		schedule: [
-			{ date: "08/11/2015", from: "08:30", to: "09:30"},
-			{ date: "08/11/2015", time: "16:00", to: "17:00"},
-			...
-		],
-		broadcater: {
-			id: 321,
-			name: "Rainie Bui",
-			avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-			heart: 1020,
-			exp: 1231231,
-			level: 10,
-			facebook-link: "http://fb.me/whatthefuck",
-			instagram-link: "...",
-			twitter: "...",
-			status: "This is updated status",
-		}
-	}
+      "id": 1,
+      "title": "new room title",
+      "slug": "ansley_morissette",
+      "thumb": "/uploads/room/thumb/1/thumb_nature.jpeg",
+      "thumb_mb": "/uploads/room/thumb/1/thumb_mb_nature.jpeg",
+      "background": null,
+      "is_privated": false,
+      "on_air": false,
+      "link_stream": "rtmp://210.245.18.154:80/livemix/android/playlist.m3u8",
+      "broadcaster": {
+        "broadcaster_id": 1,
+        "user_id": 1,
+        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+        "name": "Ansley Morissette",
+        "heart": 0,
+        "exp": 0,
+        "percent": 0,
+        "level": 0,
+        "facebook": null,
+        "twitter": null,
+        "instagram": null,
+        "status": "this is my update status",
+        "isFollow": true
+      },
+      "schedules": [
+        {
+          "date": "20/11/2015",
+          "start": "13:46",
+          "end": "15:46"
+        },
+        ...
+        ...
+      ]
+    }
 ```
 
 ### Update room settings
@@ -250,7 +267,7 @@
 	+ Authorization: Token token="this-is-jwt-token"
 - Request:
 	+ background: image/jpeg
-- Resoponse
+- Response
 	+ status: **200**, **400**, **404**, **401**
 
 ### Change backgroud
@@ -282,6 +299,97 @@
 ```
 - Resoponse
 	+ status: **200**, **400**, **404**, **401**
+
+### Get gifts
+- URI: **/gifts**
+- Method: **GET**
+- Header
+    + Content-Type: application/json
+    + Authorization: Token token="this-is-jwt-token"
+- Response
+    + status: **200**
+    + body (status: 200):
+```
+    [
+      {
+        "id": 1,
+        "name": "Donnelly",
+        "image": "http://localhost:3000//uploads/room_action/image/1/square_action-0.jpg",
+        "price": 1,
+        "max_vote": 10,
+        "voted": 0,
+        "percent": 0,
+        "discount": 0
+      },
+      {
+        "id": 2,
+        "name": "Stamm",
+        "image": "http://localhost:3000//uploads/room_action/image/2/square_action-1.jpg",
+        "price": 1,
+        "max_vote": 10,
+        "voted": 0,
+        "percent": 0,
+        "discount": 0
+      },
+    ...
+    ...
+    ...
+]
+```
+
+### Get actions 
+- URI: **/actions**
+- Method: **GET**
+- Header
+    + Content-Type: application/json
+    + Authorization: Token token="this-is-jwt-token"
+- Response
+    + status: **200**
+    + body (status: 200):
+```
+    [
+      {
+        "id": 1,
+        "name": "Dicki",
+        "image": "http://localhost:3000//uploads/gift/image/1/square_gift-0.jpg",
+        "price": 1,
+        "discount": 0
+      },
+      {
+        "id": 2,
+        "name": "Johnson",
+        "image": "http://localhost:3000//uploads/gift/image/2/square_gift-1.jpg",
+        "price": 4,
+        "discount": 0
+      },
+     ...
+     ...
+     ...
+    ]
+```
+
+### Get lounge
+- URI: **/actions**
+- Method: **GET**
+- Header
+    + Content-Type: application/json
+    + Authorization: Token token="this-is-jwt-token"
+- Response
+    + status: **200**
+    + body (status: 200):
+```
+    [
+      {
+        "user": {
+          "id": 0,
+          "name": ""
+        },
+        "cost": 0
+      },
+      ...
+      ...
+    ]
+```
 
 ## Broadcasters
 - Namespace URL: **/broadcasters**
@@ -318,33 +426,49 @@
 	+ body:
 ```
 {
-	id: 321,
-	name: "Rainie Bui",
-	birthday: "09/10/1991",
-	horoscope: "Thien Binh",
-	avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-	cover: "http://cdn.domain.com/broadcaters/bct-id/cover.jpg",
-	heart: 1020,
-	exp: 1231231,
-	level: 10,
-	facebook-link: "http://fb.me/whatthefuck",
-	instagram-link: "...",
-	twitter: "...",
-	status: "This is updated status",
-	description: "too long description...",
-	photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
-	videos: [
-		{
-			id: 321654,
-			thumb: "http://api.youtube.com/thumb/AbcXyZ",
-			link: "http://youtube.com/AbcXyZ"
-		},
-		...
-	],
-	fans: [
-		{id: 456, name: "Nacy babie", vip: "V1", heart: 253},
-		...
-	]
+	  id: 8,
+      name: "Marie Cummerata",
+      fullname: "Marie Cummerata",
+      username: "marie_cummerata",
+      email: "marie.cummerata@hotmail.com",
+      birthday: "2009-12-04",
+      gender: "nam",
+      address: "42966 Jude Village",
+      phone: "281.837.2686",
+      avatar: "http://localhost:3000/api/v1/users/8/avatar",
+      cover: "http://localhost:3000/uploads/user/cover/8/banner_Cover_.jpeg",
+      facebook: null,
+      twitter: null,
+      instagram: null,
+      heart: 0,
+      user_exp: 0,
+      bct_exp: 0,
+      description: "Illo sed aspernatur. Ad similique qui iusto corrupti molestias. Et sunt veritatis beatae sit possimus tempore aut.",
+      status: null,
+      photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
+      videos: [
+            {
+                id: 321654,
+                thumb: "http://api.youtube.com/thumb/AbcXyZ",
+                link: "http://youtube.com/AbcXyZ"
+            },
+            ...
+      ],
+      fans: [
+        {
+              "id": null,
+              "name": "Rosario Oberbrunner",
+              "vip": null,
+              "username": "rosario.oberbrunner",
+              "avatar": "http://localhost:3000/api/v1/users//avatar",
+              "heart": 0,
+              "money": null,
+              "user_exp": 0,
+              "level": 0
+            },
+        ...
+        ...
+      ]
 }
 ```
 
@@ -562,20 +686,25 @@
 	+ body:
 ```
 {
-	id: 321,
-	name: "Rainie Bui",
-	nickname: "Zit"
-	birthday: "09/10/1991",
-	email: "rainie@gmail.com",
-	avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
-	cover: "http://cdn.domain.com/user/user-id/cover.jpg",
-	heart: 1020,
-	exp: 1231231,
-	level: 10,
-	facebook-link: "http://fb.me/whatthefuck",
-	instagram-link: "...",
-	twitter: "...",
-	description: "too long description..."
+  "id": 1,
+  "name": "Ansley Morissette",
+  "username": "ansley.morissette",
+  "email": "ansley_morissette@yahoo.com",
+  "birthday": "2006-01-20",
+  "gender": "nam",
+  "address": "167 Montana Pass",
+  "phone": "207-790-8731 x06816",
+  "is_bct": true,
+  "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+  "cover": "http://localhost:3000/uploads/user/cover/1/banner_Cover_.jpeg",
+  "facebook": null,
+  "twitter": null,
+  "instagram": null,
+  "heart": 0,
+  "money": 1000,
+  "user_exp": 0,
+  "percent": 0,
+  "user_level": 0
 }
 ```
 
@@ -590,29 +719,34 @@
 	+ body:
 ```
 {
-	id: 321,
-	name: "Rainie Bui",
-	nickname: "Zit"
-	birthday: "09/10/1991",
-	email: "rainie@gmail.com",
-	avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
-	cover: "http://cdn.domain.com/user/user-id/cover.jpg",
-	heart: 1020,
-	exp: 1231231,
-	level: 10,
-	facebook-link: "http://fb.me/whatthefuck",
-	instagram-link: "...",
-	twitter: "...",
-	description: "too long description..."
-	photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
-	videos: [
+	"id": 5,
+      "name": "Ahmad Kris Jr.",
+      "username": "jr.ahmad.kris",
+      "email": "jr.kris.ahmad@yahoo.com",
+      "birthday": "2010-12-20",
+      "gender": "nam",
+      "address": "6485 Kelsie Roads",
+      "phone": "(855) 827-5667 x63308",
+      "is_bct": true,
+      "avatar": "http://localhost:3000/api/v1/users/5/avatar",
+      "cover": "http://localhost:3000/uploads/user/cover/5/banner_Cover_.jpeg",
+      "facebook": null,
+      "twitter": null,
+      "instagram": null,
+      "heart": 0,
+      "money": 1000,
+      "user_exp": 0,
+      "percent": 0,
+      "user_level": 0,
+	  photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
+	  videos: [
 		{
 			id: 321654,
 			thumb: "http://api.youtube.com/thumb/AbcXyZ",
 			link: "http://youtube.com/AbcXyZ"
 		},
 		...
-	]
+	  ]
 }
 ```
 
