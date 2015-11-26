@@ -1190,12 +1190,132 @@
 ### Kick user
 
 ### Send message
-
+- URI: **/send-message**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+	room_id: 123,
+	message: 'send message'
+}
+```
+- Response:
+	+ status: **401**, **404**, **403**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
+	    + status 404: ```{error: "Room not found "}```
+	
 ### Send screen text
-
+- URI: **/send-screentext **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+	room_id: 123,
+	message: 'send message'
+}
+```
+- Response:
+	+ status: **401**, **404**, **403**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+        + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
+        + status 404: ```{error: "Room not found "}```
+	
 ### Get action status
 
 ### Vote action
+- URI: **/vote-action**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        action_id: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **403**, **404**, **400**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or action has been full"}```
+	    + status 404: ```{error: "Action not found"}```
+	    + status 400: ```{error: "Bad request"}```
+	
+### Done action
+- URI: **/done-action**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        action_id: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **403**, **404**, **400**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or you is'nt broadcaster "}```
+	    + status 404: ```{error: "Action not found"}```
+	    + status 400: ```{error: "Action not full"}```
+	
+### Send gifts
+- URI: **/send-gifts **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        action_id: 123,
+        quantity: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **403**, **404**, **400**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
+	    + status 404: ```{error: "gift not found"}```
+	    + status 400: ```{error: "Action not full"}```
+
+### Buy VIP lounge
+- URI: **/buy-lounge  **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        lounge: 123,
+        cost: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **403**, **404**, **400**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough money "}```
+	    + status 404: ```{error: "Invalid lounge index "}```
+	    + status 400: ```{error: "Bad request "}```
 
 ### Get gift list
 
@@ -1204,5 +1324,60 @@
 ### Get louge list
 
 ### Send heart
+- URI: **/send-hearts **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        hearts: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **403**, **404**, **400**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough heart "}```
+	    + status 404: ```{error: "Room not found "}```
+	    + status 400: ```{error: "Bad request "}```
+
+### Start room
+- URI: **/start-room  **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **404**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 404: ```{error: "Room not found "}```
+	    
+### End room
+- URI: **/end-room  **
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123
+    }
+    ```
+- Response:
+	+ status: **401**, **404**
+	+ errors: 
+	    + status 401: ```{error: "Unauthorized "}```
+	    + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
