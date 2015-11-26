@@ -218,7 +218,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def search
     return head 400 if params[:q].nil?
     offset = params[:page].nil? ? 0 : params[:page].to_i * 12
-    @users = User.where("is_broadcaster = 1 AND name LIKE '%#{params[:q]}%'").limit(12).offset(offset)
+    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'")
   end
 
   private
