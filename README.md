@@ -1,4 +1,4 @@
-# **LIVESTAR API Ver 1.0**
+# **LIVESTAR API Ver 1.0.1**
 ``HOST: http://domain.com/api/v1``
 
 ## **Authorizations**
