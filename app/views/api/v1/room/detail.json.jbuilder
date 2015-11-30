@@ -14,7 +14,7 @@ if !@room.broadcaster_background_id.nil?
 		json.background 	false
 	end
 else
-	if !@room.room_background_id.nil?
+	if !@room.room_background_id.nil? 
 		json.background 	@room.room_background.image.url
 	else
 		json.background 	false
