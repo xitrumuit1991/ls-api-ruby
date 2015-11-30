@@ -51,22 +51,52 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
   end
 
+  def defaultBackground
+    if @user.is_broadcaster
+      @images = RoomBackground.all
+    end
+  end
+
+  def broadcasterBackground
+    if @user.is_broadcaster
+      @images = @user.broadcaster.broadcaster_backgrounds
+    end
+  end
+
+  def setDefaultBackgroundRoom
+    return head 400 if params[:background_id].nil?
+    if @user.broadcaster.rooms.order("is_privated DESC").first.update(room_background_id: params[:background_id].to_i)
+      render json: {status: true}, status: 200
+    else
+      render json: @user.errors.messages, status: 400      
+    end
+  end
+
+  def setBackgroundRoom
+    return head 400 if params[:background_id].nil?
+    if @user.broadcaster.rooms.order("is_privated DESC").first.update(broadcaster_background_id: params[:background_id].to_i)
+      render json: {status: true}, status: 200
+    else
+      render json: @user.errors.messages, status: 400      
+    end
+  end
+
   def broadcasterRevcivedItems
     return head 400 if !@user.is_broadcaster
-    giftLogs = @user.broadcaster.rooms.order("is_privated ASC").first.gift_logs
+    giftLogs = @user.broadcaster.rooms.order("is_privated DESC").first.gift_logs
     @records = Array.new
     giftLogs.each do |giftLog|
       aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image_url}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
       @records = @records.push(aryLog)
     end
 
-    heartLogs = @user.broadcaster.rooms.order("is_privated ASC").first.heart_logs
+    heartLogs = @user.broadcaster.rooms.order("is_privated DESC").first.heart_logs
     heartLogs.each do |heartLog|
       aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
       @records = @records.push(aryLog)
     end
 
-    actionLogs = @user.broadcaster.rooms.order("is_privated ASC").first.action_logs
+    actionLogs = @user.broadcaster.rooms.order("is_privated DESC").first.action_logs
     actionLogs.each do |actionLog|
       aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
       @records = @records.push(aryLog)

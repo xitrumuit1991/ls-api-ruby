@@ -1,7 +1,7 @@
 class Room < ActiveRecord::Base
 	belongs_to :broadcaster
 	belongs_to :room_type
-	belongs_to :room_ackground
+	belongs_to :room_background
 	belongs_to :broadcaster_background
 	has_many :schedules
 	has_many :heart_logs
