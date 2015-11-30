@@ -1,6 +1,8 @@
 class Room < ActiveRecord::Base
 	belongs_to :broadcaster
 	belongs_to :room_type
+	belongs_to :room_ackground
+	belongs_to :broadcaster_background
 	has_many :schedules
 	has_many :heart_logs
 	has_many :action_logs
@@ -10,5 +12,4 @@ class Room < ActiveRecord::Base
 	validates :title, presence: true
 	validates :room_type_id, presence: true
 	mount_uploader :thumb, RoomThumbUploader
-	mount_uploader :background, RoomBackgroundUploader
 end

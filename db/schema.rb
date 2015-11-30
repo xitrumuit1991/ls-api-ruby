@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151118161137) do
+ActiveRecord::Schema.define(version: 20151130081843) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -70,6 +70,15 @@ ActiveRecord::Schema.define(version: 20151118161137) do
   end
 
   add_index "bct_videos", ["broadcaster_id"], name: "index_bct_videos_on_broadcaster_id", using: :btree
+
+  create_table "broadcaster_backgrounds", force: :cascade do |t|
+    t.integer  "broadcaster_id", limit: 4
+    t.string   "image",          limit: 255
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "broadcaster_backgrounds", ["broadcaster_id"], name: "index_broadcaster_backgrounds_on_broadcaster_id", using: :btree
 
   create_table "broadcaster_levels", force: :cascade do |t|
     t.integer  "level",      limit: 4
@@ -246,6 +255,12 @@ ActiveRecord::Schema.define(version: 20151118161137) do
     t.datetime "updated_at",             null: false
   end
 
+  create_table "room_backgrounds", force: :cascade do |t|
+    t.string   "image",      limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "room_featureds", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "weight",         limit: 4
@@ -264,19 +279,22 @@ ActiveRecord::Schema.define(version: 20151118161137) do
   end
 
   create_table "rooms", force: :cascade do |t|
-    t.integer  "broadcaster_id", limit: 4
-    t.integer  "room_type_id",   limit: 4
-    t.string   "title",          limit: 255
-    t.string   "slug",           limit: 255
-    t.string   "thumb",          limit: 512
-    t.string   "background",     limit: 512
-    t.boolean  "on_air",                     default: false
+    t.integer  "broadcaster_id",            limit: 4
+    t.integer  "room_type_id",              limit: 4
+    t.integer  "broadcaster_background_id", limit: 4
+    t.integer  "room_background_id",        limit: 4
+    t.string   "title",                     limit: 255
+    t.string   "slug",                      limit: 255
+    t.string   "thumb",                     limit: 512
+    t.boolean  "on_air",                                default: false
     t.boolean  "is_privated"
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
   end
 
+  add_index "rooms", ["broadcaster_background_id"], name: "index_rooms_on_broadcaster_background_id", using: :btree
   add_index "rooms", ["broadcaster_id"], name: "index_rooms_on_broadcaster_id", using: :btree
+  add_index "rooms", ["room_background_id"], name: "index_rooms_on_room_background_id", using: :btree
   add_index "rooms", ["room_type_id"], name: "index_rooms_on_room_type_id", using: :btree
 
   create_table "schedules", force: :cascade do |t|
@@ -533,6 +551,7 @@ ActiveRecord::Schema.define(version: 20151118161137) do
   add_foreign_key "action_logs", "users"
   add_foreign_key "bct_images", "broadcasters"
   add_foreign_key "bct_videos", "broadcasters"
+  add_foreign_key "broadcaster_backgrounds", "broadcasters"
   add_foreign_key "broadcasters", "bct_types"
   add_foreign_key "broadcasters", "broadcaster_levels"
   add_foreign_key "broadcasters", "users"
@@ -553,7 +572,9 @@ ActiveRecord::Schema.define(version: 20151118161137) do
   add_foreign_key "monthly_top_user_send_gifts", "rooms"
   add_foreign_key "monthly_top_user_send_gifts", "users"
   add_foreign_key "room_featureds", "broadcasters"
+  add_foreign_key "rooms", "broadcaster_backgrounds"
   add_foreign_key "rooms", "broadcasters"
+  add_foreign_key "rooms", "room_backgrounds"
   add_foreign_key "rooms", "room_types"
   add_foreign_key "schedules", "rooms"
   add_foreign_key "screen_text_logs", "rooms"
