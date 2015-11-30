@@ -77,9 +77,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
-        puts "+++++++++++++++++++++++++++++"
-        puts params[:access_token]
-        puts "+++++++++++++++++++++++++++++"
         user = User.find_by_email(profile['email'])
         if user.present?
           if user.fb_id.blank?
@@ -89,7 +86,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
               user.update(last_login: Time.now, token: token)
               render json: {token: token}, status: 200
             else
-              render json: user.errors.messages, status: 401
+              render json: user.errors.messages, status: 400
             end
           else
             token = createToken(user)
@@ -117,7 +114,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             user.update(last_login: Time.now, token: token)
             render json: {token: token}, status: 200
           else
-            render json: user.errors.messages, status: 401
+            render json: user.errors.messages, status: 400
           end
         end
     rescue Koala::Facebook::APIError => exc
