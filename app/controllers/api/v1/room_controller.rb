@@ -41,6 +41,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def detailBySlug
     return head 400 if params[:slug].nil?
+    @user = check_authenticate
+    if @user.nil?
+      create_tmp_token
+    end
     @room = Room.find_by_slug(params[:slug])
   end
 
