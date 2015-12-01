@@ -43,7 +43,7 @@ json.broadcaster do
 	json.instagram		@room.broadcaster.user.instagram_link
 	json.status			@room.broadcaster.user.statuses.blank? ? nil : @room.broadcaster.user.statuses[0].content
 	if @user != nil
-		json.isFollow		!@user.broadcasters.where(broadcaster_id: @room.broadcaster.id).nil?
+		json.isFollow		!@user.broadcasters.where(id: @room.broadcaster.id).empty?
 	else
 		json.isFollow		false
 	end
