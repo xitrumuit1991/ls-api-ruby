@@ -3,8 +3,21 @@ json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
 json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
-json.background			@room.background.url
 json.is_privated		@room.is_privated
+
+if !@room.broadcaster_background_id.nil?
+	if !@room.broadcaster_background_id.nil?
+		json.background 	@room.broadcaster_background.image.url
+	else
+		json.background 	false
+	end
+else
+	if !@room.room_background_id.nil? 
+		json.background 	@room.room_background.image.url
+	else
+		json.background 	false
+	end
+end
 
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id

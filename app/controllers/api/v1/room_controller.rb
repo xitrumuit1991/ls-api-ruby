@@ -24,7 +24,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def getPublicRoom
     if @user.is_broadcaster
-      @room = @user.broadcaster.rooms.order("is_privated ASC").first
+      @room = @user.broadcaster.rooms.order("is_privated DESC").first
     else
       render plain: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !', status: 400
     end
