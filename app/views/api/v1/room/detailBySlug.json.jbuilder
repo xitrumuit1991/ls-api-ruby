@@ -5,7 +5,7 @@ json.thumb				"#{request.base_url}#{@room.thumb.thumb.url}"
 json.thumb_mb			"#{request.base_url}#{@room.thumb.thumb_mb.url}"
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
-json.link_stream		"rtmp://210.245.18.154:80/livemix/android/playlist.m3u8"
+json.link_stream		"http://210.245.18.154:80/livemix/#{@room.id}/playlist.m3u8"
 
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
