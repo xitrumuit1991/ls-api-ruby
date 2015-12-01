@@ -40,7 +40,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def detailBySlug
-    return head 400 ? params[:slug].nil? : nil
+    return head 400 if params[:slug].nil?
     @room = Room.find_by_slug(params[:slug])
   end
 
