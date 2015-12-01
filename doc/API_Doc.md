@@ -369,7 +369,7 @@
 ```
 
 ### Get lounge
-- URI: **/actions**
+- URI: **/lounges**
 - Method: **GET**
 - Header
     + Content-Type: application/json
