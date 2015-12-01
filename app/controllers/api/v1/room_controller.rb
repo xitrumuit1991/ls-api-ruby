@@ -37,9 +37,6 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       create_tmp_token
     end
     @room = Room.find(params[:id])
-    puts '===================='
-    puts !@user.broadcasters.where(id: @room.broadcaster.id).empty?
-    puts '===================='
   end
 
   def detailBySlug
