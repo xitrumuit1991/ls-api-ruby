@@ -337,7 +337,7 @@
 ]
 ```
 
-### Get actions 
+### Get actions
 - URI: **/actions**
 - Method: **GET**
 - Header
@@ -368,7 +368,7 @@
     ]
 ```
 
-### Get lounge
+### Get lounges
 - URI: **/lounges**
 - Method: **GET**
 - Header
@@ -1228,8 +1228,6 @@
 	    + status 401: ```{error: "Unauthorized "}```
         + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
         + status 404: ```{error: "Room not found "}```
-	
-### Get action status
 
 ### Vote action
 - URI: **/vote-action**
@@ -1316,12 +1314,6 @@
 	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough money "}```
 	    + status 404: ```{error: "Invalid lounge index "}```
 	    + status 400: ```{error: "Bad request "}```
-
-### Get gift list
-
-### Buy gift
-
-### Get louge list
 
 ### Send heart
 - URI: **/send-hearts **
