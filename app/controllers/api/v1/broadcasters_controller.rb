@@ -194,11 +194,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
     offset = params[:page].nil? ? 0 : params[:page].to_i * 5
     @users_followed = @user.broadcasters.limit(5).offset(offset)
-    puts "================================"
-    puts offset
-    puts @users_followed
-    puts @user.broadcasters
-    puts "================================"
   end
 
   api! "Follow broadcaster"
