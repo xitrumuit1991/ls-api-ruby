@@ -3,6 +3,7 @@ json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
 json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
+json.thumb_mb			"#{request.base_url}#{@room.thumb.thumb_mb}"
 json.is_privated		@room.is_privated
 
 if !@room.broadcaster_background_id.nil?
@@ -40,4 +41,14 @@ json.schedules @room.schedules do |schedule|
 	json.end_date	schedule.end.strftime('%d/%m/%Y')
 	json.start	schedule.start.strftime('%H:%M')
 	json.end	schedule.end.strftime('%H:%M')
+end
+
+json.backgrounds @backgrounds do |background|
+	json.id		background.id
+	json.thumb	"#{request.base_url}#{background.image.square}"
+end
+
+json.bct_backgrounds @bct_backgrounds do |bct_background|
+	json.id		bct_background.id
+	json.thumb	"#{request.base_url}#{bct_background.image.square}"
 end

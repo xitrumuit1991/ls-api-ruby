@@ -25,6 +25,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def getPublicRoom
     if @user.is_broadcaster
       @room = @user.broadcaster.rooms.order("is_privated DESC").first
+      @backgrounds = RoomBackground.all
+      @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
     else
       render plain: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !', status: 400
     end
@@ -80,10 +82,33 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
-  def changeBackground
+  def uploadBackgroundRoom
     return head 400 if params[:background].nil?
+    backgrounds = []
+    params[:background].each do |background|
+      pictures << @user.broadcaster.broadcaster_backgrounds.create({image: background})
+    end
+    render json: backgrounds, status: 201
+  end
+
+  def changeBackground
+    return head 400 if params[:background_id].nil?
     if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
-      room.remote_background_url = params[:background]
+      room.broadcaster_background_id = params[:background_id]
+      if room.save
+        return head 200
+      else
+        render plain: 'System error !', status: 400
+      end
+    else
+      render plain: 'System error !', status: 400
+    end
+  end
+
+  def changeBackgroundDefault
+    return head 400 if params[:background_id].nil?
+    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
+      room.room_background_id = params[:background_id]
       if room.save
         return head 200
       else
