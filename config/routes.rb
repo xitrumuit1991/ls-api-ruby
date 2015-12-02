@@ -91,6 +91,7 @@ Rails.application.routes.draw do
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
 				put   	'/background'       		=> 'room#changeBackground'
+				put   	'/background-default'       => 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground'
 				post  	'/schedule'					=> 'room#updateSchedule'
 				get		'/actions'					=> 'room#getActions'
