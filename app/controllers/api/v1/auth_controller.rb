@@ -55,7 +55,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.user_exp            = 0
     user.actived             = 0
     user.no_heart            = 0
-    user.room_background_id  = RoomBackground.first().id
     user.active_code         = activeCode
     if user.valid?
       if user.save
