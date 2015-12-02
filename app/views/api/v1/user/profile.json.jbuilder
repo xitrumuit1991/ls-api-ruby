@@ -8,7 +8,7 @@ json.address	@user.address
 json.phone		@user.phone
 json.is_bct		@user.is_broadcaster
 json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
-json.cover		"#{request.base_url}#{@user.cover.banner}"
+json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover"
 json.facebook	@user.facebook_link
 json.twitter	@user.twitter_link
 json.instagram	@user.instagram_link
