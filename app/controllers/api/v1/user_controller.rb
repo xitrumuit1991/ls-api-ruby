@@ -1,7 +1,7 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 
   def profile
   end
@@ -156,6 +156,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
       end
     rescue
       send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
+    end
+  end
+
+  def getBanner
+    begin
+      @u = User.find(params[:id])
+      if @u
+        file_url = "public#{@u.cover.banner}"
+        if FileTest.exist?(file_url)
+          send_file file_url, type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
     end
   end
 

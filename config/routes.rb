@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 			# users
 			scope '/users' do
 				get  '/:id/avatar'       	=> 'user#getAvatar'
+				get  '/:id/cover'       	=> 'user#getBanner'
 				post '/active'           	=> 'user#active'
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
 				get  '/room'				=> 'room#getPublicRoom'
