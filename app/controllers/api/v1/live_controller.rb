@@ -82,9 +82,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           if dbAction.max_vote == new_value
-            emitter.of("/room").in(@room.id).emit("action full", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
+            emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
           else
-            emitter.of("/room").in(@room.id).emit("action recived", {action: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
+            emitter.of("/room").in(@room.id).emit("action recived", {id: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
           end
 
           # insert log
@@ -117,7 +117,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if dbAction.max_vote <= rAction
         redis.set("actions:#{@room.id}:#{action_id}", 0)
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-        emitter.of("/room").in(@room.id).emit("action done", { action: action_id })
+        emitter.of("/room").in(@room.id).emit("action done", { id: action_id })
         return head 200
       else
         render json: {error: "This action must be full before set to done"}, status: 400
