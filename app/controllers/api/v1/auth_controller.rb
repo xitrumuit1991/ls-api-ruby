@@ -50,12 +50,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.username = params[:email].split("@")[0]
     user.email    = params[:email]
     user.password = params[:password].to_s
-    user.user_level_id            = UserLevel.first().id
-    user.money                    = 0
-    user.user_exp                 = 0
-    user.actived                  = 0
-    user.no_heart                 = 0
-    user.active_code              = activeCode
+    user.user_level_id       = UserLevel.first().id
+    user.money               = 0
+    user.user_exp            = 0
+    user.actived             = 0
+    user.no_heart            = 0
+    user.room_background_id  = RoomBackground.first().id
+    user.active_code         = activeCode
     if user.valid?
       if user.save
         SendCodeJob.perform_later(user, activeCode)
