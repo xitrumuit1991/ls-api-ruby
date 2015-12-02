@@ -1,7 +1,7 @@
 json.array! @records do |gift|
 	json.id			gift.id
 	json.name		gift.name
-	json.thumb		gift.thumb
+	json.thumb		gift.thumb.square
 	json.quantity	gift.quantity
 	json.cost		gift.cost
 	json.total_cost	gift.total_cost

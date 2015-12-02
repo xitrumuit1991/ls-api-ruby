@@ -17,3 +17,8 @@ json.money		@user.money
 json.user_exp	@user.user_exp
 json.percent	@user.percent
 json.user_level	@user.user_level.level
+if @user.is_broadcaster
+	json.room do
+		json.slug 	@user.broadcaster.rooms.order("is_privated DESC").first.slug
+	end
+end
