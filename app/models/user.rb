@@ -17,6 +17,10 @@ class User < ActiveRecord::Base
 	mount_uploader :avatar, AvatarUploader
 	mount_uploader :cover,  CoverUploader
 
+	def public_room
+		self.broadcaster.rooms.find_by_is_privated(false)
+	end
+
 	def decreaseMoney(money)
 		if self.money >= money then
 			old = self.money

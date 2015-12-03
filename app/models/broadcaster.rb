@@ -7,6 +7,7 @@ class Broadcaster < ActiveRecord::Base
 	has_many :users, through: :user_follow_bcts
 
 	has_many :rooms
+	has_many :broadcaster_backgrounds
 	has_many :images, class_name:'BctImage'
 	has_many :videos, class_name:'BctVideo'
 

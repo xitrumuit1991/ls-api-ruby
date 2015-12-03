@@ -4,7 +4,7 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
-  # include CarrierWave::MiniMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
@@ -14,6 +14,11 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+  end
+
+  version :square do
+    process :rails_admin_crop
+    process resize_to_fill: [250, 250]
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -42,10 +47,21 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
     %w(jpg jpeg gif png)
   end
 
+  def rails_admin_crop
+    return unless model.rails_admin_cropping?
+    manipulate! do |img|
+      ::RailsAdminJcrop::ImageHelper.crop(img, model.crop_w, model.crop_h, model.crop_x, model.crop_y)
+      img
+    end
+  end
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   # def filename
   #   "something.jpg" if original_filename
   # end
+
+  def filename
+    "Background_#{@model.id}.#{file.extension}" if original_filename
+  end
 
 end

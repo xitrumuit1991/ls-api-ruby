@@ -47,7 +47,7 @@ group :development do
   gem 'spring'
 end
 
-gem 'faker', '~> 1.4.3'
+gem 'faker', git: "https://github.com/stympy/faker.git"
 
 # Rails Admin
 gem 'rails_admin'
@@ -65,7 +65,7 @@ gem 'jwt'
 gem 'config'
 
 # Koala FB API
-gem "koala", "~> 2.0"
+gem "koala", "~> 2.2"
 
 # Rest Client
 gem 'rest-client'
@@ -83,3 +83,12 @@ gem 'socket.io-emitter'
 gem 'delayed_job_active_record'
 
 gem "daemons"
+
+gem 'mini_magick'
+
+#jcrop for rails_admin
+gem 'rails_admin_jcrop'
+
+gem 'apipie-rails'
+
+

@@ -1,3 +1,4 @@
 class WeeklyTopUserSendGift < ActiveRecord::Base
-  belongs_to :broadcaster
+  belongs_to :user
+  belongs_to :room
 end

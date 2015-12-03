@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
 
+	apipie
 	devise_for :admins
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+
+  root 'index#index'
 
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
@@ -22,36 +25,44 @@ Rails.application.routes.draw do
 
 			# users
 			scope '/users' do
-				get   '/:id/avatar'       => 'user#getAvatar'
-				post  '/active'           => 'user#active'
-				post  '/active-fb-gp'     => 'user#activeFBGP'
-				get   '/'                 => 'user#profile'
-				put   '/'                 => 'user#update'
-				put   '/avatar'           => 'user#uploadAvatar'
-				put   '/cover'            => 'user#uploadCover'
+				get  '/:id/avatar'       	=> 'user#getAvatar'
+				get  '/:id/cover'       	=> 'user#getBanner'
+				post '/active'           	=> 'user#active'
+				post '/active-fb-gp'     	=> 'user#activeFBGP'
+				get  '/room'				=> 'room#getPublicRoom'
+				get  '/'                 	=> 'user#profile'
+				get  '/expense-records'		=> 'user#expenseRecords'
+				get  '/:id'					=> 'user#publicProfile'
+				put  '/'                 	=> 'user#update'
+				post '/update-profile'  	=> 'user#updateProfile'
+				post '/avatar'          	=> 'user#uploadAvatar'
+				post '/cover'           	=> 'user#uploadCover'
 			end
 
 			# broadcasters
 			scope '/broadcasters' do
-				get     '/'														=> 'broadcasters#myProfile'
-				get			'/followed'										=> 'broadcasters#followed'
-				get     '/featured'										=> 'broadcasters#getFeatured'
+				get     '/'											=> 'broadcasters#myProfile'
+				get		'/followed'									=> 'broadcasters#followed'
+				get     '/featured'									=> 'broadcasters#getFeatured'
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
-				get     '/featured-broadcaster'				=> 'broadcasters#getfeatured'
-				get     '/home-featured-broadcaster'  => 'broadcasters#getHomeFeatured'
-				get     '/room-featured-broadcaster'  => 'broadcasters#getRoomFeatured'
-				get     '/:id'												=> 'broadcasters#profile'
-				post    '/status'											=> 'broadcasters#status'
+				get     '/search'									=> 'broadcasters#search'
+				get     '/revcived-items'							=> 'broadcasters#broadcasterRevcivedItems'
+				get     '/default-background'						=> 'broadcasters#defaultBackground'
+				get     '/broadcaster-background'					=> 'broadcasters#broadcasterBackground'
+				get     '/:id'										=> 'broadcasters#profile'
+				post    '/status'									=> 'broadcasters#status'
 				post    '/active-fb-gp'								=> 'broadcasters#activeFBGP'
-				post    '/pictures'										=> 'broadcasters#pictures'
-				post    '/videos'											=> 'broadcasters#videos'
-				put     '/'														=> 'broadcasters#update'
-				put     '/avatar'											=> 'broadcasters#uploadAvatar'
-				put     '/cover'											=> 'broadcasters#uploadCover'
-				put			'/:id/follow'									=> 'broadcasters#follow'
-				delete  '/pictures'										=> 'broadcasters#deletePictures'
-				delete  '/videos'											=> 'broadcasters#deleteVideos'
+				post    '/pictures'									=> 'broadcasters#pictures'
+				post    '/videos'									=> 'broadcasters#videos'
+				post  	'/setdefault-background'					=> 'broadcasters#setDefaultBackgroundRoom'
+				post  	'/set-room-background'						=> 'broadcasters#setBackgroundRoom'
+				put     '/'											=> 'broadcasters#update'
+				put     '/avatar'									=> 'broadcasters#uploadAvatar'
+				put     '/cover'									=> 'broadcasters#uploadCover'
+				put		'/:id/follow'								=> 'broadcasters#follow'
+				delete  '/pictures'									=> 'broadcasters#deletePictures'
+				delete  '/videos'									=> 'broadcasters#deleteVideos'
 
 			end
 
@@ -62,26 +73,31 @@ Rails.application.routes.draw do
 				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
 				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
 				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
+				get     '/update-datatime-top'							=> 'ranks#updateCreatedAtBroadcaster'
+				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
+				get		'/:id/top-fans'		=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
 			scope 'rooms' do
-				get   '/on-air'           => 'room#onair'
-				get   '/coming-soon'      => 'room#comingSoon'
-				get   '/slug/:slug'       => 'room#detailBySlug'
-				get   '/actions'          => 'room#getActions'
-				get   '/gifts'            => 'room#getGifts'
-				get   '/lounges'          => 'room#getLounges'
-				put   '/'                 => 'room#updateSettings'
-				put   '/thumb'            => 'room#uploadThumb'
-				post  '/thumb'            => 'room#uploadThumb'
-				put   '/background'       => 'room#changeBackground'
-				post  '/background'       => 'room#uploadBackground'
-				post  '/schedule'					=> 'room#updateSchedule'
+				get   	'/on-air'           		=> 'room#onair'
+				get   	'/coming-soon'      		=> 'room#comingSoon'
+				get   	'/room-type'        		=> 'room#roomType'
+				get   	'/slug/:slug'       		=> 'room#detailBySlug'
+				get   	'/actions'          		=> 'room#getActions'
+				get   	'/gifts'            		=> 'room#getGifts'
+				get   	'/lounges'          		=> 'room#getLounges'
+				put   	'/'                 		=> 'room#updateSettings'
+				put   	'/thumb'            		=> 'room#uploadThumb'
+				post  	'/thumb'            		=> 'room#uploadThumb'
+				put   	'/background'       		=> 'room#changeBackground'
+				put   	'/background-default'       => 'room#changeBackgroundDefault'
+				post  	'/background'       		=> 'room#uploadBackground'
+				post  	'/schedule'					=> 'room#updateSchedule'
 				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'						=> 'room#getGifts'
+				get		'/gifts'					=> 'room#getGifts'
 				get		'/lounges'					=> 'room#getLounges'
-				get   '/:id'              => 'room#detail'
+				get   	'/:id'              		=> 'room#detail'
 			end
 
 			# Live functions
@@ -97,6 +113,12 @@ Rails.application.routes.draw do
 				post  '/start-room'         => 'live#startRoom'
 				post  '/end-room'           => 'live#endRoom'
 				post  '/kick-user'          => 'live#kickUser'
+			end
+
+			# Posters functions
+			scope 'posters' do 
+				get 	'/sliders'			=>	'posters#getSliders'
+				get 	'/posters'			=>	'posters#getPosters'
 			end
 		end
 	end
