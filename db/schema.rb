@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151130081843) do
+ActiveRecord::Schema.define(version: 20151203093202) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -94,10 +94,10 @@ ActiveRecord::Schema.define(version: 20151130081843) do
     t.integer  "broadcaster_level_id", limit: 4
     t.string   "fullname",             limit: 255
     t.text     "description",          limit: 65535
-    t.integer  "broadcaster_exp",      limit: 4
-    t.integer  "recived_heart",        limit: 4
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.integer  "broadcaster_exp",      limit: 4,     default: 0
+    t.integer  "recived_heart",        limit: 4,     default: 0
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
   end
 
   add_index "broadcasters", ["bct_type_id"], name: "index_broadcasters_on_bct_type_id", using: :btree
@@ -449,13 +449,13 @@ ActiveRecord::Schema.define(version: 20151130081843) do
     t.string   "facebook_link",   limit: 255
     t.string   "twitter_link",    limit: 255
     t.string   "instagram_link",  limit: 255
-    t.integer  "money",           limit: 4
-    t.integer  "user_exp",        limit: 4
+    t.integer  "money",           limit: 4,   default: 0
+    t.integer  "user_exp",        limit: 4,   default: 0
     t.string   "active_code",     limit: 10
     t.boolean  "actived",                     default: false
     t.datetime "active_date"
     t.boolean  "is_broadcaster"
-    t.integer  "no_heart",        limit: 4
+    t.integer  "no_heart",        limit: 4,   default: 0
     t.boolean  "is_banned"
     t.string   "token",           limit: 255
     t.datetime "last_login"
