@@ -16,7 +16,7 @@ json.instagram			@user.instagram_link
 json.heart				@broadcaster.recived_heart
 json.user_level			@user.user_level.level
 json.broadcaster_level	@broadcaster.broadcaster_level.level
-json.percent			@room.broadcaster.percent
+json.percent			@broadcaster.percent
 json.user_exp			@user.user_exp
 json.bct_exp			@broadcaster.broadcaster_exp
 json.description		@broadcaster.description
