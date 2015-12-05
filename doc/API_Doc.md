@@ -444,6 +444,7 @@
       heart: 0,
       user_level: 1,
       broadcaster_level: 2,
+      percent: 20,
       user_exp: 0,
       bct_exp: 0,
       description: "Illo sed aspernatur. Ad similique qui iusto corrupti molestias. Et sunt veritatis beatae sit possimus tempore aut.",
