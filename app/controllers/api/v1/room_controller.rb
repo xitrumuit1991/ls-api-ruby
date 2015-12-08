@@ -84,11 +84,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadBackgroundRoom
     return head 400 if params[:background].nil?
-    backgrounds = []
-    params[:background].each do |background|
-      pictures << @user.broadcaster.broadcaster_backgrounds.create({image: background})
-    end
-    render json: backgrounds, status: 201
+    background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
+    render json: background, status: 201
   end
 
   def changeBackground
@@ -107,8 +104,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def changeBackgroundDefault
     return head 400 if params[:background_id].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
+    if room = Room.find_by_broadcaster_id_and_is_privated(@user.broadcaster.id,"0")
       room.room_background_id = params[:background_id]
+      room.broadcaster_background_id = nil
+
       if room.save
         return head 200
       else

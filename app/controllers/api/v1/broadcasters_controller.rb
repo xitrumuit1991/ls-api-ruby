@@ -146,12 +146,12 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   api! "Create video"
   def videos
-    videos = JSON.parse(params[:videos].to_json)
-    if @user.broadcaster.videos.create(videos)
-      return head 201
-    else
-      render plain: 'System error !', status: 400
+    return head 400 if params[:videos].nil?
+    response_videos = []
+    params[:videos].each do |key, video|
+       response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: video['link']}))
     end
+    render json:response_videos, status: 201
   end
 
   api! "Delete videos"

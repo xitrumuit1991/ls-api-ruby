@@ -1276,7 +1276,7 @@
 	    + status 400: ```{error: "Action not full"}```
 	
 ### Send gifts
-- URI: **/send-gifts **
+- URI: **/send-gifts**
 - Method: **POST**
 - Header:
 	+ Content-Type: application/json
@@ -1285,7 +1285,7 @@
     ```
     {
         room_id: 123,
-        action_id: 123,
+        gift_id: 123,
         quantity: 123
     }
     ```
