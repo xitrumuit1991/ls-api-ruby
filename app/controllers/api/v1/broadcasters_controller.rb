@@ -148,8 +148,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def videos
     return head 400 if params[:videos].nil?
     response_videos = []
-    params[:videos].each do |key, video |
-        response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: video['link']}))
+    params[:videos].each do |key, video|
+       response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: video['link']}))
     end
     render json:response_videos, status: 201
   end

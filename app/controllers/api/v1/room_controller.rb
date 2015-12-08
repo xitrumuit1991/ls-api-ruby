@@ -84,9 +84,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadBackgroundRoom
     return head 400 if params[:background].nil?
-    backgrounds = []
-    backgrounds << @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
-    render json: backgrounds, status: 201
+    background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
+    render json: background, status: 201
   end
 
   def changeBackground
