@@ -61,7 +61,6 @@ class BroadcasterBackgroundUploader < CarrierWave::Uploader::Base
   # end
 
   def filename
-    # "Bct_background_#{@model.id}.#{file.extension}" if original_filename
     "#{secure_token(10)}.#{file.extension}" if original_filename
   end
 
