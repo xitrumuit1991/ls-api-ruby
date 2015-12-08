@@ -160,7 +160,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 400, :desc => "can't delete video"
   def deleteVideos
     if @user.broadcaster.videos.present?
-      if @user.broadcaster.videos.where(:id => params[:videos]).destroy_all
+      if @user.broadcaster.videos.where(:id => params[:id]).destroy_all
         return head 200
       else
         return head 400
