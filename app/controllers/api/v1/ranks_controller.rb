@@ -52,11 +52,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topUserLevelGrow
 		if params[:range] == nil or params[:range] == "week"
-			@top_user_level = WeeklyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_week.all_week).group(:broadcaster_id).order('times desc').limit(5)
+			@top_user_level = WeeklyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_week.all_week).group(:user_id).order('times desc').limit(5)
 		elsif params[:range] == "all"
-			@top_user_level = TopUserLevelUp.select('*,sum(times) as level').group(:broadcaster_id).order('times desc').limit(5)
+			@top_user_level = TopUserLevelUp.select('*,sum(times) as level').group(:user_id).order('times desc').limit(5)
 		elsif params[:range] == "month"
-			@top_user_level = MonthlyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.beginning_of_month..DateTime.now.prev_month.end_of_month).group(:broadcaster_id).order('times desc').limit(5)
+			@top_user_level = MonthlyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.beginning_of_month..DateTime.now.prev_month.end_of_month).group(:user_id).order('times desc').limit(5)
 		else
 			render plain: 'Range error !', status: 400
 		end
