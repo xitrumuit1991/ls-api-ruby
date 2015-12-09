@@ -5,4 +5,5 @@ json.array! @top_broadcaster_level do |top_level|
 	json.heart		top_level.broadcaster.recived_heart
 	json.bct_exp	top_level.broadcaster.broadcaster_exp
 	json.level		top_level.broadcaster.broadcaster_level.level
+	json.times		top_level.times
 end
