@@ -8,7 +8,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def publicProfile
     return head 400 if params[:id].nil?
-    @user = User.find_by_id(params[:id])
+    @user = User.find_by_username(params[:id])
   end
 
   def active
