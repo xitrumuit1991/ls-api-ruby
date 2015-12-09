@@ -90,13 +90,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def changeBackground
     return head 400 if params[:background_id].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
-      room.broadcaster_background_id = params[:background_id]
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: params[:background_id])
+      return head 200
     else
       render plain: 'System error !', status: 400
     end
@@ -104,15 +99,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def changeBackgroundDefault
     return head 400 if params[:background_id].nil?
-    if room = Room.find_by_broadcaster_id_and_is_privated(@user.broadcaster.id,"0")
-      room.room_background_id = params[:background_id]
-      room.broadcaster_background_id = nil
-
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: nil,room_background_id: params[:background_id])
+      return head 200
     else
       render plain: 'System error !', status: 400
     end
