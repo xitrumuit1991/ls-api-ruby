@@ -31,5 +31,12 @@ end
 json.videos @user.broadcaster.videos do |video|
 	json.id		video.id
 	json.link	video.video
-	json.thumb	"#{request.base_url}#{video.thumb.url}"
+
+  if video.thumb.url.nil?
+    video_id = youtubeID(video.video)
+    json.thumb "http://img.youtube.com/vi/#{video_id}/hqdefault.jpg"
+  else
+    json.thumb	"#{request.base_url}#{video.thumb.url}"
+  end
+
 end

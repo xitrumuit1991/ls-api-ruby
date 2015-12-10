@@ -1,5 +1,6 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  helper YoutubeHelper
 
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 

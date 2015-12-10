@@ -22,7 +22,7 @@ if @user.is_broadcaster
 		json.id		photo.id
 		json.link	"#{request.base_url}#{photo.image_url}"
 		json.link_square	"#{request.base_url}#{photo.image.square}"
-	end
+  end
 	json.videos @user.broadcaster.videos do |video|
 		json.id		video.id
 		json.link	video.video
