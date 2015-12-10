@@ -91,14 +91,15 @@ Rails.application.routes.draw do
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
 				put   	'/background'       		=> 'room#changeBackground'
-				put   	'/background-default'       => 'room#changeBackgroundDefault'
+				put   	'/background-default'   => 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground'
-				post  	'/background-room'       		=> 'room#uploadBackgroundRoom'
-				post  	'/schedule'					=> 'room#updateSchedule'
-				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'					=> 'room#getGifts'
-				get		'/lounges'					=> 'room#getLounges'
+				post  	'/background-room'      => 'room#uploadBackgroundRoom'
+				post  	'/schedule'							=> 'room#updateSchedule'
+				get		'/actions'								=> 'room#getActions'
+				get		'/gifts'									=> 'room#getGifts'
+				get		'/lounges'								=> 'room#getLounges'
 				get   	'/:id'              		=> 'room#detail'
+				delete  '/background'      			=> 'room#deleteBackground'
 			end
 
 			# Live functions

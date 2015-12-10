@@ -88,6 +88,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     render json: background, status: 201
   end
 
+  def deleteBackground
+    return head 400 if params[:background_id].nil?
+    if @user.broadcaster.broadcaster_backgrounds.where(:id => params[:background_id]).destroy_all
+      return head 200
+    end
+  end
+
   def changeBackground
     return head 400 if params[:background_id].nil?
     if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: params[:background_id])
