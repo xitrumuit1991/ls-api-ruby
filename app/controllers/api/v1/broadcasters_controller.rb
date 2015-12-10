@@ -1,5 +1,6 @@
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  include YoutubeHelper
 
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
   before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :search, :getRoomFeatured]
@@ -9,19 +10,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def myProfile
-  end
-
-  def youtubeID(link)
-    if link[/youtu\.be\/([^\?]*)/]
-      $1
-    else
-      link[/^.*((v\/)|(embed\/)|(watch\?))\??v?=?([^\&\?]*).*/]
-      $5
-    end
-  end
-
-  def youtubeThumb(id)
-    return 'http://img.youtube.com/vi/' + id + '/hqdefault.jpg'
   end
 
   api! "get full profile of broadcaster by their id"
