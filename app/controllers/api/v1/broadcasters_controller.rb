@@ -11,6 +11,19 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def myProfile
   end
 
+  def youtubeID(link)
+    if link[/youtu\.be\/([^\?]*)/]
+      $1
+    else
+      link[/^.*((v\/)|(embed\/)|(watch\?))\??v?=?([^\&\?]*).*/]
+      $5
+    end
+  end
+
+  def youtubeThumb(id)
+    return 'http://img.youtube.com/vi/' + id + '/hqdefault.jpg'
+  end
+
   api! "get full profile of broadcaster by their id"
   param :id, :number, :desc => "broadcaster's id", :required => true
   error :code => 401, :desc => "Unauthorized"
@@ -149,7 +162,9 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     return head 400 if params[:videos].nil?
     response_videos = []
     params[:videos].each do |key, video|
-       response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: video['link']}))
+      id = youtubeID video[:link]
+      link = 'https://www.youtube.com/embed/'+id
+      response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
     end
     render json:response_videos, status: 201
   end
