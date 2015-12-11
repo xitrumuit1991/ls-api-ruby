@@ -72,10 +72,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if params[:new_password] != nil and params[:new_password].to_s.length >= 6 and @user.authenticate(params[:password]) != false 
-      @user.password          = params[:new_password]
-    end
-
     if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 8 and params[:name].to_s.length <= 20
       @user.name              = params[:name]
       @user.facebook_link     = params[:facebook]
@@ -93,6 +89,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
       end
     else
       render plain: 'Tên Quá Ngắn ...', status: 400
+    end
+  end
+
+  def updatePassword
+    if @user.authenticate(params[:password]) != false
+      if (params[:new_password] != nil or params[:new_password] != '')  and params[:new_password].to_s.length >= 6
+        @user.password = params[:new_password]
+        if @user.valid?
+          @user.save
+          return head 200
+        else
+          render json: @user.errors.messages, status: 400
+        end
+      else
+        render plain: 'Vui lòng nhập mật khẩu mới có độ dài tối thiểu là 6 kí tự', status: 400
+      end
+    else
+      render plain: 'Mật khẩu hiện tại không đúng!', status: 400
     end
   end
 
