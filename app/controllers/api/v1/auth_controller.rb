@@ -94,6 +94,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             render json: {token: token}, status: 200
           end
         else
+          activeCode = SecureRandom.hex(3).upcase
           user = User.new
           user.name                     = profile['name']
           user.username                 = profile['email'].split("@")[0]
@@ -108,6 +109,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           password                      = SecureRandom.hex(5)
           user.password                 = password
           user.fb_id                    = profile['id']
+          user.active_code              = activeCode
           if user.save
             user = User.find_by_email(profile['email'])
             token = createToken(user)
