@@ -26,10 +26,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendMessage
     message = params[:message]
-    emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-    user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-    emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
-    return head 201
+    if message.length <= 150
+      emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+      user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+      emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
+      return head 201
+    else
+      return head 400
+    end
   end
 
   api! "send screentext message"
