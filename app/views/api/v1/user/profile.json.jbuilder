@@ -7,7 +7,6 @@ if @user.birthday
 else
   json.birthday	nil
 end
-json.birthday	@user.birthday.strftime('%d-%m-%Y')
 json.gender		@user.gender
 json.address	@user.address
 json.phone		@user.phone
