@@ -9,7 +9,7 @@ json.gender				@user.gender
 json.address			@user.address
 json.phone				@user.phone
 json.avatar				"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
-if @user.cover.banner.url.nil?
+if @user.cover.url.nil?
   json.cover			"#{request.base_url}/api/v1/users/#{@user.id}/cover"
 else
   json.cover			"#{request.base_url}#{@user.cover.url}"
