@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @room_type], :html => {:class => "form_room_type"} do |f| %>
+          <% if @room_type.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@room_type.errors.count, "error") %> prohibited this room type from being saved:</h2>
+              <ul><% @room_type.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Title</label>
+                <input type="text" class="form-control" name="room_type[title]" value="<%= @room_type.title %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Slug</label>
+                <input type="text" class="form-control" name="room_type[slug]" value="<%= @room_type.slug %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Description</label>
+                <textarea class="form-control" name="room_type[description]" style="height:200px"><%= @room_type.description %></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+              <span>Submit</span>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

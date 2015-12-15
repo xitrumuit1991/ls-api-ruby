@@ -6,6 +6,13 @@ Rails.application.routes.draw do
 
   root 'index#index'
 
+  # ACP
+  namespace :acp do
+    get "/" => "index#index"
+    resources :room_types
+  end
+
+  # API
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
