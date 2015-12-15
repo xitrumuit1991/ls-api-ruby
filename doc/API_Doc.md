@@ -563,7 +563,8 @@
         "user_exp": 8889546,
         "level": 12,
         "room_id": 5,
-        "onair": true
+        "onair": true,
+        "room_slug":room-2
     },
     {
         "id": 1,
@@ -575,6 +576,7 @@
         "level": 19,
         "room_id": 3,
         "onair": false,
+        "room_slug":room-3
         "schedule": {
             "date": "02/11",
             "start": "10:00"

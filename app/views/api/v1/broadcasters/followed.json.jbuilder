@@ -9,6 +9,7 @@ if !@rusers_followed.present?
 		json.level		followed.user.user_level.level
 		json.room_id	followed.rooms.find_by_is_privated(false).id
 		json.onair		followed.rooms.find_by_is_privated(false).on_air
+		json.room_slug		followed.rooms.find_by_is_privated(false).slug
 		if !followed.rooms.find_by_is_privated(false).on_air and followed.rooms.find_by_is_privated(false).schedules.length > 0
 			json.schedule do
 				json.date followed.rooms.find_by_is_privated(false).schedules.take.start.strftime('%d/%m')
