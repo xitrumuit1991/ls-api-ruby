@@ -10,9 +10,9 @@ json.is_bct		@user.is_broadcaster
 json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
 
 if @user.cover.url.nil?
-  "#{request.base_url}/api/v1/users/#{@user.id}/cover"
+  json.cover "#{request.base_url}/api/v1/users/#{@user.id}/cover"
 else
-  json.cover		"#{request.base_url}#{@user.cover.url}"
+  json.cover	"#{request.base_url}#{@user.cover.url}"
 end
 json.facebook	@user.facebook_link
 json.twitter	@user.twitter_link
