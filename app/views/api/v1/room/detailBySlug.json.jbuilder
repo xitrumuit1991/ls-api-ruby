@@ -50,7 +50,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
-	json.date	schedule.start.strftime('%d/%m/%Y')
-	json.start	schedule.start.strftime('%H:%M')
-	json.end	schedule.end.strftime('%H:%M')
+	json.date	schedule.start ? schedule.start.strftime('%d/%m/%Y') : nil
+	json.start 	schedule.start ? schedule.start.strftime('%H:%M') : nil
+	json.end	schedule.end ? schedule.end.strftime('%H:%M') : nil
 end
