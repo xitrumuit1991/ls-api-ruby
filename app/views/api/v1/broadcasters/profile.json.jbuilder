@@ -27,7 +27,7 @@ json.description		@broadcaster.description
 if defined? @user.statuses[0].content
 	json.status			@user.statuses[0].content
 else
-	json.status			nil	
+	json.status			0
 end
 json.photos @broadcaster.images do |photo|
 	json.id		photo.id
@@ -41,7 +41,7 @@ end
 json.fans @followers do |follower|
 	json.id			follower.user_id
 	json.name		follower.name
-	json.vip 		nil
+	json.vip 		0
 	json.username	follower.username
 	json.avatar		"#{request.base_url}/api/v1/users/#{follower.user_id}/avatar"
 	json.heart		follower.no_heart
