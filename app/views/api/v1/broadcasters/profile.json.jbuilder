@@ -44,7 +44,11 @@ json.fans @followers do |follower|
 	json.vip 		0
 	json.username	follower.username
 	json.avatar		"#{request.base_url}/api/v1/users/#{follower.user_id}/avatar"
-	json.heart		follower.no_heart
+	if follower.no_heart.nil?
+		json.heart		0
+	else
+		json.heart		follower.no_heart
+	end 
 	json.money		follower.total_money
 	json.user_exp	follower.user_exp
 	json.level		UserLevel.find(follower.user_level_id).level
