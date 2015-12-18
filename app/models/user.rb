@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
 	validates_uniqueness_of :active_code
 	has_secure_password
 	mount_uploader :avatar, AvatarUploader
+	mount_uploader :avatar_crop, AvatarCropUploader
 	mount_uploader :cover,  CoverUploader
 
 	def public_room

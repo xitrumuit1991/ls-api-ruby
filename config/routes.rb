@@ -48,6 +48,7 @@ Rails.application.routes.draw do
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
+				post '/avatar-crop'          => 'user#avatarCrop'
 			end
 
 			# broadcasters

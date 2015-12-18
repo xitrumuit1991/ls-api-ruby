@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151203093202) do
+ActiveRecord::Schema.define(version: 20151218105357) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -445,6 +445,7 @@ ActiveRecord::Schema.define(version: 20151203093202) do
     t.string   "fb_id",           limit: 128
     t.string   "gp_id",           limit: 128
     t.string   "avatar",          limit: 512
+    t.string   "avatar_crop",     limit: 255
     t.string   "cover",           limit: 512
     t.string   "facebook_link",   limit: 255
     t.string   "twitter_link",    limit: 255
