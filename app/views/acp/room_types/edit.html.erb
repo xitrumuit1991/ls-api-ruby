@@ -1,10 +1,10 @@
 <div class="jumbotron" data-pages="parallax">
-    <div class="container-fluid container-fixed-lg sm-p-l-20 sm-p-r-20">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
         <div class="inner">
             <!-- START BREADCRUMB -->
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
-                <li><a href="/acp/room_types">Room Types</a></li>
+                <li><a href="/acp/<%= controller_name %>">Room Types</a></li>
                 <li><a href="#" class="active">Edit</a></li>
             </ul>
             <!-- END BREADCRUMB -->
@@ -13,7 +13,7 @@
 </div>
 <!-- END JUMBOTRON -->
 <!-- START CONTAINER FLUID -->
-<div class="container-fluid container-fixed-lg bg-white">
+<div class="container-fluid bg-white">
     <!-- START PANEL -->
     <%= render 'form' %>
     <!-- END PANEL -->

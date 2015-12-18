@@ -149,4 +149,8 @@ $.extend(true, $.fn.DataTable.TableTools.DEFAULTS.oTags, {
     }
 });
 
+$(".select2-wrapper").length && $.fn.select2 && $(".select2-wrapper").select2({
+    minimumResultsForSearch: -1
+});
+
 //*********************************** END PLUGIN EXTENTIONS  ***************************** 

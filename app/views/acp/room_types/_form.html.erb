@@ -3,11 +3,11 @@
     <!-- START PANEL -->
     <div class="panel panel-default">
       <div class="panel-body">
-        <%= form_for [:acp, @room_type], :html => {:class => "form_room_type"} do |f| %>
-          <% if @room_type.errors.any? %>
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+          <% if @data.errors.any? %>
             <div id="error_explanation">
-              <h2><%= pluralize(@room_type.errors.count, "error") %> prohibited this room type from being saved:</h2>
-              <ul><% @room_type.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+              <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+              <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
             </div>
           <% end %>
 
@@ -15,13 +15,13 @@
             <div class="col-sm-6">
               <div class="form-group form-group-default required">
                 <label>Title</label>
-                <input type="text" class="form-control" name="room_type[title]" value="<%= @room_type.title %>" required>
+                <input type="text" class="form-control" name="data[title]" value="<%= @data.title %>" required>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group form-group-default required">
                 <label>Slug</label>
-                <input type="text" class="form-control" name="room_type[slug]" value="<%= @room_type.slug %>" required>
+                <input type="text" class="form-control" name="data[slug]" value="<%= @data.slug %>" required>
               </div>
             </div>
           </div>
@@ -29,7 +29,7 @@
             <div class="col-sm-12">
               <div class="form-group form-group-default">
                 <label>Description</label>
-                <textarea class="form-control" name="room_type[description]" style="height:200px"><%= @room_type.description %></textarea>
+                <textarea class="form-control" name="data[description]" style="height:200px"><%= @data.description %></textarea>
               </div>
             </div>
           </div>

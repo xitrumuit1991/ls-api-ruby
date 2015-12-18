@@ -33,7 +33,7 @@
     
         // Dependency: stepsForm 
         if (typeof stepsForm != 'undefined') {
-            new stepsForm(this.$status.get(0), {
+            this.$status.length && new stepsForm(this.$status.get(0), {
                 onSubmit: function(form) {
                     _this.$status.find('.status-form-inner').addClass('hide');
                     // form.submit()
@@ -47,11 +47,11 @@
         // Prevent 'vh' bug on iOS7
         if($.Pages.getUserAgent() == 'mobile'){
             //var wh = $(window).height();
-            this.$cover && this.$cover.css('height', 400);
+            this.$cover.length && this.$cover.css('height', 400);
         }
        
         setTimeout(function() {
-            this.$day.isotope({
+            this.$day.length && this.$day.isotope({
                 "itemSelector": this.options.item,
                 "masonry": {
                     "columnWidth": this.colWidth,
@@ -71,7 +71,7 @@
             // set new column count
             this.columns = currentColumns;
             // apply width to container manually, then trigger relayout
-            this.$day.width(this.columns * (this.colWidth + 20));
+            this.$day.length && this.$day.width(this.columns * (this.colWidth + 20));
         }
     }
 

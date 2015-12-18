@@ -1,7 +1,23 @@
- $(document).ready(function() {
-    $('.datepicker').datepicker();
-    //$('.cs-select').select2();
-    var table = $('.datatable');
+$(document).ready(function () {
+    $("#form-work").validate();
+    $('.select2').select2();
+    // $('.datetimepicker').datetimepicker();
+    $('#datepicker-range, #datepicker-component, #datepicker-component2').datepicker();
+
+    //start date & end date
+    /*$('#start_date').datetimepicker();
+    $('#end_date').datetimepicker({
+        useCurrent: false //Important! See issue #1075
+    });
+    $("#start_date").on("dp.change", function (e) {
+        $('#end_date').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_date").on("dp.change", function (e) {
+        $('#start_date').data("DateTimePicker").maxDate(e.date);
+    });*/
+
+    // setup data table
+    var table = $('.data-table');
     var settings = {
         "sDom": "<'table-responsive't><'row'<p i>>",
         "sPaginationType": "bootstrap",
@@ -16,87 +32,116 @@
     table.dataTable(settings);
 
     // search box for table
-    $('#search-table').keyup(function() {
+    $('#search-table').keyup(function () {
         table.fnFilter($(this).val());
     });
 
-    $('.form-wizard-pure').bootstrapWizard({
-        onTabShow: function(tab, navigation, index) {
-            var $total = navigation.find('li').length;
-            var $current = index + 1;
-
-            // If it's the last tab then hide the last button and show the finish instead
-            if ($current >= $total) {
-                $('.form-wizard-pure').find('.pager .next').hide();
-                $('.form-wizard-pure').find('.pager .finish').show();
-                $('.form-wizard-pure').find('.pager .finish').removeClass('disabled');
-            } else {
-                $('.form-wizard-pure').find('.pager .next').show();
-                $('.form-wizard-pure').find('.pager .finish').hide();
-            }
-
-            var li = navigation.find('li.active');
-
-            var btnNext = $('.form-wizard-pure').find('.pager .next').find('button');
-            var btnPrev = $('.form-wizard-pure').find('.pager .previous').find('button');
-
-            // remove fontAwesome icon classes
-            function removeIcons(btn) {
-                btn.removeClass(function(index, css) {
-                    return (css.match(/(^|\s)fa-\S+/g) || []).join(' ');
-                });
-            }
-
-            if ($current > 1 && $current < $total) {
-
-                var nextIcon = li.next().find('.fa');
-                var nextIconClass = nextIcon.attr('class').match(/fa-[\w-]*/).join();
-
-                removeIcons(btnNext);
-                btnNext.addClass(nextIconClass + ' btn-animated from-left fa');
-
-                var prevIcon = li.prev().find('.fa');
-                var prevIconClass = prevIcon.attr('class').match(/fa-[\w-]*/).join();
-
-                removeIcons(btnPrev);
-                btnPrev.addClass(prevIconClass + ' btn-animated from-left fa');
-            } else if ($current == 1) {
-                // remove classes needed for button animations from previous button
-                btnPrev.removeClass('btn-animated from-left fa');
-                removeIcons(btnPrev);
-            } else {
-                // remove classes needed for button animations from next button
-                btnNext.removeClass('btn-animated from-left fa');
-                removeIcons(btnNext);
-            }
+    // check all for table
+    $('#check-all').on('click', function () {
+        if ($(this).is(':checked')) {
+            $('table.data-table .check-all').prop('checked', true);
+        } else {
+            $('table.data-table .check-all').prop('checked', false);
         }
     });
-
-    // load google map
-    $(".modalMap").on('click', function(){
-        var lat = $(this).data('lat');
-        var lng = $(this).data('lng');
-        var map = initGoogleMap(lat, lng);
-        $("#modalSlideUp").on('shown.bs.modal', function(){
-            google.maps.event.trigger(map, 'resize');
-            map.setCenter(new google.maps.LatLng(lat, lng));
+    
+    // update status
+    $('table.data-table').on('change', '.status', function(){
+        var result = $(this).attr('id').split('-');
+        var status = ($(this).is(':checked')) ? 1 : 0;
+        
+        data = { id: result[1], status: status, li_token: token };
+        $.post(module_url + '/ajax_update_status', data, function(resp){
+            console.log(resp.flag);
+        }, 'json');
+    });
+    
+    // restore multiple
+    $('.multiple-action').on('click', function(){
+        if(!$('.check-all').is(':checked')) return false;
+        
+        if(confirm('Are you sure ?')){
+            action = $(this).data('action');
+            $('#data-table').attr("action", module_url + '/' + action);
+            $('#data-table').submit();
+        }
+        else return false;
+    });
+    
+    // delete multiple
+    $('#delete-all').on('click', function(){
+        if(!$('.check-all').is(':checked')) return false;
+        
+        if(confirm('Are you sure ?')){
+            $('#data-table').submit();
+        }
+        else return false;
+    });
+    
+    // get slug
+    $('.slug').on('change', function(){
+        data = { text: $(this).val(), li_token: token };
+        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
+            $("input[name='slug']").val(resp);
         });
     });
 
-    //init google map
-    function initGoogleMap(lat, lng) {
-        var myLatlng = new google.maps.LatLng(lat, lng);
-        var mapOptions = {
-            center: myLatlng,
-            zoom: 17,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-        var marker = new google.maps.Marker({
-            position: myLatlng,
-            map: map,
-            title: 'Hello World!'
+    // get slug
+    $('.slug-lang').on('change', function(){
+        data = { text: $(this).val(), li_token: token };
+        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
+            $("input[name='code']").val(resp);
         });
-        return map;
-    }
- });
+    });
+
+    $('#add-browse').on('click', function(event) {
+        event.preventDefault();
+        var html = '';
+        var num = $(this).attr('data-val');
+        html += '<div class="col-sm-12" style="margin-top: 20px">';
+        html += '<div class="col-sm-4">';
+        html += '<input type="text" name="media[1]['+num+']" class="form-control" placeholder="BrowseServer ..." id="image'+num+'" readonly onclick="BrowseServer(\'image'+num+'\');"/>';
+        html += '</div>';
+        html += '</div>';
+        num ++;
+        $(this).attr('data-val', num);
+        $('.input-browse-server').append(html);
+    });
+    
+    // select2 multiple
+    $('.select2-multiple').select2()
+        .on("select2-selecting", function(e) {
+            data = { selected: e.val , li_token: token };
+            $.post(module_url + '/ajax_add_select_multiple/' + $(this).data('id'), data, function(resp){
+                console.log(resp.flag);
+            }, 'json');
+        })
+        .on("select2-removed", function(e) {
+            data = { selected: e.val, li_token: token };
+            $.post(module_url + '/ajax_delete_select_multiple/' + $(this).data('id'), data, function(resp){
+                console.log(resp.flag);
+            }, 'json');
+        });
+
+});
+
+function BrowseServer(inputId){
+    // You can use the "CKFinder" class to render CKFinder in a page:
+    var finder = new CKFinder();
+    
+    finder.basePath = '/ckfinder/';	// The path for the installation of CKFinder (default = "/ckfinder/").
+    finder.selectActionFunction = SetFileField;
+    finder.selectActionData = inputId;
+    finder.popup();
+    // It can also be done in a single line, calling the "static"
+    // popup( basePath, width, height, selectFunction ) function:
+    // CKFinder.popup( '../', null, null, SetFileField ) ;
+    //
+    // The "popup" function can also accept an object as the only argument.
+    // CKFinder.popup( { basePath : '../', selectActionFunction : SetFileField } ) ;
+}
+// This is a sample function which is called when a file is selected in CKFinder.
+function SetFileField( fileUrl, data ){
+    
+    document.getElementById( data['selectActionData'] ).value = fileUrl;
+}
