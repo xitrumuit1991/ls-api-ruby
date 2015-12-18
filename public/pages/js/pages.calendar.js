@@ -1,3 +1,4 @@
+//Pages Calendar - Version 1.2.0
 (function($) {
     'use strict';
 
@@ -34,8 +35,8 @@
                     //TODO
                 },
                 setLocale: function(lang) {
-                    setting.locale = lang;
-                    helps.setLocale();
+                    settings.locale = lang;
+                    helpers.setLocale();
                 },
                 reloadEvents: function() {
                     helpers.loadEvents();
@@ -137,7 +138,7 @@
                 var container = "#months";
                 $(container).html("");
                 content = "";
-                var monthInc = moment('January', 'MMMM').format(settings.ui.month.format);
+                var monthInc = moment(moment().startOf('year'), 'MMMM').format(settings.ui.month.format);
                 for (var i = 1; i <= 12; i++) {
                     var activeClass = (moment([calendar.year, calendar.month, calendar.date]).format(settings.ui.month.format) == monthInc) ? 'active' : '';
                     content += '<div class="month">';
@@ -154,7 +155,7 @@
             highlightMonth: function() {
                 var container = "#months";
                 $('.month a').removeClass('active');
-                $('.month:nth-child(' + (parseInt(calendar.month) + 1) + ') > a').addClass('active')
+                $('.month:nth-child(' + (parseInt(calendar.month) + 1) + ') > a').addClass('active');
             },
             /**
              * Higlight Year On Date Change
@@ -258,7 +259,7 @@
                 for (var i = 1; i <= daysOfMonth; i++) {
                     var t = moment([calendar.year, calendar.month, i]).format('ddd');
                     var activeClass = (calendar.date == i) ? 'active current-date' : '';
-                    (t == settings.ui.week.startOfTheWeek || i == 1) ? content += '<div class="week ' + activeClass + '">': '';
+                    (t ==  moment(settings.ui.week.startOfTheWeek,'d').format('ddd') || i == 1) ? content += '<div class="week ' + activeClass + '">': '';
                     content += '<div class="day-wrapper date-selector">';
                     content += '<div class="week-day">';
                     content += '<div class="day week-header">' + moment([calendar.year, calendar.month, i]).format('dd') + '</div>';
@@ -267,7 +268,7 @@
                     content += '<div class="day"><a href="#" data-date=' + moment([calendar.year, calendar.month, i]).format('D') + '>' + i + '</a></div>';
                     content += '</div>';
                     content += '</div>';
-                    (t == 'Sat') ? content += '</div>': '';
+                    (t == moment(settings.ui.week.endOfTheWeek,'d').format('ddd')) ? content += '</div>': '';
                 }
                 content += '</div>';
 
@@ -322,7 +323,8 @@
             buildWeekViewCalendar: function() {
                 var numberOfCells = 7;
                 var headerContent = '<div class="thead" ><div class="tcell"></div><div class="tcell"></div><div class="tcell"></div><div class="tcell"></div><div class="tcell"></div><div class="tcell"></div><div class="tcell"></div></div>';
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 1024 || settings.view =='day') {
+                    settings.view = 'day';
                     //Switch To single Cell on small screens
                     numberOfCells = 1;
                     headerContent = '<div class="thead" ><div class="tcell"></div></div>';
@@ -343,15 +345,15 @@
 
                 content += '<div class="tble" id="weekGrid">';
                 //START TABLE CONTENT
-                for (var i = 1; i <= 24; i++) {
+                for (var i = settings.minTime; i < settings.maxTime; i++) {
                     content += '<div class="trow" >';
                     for (var j = 1; j <= numberOfCells; j++) {
                         content += '<div class="tcell">';
                         if (settings.slotDuration == '30') {
-                            content += '<div class="cell-inner" data-time-slot="' + (i - 1) + ':00" ></div>';
-                            content += '<div class="cell-inner" data-time-slot=' + (i - 1) + ':30" ></div>';
+                            content += '<div class="cell-inner" data-time-slot="' + i + ':00" ></div>';
+                            content += '<div class="cell-inner" data-time-slot=' + i + ':30" ></div>';
                         } else {
-                            content += '<div class="cell-inner" data-time-slot="' + (i - 1) + ':00" ></div>';
+                            content += '<div class="cell-inner" data-time-slot="' + i + ':00" ></div>';
                         }
                         content += '</div>';
                     }
@@ -374,7 +376,8 @@
             buildTimeSlots: function() {
                 var container = '#time-slots';
                 content = '';
-                for (var i = 0; i < 24; i++) {
+                for (var i = settings.minTime; i < settings.maxTime; i++) {
+
                     content += '<div class="time-slot"><span>' + moment().hour(i).format(settings.ui.grid.timeFormat) + '</span></div>';
                 }
                 $(container).append(content);
@@ -487,12 +490,13 @@
                 $('#weekGrid').find('.trow .tcell').children('.cell-inner').html("");
 
                 //Small Screen Single Cell - TODO : Remove Repeating code
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 1024 || settings.view == 'day') {
                     for (var i = 0; i < settings.events.length; i++) {
                         var eventStartDate = moment(settings.events[i].start).format("YYYY-MM-DD");
                         var currentD = moment([calendar.year, calendar.month, calendar.date]).format("YYYY-MM-DD");
                         if (currentD.localeCompare(eventStartDate) == 0) {
                             var cellNo = 0;
+
                             var eventStartHours = moment(settings.events[i].start).format('H');
                             var eventStartMins = moment(settings.events[i].start).format("m");
                             var eventEndHours, evenEndMins;
@@ -523,7 +527,7 @@
                     var eventWeekStart = moment(settings.events[i].start).startOf('week').format('YYYY-MM-DD');
                     if (currentWeekStart.localeCompare(eventWeekStart) == 0) {
 
-                        var cellNo = moment(eventStartDate).day();
+                        var cellNo = moment(eventStartDate).weekday();
                         var eventStartHours = moment(settings.events[i].start).format('H');
                         var eventStartMins = moment(settings.events[i].start).format("m");
                         var eventEndHours, evenEndMins;
@@ -554,10 +558,23 @@
              * @param {int} eventDuration
              */
             drawEvent: function(eventStartHours, eventStartMins, eventEndHours, evenEndMins, cellNo, arrayIndex, eventDuration) {
+
+                var rowMap = - (settings.minTime - eventStartHours);
+
+                if(settings.maxTime < eventEndHours){
+                    eventEndHours = settings.maxTime;
+                }
+                if(rowMap <  0){
+                    console.log(rowMap)
+                    eventStartHours = settings.minTime;
+                    rowMap = 0;
+                }                
+                
                 cellHeight = $('.tcell').innerHeight();
                 evenEndMins = parseInt(evenEndMins);
                 var container = $('#weekGrid');
-                var row = container.find('.trow:nth-child(' + (parseInt(eventStartHours) + 1) + ')');
+               
+                var row = container.find('.trow:nth-child(' + (parseInt(rowMap) + 1) + ')');
                 var cell;
                 var top, height;
                 height = cellHeight;
@@ -566,8 +583,8 @@
                 //TODO ADD MORE OPTION FOR settings.slotDuration LIKE 15/30 mins options
 
                 if (settings.slotDuration == '30') {
-
                     if (parseInt(eventStartMins) >= 30) {
+
                         eventStartMins = 30;
 
                         cell = row.find('.tcell:nth-child(' + (parseInt(cellNo) + 1) + ')').children('.cell-inner:nth-child(2)');
@@ -575,20 +592,8 @@
                         eventStartMins = 0
                         cell = row.find('.tcell:nth-child(' + (parseInt(cellNo) + 1) + ')').children('.cell-inner:nth-child(1)');
                     }
-
-                    var timeGap = parseInt(eventEndHours) - parseInt(eventStartHours);
-                    var minsGap;
-                    //Fail Safe
-                    if (timeGap == 0) {
-                        timeGap = 1;
-                    }
-                    if (evenEndMins > 0 && evenEndMins <= 30) {
-                        minsGap = cellHeight / 2;
-                    } else {
-                        minsGap = 0;
-                    }
-
-                    height = height * timeGap;
+                    var diff = moment(settings.events[arrayIndex].end).diff(settings.events[arrayIndex].start,'hours',true)
+                    height = height * diff;
                 } else {
                     cell = row.find('.tcell:nth-child(' + (parseInt(cellNo) + 1) + ')').children('.cell-inner');
                     //Time gap`
@@ -711,6 +716,7 @@
              */
             weekDateChange: function(day, elem) {
                 calendar.date = day;
+                this.buildCurrentDateHeader();
                 this.highlightWeek(elem);
                 this.loadDatesToWeekView();
                 this.highlightActiveDay();
@@ -730,9 +736,14 @@
                 if (elem.index() == 1) {
                     h = "30";
                 }
-
-                var date = moment(calendar.startOfWeekDate).add(elem.parent().index(), 'days').format('YYYY/MM/D');
-                var time = moment(elem.parent().parent().index() + ':' + h, ["H:mm"]).format(' H:mm');
+                if (window.innerWidth <= 1024 || settings.view == 'day') {  
+                    var date = moment($('#weekViewTableHead .thead .tcell').attr('data-day')).format('YYYY/MM/D');
+                }
+                else{
+                    var date = moment(calendar.startOfWeekDate).add(elem.parent().index(), 'days').format('YYYY/MM/D');
+                }
+                console.log(elem.attr('data-time-slot'))
+                var time = moment(elem.attr('data-time-slot'), ["H:mm"]).format(' H:mm');
                 date = moment(date + time, 'YYYY/MM/D h:mm').format();
                 var timeSlot = {
                     date: date,
@@ -742,26 +753,26 @@
             },
 
             bindEventHanders: function() {
-                $(".date-selector").live("click", function(e) {
+                $(document).on("click", ".date-selector",function(e) {
                     $(".week-date").removeClass('active')
                     $(this).children('.week-date').addClass('active');
                     helpers.weekDateChange(parseInt($(this).children('.week-date').children('.day').children('a').attr('data-date')), $(this));
                 });
 
-                $(".cell-inner").live("dblclick doubletap", function() {
+                $(document).on("dblclick doubletap", ".cell-inner",function() {
                     helpers.timeSlotDblClick(this);
                 });
-                $('.event-container').live('click', function() {
+                $(document).on('click','.event-container',function() {
                     var eventO = helpers.constructEventForUser($(this).attr('data-index'));
                     $.fn.pagescalendar.settings.onEventClick(eventO);
                 });
-                $('.year-selector').live('click', function() {
+                $('.year-selector').on('click', function() {
                     var year = $(this).attr('data-year');
                     calendar.year = moment(year, settings.ui.year.format).year();
                     helpers.highlightYear();
                     helpers.renderViewsOnDateChange();
                 });
-                $('.month-selector').live('click', function() {
+                $('.month-selector').on('click', function() {
                     var month = $(this).attr('data-month');
                     calendar.month = moment(month, settings.ui.month.format).month();
                     helpers.renderViewsOnDateChange();
@@ -850,7 +861,8 @@
                     format: 'dd'
                 },
                 eventBubble: true,
-                startOfTheWeek: 'Sun'
+                startOfTheWeek: '0',
+                endOfTheWeek:'6'
             },
             grid: {
                 dateFormat: 'D dddd',
@@ -871,9 +883,12 @@
         eventObj: {
             editable: true
         },
+        view:'week',
         now: null,
         locale: 'en',
         timeFormat: 'h a',
+        minTime:0,
+        maxTime:24,
         dateFormat: 'MMMM Do YYYY',
         slotDuration: '30', //In Mins : only supports 30 and 60
         events: [],

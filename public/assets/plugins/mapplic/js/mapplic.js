@@ -50,6 +50,9 @@
 			return self;
 		}
 
+		self.goToLocation = function(location,duration){
+			showLocation(location, duration);
+		}
 		// Tooltip
 		function Tooltip() {
 			this.el = null;

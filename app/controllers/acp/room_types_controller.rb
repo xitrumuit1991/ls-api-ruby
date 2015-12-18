@@ -1,48 +1,59 @@
 class Acp::RoomTypesController < Acp::ApplicationController
 
-	before_action :set_room_type, only: [:show, :edit, :update, :destroy]
+	before_filter :init
+	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
 	def index
-		@data = RoomType.all.order('id desc')
+		@data = @model.all.order('id desc')
 	end
 
 	def show
 	end
 
 	def new
-		@room_type = RoomType.new
+		@data = @model.new
 	end
 
 	def edit
 	end
 
 	def create
-		@room_type = RoomType.new(room_type_params)
-		if @room_type.save
-			redirect_to acp_room_types_path, notice: 'Room type was successfully created.'
+		@data = @model.new(parameters)
+		if @data.save
+			redirect_to({ action: 'index' }, notice: 'Room type was successfully created.')
 		else
 			render :new
 		end
 	end
 
 	def update
-		if @room_type.update(room_type_params)
-			redirect_to  acp_room_types_path, notice: 'Room type was successfully updated.'
+		if @data.update(parameters)
+			redirect_to({ action: 'index' }, notice: 'Room type was successfully updated.')
 		else
 			render :edit
 		end
 	end
 
 	def destroy
-		@room_type.destroy
-		redirect_to acp_room_types_path, notice: 'Room type was successfully destroyed.'
+		@data.destroy
+		redirect_to({ action: 'index' }, notice: 'Room type was successfully destroyed.')
+	end
+
+	def destroy_m
+		@model.destroy(params[:item_id])
+		redirect_to({ action: 'index' }, notice: 'Room types were successfully destroyed.')
 	end
 
 	private
-		def set_room_type
-			@room_type = RoomType.find(params[:id])
+		def init
+			@model = controller_name.classify.constantize
 		end
-		def room_type_params
-			params.require(:room_type).permit(:title, :slug, :description)
+
+		def set_data
+			@data = @model.find(params[:id])
+		end
+
+		def parameters
+			params.require(:data).permit(:title, :slug, :description)
 		end
 end

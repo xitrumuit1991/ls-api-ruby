@@ -1,15 +1,18 @@
 Rails.application.routes.draw do
 
 	apipie
-	devise_for :admins
+	devise_for :admins, controllers: { sessions: "admins/sessions" }
+	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-
-  root 'index#index'
 
   # ACP
   namespace :acp do
     get "/" => "index#index"
+
+    # Room Types
     resources :room_types
+  	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
+    
   end
 
   # API
@@ -36,10 +39,10 @@ Rails.application.routes.draw do
 				get  '/:id/cover'       	=> 'user#getBanner'
 				post '/active'           	=> 'user#active'
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
-				get  '/room'				=> 'room#getPublicRoom'
+				get  '/room'							=> 'room#getPublicRoom'
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
-				get  '/:id'					=> 'user#publicProfile'
+				get  '/:id'								=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
 				post '/update-password'  	=> 'user#updatePassword'

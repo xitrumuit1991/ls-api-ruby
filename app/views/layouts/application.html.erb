@@ -43,6 +43,10 @@
             document.head.innerHTML += '<link rel="stylesheet" type="text/css" href="/pages/css/windows.chrome.fix.css" />'
         }
     </script>
+    <script type="text/javascript">
+        var base_url = '<%= request.base_url %>';
+        var module_url = '<%= request.base_url + "/acp/" + controller_name %>';
+    </script>
   </head>
   <body class="fixed-header menu-pin">
     <!-- BEGIN SIDEBAR -->
