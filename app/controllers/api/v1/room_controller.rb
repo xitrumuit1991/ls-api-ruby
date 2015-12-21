@@ -68,6 +68,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
+  def thumbCrop
+    return head 400 if params[:thumb_crop].nil?
+    if @user.broadcaster.rooms.order("is_privated ASC").first.update(thumb_crop: params[:thumb_crop])
+      render json: @user.broadcaster.rooms.order("is_privated ASC").first.thumb_crop, status: 200
+    else
+      return head 401
+    end
+  end
+
   def uploadBackground
     return head 400 if params[:background].nil?
     if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take

@@ -11,8 +11,18 @@ json.gender		@user.gender
 json.address	@user.address
 json.phone		@user.phone
 json.is_bct		@user.is_broadcaster
-json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
-json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover"
+avatarCrop_path = "public#{@user.avatar_crop}"
+if FileTest.exist?(avatarCrop_path)
+  json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar_crop"
+else
+  json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
+end
+coverCrop_path = "public#{@user.cover_crop}"
+if FileTest.exist?(coverCrop_path)
+  json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover_crop"
+else
+  json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover"
+end
 json.facebook	@user.facebook_link
 json.twitter	@user.twitter_link
 json.instagram	@user.instagram_link

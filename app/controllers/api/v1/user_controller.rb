@@ -1,7 +1,6 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
   helper YoutubeHelper
-
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 
   def profile
@@ -147,10 +146,28 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def avatarCrop
+    return head 400 if params[:avatar_crop].nil?
+    if @user.update(avatar_crop: params[:avatar_crop])
+      render json: @user.avatar_crop, status: 200
+    else
+      return head 401
+    end
+  end 
+
   def uploadCover
     return head 400 if params[:cover].nil?
     if @user.update(cover: params[:cover])
       return head 201
+    else
+      return head 401
+    end
+  end
+
+  def coverCrop
+    return head 400 if params[:cover_crop].nil?
+    if @user.update(cover_crop: params[:cover_crop])
+      render json: @user.cover_crop, status: 200
     else
       return head 401
     end

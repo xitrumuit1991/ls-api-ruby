@@ -91,4 +91,4 @@ gem 'rails_admin_jcrop'
 
 gem 'apipie-rails'
 
-
+gem 'carrierwave-base64'

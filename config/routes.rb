@@ -51,6 +51,8 @@ Rails.application.routes.draw do
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
+				post '/cover-crop'        => 'user#coverCrop'
+				post '/avatar-crop'       => 'user#avatarCrop'
 			end
 
 			# broadcasters
@@ -105,6 +107,7 @@ Rails.application.routes.draw do
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
+				post  	'/thumb-crop'            		=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
 				put   	'/background-default'   => 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground'
