@@ -147,12 +147,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def avatarCrop
-    return head 400 if params[:img_encode].nil?
-    image = Paperclip.io_adapters.for(params[:img_encode])
-    image.original_filename = "avatar_crop"
-    
-    if @user.update(avatar: image)
-      return head 201
+    return head 400 if params[:avatar_crop].nil?
+    if @user.update(avatar_crop: params[:avatar_crop])
+      render json: @user.avatar_crop, status: 200
     else
       return head 401
     end
@@ -162,6 +159,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return head 400 if params[:cover].nil?
     if @user.update(cover: params[:cover])
       return head 201
+    else
+      return head 401
+    end
+  end
+
+  def coverCrop
+    return head 400 if params[:cover_crop].nil?
+    if @user.update(cover_crop: params[:cover_crop])
+      render json: @user.cover_crop, status: 200
     else
       return head 401
     end

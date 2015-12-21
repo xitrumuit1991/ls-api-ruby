@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151218105357) do
+ActiveRecord::Schema.define(version: 20151221045747) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -286,6 +286,7 @@ ActiveRecord::Schema.define(version: 20151218105357) do
     t.string   "title",                     limit: 255
     t.string   "slug",                      limit: 255
     t.string   "thumb",                     limit: 512
+    t.string   "thumb_crop",                limit: 255
     t.boolean  "on_air",                                default: false
     t.boolean  "is_privated"
     t.datetime "created_at",                                            null: false
@@ -447,6 +448,7 @@ ActiveRecord::Schema.define(version: 20151218105357) do
     t.string   "avatar",          limit: 512
     t.string   "avatar_crop",     limit: 255
     t.string   "cover",           limit: 512
+    t.string   "cover_crop",      limit: 255
     t.string   "facebook_link",   limit: 255
     t.string   "twitter_link",    limit: 255
     t.string   "instagram_link",  limit: 255

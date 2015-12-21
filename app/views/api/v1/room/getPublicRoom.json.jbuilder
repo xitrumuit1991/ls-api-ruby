@@ -2,7 +2,11 @@ json.id					@room.id
 json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
+if File.exist?("public#{@room.thumb_crop}")
+  json.thumb				"#{request.base_url}#{@room.thumb_crop}"
+else
+  json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
+end
 json.thumb_mb			"#{request.base_url}#{@room.thumb.thumb_mb}"
 json.is_privated		@room.is_privated
 if !@room.broadcaster_background_id.nil?
