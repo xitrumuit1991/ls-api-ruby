@@ -1,5 +1,5 @@
 module ApplicationHelper
-	def to_slug
+  def to_slug
     # Perform transliteration to replace non-ascii characters with an ascii
     # character
     value = self.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, '').to_s
