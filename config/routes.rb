@@ -13,6 +13,9 @@ Rails.application.routes.draw do
     resources :room_types
   	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
     
+		# Broadcasters
+		resources :broadcasters
+
   end
 
   # API

@@ -1,4 +1,4 @@
-class Acp::RoomTypesController < Acp::ApplicationController
+class Acp::BroadcastersController < Acp::ApplicationController
 	before_filter :init
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -36,11 +36,6 @@ class Acp::RoomTypesController < Acp::ApplicationController
 	def destroy
 		@data.destroy
 		redirect_to({ action: 'index' }, notice: 'Room type was successfully destroyed.')
-	end
-
-	def destroy_m
-		@model.destroy(params[:item_id])
-		redirect_to({ action: 'index' }, notice: 'Room types were successfully destroyed.')
 	end
 
 	private
