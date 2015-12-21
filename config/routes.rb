@@ -16,6 +16,9 @@ Rails.application.routes.draw do
 		# Broadcasters
 		resources :broadcasters
 
+    # Gifts
+		resources :gifts
+
   end
 
   # API
