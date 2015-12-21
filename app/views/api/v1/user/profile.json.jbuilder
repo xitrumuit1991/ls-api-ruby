@@ -13,13 +13,13 @@ json.phone		@user.phone
 json.is_bct		@user.is_broadcaster
 avatarCrop_path = "public#{@user.avatar_crop}"
 if FileTest.exist?(avatarCrop_path)
-  json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar_crop"
+  json.avatar		"#{request.base_url}#{@user.avatar_crop}"
 else
   json.avatar		"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
 end
 coverCrop_path = "public#{@user.cover_crop}"
 if FileTest.exist?(coverCrop_path)
-  json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover_crop"
+  json.cover		"#{request.base_url}#{@user.cover_crop}"
 else
   json.cover		"#{request.base_url}/api/v1/users/#{@user.id}/cover"
 end
