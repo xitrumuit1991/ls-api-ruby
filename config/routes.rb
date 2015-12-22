@@ -25,6 +25,9 @@ Rails.application.routes.draw do
 		# User levels
 		resources :user_levels
 
+		# Room actions
+		resources :room_actions
+
   end
 
   # API
