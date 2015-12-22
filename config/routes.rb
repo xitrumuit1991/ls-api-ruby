@@ -16,8 +16,14 @@ Rails.application.routes.draw do
 		# Broadcasters
 		resources :broadcasters
 
-    # Gifts
+	    # Gifts
 		resources :gifts
+
+		 # Broadcaster levels
+		resources :broadcaster_levels
+
+		# User levels
+		resources :user_levels
 
   end
 

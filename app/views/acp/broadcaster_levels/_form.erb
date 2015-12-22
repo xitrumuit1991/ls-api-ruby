@@ -3,10 +3,10 @@
     <!-- START PANEL -->
     <div class="panel panel-default">
       <div class="panel-body">
-        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
             <% if @data.errors.any? %>
                 <div id="error_explanation">
-                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Gifts from being saved:</h2>
+                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Broadcaster levels from being saved:</h2>
                   <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                 </div>
             <% end %>
@@ -14,28 +14,22 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Name</label>
-                  <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>" required>
+                  <label>Level</label>
+                  <input type="number" class="form-control" name="data[level]" value="<%= @data.level %>" required>
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Image</label>
-                  <input type="file" class="form-control" name="data[image]">
+                  <label>Min heart</label>
+                  <input type="number" class="form-control" name="data[min_heart]" value="<%= @data.min_heart %>" required>
                 </div>
               </div>
             </div>
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-12">
                 <div class="form-group form-group-default">
-                  <label>Price</label>
-                  <input type="number" class="form-control" name="data[price]" value="<%= @data.price %>" required>
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div class="form-group form-group-default">
-                  <label>Discount</label>
-                  <input type="number" class="form-control" name="data[discount]" value="<%= @data.discount %>" required>
+                  <label>Grade</label>
+                  <input type="number" class="form-control" name="data[grade]" value="<%= @data.grade %>" required>
                 </div>
               </div>
             </div>
