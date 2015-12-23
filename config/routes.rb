@@ -15,18 +15,39 @@ Rails.application.routes.draw do
     
 		# Broadcasters
 		resources :broadcasters
+		post 	'/broadcasters/destroy_m' => 'broadcasters#destroy_m'
 
 	    # Gifts
 		resources :gifts
+		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
 
 		 # Broadcaster levels
 		resources :broadcaster_levels
+		post 	'/broadcaster_levels/destroy_m' => 'broadcaster_levels#destroy_m'
 
 		# User levels
 		resources :user_levels
+		post 	'/user_levels/destroy_m' => 'user_levels#destroy_m'
 
 		# Room actions
 		resources :room_actions
+		post 	'/room_actions/destroy_m' => 'room_actions#destroy_m'
+
+    # Featureds
+		resources :featureds
+		post 	'/featureds/destroy_m' => 'featureds#destroy_m'
+
+		# Home Featureds
+		resources :home_featureds
+		post 	'/home_featureds/destroy_m' => 'home_featureds#destroy_m'
+
+    # Room Featureds
+		resources :room_featureds
+		post 	'/room_featureds/destroy_m' => 'room_featureds#destroy_m'
+
+		# Posters
+		resources :posters
+		post 	'/posters/destroy_m' => 'posters#destroy_m'
 
   end
 
