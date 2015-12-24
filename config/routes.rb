@@ -14,7 +14,14 @@ Rails.application.routes.draw do
   	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
     
 		# Broadcasters
-		resources :broadcasters
+		resources :broadcasters do
+			get '/room/:id' => 'broadcasters#room'
+			delete '/delete_image/:id' => 'broadcasters#delete_image'
+			delete '/delete_video/:id' => 'broadcasters#delete_video'
+		end
+
+		# Room
+    resources :rooms
 
   end
 
