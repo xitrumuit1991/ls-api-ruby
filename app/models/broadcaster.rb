@@ -11,6 +11,9 @@ class Broadcaster < ActiveRecord::Base
 	has_many :images, class_name:'BctImage'
 	has_many :videos, class_name:'BctVideo'
 
+	validates :bct_type_id, :broadcaster_level_id, :fullname, presence: true
+	validates :broadcaster_exp, :recived_heart, numericality: { only_integer: true }
+
 	def increaseExp(exp)
 		old_value = self.broadcaster_exp
 		new_value = old_value + exp
