@@ -48,19 +48,19 @@ class Acp::HomeFeaturedsController < Acp::ApplicationController
   end
 
   private
-  def init
-    @model = controller_name.classify.constantize
-  end
+    def init
+      @model = controller_name.classify.constantize
+    end
 
-  def set_data
-    @data = @model.find(params[:id])
-  end
+    def set_data
+      @data = @model.find(params[:id])
+    end
 
-  def parameters
-    params.require(:data).permit(:broadcaster_id, :weight)
-  end
+    def parameters
+      params.require(:data).permit(:broadcaster_id, :weight)
+    end
 
-  def data_broadcasters
-    @broadcasters = Broadcaster.all.order('id desc')
-  end
+    def data_broadcasters
+      @broadcasters = Broadcaster.all.order('id desc')
+    end
 end

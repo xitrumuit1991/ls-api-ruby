@@ -60,8 +60,8 @@ class RoomBackgroundUploader < CarrierWave::Uploader::Base
   #   "something.jpg" if original_filename
   # end
 
-  def filename
-    "Background_#{@model.id}.#{file.extension}" if original_filename
-  end
+  # def filename
+  #   "Background_#{@model.id}.#{file.extension}" if original_filename
+  # end
 
 end

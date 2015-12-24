@@ -1,7 +1,7 @@
 $(document).ready(function () {
     $("#form-work").validate();
     $('.select2').select2();
-    // $('.datetimepicker').datetimepicker();
+    //$('.datetimepicker').datetimepicker();
     $('#datepicker-range, #datepicker-component, #datepicker-component2').datepicker();
 
     //start date & end date

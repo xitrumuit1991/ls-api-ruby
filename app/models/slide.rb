@@ -1,4 +1,8 @@
 class Slide < ActiveRecord::Base
+	# validates :title, :description, :sub_description, :start_time, :weight, :banner, presence: true
+	validates :title, :description, :sub_description, :weight, :banner, presence: true
+	validates :weight, numericality: {only_integer: true }
+
 	mount_uploader :banner, SlideUploader
 	# mount_uploader :thumb, SlideUploader
 

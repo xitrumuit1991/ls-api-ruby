@@ -1,14 +1,12 @@
-class Acp::RoomFeaturedsController < Acp::ApplicationController
+class Acp::SlidesController < Acp::ApplicationController
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
-  before_action :data_broadcasters, only: [:edit, :create, :new, :update]
 
   def index
     @data = @model.all.order('id desc')
   end
 
   def show
-
   end
 
   def new
@@ -16,13 +14,13 @@ class Acp::RoomFeaturedsController < Acp::ApplicationController
   end
 
   def edit
-    @broadcasters = Broadcaster.all.order('id desc')
+
   end
 
   def create
     @data = @model.new(parameters)
     if @data.save
-      redirect_to({ action: 'index' }, notice: 'Room featured was successfully created.')
+      redirect_to({ action: 'index' }, notice: 'Slide was successfully created.')
     else
       render :new
     end
@@ -30,16 +28,15 @@ class Acp::RoomFeaturedsController < Acp::ApplicationController
 
   def update
     if @data.update(parameters)
-      redirect_to({ action: 'index' }, notice: 'Room featured was successfully updated.')
+      redirect_to({ action: 'index' }, notice: 'Slide was successfully updated.')
     else
-
       render :edit
     end
   end
 
   def destroy
     @data.destroy
-    redirect_to({ action: 'index' }, notice: 'Room featured was successfully destroyed.')
+    redirect_to({ action: 'index' }, notice: 'Slide was successfully destroyed.')
   end
 
   def destroy_m
@@ -57,10 +54,6 @@ class Acp::RoomFeaturedsController < Acp::ApplicationController
     end
 
     def parameters
-      params.require(:data).permit(:broadcaster_id, :weight)
-    end
-
-    def data_broadcasters
-      @broadcasters = Broadcaster.all.order('id desc')
+      params.require(:data).permit(:title, :description, :sub_description, :start_time, :weight, :link, :banner)
     end
 end
