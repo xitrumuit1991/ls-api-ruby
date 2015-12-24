@@ -1,8 +1,8 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
-  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb]
+  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb]
 
   def onair
     offset = params[:page].nil? ? 0 : params[:page].to_i * 6
@@ -159,6 +159,26 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       status[split[2].to_i] = eval(redis.get(key))
     end
     render json: status, status: 200
+  end
+
+  def getThumb
+    begin
+      @room = Room.find(params[:id])
+      if @room
+        path_thumb_crop = "public#{@room.thumb_crop}"
+        if FileTest.exist?(path_thumb_crop)
+          send_file path_thumb_crop, type: 'image/jpg', disposition: 'inline'
+        elsif FileTest.exist?("public#{@room.thumb.thumb}")
+          send_file "public#{@room.thumb.thumb}", type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+    end
   end
 
   private
