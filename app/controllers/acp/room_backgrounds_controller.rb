@@ -19,9 +19,6 @@ class Acp::RoomBackgroundsController < Acp::ApplicationController
 
   def create
     @data = @model.new(parameters)
-    puts "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    puts @data.valid?
-    puts "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     if @data.save
       redirect_to({ action: 'index' }, notice: 'Room backgrounds was successfully created.')
     else
