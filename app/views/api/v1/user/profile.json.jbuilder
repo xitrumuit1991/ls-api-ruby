@@ -5,7 +5,7 @@ json.email		@user.email
 if @user.birthday
   json.birthday	@user.birthday.strftime('%d-%m-%Y')
 else
-  json.birthday	nil
+  json.birthday	''
 end
 json.gender		@user.gender
 json.address	@user.address

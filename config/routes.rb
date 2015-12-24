@@ -9,10 +9,6 @@ Rails.application.routes.draw do
   namespace :acp do
     get "/" => "index#index"
 
-    # Room Types
-    resources :room_types
-  	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
-    
 		# Broadcasters
 		resources :broadcasters do
 			get '/room/:id' => 'broadcasters#room'
@@ -22,6 +18,42 @@ Rails.application.routes.draw do
 
 		# Room
     resources :rooms
+
+    # Room Types
+    resources :room_types
+  	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
+
+    # Gifts
+		resources :gifts
+		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+
+	 	# Broadcaster levels
+		resources :broadcaster_levels
+		post 	'/broadcaster_levels/destroy_m' => 'broadcaster_levels#destroy_m'
+
+		# User levels
+		resources :user_levels
+		post 	'/user_levels/destroy_m' => 'user_levels#destroy_m'
+
+		# Room actions
+		resources :room_actions
+		post 	'/room_actions/destroy_m' => 'room_actions#destroy_m'
+
+    # Featureds
+		resources :featureds
+		post 	'/featureds/destroy_m' => 'featureds#destroy_m'
+
+		# Home Featureds
+		resources :home_featureds
+		post 	'/home_featureds/destroy_m' => 'home_featureds#destroy_m'
+
+    # Room Featureds
+		resources :room_featureds
+		post 	'/room_featureds/destroy_m' => 'room_featureds#destroy_m'
+
+		# Posters
+		resources :posters
+		post 	'/posters/destroy_m' => 'posters#destroy_m'
 
   end
 
@@ -58,6 +90,8 @@ Rails.application.routes.draw do
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
+				post '/cover-crop'        => 'user#coverCrop'
+				post '/avatar-crop'       => 'user#avatarCrop'
 			end
 
 			# broadcasters
@@ -112,6 +146,7 @@ Rails.application.routes.draw do
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
+				post  	'/thumb-crop'            		=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
 				put   	'/background-default'   => 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground'

@@ -47,6 +47,165 @@
           </li>
         </ul>
       </li>
+      <!--BEGIN GIFTS-->
+      <li class="<% if controller_name == 'gifts' %>active<% end %>">
+        <a href="#">
+          <span class="title">Gifts</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'gifts' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_gifts_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'gifts' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_gift_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END GIFTS-->
+
+      <!--BEGIN Broadcaster Level-->
+      <li class="<% if controller_name == 'broadcaster_levels' %>active<% end %>">
+        <a href="#">
+          <span class="title">Broadcaster Level</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'broadcaster_levels' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_broadcaster_levels_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'broadcaster_levels' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_broadcaster_level_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Broadcaster Level-->
+
+      <!--BEGIN User Level-->
+      <li class="<% if controller_name == 'user_levels' %>active<% end %>">
+        <a href="#">
+          <span class="title">User Level</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'user_levels' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_user_levels_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'user_levels' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_user_level_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END User Level-->
+
+      <!--BEGIN Room Action-->
+      <li class="<% if controller_name == 'room_actions' %>active<% end %>">
+        <a href="#">
+          <span class="title">Room actions</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'room_actions' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_room_actions_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'room_actions' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_room_action_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Room Action-->
+
+      <!--BEGIN Featured-->
+      <li class="<% if controller_name == 'featureds' %>active<% end %>">
+        <a href="#">
+          <span class="title">Featured</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'featureds' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_featureds_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'featureds' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_featured_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Feature-->
+
+      <!--BEGIN Home Featured-->
+      <li class="<% if controller_name == 'home_featureds' %>active<% end %>">
+        <a href="#">
+          <span class="title">Home Featured</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'home_featureds' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_home_featureds_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'home_featureds' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_home_featured_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Home Feature-->
+
+      <!--BEGIN Room Featured-->
+      <li class="<% if controller_name == 'room_featureds' %>active<% end %>">
+        <a href="#">
+          <span class="title">Room Featured</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'room_featureds' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_room_featureds_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'room_featureds' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_room_featured_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Room Feature-->
+
+      <!--BEGIN Poster-->
+      <li class="<% if controller_name == 'posters' %>active<% end %>">
+        <a href="#">
+          <span class="title">Poster</span>
+          <span class=" arrow"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'posters' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_posters_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'posters' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_poster_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Poster-->
     </ul>
     <div class="clearfix"></div>
   </div>

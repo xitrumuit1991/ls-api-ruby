@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <% if @data.errors.any? %>
+                <div id="error_explanation">
+                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Featured from being saved:</h2>
+                  <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                </div>
+            <% end %>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Broadcaster</label>
+                  <select class="form-control" name="data[broadcaster_id]">
+                        <% @broadcasters.each do |broadcaster| %>
+                         <% selected = broadcaster.id == @data.broadcaster_id ? 'selected' : '' %>
+                          <option value="<%=broadcaster.id%>" <%=selected%>><%= broadcaster.fullname %></option>
+                         <%end%>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Weight</label>
+                  <input type="number" class="form-control" name="data[weight]" value="<%=@data.weight%>">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+                <span>Submit</span>
+              </button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

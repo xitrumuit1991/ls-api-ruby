@@ -1,7 +1,6 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
   helper YoutubeHelper
-
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 
   def profile
@@ -147,6 +146,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def avatarCrop
+    return head 400 if params[:avatar_crop].nil?
+    if @user.update(avatar_crop: params[:avatar_crop])
+      render json: @user.avatar_crop, status: 200
+    else
+      return head 401
+    end
+  end 
+
   def uploadCover
     return head 400 if params[:cover].nil?
     if @user.update(cover: params[:cover])
@@ -156,15 +164,27 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def coverCrop
+    return head 400 if params[:cover_crop].nil?
+    if @user.update(cover_crop: params[:cover_crop])
+      render json: @user.cover_crop, status: 200
+    else
+      return head 401
+    end
+  end
+
   def getAvatar
     begin
       @u = User.find(params[:id])
       if @u
-        file_url = "public#{@u.avatar.square}"
+        file_url = "public#{@u.avatar_crop}"
+        
         if FileTest.exist?(file_url)
           send_file file_url, type: 'image/png', disposition: 'inline'
+        elsif FileTest.exist?("public#{@u.avatar.square}")
+          send_file "public#{@u.avatar.square}", type: 'image/png', disposition: 'inline'
         else
-          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
+          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'  
         end
       else
         send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
@@ -178,11 +198,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     begin
       @u = User.find(params[:id])
       if @u
-        file_url = "public#{@u.cover.banner}"
+        file_url = "public#{@u.cover_crop}"
+
         if FileTest.exist?(file_url)
           send_file file_url, type: 'image/jpg', disposition: 'inline'
+        elsif FileTest.exist?("public#{@u.cover.banner}")
+          send_file "public#{@u.cover.banner}", type: 'image/jpg', disposition: 'inline'
         else
-          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
+          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'  
         end
       else
         send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
