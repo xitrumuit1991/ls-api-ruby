@@ -181,6 +181,23 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
+  def getThumbMb
+    begin
+      @room = Room.find(params[:id])
+      if @room
+        if FileTest.exist?("public#{@room.thumb.thumb_mb}")
+          send_file "public#{@room.thumb.thumb_mb}", type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+    end
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
