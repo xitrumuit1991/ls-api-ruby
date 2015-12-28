@@ -39,10 +39,12 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:30%">Name</th>
-            <th style="width:10%">Image</th>
-            <th style="width:10%">Price</th>
-            <th style="width:10%">Discount</th>
+            <th style="width:30%">Title</th>
+            <th style="width:10%">Description</th>
+            <th style="width:10%">Sub description</th>
+            <th style="width:10%">Weight</th>
+            <th style="width:10%">Link</th>
+            <th style="width:10%">Banner</th>
             <th style="width:10%">Created</th>
             <th style="width:10%">Updated</th>
             <th style="width:7%">Action</th>
@@ -58,20 +60,26 @@
                   </div>
                 </td>
                 <td class="v-align-middle ">
-                  <%= link_to(acp_gift_path(item)) do %><p><%= item.name %></p><% end %>
+                  <%= link_to(acp_slide_path(item)) do %><p><%= item.title %></p><% end %>
                 </td>
                 <td class="v-align-middle">
-                  <% if FileTest.exist?("public#{item.image.square}") %>
-                        <img src="<%="#{request.base_url}#{item.image.square}"%>" alt="<%= item.name %>">
+                  <p><%= item.description %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.sub_description %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.weight %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.link %></p>
+                </td>
+                <td class="v-align-middle">
+                  <% if FileTest.exist?("public#{item.banner.thumb}") %>
+                      <img src="<%="#{request.base_url}#{item.banner.thumb}"%>" alt="<%= item.title %>">
                   <% else %>
-                        No image
+                      No image
                   <% end%>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.price %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.discount %></p>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
@@ -80,8 +88,8 @@
                   <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
-                  <%= link_to(edit_acp_gift_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
-                  <%= link_to(acp_gift_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                  <%= link_to(edit_acp_slide_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
+                  <%= link_to(acp_slide_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                   </a>
                 </td>
               </tr>

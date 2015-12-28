@@ -1,4 +1,4 @@
-class Acp::PostersController < Acp::ApplicationController
+class Acp::RoomBackgroundsController < Acp::ApplicationController
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -20,7 +20,7 @@ class Acp::PostersController < Acp::ApplicationController
   def create
     @data = @model.new(parameters)
     if @data.save
-      redirect_to({ action: 'index' }, notice: 'Poster was successfully created.')
+      redirect_to({ action: 'index' }, notice: 'Room backgrounds was successfully created.')
     else
       render :new
     end
@@ -28,7 +28,7 @@ class Acp::PostersController < Acp::ApplicationController
 
   def update
     if @data.update(parameters)
-      redirect_to({ action: 'index' }, notice: 'Poster was successfully updated.')
+      redirect_to({ action: 'index' }, notice: 'Room backgrounds was successfully updated.')
     else
       render :edit
     end
@@ -36,7 +36,12 @@ class Acp::PostersController < Acp::ApplicationController
 
   def destroy
     @data.destroy
-    redirect_to({ action: 'index' }, notice: 'Poster was successfully destroyed.')
+    redirect_to({ action: 'index' }, notice: 'Room backgrounds was successfully destroyed.')
+  end
+
+  def destroy_m
+    @model.destroy(params[:item_id])
+    redirect_to({ action: 'index' }, notice: 'Room backgrounds were successfully destroyed.')
   end
 
   private
@@ -49,6 +54,6 @@ class Acp::PostersController < Acp::ApplicationController
     end
 
     def parameters
-      params.require(:data).permit(:title, :sub_title, :thumb, :link, :weight)
+      params.require(:data).permit(:image)
     end
 end
