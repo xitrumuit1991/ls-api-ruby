@@ -4,8 +4,8 @@
             <!-- START BREADCRUMB -->
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
-                <li><a href="/acp/<%= controller_name %>">Room Types</a></li>
-                <li><a href="#" class="active">Edit</a></li>
+                <li><a href="/acp/<%= controller_name %>">Idols</a></li>
+                <li><a href="#" class="active">Idol Detail</a></li>
             </ul>
             <!-- END BREADCRUMB -->
         </div>
@@ -14,7 +14,183 @@
 <!-- END JUMBOTRON -->
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
     <!-- START PANEL -->
-    <%= render 'form' %>
+    <div class="panel panel-transparent">
+        <div class="panel-heading">
+            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
+        </div>
+        <div class="panel-body">
+            <div class="pull-left">
+                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
+                    <li class="active">
+                        <a href="#"><i class="fs-14 pg-plus"></i>Thông tin</a>
+                    </li>
+                    <li class="">
+                        <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Room</a>
+                    </li>
+                    <li class="">
+                        <a href="#">Giao dịch</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+                <% if @data.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                  </div>
+                <% end %>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">User Name</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" value="<%= @data.user.username %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Password</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" value="<%= @data.user.password_digest %>" required="">
+                    </div>
+                    <div class="col-sm-5">
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">Change password</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Full Name</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="data[fullname]" value="<%= @data.fullname %>">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Idol type</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="data[broadcaster_level_id]">
+                            <% @bct_types.each do |type| %>
+                            <option value="<%= type.id %>" <% if type.id == @data.bct_type_id %>selected<% end %>><%= type.title %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Level</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="data[broadcaster_level_id]">
+                            <% @levels.each do |level| %>
+                            <option value="<%= level.id %>" <% if level.id == @data.broadcaster_level_id %>selected<% end %>><%= level.level %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Description</label>
+                    <div class="col-sm-5">
+                        <textarea class="form-control" style="height:200px"><%= @data.description %></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Experience</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="data[broadcaster_exp]" value="<%= @data.broadcaster_exp %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row"> 
+                    <label class="col-sm-12">Received Heart</label>
+                    <div class="col-sm-5">
+                        <input type="number" class="form-control" name="data[recived_heart]" value="<%= @data.recived_heart %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row"> 
+                    <label class="col-sm-12">Images</label>
+                    <div class="col-sm-12">
+                      <div class="multiple-items">
+                        <% @data.images.each do |image| %>
+                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row"> 
+                    <label class="col-sm-12">Videos</label>
+                    <div class="col-sm-12">
+                      <div class="multiple-items">
+                        <% @data.videos.each do |video| %>
+                            <img src="<%= request.base_url + video.thumb_url %>" class="img-thumbnail"/>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-success" name="save">Save</button>
+                        <button class="btn" name="save_and_add_another">Save and add another</button>
+                        <button class="btn" name="save_and_edit">Save and edit</button>
+                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
     <!-- END PANEL -->
+    <!-- Modal -->
+    <div class="modal fade slide-up disable-scroll" id="model-add-new-image" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+        <div class="modal-dialog ">
+          <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                      <i class="pg-close fs-14"></i>
+                    </button>
+                    <h5>Add new image</h5>
+                </div>
+                <div class="modal-body">
+                  <form role="form">
+                    <div class="form-group">
+                        <label class="col-sm-3">Image</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="retailer_image">
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12 m-t-10 sm-m-t-10">
+                        <button type="button" class="btn btn-defult pull-right"><i class="fs-14 pg-close"></i>Cancel</button>
+                        <button type="button" class="btn btn-success pull-right">Submit</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
 </div>
+<% content_for :javascript do %>
+  <% javascript_include_tag "/assets/js/idol" %>
+<% end %>

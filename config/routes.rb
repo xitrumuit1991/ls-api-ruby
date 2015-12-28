@@ -9,19 +9,29 @@ Rails.application.routes.draw do
   namespace :acp do
     get "/" => "index#index"
 
+		# Broadcasters
+		resources :broadcasters do
+			get '/room/:id' => 'broadcasters#room'
+		end
+
+		# Room
+    resources :rooms
+
+    # Broadcaster Backgrounds
+    resources :broadcaster_backgrounds
+
+    # Schedules
+    resources :schedules
+
     # Room Types
     resources :room_types
   	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
-    
-		# Broadcasters
-		resources :broadcasters
-		post 	'/broadcasters/destroy_m' => 'broadcasters#destroy_m'
 
-	    # Gifts
+    # Gifts
 		resources :gifts
 		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
 
-		 # Broadcaster levels
+	 	# Broadcaster levels
 		resources :broadcaster_levels
 		post 	'/broadcaster_levels/destroy_m' => 'broadcaster_levels#destroy_m'
 
@@ -145,6 +155,7 @@ Rails.application.routes.draw do
 				get   	'/actions'          		=> 'room#getActions'
 				get   	'/gifts'            		=> 'room#getGifts'
 				get   	'/lounges'          		=> 'room#getLounges'
+				get  		'/:id/thumb'       			=> 'room#getThumb'
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
