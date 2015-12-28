@@ -40,15 +40,15 @@ class Acp::GiftsController < Acp::ApplicationController
   end
 
   private
-  def init
-    @model = controller_name.classify.constantize
-  end
+    def init
+      @model = controller_name.classify.constantize
+    end
 
-  def set_data
-    @data = @model.find(params[:id])
-  end
+    def set_data
+      @data = @model.find(params[:id])
+    end
 
-  def parameters
-    params.require(:data).permit(:name, :image, :price, :discount)
-  end
+    def parameters
+      params.require(:data).permit(:name, :image, :price, :discount)
+    end
 end

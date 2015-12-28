@@ -59,6 +59,14 @@ Rails.application.routes.draw do
 		resources :posters
 		post 	'/posters/destroy_m' => 'posters#destroy_m'
 
+    # Room Backgrounds
+    resources :room_backgrounds
+		post 	'/room_backgrounds/destroy_m' => 'room_backgrounds#destroy_m'
+
+    # Room Backgrounds
+    resources :slides
+		post 	'/slides/destroy_m' => 'slides#destroy_m'
+
   end
 
   # API

@@ -44,15 +44,15 @@ class Acp::UserLevelsController < Acp::ApplicationController
   end
 
   private
-  def init
-    @model = controller_name.classify.constantize
-  end
+    def init
+      @model = controller_name.classify.constantize
+    end
 
-  def set_data
-    @data = @model.find(params[:id])
-  end
+    def set_data
+      @data = @model.find(params[:id])
+    end
 
-  def parameters
-    params.require(:data).permit(:level, :min_exp, :heart_per_day, :grade)
-  end
+    def parameters
+      params.require(:data).permit(:level, :min_exp, :heart_per_day, :grade)
+    end
 end
