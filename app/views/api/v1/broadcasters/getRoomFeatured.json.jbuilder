@@ -12,7 +12,7 @@ json.array! @featured do |val|
     json.title		val.broadcaster.rooms.find_by_is_privated(false).title
     json.on_air		val.broadcaster.rooms.find_by_is_privated(false).on_air
     json.slug		val.broadcaster.rooms.find_by_is_privated(false).slug
-    json.thumb		"#{request.base_url}#{val.broadcaster.rooms.find_by_is_privated(false).thumb.thumb}"
-    json.thumb_mb	"#{request.base_url}#{val.broadcaster.rooms.find_by_is_privated(false).thumb.thumb_mb}"
+    json.thumb		"#{request.base_url}/api/v1/rooms/#{val.broadcaster.rooms.find_by_is_privated(false).id}/thumb"
+    json.thumb_mb	 "#{request.base_url}/api/v1/rooms/#{val.broadcaster.rooms.find_by_is_privated(false).id}/thumb_mb"
   end
 end

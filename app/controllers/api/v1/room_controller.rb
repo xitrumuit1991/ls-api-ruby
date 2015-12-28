@@ -166,10 +166,27 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       @room = Room.find(params[:id])
       if @room
         path_thumb_crop = "public#{@room.thumb_crop}"
-        if FileTest.exist?(path_thumb_crop)
+        if FileTest.file?(path_thumb_crop)
           send_file path_thumb_crop, type: 'image/jpg', disposition: 'inline'
-        elsif FileTest.exist?("public#{@room.thumb.thumb}")
+        elsif FileTest.file?("public#{@room.thumb.thumb}")
           send_file "public#{@room.thumb.thumb}", type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+    end
+  end
+
+  def getThumbMb
+    begin
+      @room = Room.find(params[:id])
+      if @room
+        if FileTest.file?("public#{@room.thumb.thumb_mb}")
+          send_file "public#{@room.thumb.thumb_mb}", type: 'image/jpg', disposition: 'inline'
         else
           send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
         end
