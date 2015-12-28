@@ -1,4 +1,4 @@
-class Acp::RoomsController < Acp::ApplicationController
+class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
 	before_filter :init
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -19,7 +19,7 @@ class Acp::RoomsController < Acp::ApplicationController
 	def create
 		@data = @model.new(parameters)
 		if @data.save
-			redirect_to({ action: 'index' }, notice: 'Room was successfully created.')
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Background was successfully created.')
 		else
 			render :new
 		end
@@ -27,7 +27,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def update
 		if @data.update(parameters)
-			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Room was successfully updated.')
+			redirect_to({ action: 'index' }, notice: 'Background was successfully updated.')
 		else
 			render :edit
 		end
@@ -35,12 +35,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Room was successfully destroyed.')
-	end
-
-	def destroy_m
-		@model.destroy(params[:item_id])
-		redirect_to({ action: 'index' }, notice: 'Rooms were successfully destroyed.')
+		redirect_to({ action: 'index' }, notice: 'Background was successfully destroyed.')
 	end
 
 	private
@@ -53,6 +48,6 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		def parameters
-			params.require(:room).permit(:thumb, :title, :room_type_id)
+			params.require(:background).permit(:broadcaster_id, :image)
 		end
 end
