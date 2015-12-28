@@ -78,6 +78,7 @@ Rails.application.routes.draw do
 			# auth
 			scope '/auth' do
 				get   '/logout'          => 'auth#logout'
+				get  '/:forgot_code/get-password' => 'auth#setNewPassword'
 				post  '/login'           => 'auth#login'
 				post  '/register'        => 'auth#register'
 				post  '/fb-register'     => 'auth#fbRegister'
@@ -85,6 +86,7 @@ Rails.application.routes.draw do
 				post  '/forgot'          => 'auth#forgotPassword'
 				post  '/verify-token'    => 'auth#verifyToken'
 				post  '/change'          => 'auth#changePassword'
+				post  '/forgot-code'     => 'auth#updateForgotCode'
 			end
 
 			# users

@@ -3,7 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword]
 
   resource_description do
     short 'Authorization'
@@ -211,6 +211,45 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         return head 200
       else
         render json: user.errors.messages, status: 400
+      end
+    else
+      return head 404
+    end
+  end
+
+  def updateForgotCode
+    user = User.find_by_email(params[:email])
+    forgot_code = params[:forgot_code]
+    if user.present?
+      user.forgot_code = forgot_code
+
+      if user.save
+        UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
+        return head 200
+      else
+        render json: user.errors.messages, status: 400
+      end
+    else
+      return head 404
+    end
+  end
+
+  def setNewPassword
+    user = User.find_by_forgot_code(params[:forgot_code])
+    if user.present?
+      new_password    = SecureRandom.hex(5)
+      user.password   = new_password
+      is_24h = User.where(:updated_at => user.updated_at..DateTime.now+1 , :forgot_code => params[:forgot_code])
+
+      if is_24h.present?
+        if user.save
+          UserMailer.reset_password(user, new_password).deliver_now
+          render json: user, status: 200
+        else
+          render json: user.errors.messages, status: 400
+        end
+      else
+        render json: 'error', status: 200
       end
     else
       return head 404
