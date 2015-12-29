@@ -158,6 +158,7 @@ Rails.application.routes.draw do
 				get   	'/gifts'            		=> 'room#getGifts'
 				get   	'/lounges'          		=> 'room#getLounges'
 				get  	'/:id/thumb'       			=> 'room#getThumb'
+				get 	'/:id/thumb_mb'				=> 'room#getThumbMb'
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
