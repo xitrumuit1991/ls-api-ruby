@@ -121,7 +121,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if dbAction.max_vote <= rAction
         redis.set("actions:#{@room.id}:#{action_id}", 0)
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-        emitter.of("/room").in(@room.id).emit("action done", { id: action_id })
+        emitter.of("/room").in(@room.id).emit("action done", { id: dbAction.id, image: dbAction.image.square })
         return head 200
       else
         render json: {error: "This action must be full before set to done"}, status: 400
@@ -150,7 +150,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @room.broadcaster.increaseExp(total)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
+          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image.square}, quantity:quantity, total: total, sender: user})
 
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
