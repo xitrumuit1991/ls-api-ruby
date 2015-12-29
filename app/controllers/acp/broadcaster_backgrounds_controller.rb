@@ -19,7 +19,7 @@ class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
 	def create
 		@data = @model.new(parameters)
 		if @data.save
-			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Background was successfully created.')
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: params[:room_id] }, notice: 'Background was successfully created.')
 		else
 			render :new
 		end

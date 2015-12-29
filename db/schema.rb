@@ -461,7 +461,6 @@ ActiveRecord::Schema.define(version: 20151229032045) do
     t.boolean  "is_banned"
     t.string   "token",           limit: 255
     t.datetime "last_login"
-    t.string   "forgot_code",     limit: 255
     t.integer  "user_level_id",   limit: 4
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
