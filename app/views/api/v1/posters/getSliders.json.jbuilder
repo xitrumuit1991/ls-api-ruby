@@ -7,4 +7,4 @@ json.array! @sliders do |slider|
 	json.link				slider.link
 	json.banner				"#{request.base_url}#{slider.banner.banner}"
 	json.thumb				"#{request.base_url}#{slider.banner.thumb}"
-end	
+end
