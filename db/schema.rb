@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151221045747) do
+ActiveRecord::Schema.define(version: 20151229032045) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -440,7 +440,6 @@ ActiveRecord::Schema.define(version: 20151221045747) do
     t.string   "username",        limit: 255
     t.string   "name",            limit: 255
     t.date     "birthday"
-    t.string   "gender",          limit: 5
     t.string   "address",         limit: 512
     t.string   "phone",           limit: 45
     t.string   "fb_id",           limit: 128
@@ -462,9 +461,11 @@ ActiveRecord::Schema.define(version: 20151221045747) do
     t.boolean  "is_banned"
     t.string   "token",           limit: 255
     t.datetime "last_login"
+    t.string   "forgot_code",     limit: 255
     t.integer  "user_level_id",   limit: 4
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
+    t.string   "gender",          limit: 6
   end
 
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree

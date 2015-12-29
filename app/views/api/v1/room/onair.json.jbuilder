@@ -2,8 +2,8 @@ json.array! @rooms do |room|
 	json.id			room.id
 	json.title		room.title
 	json.slug		room.slug
-	json.thumb		"#{request.base_url}/api/v1/rooms/#{room.id}/thumb"
-	json.thumb_mb	"#{request.base_url}/api/v1/rooms/#{room.id}/thumb_mb"
+  json.thumb		"#{request.base_url}#{room.thumb.thumb}"
+  json.thumb_mb	"#{request.base_url}#{room.thumb.thumb_mb.url}"
 	json.broadcaster do
 		json.id		room.broadcaster.user.id
 		json.name	room.broadcaster.user.name
