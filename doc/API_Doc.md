@@ -1314,12 +1314,11 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
+	+ status: **401**, **404**, **400**
 	+ errors: 
 	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough money "}```
 	    + status 404: ```{error: "Invalid lounge index "}```
-	    + status 400: ```{error: "Bad request "}```
+	    + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
 
 ### Send heart
 - URI: **/send-hearts **

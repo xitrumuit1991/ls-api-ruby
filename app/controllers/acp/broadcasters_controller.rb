@@ -1,7 +1,7 @@
 class Acp::BroadcastersController < Acp::ApplicationController
 	before_filter :init
 	before_action :load_data, only: [:new, :create, :edit, :update]
-	before_action :set_data, only: [:show, :edit, :room, :update, :destroy, :delete_image, :delete_video]
+	before_action :set_data, only: [:show, :basic, :edit, :room, :update, :destroy, :delete_image, :delete_video]
 
 	def index
 		@data = @model.all.order('id desc')
@@ -15,6 +15,15 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def edit
+	end
+
+	def basic
+		@user = @data.user
+		@levels = UserLevel.all
+	end
+
+	def advanced
+		
 	end
 
 	def room
@@ -84,6 +93,6 @@ class Acp::BroadcastersController < Acp::ApplicationController
 		end
 		
 		def parameters
-			params.require(:data).permit(:bct_type_id, :broadcaster_level_id, :fullname, :broadcaster_exp, :recived_heart)
+			params.require(:data).permit(:fullname, :bct_type_id, :broadcaster_level_id, :broadcaster_exp, :recived_heart, :description)
 		end
 end

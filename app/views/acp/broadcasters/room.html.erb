@@ -24,10 +24,22 @@
             <div class="pull-left">
                 <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
                     <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/edit"><i class="fs-14 pg-plus"></i>Thông tin</a>
+                        <a href="/acp/broadcasters/<%= @data.id %>/basic/<%= @data.user.id %>">Thông tin cơ bản</a>
+                    </li>
+                    <li class="">
+                        <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
                     </li>
                     <li class="active">
-                        <a href="#">Room</a>
+                        <a href="">Phòng</a>
+                    </li>
+                    <li class="">
+                        <a href="#">Quả tặng được nhận</a>
+                    </li>
+                    <li class="">
+                        <a href="#">Hình ảnh</a>
+                    </li>
+                    <li class="">
+                        <a href="#">Videos</a>
                     </li>
                     <li class="">
                         <a href="#">Giao dịch</a>

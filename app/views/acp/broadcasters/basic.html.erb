@@ -23,11 +23,11 @@
         <div class="panel-body">
             <div class="pull-left">
                 <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/basic/<%= @data.user.id %>">Thông tin cơ bản</a>
-                    </li>
                     <li class="active">
-                        <a href="#">Thông tin nâng cao</a>
+                        <a href="#">Thông tin cơ bản</a>
+                    </li>
+                    <li class="">
+                        <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
                     </li>
                     <li class="">
                         <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Phòng</a>
@@ -49,66 +49,57 @@
             <div class="clearfix"></div>
         </div>
         <div class="panel-body">
-            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
-                <% if @data.errors.any? %>
+            <%= form_for [:acp, @user], :html => {:class => "form_user"} do |f| %>
+                <% if @user.errors.any? %>
                   <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
-                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                    <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+                    <ul><% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
                 <div class="form-group">
                   <div class="row">
-                    <label class="col-sm-12">Tên idol</label>
+                    <label class="col-sm-12">Bí danh</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="data[fullname]" value="<%= @data.fullname %>">
+                        <input type="text" class="form-control" name="user[username]" value="<%= @user.username %>" required="">
                     </div>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="row">
-                    <label class="col-sm-12">Loại</label>
-                    <div class="col-sm-2">
-                        <select class="form-control select2" name="data[broadcaster_level_id]">
-                            <% @bct_types.each do |type| %>
-                            <option value="<%= type.id %>" <% if type.id == @data.bct_type_id %>selected<% end %>><%= type.title %></option>
-                            <% end %>
-                        </select>
+                    <label class="col-sm-12">Họ tên</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="user[name]" value="<%= @user.name %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Mật khẩu</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" value="<%= @data.user.password_digest %>" >
+                    </div>
+                    <div class="col-sm-5">
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-change-password">Đổi mật khẩu</button>
                     </div>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-12">Cấp độ</label>
-                    <div class="col-sm-2">
-                        <select class="form-control select2" name="data[broadcaster_level_id]">
+                    <div class="col-sm-1">
+                        <select class="form-control select2" name="user[user_level_id]">
                             <% @levels.each do |level| %>
-                            <option value="<%= level.id %>" <% if level.id == @data.broadcaster_level_id %>selected<% end %>><%= level.level %></option>
+                            <option value="<%= level.id %>" <% if level.id == @user.user_level_id %>selected<% end %>><%= level.level %></option>
                             <% end %>
                         </select>
                     </div>
                   </div>
-                </div>                
+                </div>
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-12">Kinh Nghiệm</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="data[broadcaster_exp]" value="<%= @data.broadcaster_exp %>" required="">
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row"> 
-                    <label class="col-sm-12">Số tim nhận được</label>
-                    <div class="col-sm-5">
-                        <input type="number" class="form-control" name="data[recived_heart]" value="<%= @data.recived_heart %>" required="">
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Mô tả</label>
-                    <div class="col-sm-5">
-                        <textarea class="form-control" name="data[description]" style="height:200px"><%= @data.description %></textarea>
+                        <input type="text" class="form-control" name="user[user_exp]" value="<%= @user.user_exp %>" required="">
                     </div>
                   </div>
                 </div>
@@ -127,33 +118,33 @@
     </div>
     <!-- END PANEL -->
     <!-- Modal -->
-    <div class="modal fade slide-up disable-scroll" id="model-add-new-image" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal fade slide-up disable-scroll" id="modal-change-password" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog ">
           <div class="modal-content-wrapper">
-            <div class="modal-content">
-                <div class="modal-header clearfix text-left">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                      <i class="pg-close fs-14"></i>
-                    </button>
-                    <h5>Add new image</h5>
-                </div>
-                <div class="modal-body">
-                  <form role="form">
+            <%= form_tag "/acp/users/#{@user.id}/change_password" do %>
+              <div class="modal-content">
+                  <div class="modal-header clearfix text-left">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <i class="pg-close fs-14"></i>
+                      </button>
+                      <h5>Đổi mật khẩu</h5>
+                  </div>
+                  <div class="modal-body">
                     <div class="form-group">
-                        <label class="col-sm-3">Image</label>
-                        <div class="col-sm-9">
-                            <input type="file" name="retailer_image">
-                        </div>
+                      <label>Mật khẩu mới</label>
+                      <input type="password" name="password" class="form-control" required/>
                     </div>
-                    <div class="row">
-                      <div class="col-sm-12 m-t-10 sm-m-t-10">
-                        <button type="button" class="btn btn-defult pull-right"><i class="fs-14 pg-close"></i>Cancel</button>
-                        <button type="button" class="btn btn-success pull-right">Submit</button>
-                      </div>
+                    <div class="form-group">
+                      <label>Nhập lại mật khẩu</label>
+                      <input type="password" name="password_confirmation" class="form-control" required/>
                     </div>
-                  </form>
-                </div>
-            </div>
+                  </div>
+                  <div class="modal-footer"> 
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fs-14 pg-close"></i>Close</button>
+                  </div>
+              </div>
+            <% end %>
           </div>
           <!-- /.modal-content -->
         </div>
