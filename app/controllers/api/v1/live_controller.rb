@@ -170,9 +170,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   api! "buy VIP lounge"
   param :lounge, :number, :desc => "Longe index", :required => true
   param :cost, :number, :desc => "cost to buy lounge", :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started or dont have enough money"
   error :code => 404, :desc => "Invalid lounge index"
-  error :code => 400, :desc => "Bad request"
+  error :code => 400, :desc => "Bad request or maybe you miss subscribe room or room not started or dont have enough money"
   def buyLounge
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     cost = params[:cost].to_i
@@ -183,7 +182,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
             current_lounge = eval(current_lounge)
             if current_lounge[:cost].to_i >= cost
-              render json: {error: "Your bit must larger than curent cost"}, status: 403 and return
+              render json: {error: "Your bit must larger than curent cost"}, status: 400 and return
             end
           end
           @user.decreaseMoney(cost)
@@ -202,7 +201,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           render json: {error: e.message}, status: 400
         end
       else
-        render json: {error: "You don\'t have enough money"}, status: 403
+        render json: {error: "You don\'t have enough money"}, status: 400
       end
     else
       render json: {error: "This lounge doesn\'t exist"}, status: 404
@@ -295,9 +294,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if(params.has_key?(:room_id)) then
         @room = Room.find(params[:room_id])
         getUsers
-        if(!@userlist.has_key?(@user.email)) then
-          render json: {error: "You are not subscribe to this room"}, status: 403 and return
-        end
+        # if(!@userlist.has_key?(@user.email)) then
+        #   render json: {error: "You are not subscribe to this room"}, status: 403 and return
+        # end
       else
         render json: {error: "Missing room_id parameter"}, status: 404 and return
       end

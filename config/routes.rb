@@ -11,8 +11,13 @@ Rails.application.routes.draw do
 
 		# Broadcasters
 		resources :broadcasters do
+			get '/basic/:id' => 'broadcasters#basic'
 			get '/room/:id' => 'broadcasters#room'
 		end
+
+		# Room
+    resources :users
+  	post 	'/users/:id/change_password' => 'users#change_password'
 
 		# Room
     resources :rooms
