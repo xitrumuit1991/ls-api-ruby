@@ -1,8 +1,8 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb]
-  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
     offset = params[:page].nil? ? 0 : params[:page].to_i * 6
@@ -189,13 +189,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         if FileTest.file?("public#{@room.thumb.thumb_mb}")
           send_file "public#{@room.thumb.thumb_mb}", type: 'image/jpg', disposition: 'inline'
         else
-          send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+          send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
         end
       else
-        send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+        send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
       end
     rescue
-      send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+      send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
     end
   end
 
