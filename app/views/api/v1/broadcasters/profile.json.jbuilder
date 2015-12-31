@@ -30,8 +30,9 @@ else
 	json.status			0
 end
 json.photos @broadcaster.images do |photo|
-	json.id		photo.id
-	json.link	"#{request.base_url}#{photo.image_url}"
+	json.id				photo.id
+	json.link_square	"#{request.base_url}#{photo.image.square}"
+	json.link			"#{request.base_url}#{photo.image_url}"
 end
 json.videos @broadcaster.videos do |video|
 	json.id		video.id
