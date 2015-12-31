@@ -11,8 +11,15 @@ Rails.application.routes.draw do
 
 		# Broadcasters
 		resources :broadcasters do
-			get '/basic/:id' => 'broadcasters#basic'
-			get '/room/:id' => 'broadcasters#room'
+			get 		'/basic/:id' => 'broadcasters#basic'
+			get 		'/room/:id' => 'broadcasters#room'
+			get 		'/gifts' => 'broadcasters#gifts'
+			get 		'/images' => 'broadcasters#images'
+			get 		'/videos' => 'broadcasters#videos'
+			get 		'/transactions' => 'broadcasters#transactions'
+			delete 	'/gift/:id' => 'broadcasters#destroy_gift'
+			delete 	'/image/:id' => 'broadcasters#destroy_image'
+			delete 	'/video/:id' => 'broadcasters#destroy_video'
 		end
 
 		# Room
@@ -27,6 +34,12 @@ Rails.application.routes.draw do
 
     # Schedules
     resources :schedules
+
+    # Broadcaster Backgrounds
+    resources :bct_images
+
+    # Broadcaster Backgrounds
+    resources :bct_videos
 
     # Room Types
     resources :room_types

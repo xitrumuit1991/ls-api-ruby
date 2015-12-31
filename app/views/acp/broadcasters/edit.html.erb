@@ -33,16 +33,16 @@
                         <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Phòng</a>
                     </li>
                     <li class="">
-                        <a href="#">Quả tặng được nhận</a>
+                        <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
                     </li>
                     <li class="">
-                        <a href="#">Hình ảnh</a>
+                        <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
                     </li>
                     <li class="">
-                        <a href="#">Videos</a>
+                        <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
                     </li>
                     <li class="">
-                        <a href="#">Giao dịch</a>
+                        <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
                     </li>
                 </ul>
             </div>
@@ -68,7 +68,7 @@
                   <div class="row">
                     <label class="col-sm-12">Loại</label>
                     <div class="col-sm-2">
-                        <select class="form-control select2" name="data[broadcaster_level_id]">
+                        <select class="form-control select2" name="data[bct_type_id]">
                             <% @bct_types.each do |type| %>
                             <option value="<%= type.id %>" <% if type.id == @data.bct_type_id %>selected<% end %>><%= type.title %></option>
                             <% end %>
