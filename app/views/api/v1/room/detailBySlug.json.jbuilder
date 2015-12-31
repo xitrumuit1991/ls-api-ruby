@@ -33,6 +33,7 @@ json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
 	json.avatar			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/avatar"
+	json.cover			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/cover"
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp
