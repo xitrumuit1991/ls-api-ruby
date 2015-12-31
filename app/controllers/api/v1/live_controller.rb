@@ -294,9 +294,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if(params.has_key?(:room_id)) then
         @room = Room.find(params[:room_id])
         getUsers
-        # if(!@userlist.has_key?(@user.email)) then
-        #   render json: {error: "You are not subscribe to this room"}, status: 403 and return
-        # end
+        if(!@userlist.has_key?(@user.email)) then
+          render json: {error: "You are not subscribe to this room"}, status: 403 and return
+        end
       else
         render json: {error: "Missing room_id parameter"}, status: 404 and return
       end
