@@ -138,6 +138,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 404, :desc => "gift not found"
   error :code => 400, :desc => "Bad request"
   def sendGifts
+    puts '========================'
+    puts 'aaaaaaaaaaaa'
     gift_id = params[:gift_id].to_i
     quantity = params[:quantity].to_i
     dbGift = Gift.find(gift_id)
