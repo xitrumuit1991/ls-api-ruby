@@ -1,5 +1,6 @@
 class Acp::RoomsController < Acp::ApplicationController
 	before_filter :init
+  before_action :load_data, only: [:new, :create, :edit, :update]
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
 	def index
@@ -47,6 +48,12 @@ class Acp::RoomsController < Acp::ApplicationController
 		def init
 			@model = controller_name.classify.constantize
 		end
+
+		def load_data
+			@idols = Broadcaster.all.order('id desc')
+      @room_types = RoomType.all.order('id desc')
+			@room_backgrounds = RoomBackground.all.order('id desc')
+    end
 
 		def set_data
 			@data = @model.find(params[:id])
