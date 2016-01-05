@@ -22,11 +22,12 @@ Rails.application.routes.draw do
 			delete 	'/video/:id' => 'broadcasters#destroy_video'
 		end
 
-		# Room
+		# Users
     resources :users
+  	get 	'/users/:id/transactions' => 'users#transactions'
   	post 	'/users/:id/change_password' => 'users#change_password'
 
-		# Room
+		# Rooms
     resources :rooms
 
     # Broadcaster Backgrounds

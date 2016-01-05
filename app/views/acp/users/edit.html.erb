@@ -4,8 +4,8 @@
             <!-- START BREADCRUMB -->
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
-                <li><a href="/acp/<%= controller_name %>">Idols</a></li>
-                <li><a href="#" class="active">Idol Detail</a></li>
+                <li><a href="/acp/<%= controller_name %>">Users</a></li>
+                <li><a href="#" class="active">User Detail</a></li>
             </ul>
             <!-- END BREADCRUMB -->
         </div>
@@ -18,49 +18,34 @@
     <!-- START PANEL -->
     <div class="panel panel-transparent">
         <div class="panel-heading">
-            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
+            <span class="bold">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
         </div>
         <div class="panel-body">
             <div class="pull-left">
                 <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
                     <li class="active">
-                        <a href="#">Thông tin cơ bản</a>
+                        <a href="#">Thông tin nâng cao</a>
                     </li>
                     <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Phòng</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
+                        <a href="/acp/users/<%= @data.id %>/transactions">Giao dịch</a>
                     </li>
                 </ul>
             </div>
             <div class="clearfix"></div>
         </div>
         <div class="panel-body">
-            <%= form_for [:acp, @user], :html => {:class => "form_user"} do |f| %>
-                <% if @user.errors.any? %>
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+                <% if @data.errors.any? %>
                   <div id="error_explanation">
-                    <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-                    <ul><% @user.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-12">Bí danh</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="user[username]" value="<%= @user.username %>" required="">
+                        <input type="text" class="form-control" name="user[username]" value="<%= @data.username %>" required="">
                     </div>
                   </div>
                 </div>
@@ -68,7 +53,7 @@
                   <div class="row">
                     <label class="col-sm-12">Họ tên</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="user[name]" value="<%= @user.name %>" required="">
+                        <input type="text" class="form-control" name="user[name]" value="<%= @data.name %>" required="">
                     </div>
                   </div>
                 </div>
@@ -76,7 +61,7 @@
                   <div class="row">
                     <label class="col-sm-12">Mật khẩu</label>
                     <div class="col-sm-5">
-                        <input type="password" class="form-control" value="<%= @data.user.password_digest %>" >
+                        <input type="password" class="form-control" value="<%= @data.password_digest %>" >
                     </div>
                     <div class="col-sm-5">
                       <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-change-password">Đổi mật khẩu</button>
@@ -89,7 +74,7 @@
                     <div class="col-sm-1">
                         <select class="form-control select2" name="user[user_level_id]">
                             <% @levels.each do |level| %>
-                            <option value="<%= level.id %>" <% if level.id == @user.user_level_id %>selected<% end %>><%= level.level %></option>
+                            <option value="<%= level.id %>" <% if level.id == @data.user_level_id %>selected<% end %>><%= level.level %></option>
                             <% end %>
                         </select>
                     </div>
@@ -99,7 +84,7 @@
                   <div class="row">
                     <label class="col-sm-12">Kinh Nghiệm</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="user[user_exp]" value="<%= @user.user_exp %>" required="">
+                        <input type="text" class="form-control" name="user[user_exp]" value="<%= @data.user_exp %>" required="">
                     </div>
                   </div>
                 </div>
@@ -121,7 +106,7 @@
     <div class="modal fade slide-up disable-scroll" id="modal-change-password" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog ">
           <div class="modal-content-wrapper">
-            <%= form_tag "/acp/users/#{@user.id}/change_password" do %>
+            <%= form_tag "/acp/users/#{@data.id}/change_password" do %>
               <div class="modal-content">
                   <div class="modal-header clearfix text-left">
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -151,6 +136,3 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<% content_for :javascript do %>
-  <% javascript_include_tag "/assets/js/idol" %>
-<% end %>
