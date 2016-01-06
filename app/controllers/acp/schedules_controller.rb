@@ -22,7 +22,13 @@ class Acp::SchedulesController < Acp::ApplicationController
 			end_time = DateTime.parse(item['date_end'] + ' ' + item['time_end'])
 			@model.create(start: start_time, end: end_time, room_id: params[:room_id])
 		end
-		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: params[:broadcaster_id], id: params[:room_id] }, notice: 'Schedules was successfully created.')
+
+    prev_path = Rails.application.routes.recognize_path(request.referrer)
+    if prev_path[:controller] == 'acp/rooms'
+      redirect_to({ controller: 'rooms', action: 'edit', id: params[:room_id] }, notice: "Lịch diển đã được thêm thành công.")
+    else
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: params[:broadcaster_id], id: params[:room_id] }, notice: 'Lịch diển đã được thêm thành công.')
+    end
 	end
 
 	def update
