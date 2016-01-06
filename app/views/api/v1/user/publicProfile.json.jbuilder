@@ -23,11 +23,13 @@ json.user_exp	@user.user_exp
 json.percent	@user.percent
 json.user_level	@user.user_level.level
 if @user.is_broadcaster
+	json.description @user.broadcaster.description
+	
 	json.photos @user.broadcaster.images do |photo|
 		json.id		photo.id
 		json.link	"#{request.base_url}#{photo.image_url}"
 		json.link_square	"#{request.base_url}#{photo.image.square}"
-  end
+  	end
 	json.videos @user.broadcaster.videos do |video|
 		json.id		video.id
 		json.link	video.video
