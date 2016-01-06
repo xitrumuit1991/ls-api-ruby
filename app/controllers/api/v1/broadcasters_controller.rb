@@ -237,7 +237,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def getFeatured
-    @featured = Featured.order(weight: :asc).limit(6)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
+    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
   end
 
   api! "get sticked broadcaster in homepage"
