@@ -138,8 +138,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 404, :desc => "gift not found"
   error :code => 400, :desc => "Bad request"
   def sendGifts
-    puts '========================'
-    puts 'aaaaaaaaaaaa'
+    puts '==========================================='
+    puts 'aaaaaaaaaa'
     gift_id = params[:gift_id].to_i
     quantity = params[:quantity].to_i
     dbGift = Gift.find(gift_id)
@@ -150,22 +150,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(total)
           @room.broadcaster.increaseExp(total)
+          puts '==========================================='
+          puts 'bbbbbbbbbbb'
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          puts '========================'
-          puts '11111'
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          puts '========================'
-          puts '22222'
-          puts '========================'
-          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image.square}, quantity:quantity, total: total, sender: user})
-          puts '33333'
-          puts '========================'
-
+          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
+          puts '==========================================='
+          puts 'ccccccccccc'
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
 
           return head 201
         rescue => e
+          puts '==========================================='
+          puts 'ddddddddddddddd'
+          puts '==========================================='
+          puts e.message
           render json: {error: e.message}, status: 400
         end
       else

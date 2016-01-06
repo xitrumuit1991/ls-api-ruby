@@ -27,8 +27,13 @@ class Acp::RoomsController < Acp::ApplicationController
 	end
 
 	def update
+    prev_path = Rails.application.routes.recognize_path(request.referrer)
 		if @data.update(parameters)
-			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Room was successfully updated.')
+			if prev_path[:controller] == 'acp/rooms'
+        redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
+      else
+        redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
+      end
 		else
 			render :edit
 		end
@@ -60,6 +65,6 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		def parameters
-			params.require(:room).permit(:thumb, :title, :room_type_id)
+			params.require(:room).permit(:thumb, :broadcaster_id, :title, :room_type_id)
 		end
 end

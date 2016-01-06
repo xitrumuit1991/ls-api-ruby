@@ -19,7 +19,12 @@ class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
 	def create
 		@data = @model.new(parameters)
 		if @data.save
-			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: params[:room_id] }, notice: 'Background was successfully created.')
+			prev_path = Rails.application.routes.recognize_path(request.referrer)
+	    if prev_path[:controller] == 'acp/rooms'
+	      redirect_to({ controller: 'rooms', action: 'edit', id: params[:room_id] }, notice: "Background được thêm thành công.")
+	    else
+				redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: params[:room_id] }, notice: "Background được thêm thành công.")
+	    end
 		else
 			render :new
 		end
