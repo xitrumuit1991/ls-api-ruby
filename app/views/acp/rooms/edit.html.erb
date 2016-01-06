@@ -39,6 +39,18 @@
                 </div>
                 <div class="form-group">
                   <div class="row">
+                    <label class="col-sm-12">Idols</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="room[broadcaster_id]">
+                            <% @idols.each do |idol| %>
+                            <option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
                     <label class="col-sm-12">Title</label>
                     <div class="col-sm-5">
                         <input type="text" class="form-control" name="room[title]" value="<%= @data.title %>" >
@@ -89,7 +101,7 @@
                                 <p><%= schedule.end.strftime('%d-%m-%Y') %></p>
                               </td>
                               <td class="v-align-middle">
-                                <a class="btn btn-success pull-right" data-method="delete" href="/acp/broadcasters/"><i class="fa fa-trash-o"></i></a>
+                                <%= link_to(acp_schedule_path(schedule), {class: "btn btn-success pull-right", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                               </td>
                             </tr>
                           <% end %>
@@ -139,26 +151,55 @@
         </div>
     </div>
     <!-- END PANEL -->
-    <!-- Modal -->
-    <div class="modal fade slide-up disable-scroll" id="modal-change-password" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
-        <div class="modal-dialog ">
+    <!-- Modal Add New Schedule -->
+    <div class="modal fade slide-up disable-scroll" id="model-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+        <div class="modal-dialog modal-lg">
           <div class="modal-content-wrapper">
-            <%= form_tag "/acp/users/#{@data.id}/change_password" do %>
+            <%= form_tag acp_schedules_path do %>
+              <input type="hidden" name="room_id" value="<%= @data.id %>">
               <div class="modal-content">
                   <div class="modal-header clearfix text-left">
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         <i class="pg-close fs-14"></i>
                       </button>
-                      <h5>Đổi mật khẩu</h5>
+                      <h5>Add new schedules</h5>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
-                      <label>Mật khẩu mới</label>
-                      <input type="password" name="password" class="form-control" required/>
+                      <div class="row">
+                        <label class="col-sm-3">Ngày bắt đầu</label>
+                        <label class="col-sm-2">Giờ bắt đầu</label>
+                        <label class="col-sm-2">Giờ kết thúc</label>
+                        <label class="col-sm-3">Ngày kết thúc</label>
+                        <label class="col-sm-2"></label>
+                      </div>
+                    </div>
+                    <div class="form-group schedules">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <input type="text" name="schedule[][date_start]" class="date start form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="text" name="schedule[][time_start]" class="time start form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="text" name="schedule[][time_end]" class="time end form-control" required/>
+                        </div>
+                        <div class="col-sm-3">
+                          <input type="text" name="schedule[][date_end]" class="date end form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <button type="button" class="btn btn-success remove-schedule"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                      </div>
                     </div>
                     <div class="form-group">
-                      <label>Nhập lại mật khẩu</label>
-                      <input type="password" name="password_confirmation" class="form-control" required/>
+                      <div class="row">
+                        <div class="col-sm-10"></div>
+                        <div class="col-sm-2">
+                          <button type="button" class="btn btn-success add-new-schedule"><i class="fs-14 pg-plus"></i></button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer"> 
@@ -171,5 +212,78 @@
           <!-- /.modal-content -->
         </div>
     </div>
+    <!-- Modal Add New Background Uploaded -->
+    <div class="modal fade slide-up disable-scroll" id="model-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+        <div class="modal-dialog">
+          <div class="modal-content-wrapper">
+            <%= form_tag acp_broadcaster_backgrounds_path, multipart: true do %>
+              <input type="hidden" name="background[broadcaster_id]" value="<%= @data.broadcaster.id %>">
+              <input type="hidden" name="room_id" value="<%= @data.id %>">
+              <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14"></i>
+                  </button>
+                  <h5>Add new image</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3">Image</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="background[image]">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> 
+                  <button type="submit" class="btn btn-success">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fs-14 pg-close"></i>Close</button>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+    </div>
     <!-- /.modal-dialog -->
 </div>
+<% content_for :javascript do %>
+  <%= javascript_include_tag "/assets/plugins/timepicker/timepicker.min", "/assets/plugins/datepair/jquery.datepair.min", "/assets/js/idol" %>
+  <script>
+  // initialize input widgets first
+  $('#model-add-new-schedule .time').timepicker({
+      'showDuration': true,
+      'timeFormat': 'g:ia'
+  });
+
+  $('#model-add-new-schedule .date').datepicker({
+      'format': 'd/m/yyyy',
+      'autoclose': true
+  });
+
+  // initialize datepair
+  $('#model-add-new-schedule .row').datepair({
+      defaultTimeDelta: 7200000
+  });
+  </script>
+<% end %>
+
+<% content_for :stylesheets do %>
+  <style>
+  .datepicker.dropdown-menu{z-index: 9999 !important}
+  .ui-timepicker-wrapper{
+    overflow-y: auto;
+    height: 150px;
+    width: 5.7em;
+    background: #fff;
+    border: 1px solid #ddd;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    outline: none;
+    z-index: 10001;
+    margin: 0;
+  }
+  .ui-timepicker-list{margin: 0;padding: 0;list-style: none;}
+  .ui-timepicker-list li{cursor: pointer;}
+  </style>
+<% end %>
