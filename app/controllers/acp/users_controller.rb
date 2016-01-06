@@ -23,6 +23,9 @@ class Acp::UsersController < Acp::ApplicationController
 
   def create
     @data = @model.new(parameters)
+    @data.password = params[:password]
+    @data.password_confirmation = params[:password_confirmation]
+    @data.active_code = SecureRandom.hex(3).upcase
     if @data.save
       redirect_to({ action: 'index' }, notice: 'User was successfully created.')
     else
@@ -31,6 +34,9 @@ class Acp::UsersController < Acp::ApplicationController
   end
 
   def update
+    puts '==============================='
+    puts params
+    puts '==============================='
     prev_path = Rails.application.routes.recognize_path(request.referrer)
     if @data.update(parameters)
       if prev_path[:controller] == 'acp/users'
@@ -80,6 +86,6 @@ class Acp::UsersController < Acp::ApplicationController
     end
 
     def parameters
-      params.require(:user).permit(:username, :name, :user_level_id, :user_exp)
+      params.require(:user).permit(:username, :name, :email, :user_level_id, :user_exp)
     end
 end
