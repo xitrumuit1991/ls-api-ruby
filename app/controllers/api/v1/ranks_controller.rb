@@ -126,6 +126,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		MonthlyTopUserLevelUp.update_all(:created_at => DateTime.now.prev_month)
 
 		WeeklyTopUserSendGift.update_all(:created_at => DateTime.now.prev_week)
+		Schedule.update_all(:end => '2016-10-16 06:47:44')
 		User.update_all(:money => 10000)
 		render plain: 'Done !', status: 200
 	end
