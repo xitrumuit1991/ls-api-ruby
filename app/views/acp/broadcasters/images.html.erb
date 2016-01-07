@@ -69,6 +69,8 @@
         </div>
         <div class="panel-body">
             <form action="" method="post" id="data-table">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
               <table class="table table-hover demo-table-search data-table">
                 <thead>
                   <tr>
@@ -95,7 +97,7 @@
                         <img src="<%= item.image_url %>" class="img-thumbnail" >
                       </td>
                       <td class="v-align-middle">
-                        <%= link_to("/acp/broadcasters/#{@data.id}/image/#{item.id}", {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                        <%= link_to(acp_bct_image_path(item), {class: "btn btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                       </td>
                     </tr>
                   <% end %>
@@ -106,3 +108,6 @@
     </div>
     <!-- END PANEL -->
 </div>
+<script>
+module_url = '<%= request.base_url + "/acp/bct_images" %>';
+</script>

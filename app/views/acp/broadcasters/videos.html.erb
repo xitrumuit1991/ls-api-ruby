@@ -68,6 +68,8 @@
         </div>
         <div class="panel-body">
             <form action="" method="post" id="data-table">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
               <table class="table table-hover demo-table-search data-table">
                 <thead>
                   <tr>
@@ -98,7 +100,7 @@
                         <p><%= item.video %></p>
                       </td>
                       <td class="v-align-middle">
-                        <%= link_to("/acp/broadcasters/#{@data.id}/video/#{item.id}", {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                        <%= link_to(acp_bct_video_path(item), {class: "btn btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                       </td>
                     </tr>
                   <% end %>
@@ -143,3 +145,6 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<script>
+module_url = '<%= request.base_url + "/acp/bct_videos" %>';
+</script>

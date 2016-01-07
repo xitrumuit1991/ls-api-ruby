@@ -21,7 +21,7 @@
             <span class="bold">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
         </div>
         <div class="panel-body">
-            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
                 <% if @data.errors.any? %>
                   <div id="error_explanation">
                     <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>

@@ -118,7 +118,7 @@
                                 <p><%= schedule.end.strftime('%d-%m-%Y') %></p>
                               </td>
                               <td class="v-align-middle">
-                                <a class="btn btn-success pull-right" data-method="delete" href="/acp/broadcasters/"><i class="fa fa-trash-o"></i></a>
+                                <%= link_to(acp_schedule_path(schedule), {class: "btn btn-success pull-right", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                               </td>
                             </tr>
                           <% end %>
