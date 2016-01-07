@@ -94,3 +94,5 @@ gem 'apipie-rails'
 gem 'carrierwave-base64'
 
 gem 'zodiac'
+
+gem 'savon', '~> 2.11.1'
