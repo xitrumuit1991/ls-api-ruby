@@ -36,7 +36,12 @@ class Acp::BctImagesController < Acp::ApplicationController
 
   def destroy
     @data.destroy
-    redirect_to({ action: 'index' }, notice: 'Image was successfully destroyed.')
+    redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: @data.broadcaster.id }, notice: 'Image was successfully destroyed.')
+  end
+
+  def destroy_m
+    @model.destroy(params[:item_id])
+    redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: params[:broadcaster_id] }, notice: 'Images was successfully destroyed.')
   end
 
   private

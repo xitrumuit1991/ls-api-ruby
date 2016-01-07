@@ -34,9 +34,6 @@ class Acp::UsersController < Acp::ApplicationController
   end
 
   def update
-    puts '==============================='
-    puts params
-    puts '==============================='
     prev_path = Rails.application.routes.recognize_path(request.referrer)
     if @data.update(parameters)
       if prev_path[:controller] == 'acp/users'

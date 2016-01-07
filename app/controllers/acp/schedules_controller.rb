@@ -41,7 +41,12 @@ class Acp::SchedulesController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Schedule was successfully destroyed.')
+		prev_path = Rails.application.routes.recognize_path(request.referrer)
+    if prev_path[:controller] == 'acp/rooms'
+      redirect_to({ controller: 'rooms', action: 'edit', id: @data.room.id }, notice: "Lịch diển đã được xóa thành công.")
+    else
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.room.broadcaster.id, id: @data.room.id }, notice: "Lịch diển đã được xóa thành công.")
+    end
 	end
 
 	private

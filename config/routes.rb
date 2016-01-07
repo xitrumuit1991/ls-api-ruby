@@ -38,9 +38,11 @@ Rails.application.routes.draw do
 
     # Broadcaster Backgrounds
     resources :bct_images
+		post 	'/bct_images/destroy_m' => 'bct_images#destroy_m'
 
     # Broadcaster Backgrounds
     resources :bct_videos
+		post 	'/bct_videos/destroy_m' => 'bct_videos#destroy_m'
 
     # Room Types
     resources :room_types
@@ -49,6 +51,10 @@ Rails.application.routes.draw do
     # Gifts
 		resources :gifts
 		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+
+		# Gift Logs
+		resources :gift_logs
+		post 	'/gift_logs/destroy_m' => 'gift_logs#destroy_m'
 
 	 	# Broadcaster levels
 		resources :broadcaster_levels

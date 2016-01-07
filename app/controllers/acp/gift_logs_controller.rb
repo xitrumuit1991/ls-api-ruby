@@ -1,4 +1,4 @@
-class Acp::BctVideosController < Acp::ApplicationController
+class Acp::GiftLogsController < Acp::ApplicationController
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -20,7 +20,7 @@ class Acp::BctVideosController < Acp::ApplicationController
   def create
     @data = @model.new(parameters)
     if @data.save
-      redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: @data.broadcaster.id }, notice: 'Video was successfully created.')
+      redirect_to({ action: 'index' }, notice: 'Room type was successfully created.')
     else
       render :new
     end
@@ -28,7 +28,7 @@ class Acp::BctVideosController < Acp::ApplicationController
 
   def update
     if @data.update(parameters)
-      redirect_to({ action: 'index' }, notice: 'Video was successfully updated.')
+      redirect_to({ action: 'index' }, notice: 'Gift was successfully updated.')
     else
       render :edit
     end
@@ -36,12 +36,13 @@ class Acp::BctVideosController < Acp::ApplicationController
 
   def destroy
     @data.destroy
-    redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: @data.broadcaster.id }, notice: 'Video was successfully destroyed.')
+    redirect_to({ action: 'index' }, notice: 'Gift was successfully destroyed.')
+    redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: @data.broadcaster.id }, notice: 'Image was successfully destroyed.')
   end
 
   def destroy_m
     @model.destroy(params[:item_id])
-    redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: params[:broadcaster_id] }, notice: 'Videos was successfully destroyed.')
+    redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: params[:broadcaster_id] }, notice: 'Images was successfully destroyed.')
   end
 
   private
@@ -54,6 +55,6 @@ class Acp::BctVideosController < Acp::ApplicationController
     end
 
     def parameters
-      params.require(:bct_video).permit(:broadcaster_id, :video, :thumb)
+      params.require(:data).permit(:name, :image, :price, :discount)
     end
 end
