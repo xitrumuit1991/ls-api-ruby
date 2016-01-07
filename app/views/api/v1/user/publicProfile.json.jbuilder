@@ -3,6 +3,7 @@ json.name		@user.name
 json.username	@user.username
 json.email		@user.email
 json.birthday	@user.birthday
+json.horoscope	@horoscope
 json.gender		@user.gender
 json.address	@user.address
 json.phone		@user.phone
@@ -24,7 +25,7 @@ json.percent	@user.percent
 json.user_level	@user.user_level.level
 if @user.is_broadcaster
 	json.description @user.broadcaster.description
-	
+
 	json.photos @user.broadcaster.images do |photo|
 		json.id		photo.id
 		json.link	"#{request.base_url}#{photo.image_url}"
