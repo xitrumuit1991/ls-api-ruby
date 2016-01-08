@@ -22,7 +22,8 @@ class Acp::BctVideosController < Acp::ApplicationController
     if @data.save
       redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: @data.broadcaster.id }, notice: 'Video was successfully created.')
     else
-      render :new
+      flash[:create_video_alert] =  @data.errors.full_messages
+      redirect_to "/acp/broadcasters/#{@data.broadcaster.id}/videos#modal-add-new"
     end
   end
 

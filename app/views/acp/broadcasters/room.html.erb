@@ -51,12 +51,6 @@
         <div class="panel-body">
             <%= form_for [:acp, @room], :html => {:class => "form_room", multipart: true } do |f| %>
                 <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
-                <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
-                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
-                  </div>
-                <% end %>
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-12">Banner</label>
@@ -89,7 +83,7 @@
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-8">Lịch diễn
-                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#model-add-new-schedule"><i class="fs-14 pg-plus"></i>Add new</button>
+                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-add-new-schedule"><i class="fs-14 pg-plus"></i>Add new</button>
                     </label>
                     <div class="col-sm-8">
                       <table class="table table-hover demo-table-search data-table">
@@ -143,7 +137,7 @@
                   <div class="row">
                     <label class="col-sm-12">Background Uploaded</label>
                     <label class="col-sm-12">
-                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#model-add-new-background"><i class="fs-14 pg-plus"></i>Add new</button>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-add-new-background"><i class="fs-14 pg-plus"></i>Add new</button>
                     </label>
                     <div class="col-sm-12">
                       <div class="multiple-items">
@@ -169,7 +163,7 @@
     </div>
     <!-- END PANEL -->
     <!-- Modal Add New Schedule -->
-    <div class="modal fade slide-up disable-scroll" id="model-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal fade slide-up disable-scroll" id="modal-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog modal-lg">
           <div class="modal-content-wrapper">
             <%= form_tag acp_schedules_path do %>
@@ -231,7 +225,7 @@
         </div>
     </div>
     <!-- Modal Add New Background Uploaded -->
-    <div class="modal fade slide-up disable-scroll" id="model-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal fade slide-up disable-scroll" id="modal-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog">
           <div class="modal-content-wrapper">
             <%= form_tag acp_broadcaster_backgrounds_path, multipart: true do %>
@@ -246,9 +240,17 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                      <% if flash[:create_background_alert] %>
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <% flash[:create_background_alert].each do |msg| %><p><%=msg%></p><% end %>
+                      </div>
+                      <% end %>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-3">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" name="background[image]">
+                            <input type="file" name="background[image]" required>
                         </div>
                     </div>
                 </div>

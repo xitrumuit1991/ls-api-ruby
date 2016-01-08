@@ -16,6 +16,12 @@ $(document).ready(function () {
         $('#start_date').data("DateTimePicker").maxDate(e.date);
     });*/
 
+    // check modal show
+    var modal = window.location.hash
+    if(modal !== undefined && modal !== "" && modal.search('modal') > 0){
+      $(modal).modal('show');
+    }
+
     // setup data table
     var table = $('.data-table');
     var settings = {
@@ -124,24 +130,3 @@ $(document).ready(function () {
         });
 
 });
-
-function BrowseServer(inputId){
-    // You can use the "CKFinder" class to render CKFinder in a page:
-    var finder = new CKFinder();
-    
-    finder.basePath = '/ckfinder/';	// The path for the installation of CKFinder (default = "/ckfinder/").
-    finder.selectActionFunction = SetFileField;
-    finder.selectActionData = inputId;
-    finder.popup();
-    // It can also be done in a single line, calling the "static"
-    // popup( basePath, width, height, selectFunction ) function:
-    // CKFinder.popup( '../', null, null, SetFileField ) ;
-    //
-    // The "popup" function can also accept an object as the only argument.
-    // CKFinder.popup( { basePath : '../', selectActionFunction : SetFileField } ) ;
-}
-// This is a sample function which is called when a file is selected in CKFinder.
-function SetFileField( fileUrl, data ){
-    
-    document.getElementById( data['selectActionData'] ).value = fileUrl;
-}
