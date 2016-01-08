@@ -17,8 +17,8 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
+        <div class="panel-heading text-complete">
+            <span class="bold text-uppercase">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
         </div>
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>

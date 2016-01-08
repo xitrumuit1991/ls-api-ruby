@@ -17,8 +17,8 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
+        <div class="panel-heading text-complete">
+            <span class="bold text-uppercase">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
         </div>
         <div class="panel-body">
             <div class="pull-left">
@@ -121,7 +121,8 @@
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         <i class="pg-close fs-14"></i>
                       </button>
-                      <h5>Đổi mật khẩu</h5>
+                      <h5 class="text-uppercase text-complete"><strong>Đổi mật khẩu</strong></h5>
+                      <hr class="m-t-0"/>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
@@ -134,11 +135,19 @@
                     </div>
                     <div class="form-group">
                       <label>Mật khẩu mới</label>
-                      <input type="password" name="password" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label>Nhập lại mật khẩu</label>
-                      <input type="password" name="password_confirmation" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password_confirmation" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer"> 
@@ -153,3 +162,20 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<% content_for :javascript do %>
+  <script type="text/javascript">
+    $(function() {
+      $(".input-password").on('click', '.input-group-addon', function(event) {
+        event.preventDefault();
+        $(this).toggleClass('active');
+        if ($(this).hasClass('active')) {
+          $(this).parent().find('.form-control').prop("type", "text");
+          $(this).text('hide');
+        } else {
+          $(this).parent().find('.form-control').prop("type", "password");
+          $(this).text('show');
+        }
+      });
+    });
+  </script>
+<% end %>

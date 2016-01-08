@@ -56,7 +56,12 @@
                     <label class="col-sm-12">Banner</label>
                     <div class="col-sm-5">
                       <img src="<%= @room.thumb_url %>" class="img-thumbnail" >
-                      <input type="file" name="room[thumb]" >
+                      <div class="cleafix">
+                        <label class="btn btn-success">
+                          <input type="file" name="room[thumb]" class="hidden">
+                          Upload banner
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -127,7 +132,9 @@
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @room_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -142,7 +149,10 @@
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @data.broadcaster_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                              <a href="#" class="btn-close">&times;</a>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -250,7 +260,10 @@
                     <div class="form-group">
                         <label class="col-sm-3">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" name="background[image]" required>
+                            <label class="btn btn-success">
+                              <input type="file" name="background[image]" class="hidden" required>
+                              Upload banner
+                            </label>
                         </div>
                     </div>
                 </div>
