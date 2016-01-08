@@ -112,6 +112,7 @@ Rails.application.routes.draw do
 				post  '/verify-token'    => 'auth#verifyToken'
 				post  '/change'          => 'auth#changePassword'
 				post  '/forgot-code'     => 'auth#updateForgotCode'
+				post  '/check-forgot-code'     => 'auth#check_forgotCode'
 			end
 
 			# users
