@@ -21,3 +21,192 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+      attributes:
+        room_type:
+          title: ""
+          slug: ""
+          description: ""
+          #GIFT
+        gift:
+          name: ""
+          image: ""
+          price: ""
+          discount: ""
+
+        #Broadcaster Level
+        broadcaster_level:
+          min_heart: ""
+          grade: ""
+
+        #user level
+        user_level:
+          level: ""
+          min_exp: ""
+          heart_per_day: ""
+          grade: ""
+        #Room actions
+        room_action:
+          name: ""
+          image: ""
+          price: ""
+          max_vote: ""
+          discount: ""
+
+        #feature
+        featured:
+          broadcaster_id: ''
+          weight: ''
+
+        #Home featured
+        home_featured:
+          broadcaster_id: ''
+          weight: ''
+
+        #Room featured
+        room_featured:
+          broadcaster_id: ''
+          weight: ''
+
+        #Poster
+        poster:
+          title: ''
+          sub_title: ''
+          thumb: ''
+          link: ''
+          weight: ''
+
+        #Room background
+        room_background:
+          image: ''
+
+        #slide
+        slide:
+          title: ''
+          description: ''
+          sub_description: ''
+          start_time: ''
+          weight: ''
+          link: ''
+          banner: ''
+
+
+  # THÔNG BÁO LỖI
+      errors:
+        models:
+          room_type:
+            attributes:
+              title:
+                blank: "Vui lòng nhập tiêu đề"
+              slug:
+                blank: "Vui lòng nhập Slug"
+              description:
+                blank: "Vui lòng nhập mô tả chi tiết"
+          #GIFT
+          gift:
+            attributes:
+              name:
+                blank: "Vui lòng nhập tên"
+              image:
+                blank: "Vui chọn hình ảnh"
+              price:
+                blank: "Vui lòng nhập giá"
+              discount:
+                blank: "Vui lòng nhập giảm giá"
+
+          #Broadcaster level
+          broadcaster_level:
+            attributes:
+              level:
+                blank: "Vui lòng nhập level"
+              min_heart:
+                blank: "Vui lòng nhập số trái tim"
+              grade:
+                blank: "Vui lòng nhập grade"
+
+          #Broadcaster level
+          user_level:
+            attributes:
+              level:
+                blank: "Vui lòng nhập level"
+              heart_per_day:
+                blank: "Vui lòng nhập số trái tim"
+              min_exp:
+                blank: "Vui lòng nhập số điểm kinh nghiệm"
+              grade:
+                blank: "Vui lòng nhập grade"
+
+        #Room actions
+          room_action:
+            attributes:
+              name:
+                blank: "Vui lòng nhập tên"
+              image:
+                blank: "Vui chọn hình ảnh"
+              price:
+                blank: "Vui lòng nhập giá"
+              discount:
+                blank: "Vui lòng nhập giảm giá"
+              max_vote:
+                blank: "Vui lòng nhập Vote tối đa"
+
+          #Featured
+          featured:
+            attributes:
+              broadcaster_id:
+                blank: "Vui lòng chọn idol"
+              weight:
+                blank: "Vui lòng nhập số thứ tự"
+
+          #Home featured
+          home_featured:
+            attributes:
+              broadcaster_id:
+                blank: "Vui lòng chọn idol"
+              weight:
+                blank: "Vui lòng nhập số thứ tự"
+
+          #Room featured
+          room_featured:
+            attributes:
+              broadcaster_id:
+                blank: "Vui lòng chọn idol"
+              weight:
+                blank: "Vui lòng nhập số thứ tự"
+          #Poster
+          poster:
+            attributes:
+              title:
+                blank: "Vui lòng nhập tiêu đề"
+              sub_title:
+                blank: "Vui lòng nhập tiêu đề phụ"
+              thumb:
+                blank: "Vui lòng upload hình ảnh"
+              link:
+                blank: "Vui lòng nhập liên kết"
+              weight:
+                blank: "Vui lòng nhập số thự tự"
+
+          #Room background
+          room_background:
+            attributes:
+              image:
+                blank: "Vui lòng chọn hình ảnh"
+
+          #Slide
+          slide:
+            attributes:
+              title:
+                blank: 'Vui lòng nhập tiêu đề'
+              description:
+                blank: 'Vui lòng nhập mô tả'
+              sub_description:
+                blank: 'Vui lòng nhập mô tả phụ'
+              start_time:
+                blank: 'Vui lòng nhập thời gian bắt đầu'
+              weight:
+                blank: 'Vui lòng nhập số thứ tự'
+              link:
+                blank: 'Vui lòng nhập liên kết'
+              banner:
+                blank: 'Vui lòng chọn banner'
