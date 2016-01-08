@@ -80,9 +80,10 @@
                   <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
-                  <%= link_to(edit_acp_gift_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
-                  <%= link_to(acp_gift_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
-                  </a>
+                  <div class="text-center text-nowrap">
+                    <%= link_to(edit_acp_gift_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
+                    <%= link_to(acp_gift_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                  </div>
                 </td>
               </tr>
           <% end %>
