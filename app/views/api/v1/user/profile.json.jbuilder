@@ -2,7 +2,11 @@ json.id			@user.id
 json.name		@user.name
 json.username	@user.username
 json.email		@user.email
-json.birthday	@user.birthday
+if @user.birthday
+  json.birthday	@user.birthday.strftime('%d-%m-%Y')
+else
+  json.birthday	''
+end
 json.gender		@user.gender
 json.address	@user.address
 json.phone		@user.phone

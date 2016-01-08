@@ -1,0 +1,172 @@
+<div class="jumbotron" data-pages="parallax">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
+        <div class="inner">
+            <!-- START BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="/acp">Home</a></li>
+                <li><a href="/acp/<%= controller_name %>">Users</a></li>
+                <li><a href="#" class="active">User Detail</a></li>
+            </ul>
+            <!-- END BREADCRUMB -->
+        </div>
+    </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <div class="panel-heading">
+            <span class="bold">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
+        </div>
+        <div class="panel-body">
+            <div class="pull-left">
+                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
+                    <li class="">
+                        <a href="/acp/users/<%= @data.id %>/edit">Thông tin nâng cao</a>
+                    </li>
+                    <li class="active">
+                        <a href="#">Giao dịch</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs nav-tabs-simple nav-tabs-left bg-white">
+              <li class="active">
+                <a data-toggle="tab" href="#tab1">Lịch sử nạp tiền</a>
+              </li>
+              <li class="">
+                <a data-toggle="tab" href="#tab2">Lịch sử chi tiền</a>
+              </li>
+            </ul>
+            <div class="tab-content bg-white">
+              <div class="tab-pane active" id="tab1">
+                <div class="pull-left">
+                    <div class="col-xs-12">
+                        <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
+                    </div>
+                </div>
+                <div class="pull-left">
+                    <div class="col-xs-12">
+                        <input type="text" id="search-table-recharge" class="form-control pull-right" placeholder="Search">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search table-recharge">
+                  <thead>
+                    <tr>
+                        <th style="width:3%">
+                          <div class="checkbox ">
+                            <input type="checkbox" id="check-all">
+                            <label for="check-all"></label>
+                          </div>
+                        </th>
+                        <th style="width:10%">Ngày</th>
+                        <th style="width:30%">ID giao dịch</th>
+                        <th style="width:25%">Mệnh giá</th>
+                        <th style="width:25%">Hình thức thanh toán</th>
+                        <th style="width:7%">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tab-pane" id="tab2">
+                <div class="pull-left">
+                    <div class="col-xs-12">
+                        <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
+                    </div>
+                </div>
+                <div class="pull-left">
+                    <div class="col-xs-12">
+                        <input type="text" id="search-table-pay" class="form-control pull-right" placeholder="Search">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search table-pay">
+                  <thead>
+                    <tr>
+                        <th style="width:3%">
+                          <div class="checkbox ">
+                            <input type="checkbox" id="check-all">
+                            <label for="check-all"></label>
+                          </div>
+                        </th>
+                        <th style="width:10%">Ngày</th>
+                        <th style="width:30%">Quà tặng được nhận</th>
+                        <th style="width:10%">Số lượng</th>
+                        <th style="width:20%">Mệnh giá</th>
+                        <th style="width:20%">Thành tiền</th>
+                        <th style="width:7%">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @gifts.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle">
+                          <div class="checkbox ">
+                              <input type="checkbox" name="item_id[]" value="<%= item.id %>" class="check-all" id="checkbox-<%= item.id %>">
+                              <label for="checkbox-<%= item.id %>"></label>
+                          </div>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <img src="<%= item.gift.image.square %>" class="img-thumbnail" >
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.quantity %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.cost %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.quantity * item.cost %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <%= link_to("/acp/broadcasters/#{@data.id}/gift/#{item.id}", {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>
+<% content_for :javascript do %>
+  <script>
+  var table_recharge = $('.table-recharge');
+  var table_pay = $('.table-pay');
+
+  var settings = {
+      "sDom": "<'table-responsive't><'row'<p i>>",
+      "sPaginationType": "bootstrap",
+      "destroy": true,
+      "scrollCollapse": true,
+      "oLanguage": {
+          "sLengthMenu": "_MENU_ ",
+          "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
+      },
+      "iDisplayLength": 10
+  };
+
+  table_recharge.dataTable(settings);
+  table_pay.dataTable(settings);
+
+  // search box for table
+  $('#search-table-recharge').keyup(function () {
+      table_recharge.fnFilter($(this).val());
+  });
+  $('#search-table-pay').keyup(function () {
+      table_pay.fnFilter($(this).val());
+  });
+  </script>
+<% end %>

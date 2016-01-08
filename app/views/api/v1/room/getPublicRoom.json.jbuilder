@@ -2,21 +2,24 @@ json.id					@room.id
 json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				"#{request.base_url}#{@room.thumb.thumb}"
-json.thumb_mb			"#{request.base_url}#{@room.thumb.thumb_mb}"
+json.thumb 	 			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb"
+json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb"
 json.is_privated		@room.is_privated
-
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
 		json.background 	@room.broadcaster_background.image.url
+    json.background_id @room.broadcaster_background.id
 	else
 		json.background 	false
+    json.background_id false
 	end
 else
 	if !@room.room_background_id.nil? 
 		json.background 	@room.room_background.image.url
+    json.background_id @room.room_background.id
 	else
 		json.background 	false
+    json.background_id false
 	end
 end
 

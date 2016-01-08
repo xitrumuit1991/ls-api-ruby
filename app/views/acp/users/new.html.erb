@@ -1,0 +1,103 @@
+<div class="jumbotron" data-pages="parallax">
+  <div class="container-fluid sm-p-l-20 sm-p-r-20">
+    <div class="inner">
+      <!-- START BREADCRUMB -->
+      <ul class="breadcrumb">
+        <li><a href="/acp">Home</a></li>
+        <li><a href="/acp/<%= controller_name %>">Users</a></li>
+        <li><a href="#" class="active">Add</a></li>
+      </ul>
+      <!-- END BREADCRUMB -->
+    </div>
+  </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+  <!-- START PANEL -->
+  <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <div class="panel-body">
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+                <% if @data.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                  </div>
+                <% end %>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Bí danh</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="user[username]" value="<%= @data.username %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Họ tên</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="user[name]" value="<%= @data.name %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Email</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="user[email]" value="<%= @data.email %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Mật khẩu</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" name="password" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Nhập lại mật khẩu</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" name="password_confirmation" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Cấp độ</label>
+                    <div class="col-sm-1">
+                        <select class="form-control select2" name="user[user_level_id]">
+                            <% @levels.each do |level| %>
+                            <option value="<%= level.id %>" <% if level.id == @data.user_level_id %>selected<% end %>><%= level.level %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Kinh Nghiệm</label>
+                    <div class="col-sm-5">
+                        <input type="number" class="form-control" name="user[user_exp]" value="<%= @data.user_exp %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-success" name="save">Save</button>
+                        <button class="btn" name="save_and_add_another">Save and add another</button>
+                        <button class="btn" name="save_and_edit">Save and edit</button>
+                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>

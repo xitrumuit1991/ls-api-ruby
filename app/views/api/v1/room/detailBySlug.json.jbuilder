@@ -1,11 +1,11 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				"#{request.base_url}#{@room.thumb.thumb.url}"
-json.thumb_mb			"#{request.base_url}#{@room.thumb.thumb_mb.url}"
+json.thumb				"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb"
+json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb"
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
-json.link_stream		"http://210.245.18.154:80/livemix/#{@room.id}/playlist.m3u8"
+json.link_stream		"http://210.245.18.154:80/livemix/#{@room.id}_aac/playlist.m3u8"
 
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
@@ -33,6 +33,7 @@ json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
 	json.avatar			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/avatar"
+	json.cover			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/cover"
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp
@@ -50,7 +51,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
-	json.date	schedule.start.strftime('%d/%m/%Y')
-	json.start	schedule.start.strftime('%H:%M')
-	json.end	schedule.end.strftime('%H:%M')
+	json.date	schedule.start ? schedule.start.strftime('%d/%m/%Y') : nil
+	json.start 	schedule.start ? schedule.start.strftime('%H:%M') : nil
+	json.end	schedule.end ? schedule.end.strftime('%H:%M') : nil
 end

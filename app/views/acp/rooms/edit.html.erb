@@ -1,0 +1,289 @@
+<div class="jumbotron" data-pages="parallax">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
+        <div class="inner">
+            <!-- START BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="/acp">Home</a></li>
+                <li><a href="/acp/<%= controller_name %>">Rooms</a></li>
+                <li><a href="#" class="active">Room Detail</a></li>
+            </ul>
+            <!-- END BREADCRUMB -->
+        </div>
+    </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <div class="panel-heading">
+            <span class="bold">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
+        </div>
+        <div class="panel-body">
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+                <% if @data.errors.any? %>
+                  <div id="error_explanation">
+                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                  </div>
+                <% end %>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Banner</label>
+                    <div class="col-sm-5">
+                      <img src="<%= @data.thumb_url %>" class="img-thumbnail" >
+                      <input type="file" name="room[thumb]" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Idols</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="room[broadcaster_id]">
+                            <% @idols.each do |idol| %>
+                            <option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Title</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="room[title]" value="<%= @data.title %>" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Room type</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="room[room_type_id]">
+                            <% @room_types.each do |type| %>
+                            <option value="<%= type.id %>" <% if type.id == @data.room_type_id %>selected<% end %>><%= type.title %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-8">Lịch diễn
+                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#model-add-new-schedule"><i class="fs-14 pg-plus"></i>Add new</button>
+                    </label>
+                    <div class="col-sm-8">
+                      <table class="table table-hover demo-table-search data-table">
+                        <thead>
+                          <tr>
+                              <th style="width:20%">Ngày bắt đầu</th>
+                              <th style="width:20%">Giờ bắt đầu</th>
+                              <th style="width:20%">Giờ kết thúc</th>
+                              <th style="width:20%">Ngày kết thúc</th>
+                              <th style="width:20%"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% @data.schedules.each do |schedule| %>
+                            <tr>
+                              <td class="v-align-middle">
+                                <p><%= schedule.start.strftime('%d-%m-%Y') %></p>
+                              </td>
+                              <td class="v-align-middle">
+                                <p><%= schedule.start.strftime('%H:%M') %></p>
+                              </td>
+                              <td class="v-align-middle">
+                                <p><%= schedule.end.strftime('%H:%M') %></p>
+                              </td>
+                              <td class="v-align-middle">
+                                <p><%= schedule.end.strftime('%d-%m-%Y') %></p>
+                              </td>
+                              <td class="v-align-middle">
+                                <%= link_to(acp_schedule_path(schedule), {class: "btn btn-success pull-right", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                              </td>
+                            </tr>
+                          <% end %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Background Default</label>
+                    <div class="col-sm-12">
+                      <div class="multiple-items">
+                        <% @room_backgrounds.each do |image| %>
+                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Background Uploaded</label>
+                    <label class="col-sm-12">
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#model-add-new-background"><i class="fs-14 pg-plus"></i>Add new</button>
+                    </label>
+                    <div class="col-sm-12">
+                      <div class="multiple-items">
+                        <% @data.broadcaster.broadcaster_backgrounds.each do |image| %>
+                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-success" name="save">Save</button>
+                        <button class="btn" name="save_and_add_another">Save and add another</button>
+                        <button class="btn" name="save_and_edit">Save and edit</button>
+                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
+    <!-- END PANEL -->
+    <!-- Modal Add New Schedule -->
+    <div class="modal fade slide-up disable-scroll" id="model-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content-wrapper">
+            <%= form_tag acp_schedules_path do %>
+              <input type="hidden" name="room_id" value="<%= @data.id %>">
+              <div class="modal-content">
+                  <div class="modal-header clearfix text-left">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <i class="pg-close fs-14"></i>
+                      </button>
+                      <h5>Add new schedules</h5>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <div class="row">
+                        <label class="col-sm-3">Ngày bắt đầu</label>
+                        <label class="col-sm-2">Giờ bắt đầu</label>
+                        <label class="col-sm-2">Giờ kết thúc</label>
+                        <label class="col-sm-3">Ngày kết thúc</label>
+                        <label class="col-sm-2"></label>
+                      </div>
+                    </div>
+                    <div class="form-group schedules">
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <input type="text" name="schedule[][date_start]" class="date start form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="text" name="schedule[][time_start]" class="time start form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <input type="text" name="schedule[][time_end]" class="time end form-control" required/>
+                        </div>
+                        <div class="col-sm-3">
+                          <input type="text" name="schedule[][date_end]" class="date end form-control" required/>
+                        </div>
+                        <div class="col-sm-2">
+                          <button type="button" class="btn btn-success remove-schedule"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-sm-10"></div>
+                        <div class="col-sm-2">
+                          <button type="button" class="btn btn-success add-new-schedule"><i class="fs-14 pg-plus"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer"> 
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fs-14 pg-close"></i>Close</button>
+                  </div>
+              </div>
+            <% end %>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- Modal Add New Background Uploaded -->
+    <div class="modal fade slide-up disable-scroll" id="model-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+        <div class="modal-dialog">
+          <div class="modal-content-wrapper">
+            <%= form_tag acp_broadcaster_backgrounds_path, multipart: true do %>
+              <input type="hidden" name="background[broadcaster_id]" value="<%= @data.broadcaster.id %>">
+              <input type="hidden" name="room_id" value="<%= @data.id %>">
+              <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <i class="pg-close fs-14"></i>
+                  </button>
+                  <h5>Add new image</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3">Image</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="background[image]">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"> 
+                  <button type="submit" class="btn btn-success">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fs-14 pg-close"></i>Close</button>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<% content_for :javascript do %>
+  <%= javascript_include_tag "/assets/plugins/timepicker/timepicker.min", "/assets/plugins/datepair/jquery.datepair.min", "/assets/js/idol" %>
+  <script>
+  // initialize input widgets first
+  $('#model-add-new-schedule .time').timepicker({
+      'showDuration': true,
+      'timeFormat': 'g:ia'
+  });
+
+  $('#model-add-new-schedule .date').datepicker({
+      'format': 'd/m/yyyy',
+      'autoclose': true
+  });
+
+  // initialize datepair
+  $('#model-add-new-schedule .row').datepair({
+      defaultTimeDelta: 7200000
+  });
+  </script>
+<% end %>
+
+<% content_for :stylesheets do %>
+  <style>
+  .datepicker.dropdown-menu{z-index: 9999 !important}
+  .ui-timepicker-wrapper{
+    overflow-y: auto;
+    height: 150px;
+    width: 5.7em;
+    background: #fff;
+    border: 1px solid #ddd;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    outline: none;
+    z-index: 10001;
+    margin: 0;
+  }
+  .ui-timepicker-list{margin: 0;padding: 0;list-style: none;}
+  .ui-timepicker-list li{cursor: pointer;}
+  </style>
+<% end %>

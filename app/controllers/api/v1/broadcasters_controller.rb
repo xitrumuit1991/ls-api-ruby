@@ -1,5 +1,6 @@
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  include YoutubeHelper
 
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
   before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :search, :getRoomFeatured]
@@ -86,7 +87,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     giftLogs = @user.broadcaster.rooms.order("is_privated DESC").first.gift_logs
     @records = Array.new
     giftLogs.each do |giftLog|
-      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image_url}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image.square}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
       @records = @records.push(aryLog)
     end
 
@@ -98,7 +99,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
     actionLogs = @user.broadcaster.rooms.order("is_privated DESC").first.action_logs
     actionLogs.each do |actionLog|
-      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image_url}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image.square}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
       @records = @records.push(aryLog)
     end
 
@@ -146,12 +147,14 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   api! "Create video"
   def videos
-    videos = JSON.parse(params[:videos].to_json)
-    if @user.broadcaster.videos.create(videos)
-      return head 201
-    else
-      render plain: 'System error !', status: 400
+    return head 400 if params[:videos].nil?
+    response_videos = []
+    params[:videos].each do |key, video|
+      id = youtubeID video[:link]
+      link = 'https://www.youtube.com/embed/'+id
+      response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
     end
+    render json:response_videos, status: 201
   end
 
   api! "Delete videos"
@@ -160,7 +163,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 400, :desc => "can't delete video"
   def deleteVideos
     if @user.broadcaster.videos.present?
-      if @user.broadcaster.videos.where(:id => params[:videos]).destroy_all
+      if @user.broadcaster.videos.where(:id => params[:id]).destroy_all
         return head 200
       else
         return head 400
@@ -189,8 +192,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   EOS
   def followed
     max_page = (Float( @user.broadcasters.count )/5).ceil
-    if (params[:page].to_i + 1) > max_page
-      params[:page] = max_page - 1
+    if !params[:page].nil?
+      if (params[:page].to_i + 1) > max_page
+        params[:page] = max_page - 1
+      end
     end
     offset = params[:page].nil? ? 0 : params[:page].to_i * 5
     @users_followed = @user.broadcasters.limit(5).offset(offset)
@@ -232,7 +237,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def getFeatured
-    @featured = Featured.order(weight: :asc).limit(6)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
+    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
   end
 
   api! "get sticked broadcaster in homepage"

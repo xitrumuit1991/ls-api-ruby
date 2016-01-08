@@ -1,6 +1,6 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   include Api::V1::Authorize
-
+  helper YoutubeHelper
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 
   def profile
@@ -8,7 +8,26 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def publicProfile
     return head 400 if params[:id].nil?
-    @user = User.find_by_id(params[:id])
+    @user = User.find_by_username(params[:id])
+    @horoscope = horoscope(@user.birthday.zodiac_sign)
+  end
+
+  def horoscope(birthday)
+    arr = {
+      "Aries"       =>  "Bạch Dương",
+      "Taurus"      =>  "Kim Ngưu",
+      "Gemini"      =>  "Song Tử",
+      "Cancer"      =>  "Cự Giải",
+      "Leo"         =>  "Sư Tử",
+      "Virgo"       =>  "Thất Nữ",
+      "Libra"       =>  "Thiên Xứng",
+      "Scorpio"     =>  "Thiên Yết",
+      "Sagittarius" =>  "Nhân Mã",
+      "Capricornus" =>  "Ma Kết",
+      "Aquarius"    =>  "Bảo Bình",
+      "Pisces"      =>  "Song Ngư"
+    }
+    return arr[birthday]
   end
 
   def active
@@ -71,11 +90,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if params[:new_password] != nil and params[:new_password].to_s.length >= 6 and @user.authenticate(params[:password]) != false 
-      @user.password          = params[:new_password]
-    end
-
-    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6
+    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 8 and params[:name].to_s.length <= 20
       @user.name              = params[:name]
       @user.facebook_link     = params[:facebook]
       @user.twitter_link      = params[:twitter]
@@ -95,11 +110,29 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def updatePassword
+    if @user.authenticate(params[:password]) != false
+      if (params[:new_password] != nil or params[:new_password] != '')  and params[:new_password].to_s.length >= 6
+        @user.password = params[:new_password]
+        if @user.valid?
+          @user.save
+          return head 200
+        else
+          render json: @user.errors.messages, status: 400
+        end
+      else
+        render plain: 'Vui lòng nhập mật khẩu mới có độ dài tối thiểu là 6 kí tự', status: 400
+      end
+    else
+      render plain: 'Mật khẩu hiện tại không đúng!', status: 400
+    end
+  end
+
   def expenseRecords
     giftLogs = @user.gift_logs
     @records = Array.new
     giftLogs.each do |giftLog|
-      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image_url}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image.square}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
       @records = @records.push(aryLog)
     end
 
@@ -132,6 +165,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def avatarCrop
+    return head 400 if params[:avatar_crop].nil?
+    if @user.update(avatar_crop: params[:avatar_crop])
+      render json: @user.avatar_crop, status: 200
+    else
+      return head 401
+    end
+  end 
+
   def uploadCover
     return head 400 if params[:cover].nil?
     if @user.update(cover: params[:cover])
@@ -141,15 +183,26 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def coverCrop
+    return head 400 if params[:cover_crop].nil?
+    if @user.update(cover_crop: params[:cover_crop])
+      render json: @user.cover_crop, status: 200
+    else
+      return head 401
+    end
+  end
+
   def getAvatar
     begin
       @u = User.find(params[:id])
       if @u
-        file_url = "public#{@u.avatar.square}"
-        if FileTest.exist?(file_url)
+        file_url = "public#{@u.avatar_crop}"
+        if FileTest.file?(file_url)
           send_file file_url, type: 'image/png', disposition: 'inline'
+        elsif FileTest.file?("public#{@u.avatar.square}")
+          send_file "public#{@u.avatar.square}", type: 'image/png', disposition: 'inline'
         else
-          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
+          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'  
         end
       else
         send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
@@ -163,11 +216,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
     begin
       @u = User.find(params[:id])
       if @u
-        file_url = "public#{@u.cover.banner}"
-        if FileTest.exist?(file_url)
+        file_url = "public#{@u.cover_crop}"
+        if FileTest.file?(file_url)
           send_file file_url, type: 'image/jpg', disposition: 'inline'
+        elsif FileTest.file?("public#{@u.cover.banner}")
+          send_file "public#{@u.cover.banner}", type: 'image/jpg', disposition: 'inline'
         else
-          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
+          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'  
         end
       else
         send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'

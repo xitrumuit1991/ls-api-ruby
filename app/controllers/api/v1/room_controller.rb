@@ -1,8 +1,8 @@
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
-  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges]
+  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
     offset = params[:page].nil? ? 0 : params[:page].to_i * 6
@@ -13,6 +13,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     offset = params[:page].nil? ? 0 : params[:page].to_i * 6
     if params[:category_id].nil?
       @schedules = Schedule.where('start < ? AND end > ?', DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).limit(6).offset(offset)
+      # @schedules = Schedule.where('upddate_at < ? AND ? < ?', DateTime.now, DateTime.now, user.update_at+1).order(start: :asc, end: :asc).limit(6).offset(offset)
     else
       @schedules = Schedule.joins(:room).where('rooms.room_type_id = ? AND start < ? AND end > ?', params[:category_id], DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).limit(6).offset(offset)
     end
@@ -68,6 +69,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
   end
 
+  def thumbCrop
+    return head 400 if params[:thumb_crop].nil?
+    if @user.broadcaster.rooms.order("is_privated ASC").first.update(thumb_crop: params[:thumb_crop])
+      render json: @user.broadcaster.rooms.order("is_privated ASC").first.thumb_crop, status: 200
+    else
+      return head 401
+    end
+  end
+
   def uploadBackground
     return head 400 if params[:background].nil?
     if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
@@ -84,22 +94,21 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadBackgroundRoom
     return head 400 if params[:background].nil?
-    backgrounds = []
-    params[:background].each do |background|
-      pictures << @user.broadcaster.broadcaster_backgrounds.create({image: background})
+    background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
+    render json: background, status: 201
+  end
+
+  def deleteBackground
+    return head 400 if params[:background_id].nil?
+    if @user.broadcaster.broadcaster_backgrounds.where(:id => params[:background_id]).destroy_all
+      return head 200
     end
-    render json: backgrounds, status: 201
   end
 
   def changeBackground
     return head 400 if params[:background_id].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
-      room.broadcaster_background_id = params[:background_id]
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: params[:background_id])
+      return head 200
     else
       render plain: 'System error !', status: 400
     end
@@ -107,13 +116,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def changeBackgroundDefault
     return head 400 if params[:background_id].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id} AND is_privated = 0").take
-      room.room_background_id = params[:background_id]
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
+    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: nil,room_background_id: params[:background_id])
+      return head 200
     else
       render plain: 'System error !', status: 400
     end
@@ -156,6 +160,43 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       status[split[2].to_i] = eval(redis.get(key))
     end
     render json: status, status: 200
+  end
+
+  def getThumb
+    begin
+      @room = Room.find(params[:id])
+      if @room
+        path_thumb_crop = "public#{@room.thumb_crop}"
+        if FileTest.file?(path_thumb_crop)
+          send_file path_thumb_crop, type: 'image/jpg', disposition: 'inline'
+        elsif FileTest.file?("public#{@room.thumb.thumb}")
+          send_file "public#{@room.thumb.thumb}", type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/room_setting_default.jpg', type: 'image/jpg', disposition: 'inline'
+    end
+  end
+
+  def getThumbMb
+    begin
+      @room = Room.find(params[:id])
+      if @room
+        if FileTest.file?("public#{@room.thumb.thumb_mb}")
+          send_file "public#{@room.thumb.thumb_mb}", type: 'image/jpg', disposition: 'inline'
+        else
+          send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
+        end
+      else
+        send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
+      end
+    rescue
+      send_file 'public/default/thumb_mb_default.jpg', type: 'image/jpg', disposition: 'inline'
+    end
   end
 
   private

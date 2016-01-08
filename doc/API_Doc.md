@@ -432,6 +432,7 @@
       username: "marie_cummerata",
       email: "marie.cummerata@hotmail.com",
       birthday: "2009-12-04",
+      horoscope: "Bo cap",
       gender: "nam",
       address: "42966 Jude Village",
       phone: "281.837.2686",
@@ -441,6 +442,9 @@
       twitter: null,
       instagram: null,
       heart: 0,
+      user_level: 1,
+      broadcaster_level: 2,
+      percent: 20,
       user_exp: 0,
       bct_exp: 0,
       description: "Illo sed aspernatur. Ad similique qui iusto corrupti molestias. Et sunt veritatis beatae sit possimus tempore aut.",
@@ -559,7 +563,8 @@
         "user_exp": 8889546,
         "level": 12,
         "room_id": 5,
-        "onair": true
+        "onair": true,
+        "room_slug":room-2
     },
     {
         "id": 1,
@@ -571,6 +576,7 @@
         "level": 19,
         "room_id": 3,
         "onair": false,
+        "room_slug":room-3
         "schedule": {
             "date": "02/11",
             "start": "10:00"
@@ -1272,7 +1278,7 @@
 	    + status 400: ```{error: "Action not full"}```
 	
 ### Send gifts
-- URI: **/send-gifts **
+- URI: **/send-gifts**
 - Method: **POST**
 - Header:
 	+ Content-Type: application/json
@@ -1281,7 +1287,7 @@
     ```
     {
         room_id: 123,
-        action_id: 123,
+        gift_id: 123,
         quantity: 123
     }
     ```
@@ -1308,12 +1314,11 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
+	+ status: **401**, **404**, **400**
 	+ errors: 
 	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough money "}```
 	    + status 404: ```{error: "Invalid lounge index "}```
-	    + status 400: ```{error: "Bad request "}```
+	    + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
 
 ### Send heart
 - URI: **/send-hearts **

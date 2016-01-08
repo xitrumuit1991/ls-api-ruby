@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
+            <% if @data.errors.any? %>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <h2>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra, Bạn không thể lưu áp phích này: </h2>
+                  <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                </div>
+            <% end %>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Tiêu đề</label>
+                  <input type="text" class="form-control" name="data[title]" value="<%= @data.title %>" required >
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Tiêu đề phụ</label>
+                  <input type="text" class="form-control" name="data[sub_title]" value="<%= @data.sub_title %>" required >
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Hình ảnh</label>
+                  <input type="file" class="form-control" name="data[thumb]">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default">
+                  <label>Liên kết</label>
+                  <input type="text" class="form-control" name="data[link]" value="<%= @data.link %>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default">
+                  <label>Thứ tự</label>
+                  <input type="number" class="form-control" name="data[weight]" value="<%= @data.weight %>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+                <span>Cập nhật</span>
+              </button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

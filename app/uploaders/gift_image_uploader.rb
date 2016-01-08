@@ -18,7 +18,7 @@ class GiftImageUploader < CarrierWave::Uploader::Base
 
   version :square do
     process :rails_admin_crop
-    process resize_to_fill: [100, 100]
+    process resize_to_fill: [50, 50]
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -58,7 +58,7 @@ class GiftImageUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   # def filename
-  #   "something.jpg" if original_filename
+  #   "Gift#{@model.id}.#{file.extension}" if original_filename
   # end
 
 end

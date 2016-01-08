@@ -1,0 +1,95 @@
+<div class="jumbotron" data-pages="parallax">
+  <div class="container-fluid sm-p-l-20 sm-p-r-20">
+    <div class="inner">
+      <!-- START BREADCRUMB -->
+      <ul class="breadcrumb">
+        <li><a href="/acp">Home</a></li>
+        <li><a href="#" class="active">Quà tặng</a></li>
+      </ul>
+      <!-- END BREADCRUMB -->
+    </div>
+  </div>
+</div>
+<div class="container-fluid bg-white">
+  <%= render 'shared/alert' %>
+  <!-- START PANEL -->
+  <div class="panel panel-transparent">
+    <div class="panel-heading">
+      <div class="pull-left">
+        <div class="col-xs-12">
+          <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
+        </div>
+      </div>
+      <div class="pull-left">
+        <div class="col-xs-12">
+          <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+      <form action="" method="post" id="data-table">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <table class="table table-hover demo-table-search data-table">
+          <thead>
+          <tr>
+            <th style="width:3%">
+              <div class="checkbox ">
+                <input type="checkbox" id="check-all">
+                <label for="check-all"></label>
+              </div>
+            </th>
+            <th style="width:20%">Tên</th>
+            <th style="width:10%">Hình ảnh</th>
+            <th style="width:10%">Giá</th>
+            <th style="width:10%">Giảm giá</th>
+            <th style="width:10%">Ngày tạo</th>
+            <th style="width:10%">Ngày cập nhật</th>
+            <th style="width:10%">Hành động</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @data.each do |item| %>
+              <tr id="row_page_<%= item.id %>">
+                <td class="v-align-middle">
+                  <div class="checkbox ">
+                    <input type="checkbox" name="item_id[]" value="<%= item.id %>" class="check-all" id="checkbox-<%= item.id %>">
+                    <label for="checkbox-<%= item.id %>"></label>
+                  </div>
+                </td>
+                <td class="v-align-middle ">
+                  <%= link_to(acp_gift_path(item)) do %><p><%= item.name %></p><% end %>
+                </td>
+                <td class="v-align-middle">
+                  <% if FileTest.exist?("public#{item.image.square}") %>
+                        <img src="<%="#{request.base_url}#{item.image.square}"%>" alt="<%= item.name %>">
+                  <% else %>
+                        No image
+                  <% end%>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.price %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.discount %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
+                </td>
+                <td class="v-align-middle">
+                  <%= link_to(edit_acp_gift_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
+                  <%= link_to(acp_gift_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                  </a>
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+  <!-- END PANEL -->
+</div>

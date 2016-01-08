@@ -1,0 +1,47 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+          <% if @data.errors.any? %>
+             <div class="alert alert-danger" role="alert">
+               <button class="close" data-dismiss="alert"></button>
+               <p>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra, Bạn không thể loại phòng này</p>
+              <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Tiêu đề</label>
+                <input type="text" class="form-control" name="data[title]" value="<%= @data.title %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Slug</label>
+                <input type="text" class="form-control" name="data[slug]" value="<%= @data.slug %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group form-group-default">
+                <label>Mô tả chi tiết</label>
+                <textarea class="form-control" name="data[description]" style="height:200px" required><%= @data.description %></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+              <span>Lưu</span>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

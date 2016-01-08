@@ -1,6 +1,7 @@
 class Slide < ActiveRecord::Base
+	validates :title, :description, :sub_description, :weight, :banner, presence: true
+
 	mount_uploader :banner, SlideUploader
-	# mount_uploader :thumb, SlideUploader
 
 	rails_admin do
 		configure :banner, :jcrop

@@ -8,7 +8,7 @@ json.gender				@user.gender
 json.address			@user.address
 json.phone				@user.phone
 json.avatar				"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
-json.cover				"#{request.base_url}#{@user.cover.banner}"
+json.cover				"#{request.base_url}/api/v1/users/#{@user.id}/cover"
 json.facebook			@user.facebook_link
 json.twitter			@user.twitter_link
 json.instagram			@user.instagram_link
@@ -31,5 +31,12 @@ end
 json.videos @user.broadcaster.videos do |video|
 	json.id		video.id
 	json.link	video.video
-	json.thumb	"#{request.base_url}#{video.thumb.url}"
+
+  if video.thumb.url.nil?
+    video_id = youtubeID(video.video)
+    json.thumb "http://img.youtube.com/vi/#{video_id}/hqdefault.jpg"
+  else
+    json.thumb	"#{request.base_url}#{video.thumb.url}"
+  end
+
 end

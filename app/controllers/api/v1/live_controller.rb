@@ -26,10 +26,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendMessage
     message = params[:message]
-    emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-    user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-    emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
-    return head 201
+    if message.length <= 150
+      emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+      user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+      emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
+      return head 201
+    else
+      return head 400
+    end
   end
 
   api! "send screentext message"
@@ -117,7 +121,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if dbAction.max_vote <= rAction
         redis.set("actions:#{@room.id}:#{action_id}", 0)
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-        emitter.of("/room").in(@room.id).emit("action done", { id: action_id })
+        emitter.of("/room").in(@room.id).emit("action done", { id: dbAction.id, image: dbAction.image.square })
         return head 200
       else
         render json: {error: "This action must be full before set to done"}, status: 400
@@ -134,6 +138,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 404, :desc => "gift not found"
   error :code => 400, :desc => "Bad request"
   def sendGifts
+    puts '==========================================='
+    puts 'aaaaaaaaaa'
     gift_id = params[:gift_id].to_i
     quantity = params[:quantity].to_i
     dbGift = Gift.find(gift_id)
@@ -144,15 +150,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(total)
           @room.broadcaster.increaseExp(total)
+          puts '==========================================='
+          puts 'bbbbbbbbbbb'
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
-
+          puts '==========================================='
+          puts 'ccccccccccc'
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
 
           return head 201
         rescue => e
+          puts '==========================================='
+          puts 'ddddddddddddddd'
+          puts '==========================================='
+          puts e.message
           render json: {error: e.message}, status: 400
         end
       else
@@ -166,9 +179,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   api! "buy VIP lounge"
   param :lounge, :number, :desc => "Longe index", :required => true
   param :cost, :number, :desc => "cost to buy lounge", :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started or dont have enough money"
   error :code => 404, :desc => "Invalid lounge index"
-  error :code => 400, :desc => "Bad request"
+  error :code => 400, :desc => "Bad request or maybe you miss subscribe room or room not started or dont have enough money"
   def buyLounge
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     cost = params[:cost].to_i
@@ -179,7 +191,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
             current_lounge = eval(current_lounge)
             if current_lounge[:cost].to_i >= cost
-              render json: {error: "Your bit must larger than curent cost"}, status: 403 and return
+              render json: {error: "Your bit must larger than curent cost"}, status: 400 and return
             end
           end
           @user.decreaseMoney(cost)
@@ -198,7 +210,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           render json: {error: e.message}, status: 400
         end
       else
-        render json: {error: "You don\'t have enough money"}, status: 403
+        render json: {error: "You don\'t have enough money"}, status: 400
       end
     else
       render json: {error: "This lounge doesn\'t exist"}, status: 404

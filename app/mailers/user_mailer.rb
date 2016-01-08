@@ -13,4 +13,10 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Active your account to complete registration')
   end
 
+  def confirm_forgot_password(user,forgot_code)
+    @user= user
+    @forgot_code = forgot_code
+    mail(to: @user.email, subject: 'Confirm to reset password')
+  end
+
 end

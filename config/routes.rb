@@ -1,11 +1,94 @@
 Rails.application.routes.draw do
 
 	apipie
-	devise_for :admins
+	devise_for :admins, controllers: { sessions: "admins/sessions" }
+	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
-  root 'index#index'
+  # ACP
+  namespace :acp do
+    get "/" => "index#index"
 
+		# Broadcasters
+		resources :broadcasters do
+			get 		'/basic/:id' => 'broadcasters#basic'
+			get 		'/room/:id' => 'broadcasters#room'
+			get 		'/gifts' => 'broadcasters#gifts'
+			get 		'/images' => 'broadcasters#images'
+			get 		'/videos' => 'broadcasters#videos'
+			get 		'/transactions' => 'broadcasters#transactions'
+			delete 	'/gift/:id' => 'broadcasters#destroy_gift'
+			delete 	'/image/:id' => 'broadcasters#destroy_image'
+			delete 	'/video/:id' => 'broadcasters#destroy_video'
+		end
+
+		# Users
+    resources :users
+  	get 	'/users/:id/transactions' => 'users#transactions'
+  	post 	'/users/:id/change_password' => 'users#change_password'
+
+		# Rooms
+    resources :rooms
+
+    # Broadcaster Backgrounds
+    resources :broadcaster_backgrounds
+
+    # Schedules
+    resources :schedules
+
+    # Broadcaster Backgrounds
+    resources :bct_images
+
+    # Broadcaster Backgrounds
+    resources :bct_videos
+
+    # Room Types
+    resources :room_types
+  	post 	'/room_types/destroy_m' => 'room_types#destroy_m'
+
+    # Gifts
+		resources :gifts
+		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+
+	 	# Broadcaster levels
+		resources :broadcaster_levels
+		post 	'/broadcaster_levels/destroy_m' => 'broadcaster_levels#destroy_m'
+
+		# User levels
+		resources :user_levels
+		post 	'/user_levels/destroy_m' => 'user_levels#destroy_m'
+
+		# Room actions
+		resources :room_actions
+		post 	'/room_actions/destroy_m' => 'room_actions#destroy_m'
+
+    # Featureds
+		resources :featureds
+		post 	'/featureds/destroy_m' => 'featureds#destroy_m'
+
+		# Home Featureds
+		resources :home_featureds
+		post 	'/home_featureds/destroy_m' => 'home_featureds#destroy_m'
+
+    # Room Featureds
+		resources :room_featureds
+		post 	'/room_featureds/destroy_m' => 'room_featureds#destroy_m'
+
+		# Posters
+		resources :posters
+		post 	'/posters/destroy_m' => 'posters#destroy_m'
+
+    # Room Backgrounds
+    resources :room_backgrounds
+		post 	'/room_backgrounds/destroy_m' => 'room_backgrounds#destroy_m'
+
+    # Room Backgrounds
+    resources :slides
+		post 	'/slides/destroy_m' => 'slides#destroy_m'
+
+  end
+
+  # API
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
@@ -14,6 +97,7 @@ Rails.application.routes.draw do
 			# auth
 			scope '/auth' do
 				get   '/logout'          => 'auth#logout'
+				get  '/:forgot_code/get-password' => 'auth#setNewPassword'
 				post  '/login'           => 'auth#login'
 				post  '/register'        => 'auth#register'
 				post  '/fb-register'     => 'auth#fbRegister'
@@ -21,6 +105,7 @@ Rails.application.routes.draw do
 				post  '/forgot'          => 'auth#forgotPassword'
 				post  '/verify-token'    => 'auth#verifyToken'
 				post  '/change'          => 'auth#changePassword'
+				post  '/forgot-code'     => 'auth#updateForgotCode'
 			end
 
 			# users
@@ -29,14 +114,17 @@ Rails.application.routes.draw do
 				get  '/:id/cover'       	=> 'user#getBanner'
 				post '/active'           	=> 'user#active'
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
-				get  '/room'				=> 'room#getPublicRoom'
+				get  '/room'							=> 'room#getPublicRoom'
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
-				get  '/:id'					=> 'user#publicProfile'
+				get  '/:id'								=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
+				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
+				post '/cover-crop'        => 'user#coverCrop'
+				post '/avatar-crop'       => 'user#avatarCrop'
 			end
 
 			# broadcasters
@@ -68,14 +156,15 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
+				get     '/user-ranking'      					=> 'ranks#userRanking'
 				get     '/top-heart-broadcaster'      => 'ranks#topBroadcasterRevcivedHeart'
 				get     '/top-level-grow-broadcaster'	=> 'ranks#topBroadcasterLevelGrow'
 				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
 				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
 				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
-				get     '/update-datatime-top'							=> 'ranks#updateCreatedAtBroadcaster'
-				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
-				get		'/:id/top-fans'		=> 'ranks#topUserFollowBroadcaster'
+				get     '/update-datatime-top'				=> 'ranks#updateCreatedAtBroadcaster'
+				get			'/top-gift-user-in-room'			=> 'ranks#topUserSendGiftRoom'
+				get			'/:id/top-fans'								=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
@@ -87,17 +176,22 @@ Rails.application.routes.draw do
 				get   	'/actions'          		=> 'room#getActions'
 				get   	'/gifts'            		=> 'room#getGifts'
 				get   	'/lounges'          		=> 'room#getLounges'
+				get  	'/:id/thumb'       			=> 'room#getThumb'
+				get 	'/:id/thumb_mb'				=> 'room#getThumbMb'
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
+				post  	'/thumb-crop'            		=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
-				put   	'/background-default'       => 'room#changeBackgroundDefault'
+				put   	'/background-default'   => 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground'
-				post  	'/schedule'					=> 'room#updateSchedule'
-				get		'/actions'					=> 'room#getActions'
-				get		'/gifts'					=> 'room#getGifts'
-				get		'/lounges'					=> 'room#getLounges'
+				post  	'/background-room'      => 'room#uploadBackgroundRoom'
+				post  	'/schedule'							=> 'room#updateSchedule'
+				get		'/actions'								=> 'room#getActions'
+				get		'/gifts'									=> 'room#getGifts'
+				get		'/lounges'								=> 'room#getLounges'
 				get   	'/:id'              		=> 'room#detail'
+				delete  '/background'      			=> 'room#deleteBackground'
 			end
 
 			# Live functions
