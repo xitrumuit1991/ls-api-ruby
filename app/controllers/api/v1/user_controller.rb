@@ -1,7 +1,8 @@
 class Api::V1::UserController < Api::V1::ApplicationController
+  require "./lib/payments/paygates"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :payments]
 
   def profile
   end
@@ -233,5 +234,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def payments
+    params[:username]
+    params[:pin]
+    params[:serial]
+    params[:provider]
+    test = Paygate::Login.new
+    puts '****************************************'
+    puts test._login
+    puts '****************************************'
   end
 end
