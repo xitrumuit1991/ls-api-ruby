@@ -5,8 +5,9 @@
       <div class="panel-body">
         <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
             <% if @data.errors.any? %>
-                <div id="error_explanation">
-                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Gifts from being saved:</h2>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu quà tặng này: </p>
                   <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                 </div>
             <% end %>
@@ -14,13 +15,13 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Name</label>
-                  <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>" required>
+                  <label>Tiêu đề</label>
+                  <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>">
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Image</label>
+                  <label>Hình ảnh</label>
                   <input type="file" class="form-control" name="data[image]">
                 </div>
               </div>
@@ -28,20 +29,20 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default">
-                  <label>Price</label>
-                  <input type="number" class="form-control" name="data[price]" value="<%= @data.price %>" required>
+                  <label>Giá</label>
+                  <input type="number" class="form-control" name="data[price]" value="<%= @data.price %>">
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group form-group-default">
-                  <label>Discount</label>
-                  <input type="number" class="form-control" name="data[discount]" value="<%= @data.discount %>" required>
+                  <label>Giảm giá</label>
+                  <input type="number" class="form-control" name="data[discount]" value="<%= @data.discount %>">
                 </div>
               </div>
             </div>
             <div class="row">
               <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
-                <span>Submit</span>
+                <span>Lưu</span>
               </button>
             </div>
         <% end %>
