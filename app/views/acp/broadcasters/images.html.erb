@@ -58,7 +58,7 @@
             <%= form_tag acp_bct_images_path, multipart: true do %>
               <input type="hidden" name="bct_image[broadcaster_id]" value="<%= @data.id %>">
               <div class="col-xs-6">
-                  <input type="file" name="bct_image[image]">
+                  <input type="file" name="bct_image[image]" required>
               </div>
               <div class="col-xs-6">
                   <button class="btn btn-success" name="save">Submit</button>
