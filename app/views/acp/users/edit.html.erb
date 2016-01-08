@@ -14,6 +14,7 @@
 <!-- END JUMBOTRON -->
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
         <div class="panel-heading text-complete">
@@ -124,6 +125,14 @@
                       <hr class="m-t-0"/>
                   </div>
                   <div class="modal-body">
+                    <div class="form-group">
+                      <% if flash[:change_password_alert] %>
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <% flash[:change_password_alert].each do |msg| %><p><%=msg%></p><% end %>
+                      </div>
+                      <% end %>
+                    </div>
                     <div class="form-group">
                       <label>Mật khẩu mới</label>
                       <div class="input-group input-password">

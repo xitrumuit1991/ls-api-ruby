@@ -22,7 +22,7 @@ class Acp::BctImagesController < Acp::ApplicationController
     if @data.save
       redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: @data.broadcaster.id }, notice: 'Image was successfully created.')
     else
-      render :new
+      redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: @data.broadcaster.id }, alert: @data.errors.full_messages)
     end
   end
 
