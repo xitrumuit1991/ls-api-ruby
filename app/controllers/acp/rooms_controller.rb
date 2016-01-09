@@ -19,6 +19,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def create
 		@data = @model.new(parameters)
+		@data.is_privated = false
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Room was successfully created.')
 		else

@@ -17,15 +17,7 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-              <%= render 'nav_tabs' %>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-body">
             <%= form_for [:acp, @room], :html => {:class => "form_room", multipart: true } do |f| %>
                 <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
@@ -111,7 +103,7 @@
                       <div class="multiple-items">
                         <% @room_backgrounds.each do |image| %>
                             <div class="relative">
-                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
                             </div>
                         <% end %>
                       </div>
@@ -128,8 +120,8 @@
                       <div class="multiple-items">
                         <% @data.broadcaster_backgrounds.each do |image| %>
                             <div class="relative">
-                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
-                              <a href="#" class="btn-close">&times;</a>
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
+                              <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
                             </div>
                         <% end %>
                       </div>

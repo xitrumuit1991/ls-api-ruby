@@ -44,8 +44,13 @@ class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
 	end
 
 	def destroy
+		prev_path = Rails.application.routes.recognize_path(request.referrer)
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Background was successfully destroyed.')
+		if prev_path[:controller] == 'acp/rooms'
+      redirect_to({ controller: 'rooms', action: 'edit', id: @data.broadcaster.rooms.find_by_is_privated(false) }, notice: "Background đã được xóa thành công.")
+    else
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id }, notice: "Background đã được xóa thành công.")
+    end
 	end
 
 	private

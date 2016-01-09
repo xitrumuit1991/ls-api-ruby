@@ -17,15 +17,7 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading text-complete">
-            <span class="bold text-uppercase">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-              <%= render 'nav_tabs' %>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
                 <% if @data.errors.any? %>
