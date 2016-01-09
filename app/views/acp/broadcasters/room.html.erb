@@ -22,29 +22,7 @@
         </div>
         <div class="panel-body">
             <div class="pull-left">
-                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/basic/<%= @data.user.id %>">Thông tin cơ bản</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
-                    </li>
-                    <li class="active">
-                        <a href="">Phòng</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
-                    </li>
-                </ul>
+              <%= render 'nav_tabs' %>
             </div>
             <div class="clearfix"></div>
         </div>
@@ -283,18 +261,18 @@
   <%= javascript_include_tag "/assets/plugins/timepicker/timepicker.min", "/assets/plugins/datepair/jquery.datepair.min", "/assets/js/idol" %>
   <script>
   // initialize input widgets first
-  $('#model-add-new-schedule .time').timepicker({
+  $('#modal-add-new-schedule .time').timepicker({
       'showDuration': true,
       'timeFormat': 'g:ia'
   });
 
-  $('#model-add-new-schedule .date').datepicker({
+  $('#modal-add-new-schedule .date').datepicker({
       'format': 'd/m/yyyy',
       'autoclose': true
   });
 
   // initialize datepair
-  $('#model-add-new-schedule .row').datepair({
+  $('#modal-add-new-schedule .row').datepair({
       defaultTimeDelta: 7200000
   });
   </script>
