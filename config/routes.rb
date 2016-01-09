@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 		# Broadcasters
 		resources :broadcasters do
 			get 		'/basic/:id' => 'broadcasters#basic'
-			get 		'/room/:id' => 'broadcasters#room'
+			get 		'/room' => 'broadcasters#room'
 			get 		'/gifts' => 'broadcasters#gifts'
 			get 		'/images' => 'broadcasters#images'
 			get 		'/videos' => 'broadcasters#videos'

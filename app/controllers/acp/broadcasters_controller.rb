@@ -12,6 +12,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def new
 		@data = @model.new
+		@users = User.all.order('id desc')
 	end
 
 	def edit
@@ -23,13 +24,20 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def room
-		@room = @data.rooms.find_by_is_privated(false)
-		@room_types = RoomType.all.order('id desc')
-		@room_backgrounds = RoomBackground.all.order('id desc')
+		if @room = @data.rooms.find_by_is_privated(false)
+			@room_types = RoomType.all.order('id desc')
+			@room_backgrounds = RoomBackground.all.order('id desc')
+		else
+			redirect_to({ action: 'index' }, alert: 'Idol này chưa có phòng.')
+		end
 	end
 
 	def gifts
-		@gifts = @data.rooms.find_by_is_privated(false).gift_logs.order('id desc')
+		if room = @data.rooms.find_by_is_privated(false)
+			@gifts = room.gift_logs.order('id desc')
+		else
+			redirect_to({ action: 'index' }, alert: 'Idol này chưa có phòng.')
+		end
 	end
 
 	def images
@@ -46,16 +54,18 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def create
 		@data = @model.new(parameters)
+		@data.user_id = params[:data][:user_id]
 		if @data.save
-			redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully created.')
+			redirect_to({ action: 'index' }, notice: 'Idol was successfully created.')
 		else
+			@users = User.all.order('id desc')
 			render :new
 		end
 	end
 
 	def update
 		if @data.update(parameters)
-			redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully updated.')
+			redirect_to({ action: 'index' }, notice: 'Idol was successfully updated.')
 		else
 			render :edit
 		end
@@ -63,7 +73,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully destroyed.')
+		redirect_to({ action: 'index' }, notice: 'Idol was successfully destroyed.')
 	end
 
 	def destroy_gift
