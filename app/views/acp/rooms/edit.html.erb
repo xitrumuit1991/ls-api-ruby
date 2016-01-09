@@ -5,7 +5,7 @@
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
                 <li><a href="/acp/<%= controller_name %>">Rooms</a></li>
-                <li><a href="#" class="active">Room Detail</a></li>
+                <li><a href="#" class="active">Detail</a></li>
             </ul>
             <!-- END BREADCRUMB -->
         </div>
@@ -34,7 +34,12 @@
                     <label class="col-sm-12">Banner</label>
                     <div class="col-sm-5">
                       <img src="<%= @data.thumb_url %>" class="img-thumbnail" >
-                      <input type="file" name="room[thumb]" >
+                      <div class="cleafix">
+                        <label class="btn btn-success">
+                          <input type="file" name="room[thumb]" class="hidden">
+                          Upload banner
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -117,7 +122,9 @@
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @room_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -132,7 +139,10 @@
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @data.broadcaster.broadcaster_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
+                              <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -239,7 +249,10 @@
                     <div class="form-group">
                         <label class="col-sm-3">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" name="background[image]" required>
+                            <label class="btn btn-success">
+                              <input type="file" name="background[image]" class="hidden" required>
+                              Upload banner
+                            </label>
                         </div>
                     </div>
                 </div>

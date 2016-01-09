@@ -17,15 +17,7 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-              <%= render 'nav_tabs' %>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-heading">
           <div class="pull-left">
               <div class="col-xs-12">

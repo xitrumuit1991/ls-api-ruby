@@ -17,9 +17,7 @@ Rails.application.routes.draw do
 			get 		'/images' => 'broadcasters#images'
 			get 		'/videos' => 'broadcasters#videos'
 			get 		'/transactions' => 'broadcasters#transactions'
-			delete 	'/gift/:id' => 'broadcasters#destroy_gift'
-			delete 	'/image/:id' => 'broadcasters#destroy_image'
-			delete 	'/video/:id' => 'broadcasters#destroy_video'
+			post 		'/ajax_change_background' => 'broadcasters#ajax_change_background'
 		end
 
 		# Users
