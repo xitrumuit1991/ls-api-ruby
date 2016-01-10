@@ -57,7 +57,7 @@
                 <td class="v-align-middle">
                   <% if FileTest.exist?("public#{item.image.square}") %>
                       <%= link_to(acp_gift_path(item)) do %>
-                          <img src="<%="#{request.base_url}#{item.image.square}"%>">
+                          <img src="<%="#{request.base_url}#{item.image.square}"%>" />
                       <% end %>
                   <% else %>
                         No image
