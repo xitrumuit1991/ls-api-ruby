@@ -123,7 +123,12 @@
                       <div class="multiple-items">
                         <% @room_backgrounds.each do |image| %>
                             <div class="relative">
-                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
+                              <label class="background-box block full-width">
+                                <input type="checkbox" class="hidden" name="background" />
+                                <span class="block">
+                                  <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
+                                </span>
+                              </label>
                             </div>
                         <% end %>
                       </div>
@@ -140,8 +145,13 @@
                       <div class="multiple-items">
                         <% @data.broadcaster.broadcaster_backgrounds.each do |image| %>
                             <div class="relative">
-                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
-                              <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
+                              <label class="background-box block full-width">
+                                <input type="checkbox" class="hidden" name="background" />
+                                <span class="block">
+                                  <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
+                                  <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
+                                </span>
+                              </label>
                             </div>
                         <% end %>
                       </div>
