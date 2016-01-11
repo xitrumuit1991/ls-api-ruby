@@ -241,7 +241,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
         if user.present?
           new_password    = SecureRandom.hex(5)
-          if user.update(pasword: new_pasword)
+          if user.update(password: new_password)
             UserMailer.reset_password(user, new_password).deliver_now
             render json: user.password,status: 200
           end
