@@ -124,7 +124,7 @@
                         <% @room_backgrounds.each do |image| %>
                             <div class="relative">
                               <label class="background-box block full-width">
-                                <input type="checkbox" class="hidden" name="background" />
+                                <input type="radio" class="hidden" name="background" />
                                 <span class="block">
                                   <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
                                 </span>
@@ -146,7 +146,7 @@
                         <% @data.broadcaster.broadcaster_backgrounds.each do |image| %>
                             <div class="relative">
                               <label class="background-box block full-width">
-                                <input type="checkbox" class="hidden" name="background" />
+                                <input type="radio" class="hidden" name="background" />
                                 <span class="block">
                                   <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
                                   <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
