@@ -36,6 +36,7 @@ en:
 
         #Broadcaster Level
         broadcaster_level:
+          level: ""
           min_heart: ""
           grade: ""
 
