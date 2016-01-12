@@ -29,7 +29,7 @@ module Paygate
 			puts '---------------------------'
 			begin
 				client = Savon.client(wsdl: $webservice)
-				result = client.call(:login,  message: { :m_UserName => $m_UserName, :m_Pass => "Tg2SiymgvKu0oLkv/cR8iLhHDp2+hjixiSejQxwTfrsgqQM90azj3LbbEsHoQGZts7SBVkOKGwq0pbmKkv9iGqAm+ZxGQ8Dvfx04drAgkTmY08AW9D9xb3XxGgj7IxOyEzQRnzXzm0IYdZHwSZZCq7Rg32H0v5gH7rVrqoI/bKUljG2INxdgf2Ga967f40JXM/6JlzU9reGk5JLfv1RVyEc2tjny+HAiI7MSKcxz/bpwgZcOWPOFS+NdxfpB4Yi3rGh0VWx16tHRPJk67mcwfBZHtoiMPFVnk2KoGaT391O+bAJa9WsHef8nA2GaOrxwdap0XVFUibCaf7otPlvfaQ==", :m_PartnerID => $m_PartnerID })
+				result = client.call(:login,  message: { :m_UserName => $m_UserName, :m_Pass => encrypedPass, :m_PartnerID => $m_PartnerID })
 				# puts '---------------------------'
 				# puts $m_UserName
 				# puts '---------------------------'
