@@ -1,3 +1,7 @@
+require 'nokogiri'
+require 'ostruct'
+require 'open-uri'
+
 $m_PartnerID   	= "charging01"
 $m_MPIN        	= "pajwtlzcb"
 $m_UserName    	= "charging01"
@@ -6,7 +10,6 @@ $m_PartnerCode 	= "00477"
 $webservice 	= "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
 # Ten tai khoan nguoi dung tren he thong doi tac
 $m_Target 		= "useraccount1";
-
 module Paygate
 	class Login
 		def _login
@@ -17,30 +20,18 @@ module Paygate
 				encrypedPass = rSAClass.encrypt($m_Pass);
 			end
 
-			pass = Base64.encode64(encrypedPass)
-			puts '--------------pass-------------'
-			puts pass.length
-			puts pass
-			puts '---------------------------'
-
-			puts '--------------encrypedPass-------------'
-			puts encrypedPass.length
-			puts encrypedPass
-			puts '---------------------------'
+			pass = Base64.encode64(encrypedPass).gsub("\n",'')
 			begin
 				client = Savon.client(wsdl: $webservice)
-				result = client.call(:login,  message: { :m_UserName => $m_UserName, :m_Pass => encrypedPass, :m_PartnerID => $m_PartnerID })
-				# puts '---------------------------'
-				# puts $m_UserName
-				# puts '---------------------------'
-				# puts encrypedPass
-				# puts '---------------------------'
-				# puts $m_PartnerID
-				puts '------------result---------------'
-				puts result
-				puts '---------------------------'
+				result = client.call(:login,  message: { :m_UserName => $m_UserName, :m_Pass => pass, :m_PartnerID => $m_PartnerID })
 			rescue Exception => e
+				return head 401
 			end
+			result = Nokogiri::XML.parse(result.to_s)
+			page = result.at('multiRef')
+			puts '===============message=================='
+			puts page.at('sessionid').text
+			puts '===============message=================='
 		end
 	end
 
@@ -76,19 +67,16 @@ module Paygate
 			while i < y  do
 				crypttext = ''
 				source[y,10]
-				crypttext = Base64.encode64(pub_key.public_encrypt(source[j,10].to_s))
+				crypttext = pub_key.public_encrypt(source[j,10].to_s)
 				crt += crypttext
 				crt += ":::";
 				j = j+10
 				i = i+1
 			end
 			if source.length%10 > 0
-				crypttext = Base64.encode64(pub_key.public_encrypt(source[j,source.length].to_s))
+				crypttext = pub_key.public_encrypt(source[j,source.length].to_s)
 				crt += crypttext
 			end
-			puts '==================pub_key.public_encrypt(source[j,source.length].to_s) ===================='
-			puts pub_key.public_encrypt("gmwtwjfws")
-			puts '==========================================================================================='
 			return crt
 		end
 
