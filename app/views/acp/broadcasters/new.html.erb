@@ -4,7 +4,7 @@
             <!-- START BREADCRUMB -->
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
-                <li><a href="/acp/<%= controller_name %>">Room Types</a></li>
+                <li><a href="/acp/<%= controller_name %>">Idols</a></li>
                 <li><a href="#" class="active">Add</a></li>
             </ul>
             <!-- END BREADCRUMB -->
@@ -15,6 +15,96 @@
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
     <!-- START PANEL -->
-    <%= render 'form' %>
+    <div class="panel panel-transparent">
+        <div class="panel-body">
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
+                <% if @data.errors.any? %>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this idol from being saved:</p>
+                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                  </div>
+                <% end %>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">User</label>
+                    <div class="col-sm-5">
+                        <select class="form-control select2" name="data[user_id]">
+                            <% @users.each do |user| %>
+                            <option value="<%= user.id %>" <% if user.id == @data.user_id %>selected<% end %>><%= user.name %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Tên idol</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="data[fullname]" value="<%= @data.fullname %>">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Loại</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="data[bct_type_id]">
+                            <% @bct_types.each do |type| %>
+                            <option value="<%= type.id %>" <% if type.id == @data.bct_type_id %>selected<% end %>><%= type.title %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Cấp độ</label>
+                    <div class="col-sm-2">
+                        <select class="form-control select2" name="data[broadcaster_level_id]">
+                            <% @levels.each do |level| %>
+                            <option value="<%= level.id %>" <% if level.id == @data.broadcaster_level_id %>selected<% end %>><%= level.level %></option>
+                            <% end %>
+                        </select>
+                    </div>
+                  </div>
+                </div>                
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Kinh Nghiệm</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="data[broadcaster_exp]" value="<%= @data.broadcaster_exp %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row"> 
+                    <label class="col-sm-12">Số tim nhận được</label>
+                    <div class="col-sm-5">
+                        <input type="number" class="form-control" name="data[recived_heart]" value="<%= @data.recived_heart %>" required="">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Mô tả</label>
+                    <div class="col-sm-5">
+                        <textarea class="form-control" name="data[description]" style="height:200px"><%= @data.description %></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-sm-12">
+                        <button class="btn btn-success" name="save">Save</button>
+                        <button class="btn" name="save_and_add_another">Save and add another</button>
+                        <button class="btn" name="save_and_edit">Save and edit</button>
+                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+        </div>
+    </div>
     <!-- END PANEL -->
 </div>

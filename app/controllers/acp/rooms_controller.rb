@@ -19,6 +19,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def create
 		@data = @model.new(parameters)
+		@data.is_privated = false
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Room was successfully created.')
 		else
@@ -35,7 +36,11 @@ class Acp::RoomsController < Acp::ApplicationController
         redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
       end
 		else
-			render :edit
+			if prev_path[:controller] == 'acp/rooms'
+				render :edit
+			else
+        redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
+			end
 		end
 	end
 

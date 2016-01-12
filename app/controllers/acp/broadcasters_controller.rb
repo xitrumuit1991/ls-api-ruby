@@ -1,7 +1,7 @@
 class Acp::BroadcastersController < Acp::ApplicationController
 	before_filter :init
 	before_action :load_data, only: [:new, :create, :edit, :update]
-	before_action :set_data, only: [:show, :basic, :edit, :room, :gifts, :images, :videos, :transactions, :update, :destroy, :destroy_gift, :destroy_image, :destroy_video]
+	before_action :set_data, only: [:show, :basic, :edit, :room, :gifts, :images, :videos, :transactions, :update, :destroy, :destroy_gift, :destroy_image, :destroy_video, :ajax_change_background]
 
 	def index
 		@data = @model.all.order('id desc')
@@ -12,6 +12,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def new
 		@data = @model.new
+		@users = User.all.order('id desc')
 	end
 
 	def edit
@@ -23,13 +24,20 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def room
-		@room = @data.rooms.find_by_is_privated(false)
-		@room_types = RoomType.all.order('id desc')
-		@room_backgrounds = RoomBackground.all.order('id desc')
+		if @room = @data.rooms.find_by_is_privated(false)
+			@room_types = RoomType.all.order('id desc')
+			@room_backgrounds = RoomBackground.all.order('id desc')
+		else
+			redirect_to({ action: 'index' }, alert: 'Idol này chưa có phòng.')
+		end
 	end
 
 	def gifts
-		@gifts = @data.rooms.find_by_is_privated(false).gift_logs.order('id desc')
+		if room = @data.rooms.find_by_is_privated(false)
+			@gifts = room.gift_logs.order('id desc')
+		else
+			redirect_to({ action: 'index' }, alert: 'Idol này chưa có phòng.')
+		end
 	end
 
 	def images
@@ -46,16 +54,18 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def create
 		@data = @model.new(parameters)
+		@data.user_id = params[:data][:user_id]
 		if @data.save
-			redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully created.')
+			redirect_to({ action: 'index' }, notice: 'Idol was successfully created.')
 		else
+			@users = User.all.order('id desc')
 			render :new
 		end
 	end
 
 	def update
 		if @data.update(parameters)
-			redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully updated.')
+			redirect_to({ action: 'index' }, notice: 'Idol was successfully updated.')
 		else
 			render :edit
 		end
@@ -63,43 +73,13 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Broadcaster was successfully destroyed.')
+		redirect_to({ action: 'index' }, notice: 'Idol was successfully destroyed.')
 	end
 
-	def destroy_gift
-		if @data.rooms.find_by_is_privated(false).gift_logs.present?
-      if @data.rooms.find_by_is_privated(false).gift_logs.find(params[:id]).destroy
-        redirect_to({ action: 'gifts', broadcaster_id: @data.id }, notice: 'Gift was successfully deleted.')
-      else
-        redirect_to({ action: 'gifts', broadcaster_id: @data.id }, alert: 'Gift not found.')
-      end
-    else
-      redirect_to({ action: 'gifts', broadcaster_id: @data.id }, alert: 'Gift not found.')
-    end
-	end
-
-	def destroy_image
-		if @data.images.present?
-      if @data.images.find(params[:id]).destroy
-        redirect_to({ action: 'images', broadcaster_id: @data.id }, notice: 'Image was successfully deleted.')
-      else
-        redirect_to({ action: 'images', broadcaster_id: @data.id }, alert: 'Image not found.')
-      end
-    else
-      redirect_to({ action: 'images', broadcaster_id: @data.id }, alert: 'Image not found.')
-    end
-	end
-
-	def destroy_video
-		if @data.videos.present?
-      if @data.videos.find(params[:id]).destroy
-        redirect_to({ action: 'videos', broadcaster_id: @data.id }, notice: 'Video was successfully deleted.')
-      else
-        redirect_to({ action: 'videos', broadcaster_id: @data.id }, alert: 'Video not found.')
-      end
-    else
-      redirect_to({ action: 'videos', broadcaster_id: @data.id }, alert: 'Video not found.')
-    end
+	def ajax_change_background
+		data_update = (params[:type] == 'default') ? {broadcaster_background_id: nil, room_background_id: params[:bg_id]} : {broadcaster_background_id: params[:bg_id], room_background_id: nil}
+		@data.rooms.find_by_is_privated(false).update(data_update)
+		render json: true
 	end
 
 	private

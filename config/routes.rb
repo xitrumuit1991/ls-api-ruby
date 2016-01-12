@@ -12,14 +12,12 @@ Rails.application.routes.draw do
 		# Broadcasters
 		resources :broadcasters do
 			get 		'/basic/:id' => 'broadcasters#basic'
-			get 		'/room/:id' => 'broadcasters#room'
+			get 		'/room' => 'broadcasters#room'
 			get 		'/gifts' => 'broadcasters#gifts'
 			get 		'/images' => 'broadcasters#images'
 			get 		'/videos' => 'broadcasters#videos'
 			get 		'/transactions' => 'broadcasters#transactions'
-			delete 	'/gift/:id' => 'broadcasters#destroy_gift'
-			delete 	'/image/:id' => 'broadcasters#destroy_image'
-			delete 	'/video/:id' => 'broadcasters#destroy_video'
+			post 		'/ajax_change_background' => 'broadcasters#ajax_change_background'
 		end
 
 		# Users
@@ -38,9 +36,11 @@ Rails.application.routes.draw do
 
     # Broadcaster Backgrounds
     resources :bct_images
+		post 	'/bct_images/destroy_m' => 'bct_images#destroy_m'
 
     # Broadcaster Backgrounds
     resources :bct_videos
+		post 	'/bct_videos/destroy_m' => 'bct_videos#destroy_m'
 
     # Room Types
     resources :room_types
@@ -49,6 +49,10 @@ Rails.application.routes.draw do
     # Gifts
 		resources :gifts
 		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+
+		# Gift Logs
+		resources :gift_logs
+		post 	'/gift_logs/destroy_m' => 'gift_logs#destroy_m'
 
 	 	# Broadcaster levels
 		resources :broadcaster_levels
@@ -106,6 +110,7 @@ Rails.application.routes.draw do
 				post  '/verify-token'    => 'auth#verifyToken'
 				post  '/change'          => 'auth#changePassword'
 				post  '/forgot-code'     => 'auth#updateForgotCode'
+				post  '/check-forgot-code'     => 'auth#check_forgotCode'
 			end
 
 			# users

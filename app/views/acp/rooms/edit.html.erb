@@ -5,7 +5,7 @@
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
                 <li><a href="/acp/<%= controller_name %>">Rooms</a></li>
-                <li><a href="#" class="active">Room Detail</a></li>
+                <li><a href="#" class="active">Detail</a></li>
             </ul>
             <!-- END BREADCRUMB -->
         </div>
@@ -17,14 +17,15 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
+        <div class="panel-heading text-complete">
+            <span class="bold text-uppercase">Room: <%= @data.title %></span> | (tài khoản: <%= @data.broadcaster.user.username %>)
         </div>
         <div class="panel-body">
-            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
                 <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this room from being saved:</p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
@@ -33,7 +34,12 @@
                     <label class="col-sm-12">Banner</label>
                     <div class="col-sm-5">
                       <img src="<%= @data.thumb_url %>" class="img-thumbnail" >
-                      <input type="file" name="room[thumb]" >
+                      <div class="cleafix">
+                        <label class="btn btn-success">
+                          <input type="file" name="room[thumb]" class="hidden">
+                          Upload banner
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -72,7 +78,7 @@
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-8">Lịch diễn
-                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#model-add-new-schedule"><i class="fs-14 pg-plus"></i>Add new</button>
+                        <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#modal-add-new-schedule"><i class="fs-14 pg-plus"></i>Add new</button>
                     </label>
                     <div class="col-sm-8">
                       <table class="table table-hover demo-table-search data-table">
@@ -116,7 +122,9 @@
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @room_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="default" data-bg-id="<%= image.id %>"/>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -126,12 +134,15 @@
                   <div class="row">
                     <label class="col-sm-12">Background Uploaded</label>
                     <label class="col-sm-12">
-                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#model-add-new-background"><i class="fs-14 pg-plus"></i>Add new</button>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-add-new-background"><i class="fs-14 pg-plus"></i>Add new</button>
                     </label>
                     <div class="col-sm-12">
                       <div class="multiple-items">
                         <% @data.broadcaster.broadcaster_backgrounds.each do |image| %>
-                            <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail"/>
+                            <div class="relative">
+                              <img src="<%= request.base_url + image.image_url %>" class="img-thumbnail room-background" data-id="<%= @data.broadcaster.id %>" data-type="uploaded" data-bg-id="<%= image.id %>"/>
+                              <%= link_to(acp_broadcaster_background_path(image), {class: "btn-close", method: 'delete', data: { confirm: 'Are you sure ?'}}) do %>&times;<% end %>
+                            </div>
                         <% end %>
                       </div>
                     </div>
@@ -152,7 +163,7 @@
     </div>
     <!-- END PANEL -->
     <!-- Modal Add New Schedule -->
-    <div class="modal fade slide-up disable-scroll" id="model-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal fade slide-up disable-scroll" id="modal-add-new-schedule" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog modal-lg">
           <div class="modal-content-wrapper">
             <%= form_tag acp_schedules_path do %>
@@ -213,7 +224,7 @@
         </div>
     </div>
     <!-- Modal Add New Background Uploaded -->
-    <div class="modal fade slide-up disable-scroll" id="model-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
+    <div class="modal fade slide-up disable-scroll" id="modal-add-new-background" tabindex="-1" role="dialog" aria-labelledby="modalSlideUpLabel" aria-hidden="false">
         <div class="modal-dialog">
           <div class="modal-content-wrapper">
             <%= form_tag acp_broadcaster_backgrounds_path, multipart: true do %>
@@ -228,9 +239,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
+                      <% if flash[:create_background_alert] %>
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <% flash[:create_background_alert].each do |msg| %><p><%=msg%></p><% end %>
+                      </div>
+                      <% end %>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-3">Image</label>
                         <div class="col-sm-9">
-                            <input type="file" name="background[image]">
+                            <label class="btn btn-success">
+                              <input type="file" name="background[image]" class="hidden" required>
+                              Upload banner
+                            </label>
                         </div>
                     </div>
                 </div>

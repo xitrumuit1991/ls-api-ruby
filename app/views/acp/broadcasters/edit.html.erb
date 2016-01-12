@@ -17,42 +17,13 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/basic/<%= @data.user.id %>">Thông tin cơ bản</a>
-                    </li>
-                    <li class="active">
-                        <a href="#">Thông tin nâng cao</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Phòng</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
                 <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this idol from being saved:</p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>

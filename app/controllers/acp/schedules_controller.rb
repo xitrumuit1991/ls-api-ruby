@@ -18,6 +18,7 @@ class Acp::SchedulesController < Acp::ApplicationController
 
 	def create
 		params[:schedule].each do |item|
+			next if item['date_start'] == '' || item['date_end'] == '' || item['time_start'] == '' || item['time_end'] == ''
 			start_time = DateTime.parse(item['date_start'] + ' ' + item['time_start'])
 			end_time = DateTime.parse(item['date_end'] + ' ' + item['time_end'])
 			@model.create(start: start_time, end: end_time, room_id: params[:room_id])
@@ -41,7 +42,12 @@ class Acp::SchedulesController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Schedule was successfully destroyed.')
+		prev_path = Rails.application.routes.recognize_path(request.referrer)
+    if prev_path[:controller] == 'acp/rooms'
+      redirect_to({ controller: 'rooms', action: 'edit', id: @data.room.id }, notice: "Lịch diển đã được xóa thành công.")
+    else
+			redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.room.broadcaster.id, id: @data.room.id }, notice: "Lịch diển đã được xóa thành công.")
+    end
 	end
 
 	private

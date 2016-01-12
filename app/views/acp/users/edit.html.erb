@@ -17,8 +17,8 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
+        <div class="panel-heading text-complete">
+            <span class="bold text-uppercase">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
         </div>
         <div class="panel-body">
             <div class="pull-left">
@@ -36,8 +36,9 @@
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
                 <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
@@ -45,7 +46,7 @@
                   <div class="row">
                     <label class="col-sm-12">Bí danh</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="user[username]" value="<%= @data.username %>" required="">
+                        <input type="text" class="form-control" name="user[username]" value="<%= @data.username %>" >
                     </div>
                   </div>
                 </div>
@@ -120,16 +121,33 @@
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         <i class="pg-close fs-14"></i>
                       </button>
-                      <h5>Đổi mật khẩu</h5>
+                      <h5 class="text-uppercase text-complete"><strong>Đổi mật khẩu</strong></h5>
+                      <hr class="m-t-0"/>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
+                      <% if flash[:change_password_alert] %>
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <% flash[:change_password_alert].each do |msg| %><p><%=msg%></p><% end %>
+                      </div>
+                      <% end %>
+                    </div>
+                    <div class="form-group">
                       <label>Mật khẩu mới</label>
-                      <input type="password" name="password" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label>Nhập lại mật khẩu</label>
-                      <input type="password" name="password_confirmation" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password_confirmation" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer"> 
@@ -144,3 +162,20 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<% content_for :javascript do %>
+  <script type="text/javascript">
+    $(function() {
+      $(".input-password").on('click', '.input-group-addon', function(event) {
+        event.preventDefault();
+        $(this).toggleClass('active');
+        if ($(this).hasClass('active')) {
+          $(this).parent().find('.form-control').prop("type", "text");
+          $(this).text('hide');
+        } else {
+          $(this).parent().find('.form-control').prop("type", "password");
+          $(this).text('show');
+        }
+      });
+    });
+  </script>
+<% end %>

@@ -17,37 +17,7 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading">
-            <span class="bold">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="active">
-                        <a href="#">Thông tin cơ bản</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/room/<%= @data.rooms.find_by_is_privated(false).id %>">Phòng</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-body">
             <%= form_for [:acp, @user], :html => {:class => "form_user"} do |f| %>
                 <% if @user.errors.any? %>
@@ -76,7 +46,7 @@
                   <div class="row">
                     <label class="col-sm-12">Email</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="user[email]" value="<%= @user.email %>" required="">
+                        <input type="text" class="form-control" name="user[email]" value="<%= @user.email %>" >
                     </div>
                   </div>
                 </div>
@@ -135,16 +105,33 @@
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         <i class="pg-close fs-14"></i>
                       </button>
-                      <h5>Đổi mật khẩu</h5>
+                      <h5 class="text-uppercase text-complete"><strong>Đổi mật khẩu</strong></h5>
+                      <hr class="m-t-0"/>
                   </div>
                   <div class="modal-body">
                     <div class="form-group">
+                      <% if flash[:change_password_alert] %>
+                      <div class="alert alert-danger" role="alert">
+                        <button class="close" data-dismiss="alert"></button>
+                        <% flash[:change_password_alert].each do |msg| %><p><%=msg%></p><% end %>
+                      </div>
+                      <% end %>
+                    </div>
+                    <div class="form-group">
                       <label>Mật khẩu mới</label>
-                      <input type="password" name="password" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                     <div class="form-group">
                       <label>Nhập lại mật khẩu</label>
-                      <input type="password" name="password_confirmation" class="form-control" required/>
+                      <div class="input-group input-password">
+                        <input type="password" name="password_confirmation" class="form-control" required/>
+                        <a href="#" class="input-group-addon text-uppercase bg-transparent text-complete">SHOW</i>
+                        </a>
+                      </div>
                     </div>
                   </div>
                   <div class="modal-footer"> 
@@ -161,4 +148,19 @@
 </div>
 <% content_for :javascript do %>
   <% javascript_include_tag "/assets/js/idol" %>
+  <script type="text/javascript">
+    $(function() {
+      $(".input-password").on('click', '.input-group-addon', function(event) {
+        event.preventDefault();
+        $(this).toggleClass('active');
+        if ($(this).hasClass('active')) {
+          $(this).parent().find('.form-control').prop("type", "text");
+          $(this).text('hide');
+        } else {
+          $(this).parent().find('.form-control').prop("type", "password");
+          $(this).text('show');
+        }
+      });
+    });
+  </script>
 <% end %>

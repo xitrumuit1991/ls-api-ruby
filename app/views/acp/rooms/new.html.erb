@@ -15,14 +15,14 @@
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
   <!-- START PANEL -->
-  <%= render 'shared/alert' %>
-    <!-- START PANEL -->
+    <%= render 'shared/alert' %>
     <div class="panel panel-transparent">
         <div class="panel-body">
-            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
                 <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
