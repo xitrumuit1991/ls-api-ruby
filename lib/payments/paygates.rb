@@ -16,18 +16,30 @@ module Paygate
 			begin
 				encrypedPass = rSAClass.encrypt($m_Pass);
 			end
+
+			pass = Base64.encode64(encrypedPass)
+			puts '--------------pass-------------'
+			puts pass.length
+			puts pass
+			puts '---------------------------'
+
+			puts '--------------encrypedPass-------------'
+			puts encrypedPass.length
+			puts encrypedPass
+			puts '---------------------------'
 			begin
 				client = Savon.client(wsdl: $webservice)
-				# result = client.call.login($m_UserName, encrypedPass, $m_PartnerID)
-				result = client.call(:login,  message: { $m_UserName, encrypedPass, $m_PartnerID })
-				puts '---------------------------'
+				result = client.call(:login,  message: { :m_UserName => $m_UserName, :m_Pass => "Tg2SiymgvKu0oLkv/cR8iLhHDp2+hjixiSejQxwTfrsgqQM90azj3LbbEsHoQGZts7SBVkOKGwq0pbmKkv9iGqAm+ZxGQ8Dvfx04drAgkTmY08AW9D9xb3XxGgj7IxOyEzQRnzXzm0IYdZHwSZZCq7Rg32H0v5gH7rVrqoI/bKUljG2INxdgf2Ga967f40JXM/6JlzU9reGk5JLfv1RVyEc2tjny+HAiI7MSKcxz/bpwgZcOWPOFS+NdxfpB4Yi3rGh0VWx16tHRPJk67mcwfBZHtoiMPFVnk2KoGaT391O+bAJa9WsHef8nA2GaOrxwdap0XVFUibCaf7otPlvfaQ==", :m_PartnerID => $m_PartnerID })
+				# puts '---------------------------'
+				# puts $m_UserName
+				# puts '---------------------------'
+				# puts encrypedPass
+				# puts '---------------------------'
+				# puts $m_PartnerID
+				puts '------------result---------------'
 				puts result
 				puts '---------------------------'
 			rescue Exception => e
-				puts '---------------------------'
-				puts e 
-				puts "xay ra loi khi login"
-				puts '---------------------------'
 			end
 		end
 	end
@@ -59,22 +71,25 @@ module Paygate
 			pub_key = @rsaPublicKey
 			j=0
 			i=0
-			y = (source.length/10.0).ceil.to_i
+			y = (source.length/10.0).floor.to_i
 			crt = ''
-
 			while i < y  do
 				crypttext = ''
 				source[y,10]
-				crypttext = Base64.encode64(@rsaPublicKey.public_encrypt(source[y,10]))
+				crypttext = Base64.encode64(pub_key.public_encrypt(source[j,10].to_s))
 				crt += crypttext
 				crt += ":::";
 				j = j+10
 				i = i+1
 			end
 			if source.length%10 > 0
-				crypttext = Base64.encode64(@rsaPublicKey.public_encrypt(source[y,source.length-1]))
+				crypttext = Base64.encode64(pub_key.public_encrypt(source[j,source.length].to_s))
 				crt += crypttext
 			end
+			puts '==================pub_key.public_encrypt(source[j,source.length].to_s) ===================='
+			puts pub_key.public_encrypt("gmwtwjfws")
+			puts '==========================================================================================='
+			return crt
 		end
 
 		def decrypt
