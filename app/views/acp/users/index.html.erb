@@ -39,12 +39,10 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:25%">Bí danh</th>
-            <th style="width:25%">Họ tên</th>
-            <th style="width:10%">Cấp độ</th>
-            <th style="width:10%">Kinh nghiệm</th>
-            <th style="width:10%">Created</th>
-            <th style="width:10%">Updated</th>
+            <th style="width:30%">Bí danh</th>
+            <th style="width:30%">Họ tên</th>
+            <th style="width:15%">Cấp độ</th>
+            <th style="width:15%">Kinh nghiệm</th>
             <th style="width:7%">Action</th>
           </tr>
           </thead>
@@ -68,12 +66,6 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.user_exp %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">
