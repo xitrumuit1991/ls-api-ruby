@@ -39,12 +39,10 @@
                     <label for="check-all"></label>
                   </div>
                 </th>
-                <th style="width:20%">Tiêu đề</th>
-                <th style="width:15%">Slug</th>
-                <th style="width:30%">Mô tả chi tiết</th>
-                <th style="width:10%">Ngày tạo</th>
-                <th style="width:10%">Ngày cập nhật</th>
-                <th style="width:15%">Hành động</th>
+                <th style="width:25%">Tiêu đề</th>
+                <th style="width:25%">Slug</th>
+                <th style="width:40%">Mô tả chi tiết</th>
+                <th style="width:7%">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -64,12 +62,6 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.description %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">

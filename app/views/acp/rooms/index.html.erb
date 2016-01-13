@@ -39,12 +39,10 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:20%"></th>
-            <th style="width:20%">Tên phòng</th>
-            <th style="width:20%">Tên Idol</th>
-            <th style="width:10%">Trạng thái</th>
-            <th style="width:10%">Created</th>
-            <th style="width:10%">Updated</th>
+            <th style="width:25%"></th>
+            <th style="width:25%">Tên phòng</th>
+            <th style="width:25%">Tên Idol</th>
+            <th style="width:15%">Trạng thái</th>
             <th style="width:7%">Action</th>
           </tr>
           </thead>
@@ -68,12 +66,6 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.on_air ? 'On Air' : 'Offline' %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">
