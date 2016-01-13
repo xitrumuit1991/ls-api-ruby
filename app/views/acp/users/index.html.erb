@@ -39,8 +39,9 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:30%">Bí danh</th>
-            <th style="width:30%">Họ tên</th>
+            <th style="width:15%">Bí danh</th>
+            <th style="width:15%">Email</th>
+            <th style="width:15%">Avatar</th>
             <th style="width:15%">Cấp độ</th>
             <th style="width:15%">Kinh nghiệm</th>
             <th style="width:7%">Action</th>
@@ -59,10 +60,19 @@
                   <%= link_to(edit_acp_user_path(item)) do %><p><%= item.username %></p><% end %>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.name %></p>
+                  <p><%= item.email %></p>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.user_level.level %></p>
+                  <% if File.exist?("public#{item.avatar.minisquare}")%>
+                    <img src="<%= item.avatar.minisquare.url %>" />
+                  <%else%>
+                      <p>No image</p>
+                  <%end%>
+                </td>
+                <td class="v-align-middle">
+                  <% if item.user_level.present?%>
+                    <p><%= item.user_level.level %></p>
+                  <%end%>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.user_exp %></p>
