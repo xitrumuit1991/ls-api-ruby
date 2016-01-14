@@ -21,7 +21,7 @@
                 <% if @data.errors.any? %>
                   <div class="alert alert-danger" role="alert">
                     <button class="close" data-dismiss="alert"></button>
-                    <p><%= pluralize(@data.errors.count, "error") %> prohibited this idol from being saved:</p>
+                    <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu idol này: </p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
@@ -96,10 +96,10 @@
                 <div class="form-group">
                   <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-success" name="save">Save</button>
-                        <button class="btn" name="save_and_add_another">Save and add another</button>
-                        <button class="btn" name="save_and_edit">Save and edit</button>
-                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                      <button class="btn btn-success" name="save">Lưu</button>
+                      <button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
+                      <button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
+                      <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
                     </div>
                   </div>
                 </div>

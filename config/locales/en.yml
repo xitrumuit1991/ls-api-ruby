@@ -23,6 +23,28 @@ en:
   hello: "Hello world"
   activerecord:
       attributes:
+        #User
+        user:
+          username: ""
+          name: ""
+          email: ""
+          password: ""
+          user_exp: ""
+
+        #room
+        room:
+          title: ""
+          room_type_id: ""
+
+        #Idol
+        broadcaster:
+          fullname: ""
+          user_id: ""
+          bct_type_id: ""
+          broadcaster_level_id: ""
+          broadcaster_exp: ""
+          recived_heart: ""
+        #Room type
         room_type:
           title: ""
           slug: ""
@@ -95,6 +117,48 @@ en:
   # THÔNG BÁO LỖI
       errors:
         models:
+          #User
+          user:
+            attributes:
+              username:
+                blank: "Vui lòng nhập bí danh"
+                taken: "Bí danh đã có người sử dụng, Vui lòng dùng bí danh khác"
+              name:
+                blank: "Vui lòng nhập họ tên"
+              email:
+                blank: "Vui lòng nhập email"
+                taken: "Email đã có người sử dụng, Vui lòng dùng email khác"
+                invalid: "Vui lòng nhập đúng định dạng Email"
+              password:
+                blank: "Vui lòng nhập mật khẩu"
+              user_exp:
+                blank: "Vui lòng nhập kinh nghiệm"
+
+          #broadcaster
+          broadcaster:
+            attributes:
+              fullname:
+                blank: "Vui lòng nhập tên idol"
+              user_id:
+                blank: "Vui lòng chọn user"
+              bct_type_id:
+                blank: "Vui lòng chọn loại idol"
+              broadcaster_level_id:
+                blank: "Vui lòng chọn cấp idol"
+              broadcaster_exp:
+                not_a_number: "Vui lòng kinh nghiệm cho idol, Lưu ý: Chỉ nhập số"
+              recived_heart:
+                not_a_number: "Vui lòng số trái tim nhận được, Lưu ý: Chỉ nhập số"
+
+          #room
+          room:
+            attributes:
+            title:
+              blank: "Vui lòng nhập tên phòng"
+            room_type_id:
+              blank: "Vui lòng nhập loại phòng"
+
+          #Room type
           room_type:
             attributes:
               title:

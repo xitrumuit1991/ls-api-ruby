@@ -8,7 +8,7 @@
             <% if @data.errors.any? %>
                 <div class="alert alert-danger" role="alert">
                   <button class="close" data-dismiss="alert"></button>
-                  <p>Có <%= pluralize(@data.errors.count, "") %> xảy ra, Bạn không thể lưu slide này: </p>
+                  <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu slide này: </p>
                   <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                 </div>
             <% end %>
