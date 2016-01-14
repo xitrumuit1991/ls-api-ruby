@@ -257,12 +257,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
     transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
     cardCharging.m_TransID    = transid
 
-    puts '===================transid===================='
-    puts transid
-    puts '===================transid===================='
-
     cardChargingResponse = Paygate::CardChargingResponse.new;
     cardChargingResponse = cardCharging._cardCharging
-
+    puts '===================cardChargingResponse===================='
+    puts cardChargingResponse
+    puts '===================cardChargingResponse===================='
+    render plain: cardChargingResponse, status: 200
   end
 end

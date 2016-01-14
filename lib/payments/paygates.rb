@@ -24,11 +24,8 @@ module Paygate
 			begin
 				result = soapClient.call(:login,  message: { :m_UserName => m_UserName, :m_Pass => pass, :m_PartnerID => m_PartnerID })
 			rescue Exception => e
-				return head 401
+				render plain: "Co loi xay ra khi thuc hien login : " + e , status: 400 
 			end
-			puts '==============result================='
-			puts result
-			puts '==============result================='
 			result = Nokogiri::XML.parse(result.to_s)
 			page = result.at('multiRef')
 			$obj.m_Sessage = page.at('message').text
@@ -38,7 +35,7 @@ module Paygate
 				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text));
 				$obj.m_SessionID = hextobyte(session_Decryped)
 			rescue Exception => e
-				return head 401
+				render plain: "Co loi xay ra khi thuc hien session_Decryped: " + e , status: 400
 			end
 			$obj.m_Sessage = page.at('transid').text
 			return $obj;
@@ -138,14 +135,32 @@ module Paygate
 			key = hextobyte(sessionID);
 			objTriptDes 		= Paygate::TriptDes.new
 			objTriptDes.dessKey = key
-
 			begin
 				strEncreped = objTriptDes.encrypt(m_MPIN)
 				mpin = byteToHex(strEncreped);
-				card_DATA = byteToHex(objTriptDes.encrypt(m_Card_DATA));
+				card_DATA = byteToHex(objTriptDes.encrypt(m_Card_DATA))
 			rescue Exception => e
+				render plain: "Co loi xay ra khi ma hoa mpin: " + e , status: 400
 			end
 
+			begin
+				result = soapClient.call(:card_charging,  message: { :m_TransID => m_TransID, :m_UserName => m_UserName, :m_PartnerID => m_PartnerID, :m_MPIN => mpin, :m_Target => m_Target, :m_Card_DATA => card_DATA, :SessionID => Digest::MD5.hexdigest(sessionID) })
+			rescue Exception => e
+				render plain: "Co loi xay ra khi thuc hien charging: " + e , status: 400
+			end
+
+			result = Nokogiri::XML.parse(result.to_s)
+			page = result.at('multiRef')
+
+			ojb.m_Message			= page.at('message').text
+			ojb.m_AMOUNT 			= page.at('amount').text
+			ojb.m_TRANSID 			= page.at('transid').text
+			ojb.m_Status 			= page.at('status').text
+			ojb.m_RESPONSEAMOUNT 	= objTriptDes.decrypt(hextobyte(page.at('responseamount').text))
+			puts '============m_RESPONSEAMOUNT================='
+			puts ojb.m_RESPONSEAMOUNT
+			puts '============m_RESPONSEAMOUNT================='
+			return ojb
 		end
 
 		def hextobyte(strHex)
@@ -169,40 +184,38 @@ module Paygate
 			dessKey = key
 		end
 
-		# public function encrypt($text) {
-		# 	$key       = $this->DessKey;
-		# 	$text      = $this->pkcs5_pad($text, 8);// AES?16????????
-		# 	$size      = mcrypt_get_iv_size(MCRYPT_3DES, MCRYPT_MODE_ECB);
-		# 	$iv        = mcrypt_create_iv($size, MCRYPT_RAND);
-		# 	$bin       = pack('H*', bin2hex($text));
-		# 	$encrypted = mcrypt_encrypt(MCRYPT_3DES, $key, $bin, MCRYPT_MODE_ECB, $iv);
-		# 	return $encrypted;
-		# }
+		def decrypt(text)
+			key 		= dessKey
+			cipher 		= OpenSSL::Cipher::Cipher.new("DES-EDE3")
+			cipher.decrypt
+			cipher.key 	= key
+			decrypted = cipher.update(text) + cipher.final
+			return pkcs5_unpad(decrypted)
+		end
 
 		def encrypt(text)
 			key 	= dessKey
 			text 	= pkcs5_pad(text, 8)
-			cipher 	= OpenSSL::Cipher::Cipher.new("des-ede-cbc")
+			cipher 	= OpenSSL::Cipher::Cipher.new("DES-EDE3")
 			iv 		= cipher.random_iv
 			bin 	= text.to_hex_string.split(' ').pack('H*' * text.to_hex_string.split(' ').size)
-			#xong den day roi 
 			cipher.encrypt
-			cipher.key = bin
+			cipher.key = key
 			cipher.iv = iv
-			encrypted = cipher.update(key) + cipher.final
-			test = Base64.encode64(text).gsub("\n",'')
-			puts '==========iv=========='
-			puts dessKey
-			puts '==========encrypted=========='
-			puts encrypted
-			puts '==========test=========='
-			puts test
-			puts '==========iv=========='
+			encrypted = cipher.update(bin)
+			return encrypted
 		end
 
 		def pkcs5_pad(text, blocksize)
 			pad = blocksize - (text.length%blocksize)
 			return text + pad.chr*pad
+		end
+
+		def pkcs5_unpad(text)
+			puts '=========================='
+			puts text
+			puts text.length
+			puts '=========================='
 		end
 	end
 
