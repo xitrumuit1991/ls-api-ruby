@@ -2,7 +2,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :payments]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
 
   def profile
   end
@@ -251,17 +251,31 @@ class Api::V1::UserController < Api::V1::ApplicationController
     cardCharging.m_MPIN       = m_MPIN
     cardCharging.m_Target     = m_Target
     cardCharging.m_Card_DATA  = params[:serial].to_s + ":".to_s + params[:pin].to_s + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
-    # cardCharging.m_SessionID  = ""
     cardCharging.m_Pass       = m_Pass
     cardCharging.soapClient   = soapClient
     transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
     cardCharging.m_TransID    = transid
 
     cardChargingResponse = Paygate::CardChargingResponse.new;
-    cardChargingResponse = cardCharging._cardCharging
-    puts '===================cardChargingResponse===================='
-    puts cardChargingResponse
-    puts '===================cardChargingResponse===================='
-    render plain: cardChargingResponse, status: 200
+    cardChargingResponse = cardCharging.cardCharging
+    if cardChargingResponse.m_Status.to_i == 1
+      if update_xu(cardChargingResponse.m_RESPONSEAMOUNT)
+        render plain: cardChargingResponse, status: 200
+      else
+        render plain: "Khong them dc du lieu", status: 201
+      end
+    else
+      render plain: cardChargingResponse, status: 400
+    end
   end
+
+  private
+    def update_xu(xu)
+      money = @user.money + xu.to_i
+      if @user.update(money: money)
+        return true
+      else
+        return false 
+      end
+    end
 end

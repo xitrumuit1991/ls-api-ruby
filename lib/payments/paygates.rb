@@ -32,7 +32,7 @@ module Paygate
 			$obj.m_Status = page.at('status').text
 			rSAClass.GetPrivatekeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'private_key.pem'))
 			begin
-				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text));
+				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text))
 				$obj.m_SessionID = hextobyte(session_Decryped)
 			rescue Exception => e
 				render plain: "Co loi xay ra khi thuc hien session_Decryped: " + e , status: 400
@@ -116,7 +116,7 @@ module Paygate
 	class CardCharging
 		attr_accessor :m_WebUser, :m_TransID, :m_UserName, :m_PartnerID, :m_MPIN, :m_Target, :m_Card_DATA, :m_Pass, :sessionID, :soapClient
 
-		def _cardCharging
+		def cardCharging
 			login = Paygate::Login.new
 			login.m_UserName	= m_UserName
 			login.m_Pass		= m_Pass
@@ -157,9 +157,9 @@ module Paygate
 			ojb.m_TRANSID 			= page.at('transid').text
 			ojb.m_Status 			= page.at('status').text
 			ojb.m_RESPONSEAMOUNT 	= objTriptDes.decrypt(hextobyte(page.at('responseamount').text))
-			puts '============m_RESPONSEAMOUNT================='
-			puts ojb.m_RESPONSEAMOUNT
-			puts '============m_RESPONSEAMOUNT================='
+			if ojb.m_Status == "3" or ojb.m_Status == "7"
+				sessionID = nil
+			end
 			return ojb
 		end
 
@@ -185,12 +185,15 @@ module Paygate
 		end
 
 		def decrypt(text)
-			key 		= dessKey
-			cipher 		= OpenSSL::Cipher::Cipher.new("DES-EDE3")
-			cipher.decrypt
-			cipher.key 	= key
-			decrypted = cipher.update(text) + cipher.final
-			return pkcs5_unpad(decrypted)
+			begin
+				key 		= dessKey
+				cipher 		= OpenSSL::Cipher::Cipher.new("DES-EDE3")
+				cipher.decrypt
+				cipher.key 	= key
+				decrypted = cipher.update(text) + cipher.final
+				return pkcs5_unpad(decrypted)
+			rescue Exception => e
+			end
 		end
 
 		def encrypt(text)
@@ -212,10 +215,7 @@ module Paygate
 		end
 
 		def pkcs5_unpad(text)
-			puts '=========================='
-			puts text
-			puts text.length
-			puts '=========================='
+			return text.gsub(" ",'')
 		end
 	end
 
