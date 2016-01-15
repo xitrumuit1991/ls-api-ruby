@@ -22,7 +22,8 @@ class Acp::BctVideosController < Acp::ApplicationController
     if @data.save
       redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: @data.broadcaster.id }, notice: 'Video was successfully created.')
     else
-      render :new
+      flash[:create_video_alert] =  @data.errors.full_messages
+      redirect_to "/acp/broadcasters/#{@data.broadcaster.id}/videos#modal-add-new"
     end
   end
 
@@ -36,7 +37,12 @@ class Acp::BctVideosController < Acp::ApplicationController
 
   def destroy
     @data.destroy
-    redirect_to({ action: 'index' }, notice: 'Video was successfully destroyed.')
+    redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: @data.broadcaster.id }, notice: 'Video was successfully destroyed.')
+  end
+
+  def destroy_m
+    @model.destroy(params[:item_id])
+    redirect_to({ controller: 'broadcasters', action: 'videos', broadcaster_id: params[:broadcaster_id] }, notice: 'Videos was successfully destroyed.')
   end
 
   private

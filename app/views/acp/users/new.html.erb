@@ -14,15 +14,14 @@
 <!-- END JUMBOTRON -->
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
-  <!-- START PANEL -->
-  <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
                 <% if @data.errors.any? %>
-                  <div id="error_explanation">
-                    <h2><%= pluralize(@data.errors.count, "error") %> prohibited this room type from being saved:</h2>
+                  <div class="alert alert-danger" role="alert">
+                    <button class="close" data-dismiss="alert"></button>
+                    <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu người dùng này: </p>
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
@@ -54,7 +53,7 @@
                   <div class="row">
                     <label class="col-sm-12">Mật khẩu</label>
                     <div class="col-sm-5">
-                        <input type="password" class="form-control" name="password" >
+                        <input type="password" class="form-control" name="password" required="">
                     </div>
                   </div>
                 </div>
@@ -62,7 +61,7 @@
                   <div class="row">
                     <label class="col-sm-12">Nhập lại mật khẩu</label>
                     <div class="col-sm-5">
-                        <input type="password" class="form-control" name="password_confirmation" >
+                        <input type="password" class="form-control" name="password_confirmation" required="">
                     </div>
                   </div>
                 </div>
@@ -89,10 +88,10 @@
                 <div class="form-group">
                   <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-success" name="save">Save</button>
-                        <button class="btn" name="save_and_add_another">Save and add another</button>
-                        <button class="btn" name="save_and_edit">Save and edit</button>
-                        <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Cancel</a>
+                      <button class="btn btn-success" name="save">Lưu</button>
+                      <button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
+                      <button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
+                      <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
                     </div>
                   </div>
                 </div>

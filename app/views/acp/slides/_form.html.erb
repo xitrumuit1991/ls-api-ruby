@@ -6,44 +6,45 @@
       <div class="panel-body">
         <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
             <% if @data.errors.any? %>
-                <div id="error_explanation">
-                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Gifts from being saved:</h2>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu slide này: </p>
                   <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                 </div>
             <% end %>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Title</label>
-                  <input type="text" class="form-control" name="data[title]" value="<%= @data.title %>" required>
+                  <label>Tiêu đề</label>
+                  <input type="text" class="form-control" name="data[title]" value="<%= @data.title %>">
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group form-group-default required">
-                  <label>Description</label>
-                  <input type="text" class="form-control" name="data[description]" value="<%= @data.description %>" required>
+                  <label>Mô tả</label>
+                  <input type="text" class="form-control" name="data[description]" value="<%= @data.description %>" >
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default">
-                  <label>Sub Description</label>
-                  <input type="text" class="form-control" name="data[sub_description]" value="<%= @data.sub_description %>" required>
+                  <label>Mô tả phụ</label>
+                  <input type="text" class="form-control" name="data[sub_description]" value="<%= @data.sub_description %>" >
                 </div>
               </div>
               <div class="col-sm-6">
                 <div class="form-group form-group-default" style="overflow: visible; position: static">
-                  <label>Start time</label>
-                  <input type="text" class="form-control datetimepicker" name="data[start_time]" value="<%=@data.start_time %>" required>
+                  <label>Thời gian bắt đầu</label>
+                  <input type="text" class="form-control datetimepicker" name="data[start_time]" value="<%=@data.start_time %>" >
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default">
-                  <label>Link</label>
-                  <input type="text" class="form-control" name="data[link]" value="<%= @data.link %>" required>
+                  <label>Liên kết</label>
+                  <input type="text" class="form-control" name="data[link]" value="<%= @data.link %>" >
                 </div>
               </div>
               <div class="col-sm-6">
@@ -56,16 +57,14 @@
             <div class="row">
               <div class="col-sm-6">
                 <div class="form-group form-group-default">
-                  <label>Weight</label>
-                  <input type="number" class="form-control" name="data[weight]" value="<%= @data.weight %>" required>
+                  <label>Thứ tự</label>
+                  <input type="number" class="form-control" name="data[weight]" value="<%= @data.weight %>" >
                 </div>
               </div>
             </div>
-
-
             <div class="row">
               <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
-                <span>Submit</span>
+                <span>Lưu</span>
               </button>
             </div>
         <% end %>

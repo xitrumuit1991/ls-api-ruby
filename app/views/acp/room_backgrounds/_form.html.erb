@@ -6,7 +6,7 @@
         <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
             <% if @data.errors.any? %>
                 <div id="error_explanation">
-                  <h2><%= pluralize(@data.errors.count, "error") %> prohibited this Gifts from being saved:</h2>
+                  <h2>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu hình nền của phòng: </h2>
                   <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                 </div>
             <% end %>

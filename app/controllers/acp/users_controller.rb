@@ -34,9 +34,6 @@ class Acp::UsersController < Acp::ApplicationController
   end
 
   def update
-    puts '==============================='
-    puts params
-    puts '==============================='
     prev_path = Rails.application.routes.recognize_path(request.referrer)
     if @data.update(parameters)
       if prev_path[:controller] == 'acp/users'
@@ -45,7 +42,11 @@ class Acp::UsersController < Acp::ApplicationController
         redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin cơ bản được cập nhật thành công.')
       end
     else
-      render :edit
+      if prev_path[:controller] == 'acp/users'
+        render :edit
+      else
+        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
+      end
     end
   end
 
@@ -58,7 +59,12 @@ class Acp::UsersController < Acp::ApplicationController
         redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Đổi mật khẩu thành công.')
       end
     else
-      render :edit
+      flash[:change_password_alert] =  @data.errors.full_messages
+      if prev_path[:controller] == 'acp/users'
+        redirect_to "/acp/users/#{@data.id}/edit#modal-change-password"
+      else
+        redirect_to "/acp/broadcasters/#{@data.broadcaster.id}/basic/#{@data.id}#modal-change-password"
+      end
     end
   end
 

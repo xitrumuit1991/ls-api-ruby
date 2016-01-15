@@ -1,0 +1,33 @@
+<div class="panel-heading text-complete">
+    <span class="bold text-uppercase">IDOl: <%= @data.fullname %></span> | (tài khoản: <%= @data.user.username %>)
+</div>
+<div class="panel-body">
+    <div class="pull-left">
+      <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
+        <li class="<%= 'active' if action_name == 'basic'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/basic/<%= @data.user.id %>">Thông tin cơ bản</a>
+        </li>
+        <li class="<%= 'active' if action_name == 'edit'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/edit">Thông tin nâng cao</a>
+        </li>
+        <% if @data.rooms.find_by_is_privated(false).present? %>
+        <li class="<%= 'active' if action_name == 'room'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/room">Phòng</a>
+        </li>
+        <li class="<%= 'active' if action_name == 'gifts'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/gifts">Quả tặng được nhận</a>
+        </li>
+        <% end %>
+        <li class="<%= 'active' if action_name == 'images'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/images">Hình ảnh</a>
+        </li>
+        <li class="<%= 'active' if action_name == 'videos'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/videos">Videos</a>
+        </li>
+        <li class="<%= 'active' if action_name == 'transactions'%>">
+            <a href="/acp/broadcasters/<%= @data.id %>/transactions">Giao dịch</a>
+        </li>
+      </ul>
+    </div>
+    <div class="clearfix"></div>
+</div>

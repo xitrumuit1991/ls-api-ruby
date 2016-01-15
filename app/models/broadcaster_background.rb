@@ -3,4 +3,6 @@ class BroadcasterBackground < ActiveRecord::Base
   has_many :rooms
 
   mount_uploader :image, BroadcasterBackgroundUploader
+
+	validates :image, presence: true
 end

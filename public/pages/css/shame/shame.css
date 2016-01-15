@@ -1,0 +1,51 @@
+.table thead tr th {
+	padding: 15px 10px;
+}
+.table tbody tr td {
+	padding: 15px;
+}
+.modal .close {
+	line-height: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 10px;
+}
+.nav-tabs-simple > li.active:after, .nav-tabs-simple > li:after {
+	position: absolute;
+	bottom: 0;
+}
+.multiple-items .relative {
+	padding: 7px;
+}
+.multiple-items .relative a.btn-close { 
+	font-size: 22px;
+    padding: 0;
+    line-height: 1;
+    vertical-align: top;
+    display: block;
+    width: 20px;
+    height: 20px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	text-align: center;
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	border-radius: 100%;
+	background-color: #40d9ca;
+    color: #ffffff;
+}
+.relative {
+	outline: none;
+}
+.background-box {
+	outline: none;
+	border-width: 0;
+}
+.background-box input[type="radio"]:checked~span {
+	outline: 1px solid #F55753;
+	-webkit-box-shadow: 0px 0px 15px 5px #F55753;
+	-moz-box-shadow: 0px 0px 15px 5px #F55753;
+    box-shadow: 0px 0px 15px 5px #F55753;
+}
