@@ -128,8 +128,9 @@ Rails.application.routes.draw do
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
-				post '/cover-crop'        => 'user#coverCrop'
-				post '/avatar-crop'       => 'user#avatarCrop'
+				post '/cover-crop'        	=> 'user#coverCrop'
+				post '/avatar-crop'       	=> 'user#avatarCrop'
+				post '/payments'       		=> 'user#payments'
 			end
 
 			# broadcasters
