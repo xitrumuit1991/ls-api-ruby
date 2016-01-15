@@ -32,7 +32,7 @@ module Paygate
 			$obj.m_Status = page.at('status').text
 			rSAClass.GetPrivatekeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'private_key.pem'))
 			begin
-				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text))
+				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text));
 				$obj.m_SessionID = hextobyte(session_Decryped)
 			rescue Exception => e
 				render plain: "Co loi xay ra khi thuc hien session_Decryped: " + e , status: 400
@@ -193,6 +193,7 @@ module Paygate
 				decrypted = cipher.update(text) + cipher.final
 				return pkcs5_unpad(decrypted)
 			rescue Exception => e
+				return false
 			end
 		end
 
