@@ -236,7 +236,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def payments
     # nha mang cung cap 
     m_UserName    = "charging01"
-    m_Pass        = "gmwtwjfws"
+    m_Pass        = "gmwtwjfws1"
     m_PartnerCode = "00477"
     m_PartnerID   = "charging01"
     m_MPIN        = "pajwtlzcb"
@@ -258,14 +258,20 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
     cardChargingResponse = Paygate::CardChargingResponse.new;
     cardChargingResponse = cardCharging.cardCharging
-    if cardChargingResponse.m_Status.to_i == 1
-      if update_xu(cardChargingResponse.m_RESPONSEAMOUNT)
-        render plain: cardChargingResponse, status: 200
+    if cardChargingResponse.status == 200
+      if cardChargingResponse.m_Status == "1"
+        if update_xu(cardChargingResponse.m_RESPONSEAMOUNT)
+          render plain: cardChargingResponse, status: 200
+        else
+          render plain: "Khong them dc du lieu", status: 201
+        end
       else
-        render plain: "Khong them dc du lieu", status: 201
+        render plain: cardChargingResponse, status: 400
       end
+    elsif cardChargingResponse.status == 400
+      render plain: cardChargingResponse.message, status: 400
     else
-      render plain: cardChargingResponse, status: 400
+      render plain: cardChargingResponse.message, status: 500
     end
   end
 
