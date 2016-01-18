@@ -1,44 +1,50 @@
-require 'nokogiri'
 require 'hex_string'
+include AbstractController::Rendering
 
-$m_PartnerID   	= "charging01"
-$m_MPIN        	= "pajwtlzcb"
-$m_UserName    	= "charging01"
-$m_Pass        	= "gmwtwjfws"
-$m_PartnerCode 	= "00477"
-$webservice 	= "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
+# $m_PartnerID   	= "charging01"
+# $m_MPIN        	= "pajwtlzcb"
+# $m_UserName    	= "charging01"
+# $m_Pass        	= "gmwtwjfws"
+# $m_PartnerCode 	= "00477"
+# $webservice 	= "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
 # Ten tai khoan nguoi dung tren he thong doi tac
 $m_Target 		= "useraccount1";
 module Paygate
 	class Login
 		attr_accessor :m_UserName, :m_Pass, :m_PartnerID, :soapClient
 		def _login
-			$obj 		= Paygate::LoginResponse.new
+			obj 		= Paygate::LoginResponse.new
 			rSAClass 	= Paygate::ClsCryptor.new
 			rSAClass.GetpublicKeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'Epay_Public_key.pem'))
 			begin
 				encrypedPass = rSAClass.encrypt(m_Pass);
 			end
-
 			pass = Base64.encode64(encrypedPass).gsub("\n",'')
 			begin
 				result = soapClient.call(:login,  message: { :m_UserName => m_UserName, :m_Pass => pass, :m_PartnerID => m_PartnerID })
 			rescue Exception => e
-				render plain: "Co loi xay ra khi thuc hien login : " + e , status: 400 
+				obj.status 	= 500
+				obj.message 	= "Lổi hệ thống đăng nhập SOAP."
+				return obj
 			end
-			result = Nokogiri::XML.parse(result.to_s)
-			page = result.at('multiRef')
-			$obj.m_Sessage = page.at('message').text
-			$obj.m_Status = page.at('status').text
-			rSAClass.GetPrivatekeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'private_key.pem'))
-			begin
-				session_Decryped = rSAClass.decrypt(Base64.decode64(page.at('sessionid').text));
-				$obj.m_SessionID = hextobyte(session_Decryped)
-			rescue Exception => e
-				render plain: "Co loi xay ra khi thuc hien session_Decryped: " + e , status: 400
+			obj.m_Sessage = result.body[:multi_ref][:message]
+			obj.m_Status = result.body[:multi_ref][:status]
+			obj.m_Sessage = result.body[:multi_ref][:transid]
+			if result.body[:multi_ref][:status] == "1"
+				rSAClass.GetPrivatekeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'private_key.pem'))
+				begin
+					session_Decryped = rSAClass.decrypt(Base64.decode64(result.body[:multi_ref][:sessionid]))
+					obj.m_SessionID = hextobyte(session_Decryped)
+				rescue Exception => e
+					obj.status 	= 500
+					obj.message 	= "_login : Không thể giải mã."
+					return obj
+				end
+			else
+				obj.m_SessionID = result.body[:multi_ref][:sessionid]
 			end
-			$obj.m_Sessage = page.at('transid').text
-			return $obj;
+			obj.status 	= 200
+			return obj
 		end
 		def hextobyte(strHex)
 			string = ''
@@ -52,7 +58,7 @@ module Paygate
 	end
 
 	class LoginResponse
-		attr_accessor :m_Status, :m_Sessage, :m_SessionID, :m_TransID
+		attr_accessor :m_Status, :m_Sessage, :m_SessionID, :m_TransID, :status, :message
 	end
 
 	class ClsCryptor
@@ -118,6 +124,7 @@ module Paygate
 
 		def cardCharging
 			login = Paygate::Login.new
+			ojb = Paygate::CardChargingResponse.new
 			login.m_UserName	= m_UserName
 			login.m_Pass		= m_Pass
 			login.m_PartnerID	= m_PartnerID
@@ -125,13 +132,21 @@ module Paygate
 
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
-			if loginresponse.m_Status == "1"
-				sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
+
+			if loginresponse.status == 200
+				if loginresponse.m_Status == "1"
+					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
+				else
+					ojb.status 		= 500
+					ojb.message 	= "Không thể đăng nhập vào SOAP service vì sai tài khoản vui lòng cập nhật lại tài khoản !!! Xin cảm ơn."
+					return ojb
+				end
 			else
-				render plain: 'Login fail khong thuc hien charging', status: 400
+				ojb.message 	= loginresponse.message
+				ojb.status 		= 500
+				return ojb
 			end
 			#Bat dau thuc hien charging
-			ojb = Paygate::CardChargingResponse.new
 			key = hextobyte(sessionID);
 			objTriptDes 		= Paygate::TriptDes.new
 			objTriptDes.dessKey = key
@@ -140,25 +155,47 @@ module Paygate
 				mpin = byteToHex(strEncreped);
 				card_DATA = byteToHex(objTriptDes.encrypt(m_Card_DATA))
 			rescue Exception => e
-				render plain: "Co loi xay ra khi ma hoa mpin: " + e , status: 400
+				ojb.message 	= "Có lổi khi mã hõa mã thẻ. Vui lòng thử lại lần nữa."
+				ojb.status 		= 500
+				return ojb
 			end
-
 			begin
 				result = soapClient.call(:card_charging,  message: { :m_TransID => m_TransID, :m_UserName => m_UserName, :m_PartnerID => m_PartnerID, :m_MPIN => mpin, :m_Target => m_Target, :m_Card_DATA => card_DATA, :SessionID => Digest::MD5.hexdigest(sessionID) })
 			rescue Exception => e
-				render plain: "Co loi xay ra khi thuc hien charging: " + e , status: 400
+				ojb.message 	= "Có lỏi khi thực hiện nạp thể. Vui lòng thử lại lần nữa."
+				ojb.status 		= 500
+				return ojb
 			end
+			if result.body[:multi_ref][:status] == "1"
+				ojb.m_Message			= result.body[:multi_ref][:message]
+				ojb.m_AMOUNT 			= result.body[:multi_ref][:amount]
+				ojb.m_TRANSID 			= result.body[:multi_ref][:transid]
+				ojb.m_Status 			= result.body[:multi_ref][:status]
+				ojb.m_RESPONSEAMOUNT 	= objTriptDes.decrypt(hextobyte(result.body[:multi_ref][:responseamount]))
+				ojb.message 			= "Nạp thẻ thành công."
+				ojb.status 				= 200
+				if ojb.m_Status == "3" or ojb.m_Status == "7"
+					sessionID = nil
+				end
 
-			result = Nokogiri::XML.parse(result.to_s)
-			page = result.at('multiRef')
-
-			ojb.m_Message			= page.at('message').text
-			ojb.m_AMOUNT 			= page.at('amount').text
-			ojb.m_TRANSID 			= page.at('transid').text
-			ojb.m_Status 			= page.at('status').text
-			ojb.m_RESPONSEAMOUNT 	= objTriptDes.decrypt(hextobyte(page.at('responseamount').text))
-			if ojb.m_Status == "3" or ojb.m_Status == "7"
-				sessionID = nil
+			elsif result.body[:multi_ref][:status] == "50"
+				ojb.message 	= "thẻ đã được sử dụng hay không tồn tại."
+				ojb.status 		= 400
+			elsif result.body[:multi_ref][:status] == "51"
+				ojb.message 	= "Mã số thẻ không xác thực"
+				ojb.status 		= 400
+			elsif result.body[:multi_ref][:status] == "52"
+				ojb.message 	= "Mã số thẻ và serial không khớp."
+				ojb.status 		= 400
+			elsif result.body[:multi_ref][:status] == "53"
+				ojb.message 	= "Mã số thẻ và serial không đúng."
+				ojb.status 		= 400
+			elsif result.body[:multi_ref][:status] == "55"
+				ojb.message 	= "thẻ bị khóa trong 24 tiếng đồng hồ"
+				ojb.status 		= 400
+			elsif result.body[:multi_ref][:status] == "4"
+				ojb.message 	= "Mã thẻ không hợp lệ."
+				ojb.status 		= 400
 			end
 			return ojb
 		end
@@ -221,6 +258,6 @@ module Paygate
 	end
 
 	class CardChargingResponse
-		attr_accessor :m_Status, :m_Message, :m_TRANSID, :m_AMOUNT, :m_RESPONSEAMOUNT
+		attr_accessor :m_Status, :m_Message, :m_TRANSID, :m_AMOUNT, :m_RESPONSEAMOUNT, :status, :message #:status return ra web
 	end
 end
