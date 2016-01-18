@@ -44,9 +44,9 @@
                 <label for="check-all"></label>
               </div>
             </th>
+            <th style="width:15%">Avatar</th>
             <th style="width:15%">Bí danh</th>
             <th style="width:15%">Email</th>
-            <th style="width:15%">Avatar</th>
             <th style="width:15%">Cấp độ</th>
             <th style="width:15%">Kinh nghiệm</th>
             <th style="width:7%">Action</th>
@@ -62,17 +62,17 @@
                   </div>
                 </td>
                 <td class="v-align-middle">
+                  <% if item.avatar? %>
+                    <img src="<%= item.avatar.minisquare.url %>" class="img-thumbnail">
+                  <% else %>
+                    <p>No Image</p>
+                  <% end %>
+                </td>
+                <td class="v-align-middle">
                   <%= link_to(edit_acp_user_path(item)) do %><p><%= item.username %></p><% end %>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.email %></p>
-                </td>
-                <td class="v-align-middle">
-                  <% if File.exist?("public#{item.avatar.minisquare}")%>
-                    <img src="<%= item.avatar.minisquare.url %>" />
-                  <%else%>
-                      <p>No image</p>
-                  <%end%>
                 </td>
                 <td class="v-align-middle">
                   <% if item.user_level.present?%>

@@ -44,10 +44,10 @@
                     <label for="check-all"></label>
                   </div>
                 </th>
+                <th style="width:15%">Avatar</th>
                 <th style="width:15%">Name</th>
                 <th style="width:15%">Email</th>
                 <th style="width:15%">Room Name</th>
-                <th style="width:15%">Avatar</th>
                 <th style="width:15%">Type</th>
                 <th style="width:15%">Level</th>
                 <th style="width:15%">Exp</th>
@@ -64,6 +64,13 @@
                       <label for="checkbox-<%= item.id %>"></label>
                   </div>
                 </td>
+                <td class="v-align-middle">
+                  <% if item.user.avatar? %>
+                    <img src="<%=item.user.avatar.minisquare.url%>" class="img-thumbnail">
+                  <% else %>
+                    <p>No Image</p>
+                  <% end %>
+                </td>
                 <td class="v-align-middle ">
                   <%= link_to(edit_acp_broadcaster_path(item)) do %><p><%= item.fullname %></p><% end %>
                 </td>
@@ -75,13 +82,6 @@
                       <p><%=item.rooms.find_by_is_privated(false).title%></p>
                   <% else %>
                       <p>Idol chưa có room</p>
-                  <% end %>
-                </td>
-                <td class="v-align-middle">
-                  <% if item.user.present?%>
-                       <img src="<%=item.user.avatar.minisquare.url%>">
-                  <% else %>
-                      <p>No image</p>
                   <% end %>
                 </td>
                 <td class="v-align-middle">
