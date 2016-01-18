@@ -1,4 +1,5 @@
 require 'hex_string'
+include AbstractController::Rendering
 
 # $m_PartnerID   	= "charging01"
 # $m_MPIN        	= "pajwtlzcb"
@@ -42,6 +43,7 @@ module Paygate
 			else
 				obj.m_SessionID = result.body[:multi_ref][:sessionid]
 			end
+			obj.message 	= "Đăng nhặp thành công SOAP."
 			obj.status 	= 200
 			return obj
 		end
@@ -131,7 +133,6 @@ module Paygate
 
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
-
 			if loginresponse.status == 200
 				if loginresponse.m_Status == "1"
 					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
@@ -176,7 +177,6 @@ module Paygate
 				if ojb.m_Status == "3" or ojb.m_Status == "7"
 					sessionID = nil
 				end
-
 			elsif result.body[:multi_ref][:status] == "50"
 				ojb.message 	= "thẻ đã được sử dụng hay không tồn tại."
 				ojb.status 		= 400
