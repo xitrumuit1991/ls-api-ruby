@@ -1,5 +1,4 @@
 require 'hex_string'
-include AbstractController::Rendering
 
 # $m_PartnerID   	= "charging01"
 # $m_MPIN        	= "pajwtlzcb"
