@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160111030533) do
+ActiveRecord::Schema.define(version: 20160118100549) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -103,6 +103,28 @@ ActiveRecord::Schema.define(version: 20160111030533) do
   add_index "broadcasters", ["bct_type_id"], name: "index_broadcasters_on_bct_type_id", using: :btree
   add_index "broadcasters", ["broadcaster_level_id"], name: "index_broadcasters_on_broadcaster_level_id", using: :btree
   add_index "broadcasters", ["user_id"], name: "index_broadcasters_on_user_id", using: :btree
+
+  create_table "cards", force: :cascade do |t|
+    t.integer  "price",      limit: 4
+    t.integer  "coin",       limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  create_table "cart_logs", force: :cascade do |t|
+    t.integer  "user_id",     limit: 4
+    t.integer  "provider_id", limit: 4
+    t.string   "pin",         limit: 255
+    t.string   "serial",      limit: 255
+    t.integer  "price",       limit: 4
+    t.integer  "coin",        limit: 4
+    t.integer  "status",      limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "cart_logs", ["provider_id"], name: "index_cart_logs_on_provider_id", using: :btree
+  add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0, null: false
@@ -243,6 +265,14 @@ ActiveRecord::Schema.define(version: 20160111030533) do
     t.integer  "weight",     limit: 4
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "providers", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.string   "slug",        limit: 255
+    t.text     "description", limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "room_actions", force: :cascade do |t|
@@ -559,6 +589,8 @@ ActiveRecord::Schema.define(version: 20160111030533) do
   add_foreign_key "broadcasters", "bct_types"
   add_foreign_key "broadcasters", "broadcaster_levels"
   add_foreign_key "broadcasters", "users"
+  add_foreign_key "cart_logs", "providers"
+  add_foreign_key "cart_logs", "users"
   add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"
   add_foreign_key "gift_logs", "rooms"
