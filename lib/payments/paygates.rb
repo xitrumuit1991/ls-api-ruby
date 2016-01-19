@@ -1,5 +1,4 @@
 require 'hex_string'
-include AbstractController::Rendering
 
 # $m_PartnerID   	= "charging01"
 # $m_MPIN        	= "pajwtlzcb"
@@ -194,6 +193,9 @@ module Paygate
 				ojb.status 		= 400
 			elsif result.body[:multi_ref][:status] == "4"
 				ojb.message 	= "Mã thẻ không hợp lệ."
+				ojb.status 		= 400
+			else
+				ojb.message 	= "Chua xac dinh."
 				ojb.status 		= 400
 			end
 			return ojb
