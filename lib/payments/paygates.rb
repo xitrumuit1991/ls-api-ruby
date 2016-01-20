@@ -42,6 +42,7 @@ module Paygate
 			else
 				obj.m_SessionID = result.body[:multi_ref][:sessionid]
 			end
+			obj.message 	= "Đăng nhặp thành công SOAP."
 			obj.status 	= 200
 			return obj
 		end
@@ -131,7 +132,6 @@ module Paygate
 
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
-
 			if loginresponse.status == 200
 				if loginresponse.m_Status == "1"
 					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
@@ -176,7 +176,6 @@ module Paygate
 				if ojb.m_Status == "3" or ojb.m_Status == "7"
 					sessionID = nil
 				end
-
 			elsif result.body[:multi_ref][:status] == "50"
 				ojb.message 	= "thẻ đã được sử dụng hay không tồn tại."
 				ojb.status 		= 400
@@ -194,6 +193,9 @@ module Paygate
 				ojb.status 		= 400
 			elsif result.body[:multi_ref][:status] == "4"
 				ojb.message 	= "Mã thẻ không hợp lệ."
+				ojb.status 		= 400
+			else
+				ojb.message 	= "Chua xac dinh."
 				ojb.status 		= 400
 			end
 			return ojb

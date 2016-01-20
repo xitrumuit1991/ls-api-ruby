@@ -2,7 +2,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders]
 
   def profile
   end
@@ -233,17 +233,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def getProviders
+    @providers = Provider::all
+  end
+
   def payments
     # nha mang cung cap 
     m_UserName    = "charging01"
-    m_Pass        = "gmwtwjfws1"
+    m_Pass        = "gmwtwjfws"
     m_PartnerCode = "00477"
     m_PartnerID   = "charging01"
     m_MPIN        = "pajwtlzcb"
 
     webservice   = "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
     soapClient = Savon.client(wsdl: webservice)
-    m_Target = params[:username] # tai khoan nguoi dung tren livestar , dung de nap tien vao day 
+    m_Target = @user.username 
 
     cardCharging              = Paygate::CardCharging.new
     cardCharging.m_UserName   = m_UserName
@@ -259,14 +263,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
     cardChargingResponse = Paygate::CardChargingResponse.new;
     cardChargingResponse = cardCharging.cardCharging
     if cardChargingResponse.status == 200
-      if cardChargingResponse.m_Status == "1"
-        if update_xu(cardChargingResponse.m_RESPONSEAMOUNT)
-          render plain: cardChargingResponse, status: 200
+      card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
+      info = { pin: params[:pin], provider: params[:provider], serial: params[:serial], coin: card.coin.to_s }
+      if card_logs(cardChargingResponse, info)
+        if update_coin(info[:coin])
+          render plain: "Nạp tiền thành công.", status: 200
         else
-          render plain: "Khong them dc du lieu", status: 201
+          render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
         end
       else
-        render plain: cardChargingResponse, status: 400
+        render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
       end
     elsif cardChargingResponse.status == 400
       render plain: cardChargingResponse.message, status: 400
@@ -276,8 +282,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   private
-    def update_xu(xu)
-      money = @user.money + xu.to_i
+    def card_logs(obj, info)
+      provider  = Provider::find_by_name info[:provider]
+      CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
+    end
+    def update_coin(coin)
+      money = @user.money + coin.to_i
       if @user.update(money: money)
         return true
       else
