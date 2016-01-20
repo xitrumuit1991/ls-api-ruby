@@ -15,7 +15,7 @@ module Paygate
 				result = soapClient.call(:login,  message: { :m_UserName => m_UserName, :m_Pass => pass, :m_PartnerID => m_PartnerID })
 			rescue Exception => e
 				obj.status 	= 500
-				obj.message 	= "Lổi hệ thống đăng nhập SOAP: "+ e
+				obj.message 	= "Lổi hệ thống đăng nhập SOAP: "
 				return obj
 			end
 			obj.m_Sessage = result.body[:multi_ref][:message]
