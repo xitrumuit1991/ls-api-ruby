@@ -1,13 +1,5 @@
 require 'hex_string'
 
-# $m_PartnerID   	= "charging01"
-# $m_MPIN        	= "pajwtlzcb"
-# $m_UserName    	= "charging01"
-# $m_Pass        	= "gmwtwjfws"
-# $m_PartnerCode 	= "00477"
-# $webservice 	= "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
-# Ten tai khoan nguoi dung tren he thong doi tac
-$m_Target 		= "useraccount1";
 module Paygate
 	class Login
 		attr_accessor :m_UserName, :m_Pass, :m_PartnerID, :soapClient
@@ -23,7 +15,7 @@ module Paygate
 				result = soapClient.call(:login,  message: { :m_UserName => m_UserName, :m_Pass => pass, :m_PartnerID => m_PartnerID })
 			rescue Exception => e
 				obj.status 	= 500
-				obj.message 	= "Lổi hệ thống đăng nhập SOAP."
+				obj.message 	= "Lổi hệ thống đăng nhập SOAP: "+ e
 				return obj
 			end
 			obj.m_Sessage = result.body[:multi_ref][:message]
