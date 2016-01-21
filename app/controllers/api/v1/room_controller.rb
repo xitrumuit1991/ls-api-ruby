@@ -5,17 +5,17 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
-    @rooms = Room.where(on_air: true).limit(6).offset(offset)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 9
+    @rooms = Room.where(on_air: true).limit(9).offset(offset)
   end
 
   def comingSoon
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     if params[:category_id].nil?
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start < ? AND end > ?', DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(6).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start < ? AND end > ?', DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
       # @schedules = Schedule.where('upddate_at < ? AND ? < ?', DateTime.now, DateTime.now, user.update_at+1).order(start: :asc, end: :asc).limit(6).offset(offset)
     else
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start < ? AND end > ?', params[:category_id], DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(6).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start < ? AND end > ?', params[:category_id], DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     end
   end
 
@@ -153,7 +153,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     keys = redis.keys("lounges:#{params[:room_id]}:*")
     status = []
     12.times do |n|
-      status[n] = {user: {id: 0, name: ''}, cost: 0}
+      status[n] = {user: {id: 0, name: ''}, cost: 50}
     end
     keys.each do |key|
       split = key.split(':')
