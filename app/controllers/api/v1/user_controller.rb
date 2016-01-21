@@ -1,8 +1,9 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
+  require "./lib/payments/epaysms"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms]
 
   def profile
   end
@@ -233,6 +234,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def sms
+    data = Ebaysms::Sms.new
+    data.partnerid            = params[:partnerid]
+    data.moid                 = params[:moid]
+    data.userid               = params[:userid]
+    data.shortcode            = params[:shortcode]
+    data.keyword              = params[:keyword]
+    data.content              = params[:content]
+    data.transdate            = params[:transdate]
+    data.checksum             = params[:checksum]
+    data.amount               = params[:amount]
+    data.smspPartnerPassword  = params[:smspPartnerPassword]
+    checksum = data._checksum
+  end
+
   def getProviders
     @providers = Provider::all
   end
@@ -260,7 +276,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
     cardCharging.m_TransID    = transid
 
-    cardChargingResponse = Paygate::CardChargingResponse.new;
+    cardChargingResponse = Paygate::CardChargingResponse.new
     cardChargingResponse = cardCharging.cardCharging
     if cardChargingResponse.status == 200
       card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
