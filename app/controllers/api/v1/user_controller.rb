@@ -235,6 +235,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
+    partnerid                 = "10004"
+    partnerpass               = "SMSP_PARTNER_PASSWORD"
     data = Ebaysms::Sms.new
     data.partnerid            = params[:partnerid]
     data.moid                 = params[:moid]
@@ -247,6 +249,66 @@ class Api::V1::UserController < Api::V1::ApplicationController
     data.amount               = params[:amount]
     data.smspPartnerPassword  = params[:smspPartnerPassword]
     checksum = data._checksum
+    puts '=============================='
+    puts params[:partnerid]
+    puts params[:moid]
+    puts params[:userid]
+    puts params[:shortcode]
+    puts params[:keyword]
+    puts params[:content]
+    puts params[:transdate]
+    puts params[:checksum]
+    puts params[:amount]
+    puts params[:subkeyword]
+    puts checksum
+    puts '=============================='
+    if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
+      if _checkmoid(params[:moid])
+        render plain: 'requeststatus=2', status: 400
+      end
+      _smslog(params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:checksum], params[:amount], params[:subkeyword])
+      coin  = Card::find_by_price params[:amount].to_i
+      if update_coin_sms(coin.coin)
+        url         ='http://sms.megapayment.net.vn:9099/smsApi?'
+        url         += 'partnerid=' + partnerid
+        url         += '&moid=' + params[:moid]
+        mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%I%M") + rand(0, 99999);
+        url         += '&mtid=' + mtid
+        url         += '&userid=' + params[:userid]
+        url         += '&receivernumber=' + params[:userid]
+        url         += '&shortcode=' + params[:shortcode]
+        url         += '&keyword=' + params[:keyword]
+        mt_content  = 'Ban+da+nap+thanh+cong+'.$amount.'+xu+vao+tai+khoan+tai+website+Dinhmenh.org'
+        url         += '&content=' + mt_content
+        url         += '&messagetype=1'
+        url         += '&totalmessage=1'
+        url         += '&messageindex=1'
+        url         += '&ismore=0'
+        url         += '&contenttype=0'
+        mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
+        url         += '&transdate=' + mt_transdate
+        url         += '&checksum='.md5($mtid.$get['moid'].$get['shortcode'].$get['keyword'].$mt_content.$mt_transdate.md5(SMSP_PARTNER_PASSWORD))
+        url         += '&checksum=' + Digest::MD5.hexdigest (mtid + params[:moid]  + params[:shortcode] + params[:keyword] + mt_content  + mt_transdate + Digest::MD5.hexdigest (partnerpass))
+        url         += '&amount=' + params[:amount]
+
+      else
+
+      end
+    else
+      #goi ham ghi log sai checksum
+      render plain: 'requeststatus=17', status: 400
+    end
+  end
+
+  def _checkmoid(moid)
+    return SmsLog::find_by_moid(moid).present?
+  end
+
+  def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+    @user_sms = User::find_by_active_code(subkeyword)
+    if @user_sms.present?
+      SmsLog.create(user_id: @user_sms.id, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksun: checksun, amount: amount)
+    end
   end
 
   def getProviders
@@ -302,6 +364,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
       provider  = Provider::find_by_name info[:provider]
       CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
     end
+
+    def update_coin_sms(coin)
+      money = @user_sms.money + coin
+      if @user_sms.update(money: money)
+        return true
+      else
+        return false 
+      end
+    end
+
     def update_coin(coin)
       money = @user.money + coin.to_i
       if @user.update(money: money)
