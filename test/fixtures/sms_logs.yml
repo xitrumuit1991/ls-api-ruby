@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  moid: MyString
+  phone: MyString
+  shortcode: MyString
+  keyword: MyString
+  content: MyText
+  trans_date: MyString
+  checksun: MyString
+  amount: 1
+
+two:
+  user_id: 
+  moid: MyString
+  phone: MyString
+  shortcode: MyString
+  keyword: MyString
+  content: MyText
+  trans_date: MyString
+  checksun: MyString
+  amount: 1
