@@ -248,34 +248,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     data.checksum             = params[:checksum]
     data.amount               = params[:amount]
     data.smspPartnerPassword  = params[:smspPartnerPassword]
+    data.partnerpass          = partnerpass
     checksum = data._checksum
     if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
       if _checkmoid(params[:moid])
         render plain: 'requeststatus=2', status: 400
       else
         if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
-          url         ='http://sms.megapayment.net.vn:9099/smsApi?'
-          url         += 'partnerid=' + partnerid
-          url         += '&moid=' + params[:moid]
-          mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%I%M") + rand(0..99999).to_s;
-          url         += '&mtid=' + mtid
-          url         += '&userid=' + params[:userid]
-          url         += '&receivernumber=' + params[:userid]
-          url         += '&shortcode=' + params[:shortcode]
-          url         += '&keyword=' + params[:keyword]
-          mt_content  = 'Ban+da+nap+thanh+cong+' + params[:amount] + '+xu+vao+tai+khoan+tai+website+livestar.vn'
-          url         += '&content=' + mt_content
-          url         += '&messagetype=1'
-          url         += '&totalmessage=1'
-          url         += '&messageindex=1'
-          url         += '&ismore=0'
-          url         += '&contenttype=0'
-          mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
-          url         += '&transdate=' + mt_transdate
-          url         += '&checksum=' + Digest::MD5.hexdigest(mtid + params[:moid]  + params[:shortcode] + params[:keyword] + mt_content  + mt_transdate + Digest::MD5.hexdigest(partnerpass))
-          url         += '&amount=' + params[:amount]
-
-          str         = data.getUrl(url)
+          str         = data.confirm
 
           if str == "requeststatus=200"
             render plain: str, status: 200
@@ -283,7 +263,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
             render plain: str, status: 400
           end
         else
-          #tai khoan khong ton tai hoac loi xay ra khi ghi log
+          #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+          #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
           render plain: 'requeststatus=200', status: 200
         end
       end

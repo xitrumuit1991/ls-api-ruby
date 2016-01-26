@@ -1,16 +1,12 @@
 module Ebaysms
 	class Sms
-		attr_accessor :partnerid, :moid, :userid, :shortcode, :keyword, :content, :transdate, :checksum, :amount, :smspPartnerPassword
+		attr_accessor :partnerid, :moid, :userid, :shortcode, :keyword, :content, :transdate, :checksum, :amount, :smspPartnerPassword, :partnerpass
 
-		def encode
-			
-		end
-		
 		def getMOChecksum
-			puts '======================'
-			puts Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + "37c91f0c15547ddc2fdb6a6d126f8590")
-			puts '======================'
-			return Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + "37c91f0c15547ddc2fdb6a6d126f8590")
+			return Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
+			puts '==========Chuoi check sum ben ruby================'
+			puts Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
+			puts '==========Chuoi check sum ben ruby================'
 		end
 
 		def _checksum
@@ -21,25 +17,40 @@ module Ebaysms
 			end
 		end
 
-		def getUrl(url)
+		def getUrl
+			url         ='http://sms.megapayment.net.vn:9099/smsApi?'
+			url         += 'partnerid=' + partnerid
+			url         += '&moid=' + moid
+			mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%I%M") + rand(0..99999).to_s;
+			url         += '&mtid=' + mtid
+			url         += '&userid=' + userid
+			url         += '&receivernumber=' + userid
+			url         += '&shortcode=' + shortcode
+			url         += '&keyword=' + keyword
+			mt_content  = 'Ban+da+nap+thanh+cong+' + amount + '+xu+vao+tai+khoan+tai+website+livestar.vn'
+			url         += '&content=' + mt_content
+			url         += '&messagetype=1'
+			url         += '&totalmessage=1'
+			url         += '&messageindex=1'
+			url         += '&ismore=0'
+			url         += '&contenttype=0'
+			mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
+			url         += '&transdate=' + mt_transdate
+			url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + Digest::MD5.hexdigest(partnerpass))
+			url         += '&amount=' + amount
+			puts '=========confirm url=========='
+			puts url
+			puts '=========confirm url=========='
+			return url
+		end
+
+		def confirm
+			url = getUrl
 			str = Curl::Easy.perform('http://api.livestar.vn/api/v1/users/username_1')
+			puts '=========Status tra ve khi goi confirm=========='
+			puts str
+			puts '=========Status tra ve khi goi confirm=========='
 			return str.body_str
-		end
-
-		def mtid
-			
-		end
-
-		def getMTPayload
-			
-		end
-
-		def getMTPath
-			
-		end
-
-		def sendMT
-			
 		end
 	end
 end
