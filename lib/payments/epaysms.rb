@@ -21,6 +21,11 @@ module Ebaysms
 			end
 		end
 
+		def getUrl(url)
+			str = Curl::Easy.perform('http://api.livestar.vn/api/v1/users/username_1')
+			return str.body_str
+		end
+
 		def mtid
 			
 		end
