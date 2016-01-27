@@ -332,10 +332,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
     end
 
-    def _smslog(moid, userid, shortcode, keyword, content, transdate, checksun, amount, subkeyword)
+    def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
       @user_sms = User::find_by_active_code(subkeyword)
       if @user_sms.present?
-        SmsLog.create(user_id: @user_sms.id, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksun: checksun, amount: amount)
+        SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
       end
     end
 
