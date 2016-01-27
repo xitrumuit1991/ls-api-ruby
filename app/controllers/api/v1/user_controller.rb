@@ -1,8 +1,9 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
+  require "./lib/payments/epaysms"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms]
 
   def profile
   end
@@ -233,6 +234,50 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def sms
+    partnerid                 = "10004"
+    partnerpass               = "SMSP_PARTNER_PASSWORD"
+    data = Ebaysms::Sms.new
+    data.partnerid            = params[:partnerid]
+    data.moid                 = params[:moid]
+    data.userid               = params[:userid]
+    data.shortcode            = params[:shortcode]
+    data.keyword              = params[:keyword]
+    data.content              = params[:content]
+    data.transdate            = params[:transdate]
+    data.checksum             = params[:checksum]
+    data.amount               = params[:amount]
+    data.smspPartnerPassword  = params[:smspPartnerPassword]
+    data.partnerpass          = partnerpass
+    checksum = data._checksum
+    if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
+      if _checkmoid(params[:moid])
+        render plain: 'requeststatus=2', status: 400
+      else
+        if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+          str         = data.confirm
+
+          if str == "requeststatus=200"
+            render plain: str, status: 200
+          else
+            render plain: str, status: 400
+          end
+        else
+          #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+          #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
+          render plain: 'requeststatus=200', status: 200
+        end
+      end
+    else
+      #loi checksum
+      render plain: 'requeststatus=17', status: 400
+    end
+  end
+
+  def _checkmoid(moid)
+    return SmsLog::find_by_moid(moid).present?
+  end
+
   def getProviders
     @providers = Provider::all
   end
@@ -260,7 +305,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
     cardCharging.m_TransID    = transid
 
-    cardChargingResponse = Paygate::CardChargingResponse.new;
+    cardChargingResponse = Paygate::CardChargingResponse.new
     cardChargingResponse = cardCharging.cardCharging
     if cardChargingResponse.status == 200
       card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
@@ -286,6 +331,31 @@ class Api::V1::UserController < Api::V1::ApplicationController
       provider  = Provider::find_by_name info[:provider]
       CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
     end
+
+    def _smslog(moid, userid, shortcode, keyword, content, transdate, checksun, amount, subkeyword)
+      @user_sms = User::find_by_active_code(subkeyword)
+      if @user_sms.present?
+        SmsLog.create(user_id: @user_sms.id, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksun: checksun, amount: amount)
+      end
+    end
+
+    def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
+      @user_sms = User::find_by_active_code(subkeyword)
+      coin  = Card::find_by_price amount.to_i
+      money = @user_sms.money + coin.coin
+      if @user_sms.update(money: money)
+        if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+          return true
+        else
+          # loi xay ra khi ghi log
+          return false
+        end
+      else
+        # tai khoan khong ton tai 
+        return false 
+      end
+    end
+
     def update_coin(coin)
       money = @user.money + coin.to_i
       if @user.update(money: money)
