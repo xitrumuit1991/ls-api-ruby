@@ -28,6 +28,22 @@ Rails.application.routes.draw do
 		# Rooms
     resources :rooms
 
+    # Sms mobile
+    resources :sms_mobiles
+    	post 	'/sms_mobiles/destroy_m' => 'sms_mobiles#destroy_m'
+
+    # Sms mobile
+    resources :sms_logs
+    	post 	'/sms_logs/destroy_m' => 'sms_logs#destroy_m'
+
+    # Sms mobile
+    resources :cart_logs
+    	post 	'/cart_logs/destroy_m' => 'cart_logs#destroy_m'
+
+    # Card 
+    resources :cards
+    	post 	'/cards/destroy_m' => 'cards#destroy_m'
+
     # Broadcaster Backgrounds
     resources :broadcaster_backgrounds
 

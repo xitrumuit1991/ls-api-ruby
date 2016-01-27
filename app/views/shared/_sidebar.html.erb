@@ -16,7 +16,7 @@
       <li class="<% if controller_name == 'users' %>active<% end %>  m-t-30">
         <a href="#">
           <span class="title">Users</span>
-          <span class=" arrow"></span>
+          <span class="arrow<% if controller_name == 'users' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -36,7 +36,7 @@
       <li class="<% if controller_name == 'broadcasters' %>active<% end %>">
         <a href="#">
           <span class="title">Idols</span>
-          <span class=" arrow"></span>
+          <span class="arrow<% if controller_name == 'broadcasters' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -56,7 +56,7 @@
       <li class="<% if controller_name == 'rooms' %>active<% end %>">
         <a href="#">
           <span class="title">Room</span>
-          <span class=" arrow"></span>
+          <span class="arrow<% if controller_name == 'rooms' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -72,7 +72,7 @@
           <li class="<% if controller_name == 'room_types' %>active<% end %>">
             <a href="#">
               <span class="title">Room Types</span>
-              <span class=" arrow"></span>
+              <span class=" arrow<% if controller_name == 'room_types' %> open<% end %>"></span>
             </a>
             <span class="icon-thumbnail"><i class="pg-grid"></i></span>
             <ul class="sub-menu">
@@ -94,7 +94,7 @@
       <li class="<% if controller_name == 'gifts' %>active<% end %>">
         <a href="#">
           <span class="title">Gifts</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'gifts' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -114,7 +114,7 @@
       <li class="<% if controller_name == 'broadcaster_levels' %>active<% end %>">
         <a href="#">
           <span class="title">Broadcaster Level</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'broadcaster_levels' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -134,7 +134,7 @@
       <li class="<% if controller_name == 'user_levels' %>active<% end %>">
         <a href="#">
           <span class="title">User Level</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'user_levels' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -154,7 +154,7 @@
       <li class="<% if controller_name == 'room_actions' %>active<% end %>">
         <a href="#">
           <span class="title">Room actions</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'room_actions' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -174,7 +174,7 @@
       <li class="<% if controller_name == 'featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Featured</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'featureds' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -194,7 +194,7 @@
       <li class="<% if controller_name == 'home_featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Home Featured</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'home_featureds' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -214,7 +214,7 @@
       <li class="<% if controller_name == 'room_featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Room Featured</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'room_featureds' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -234,7 +234,7 @@
       <li class="<% if controller_name == 'posters' %>active<% end %>">
         <a href="#">
           <span class="title">Poster</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'posters' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -254,7 +254,7 @@
       <li class="<% if controller_name == 'room_backgrounds' %>active<% end %>">
         <a href="#">
           <span class="title">Room backgrounds</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'room_backgrounds' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -271,24 +271,60 @@
       <!--END Room Background-->
 
       <!--BEGIN Slides-->
-      <li class="<% if controller_name == 'room_backgrounds' %>active<% end %>">
+      <li class="<% if controller_name == 'slides' %>active<% end %>">
         <a href="#">
           <span class="title">Slides</span>
-          <span class=" arrow"></span>
+          <span class=" arrow<% if controller_name == 'slides' %> open<% end %>"></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
-          <li class="<% if controller_name == 'room_backgrounds' && action_name == 'index' %>active<% end %>">
+          <li class="<% if controller_name == 'slides' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_slides_path) do %><span class="title">List</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
-          <li class="<% if controller_name == 'room_backgrounds' && action_name == 'new' %>active<% end %>">
+          <li class="<% if controller_name == 'slides' && action_name == 'new' %>active<% end %>">
             <%= link_to(new_acp_slide_path) do %><span class="title">Add New</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
         </ul>
       </li>
       <!--END Slides-->
+
+      <!--BEGIN Epay-->
+      <li class="<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %>active<% end %>">
+        <a href="#">
+          <span class="title">Epay</span>
+          <span class=" arrow<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %> open<% end %> "></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'sms_mobiles' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_sms_mobiles_path) do %><span class="title">List SMS</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'sms_mobiles' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_sms_mobile_path) do %><span class="title">Add New SMS</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+          <li class="<% if controller_name == 'sms_logs' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_sms_logs_path) do %><span class="title">List Card_Logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'cards' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_cards_path) do %><span class="title">List Card</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'cards' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_card_path) do %><span class="title">Add New Card</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+          <li class="<% if controller_name == 'cart_logs' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_cart_logs_path) do %><span class="title">List Card_Logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Epay-->
 
     </ul>
     <div class="clearfix"></div>
