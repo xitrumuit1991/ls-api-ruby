@@ -23,6 +23,11 @@
                 <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
                 <div class="form-group">
                   <div class="row">
+                    <label class="col-sm-12">#ID: <%= @room.id %></label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
                     <label class="col-sm-12">Banner</label>
                     <div class="col-sm-5">
                       <img src="<%= @room.thumb_url %>" class="img-thumbnail" >
