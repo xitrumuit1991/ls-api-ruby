@@ -12,10 +12,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def comingSoon
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     if params[:category_id].nil?
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start < ? AND end > ?', DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
-      # @schedules = Schedule.where('upddate_at < ? AND ? < ?', DateTime.now, DateTime.now, user.update_at+1).order(start: :asc, end: :asc).limit(6).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     else
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start < ? AND end > ?', params[:category_id], DateTime.now+1, DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
+      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     end
   end
 
