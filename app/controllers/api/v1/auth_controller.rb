@@ -50,6 +50,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.username = params[:email].split("@")[0]
     user.email    = params[:email]
     user.password = params[:password].to_s
+    user.birthday = '2000-01-01'
     user.user_level_id       = UserLevel.first().id
     user.money               = 0
     user.user_exp            = 0

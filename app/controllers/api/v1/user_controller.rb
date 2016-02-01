@@ -93,7 +93,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 8 and params[:name].to_s.length <= 20
+    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6 and params[:name].to_s.length <= 20
       @user.name              = params[:name]
       @user.facebook_link     = params[:facebook]
       @user.twitter_link      = params[:twitter]
