@@ -149,6 +149,7 @@ Rails.application.routes.draw do
 				post '/cover-crop'        	=> 'user#coverCrop'
 				post '/avatar-crop'       	=> 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
+				post '/internet-banking'    => 'user#internetBank'
 			end
 
 			# broadcasters

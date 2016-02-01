@@ -1,9 +1,10 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   require "./lib/payments/epaysms"
+  require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :internetBank]
 
   def profile
   end
@@ -234,6 +235,48 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def internetBank
+    # epay cung cap
+    webservice    = "http://203.128.244.163:8015/Service.asmx?wsdl"
+    respUrl       = "http://localhost/megabank/response.php"
+    merchantid    = "TA123"
+    issuerID      = "18800110"
+    send_key      = "reesatersuusrtiy12312kty"
+    received_key  = "k43423553535gsgrthkladgt"
+    soapClient    = Savon.client(wsdl: webservice)
+    paramDeposit  = Megabank::Service.new
+
+    paramDeposit.respUrl          = respUrl
+    paramDeposit.merchantid       = merchantid
+    paramDeposit.issuerID         = issuerID
+    paramDeposit.send_key         = send_key
+    paramDeposit.received_key     = received_key
+    paramDeposit.soapClient       = soapClient
+    paramDeposit.txnAmount        = params[:txnAmount]
+    paramDeposit.fee              = params[:fee]
+    paramDeposit.userName         = params[:userName]
+    paramDeposit.bankID           = params[:bankID]
+    result                        = paramDeposit._deposit
+    puts '==================================='
+    puts params
+    puts result
+    puts '==================================='
+    render plain: "str", status: 200
+    # if ($result) {
+    #   if ($result->DepositResult->responsecode == '00') {
+    #     header('Location: '.$result->DepositResult->url);
+    #     exit;
+    #   } else {
+    #     $error .= $result->DepositResult->descriptionvn;
+    #   }
+    # }
+    if result
+      # toi day roi
+    else
+    end
+    # result = soapClient.call(:deposit,  message: { :merchantid => merchantid, :txnAmount => params[:txnAmount], :fee => params[:fee], :userName => params[:userName], :IssuerID => issuerID, :bankID => params[:bankID], :respUrl => respUrl})
+  end
+
   def sms
     partnerid                 = "10004"
     partnerpass               = "SMSP_PARTNER_PASSWORD"
@@ -291,6 +334,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     m_MPIN        = "pajwtlzcb"
 
     webservice   = "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
+
     soapClient = Savon.client(wsdl: webservice)
     m_Target = @user.username 
 
