@@ -245,7 +245,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
     received_key  = "k43423553535gsgrthkladgt"
     soapClient    = Savon.client(wsdl: webservice)
     paramDeposit  = Megabank::Service.new
-
     paramDeposit.respUrl          = respUrl
     paramDeposit.merchantid       = merchantid
     paramDeposit.issuerID         = issuerID
@@ -257,10 +256,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     paramDeposit.userName         = params[:userName]
     paramDeposit.bankID           = params[:bankID]
     result                        = paramDeposit._deposit
-    puts '==================================='
-    puts params
-    puts result
-    puts '==================================='
+    # Settings.ary.each do |item|
+    #   result = paramDeposit._deposit(item)
+    #   SmsLog.create(:active_code => result , :moid => item)
+    # end
     render plain: "str", status: 200
     # if ($result) {
     #   if ($result->DepositResult->responsecode == '00') {
