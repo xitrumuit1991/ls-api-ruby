@@ -8,9 +8,9 @@ module Megabank
 			termtxndatetime = DateTime.now.strftime('%Y%m%d%H%M%S')
 			macData 		= merchantid + stan + termtxndatetime + txnAmount + fee + userName + issuerID + tranID + bankID + respUrl
 			mac 			= mDESMAC_3des(macData, send_key)
-			data 			= { :merchantid => merchantid, :stan => stan, :termtxndatetime => termtxndatetime, :txnAmount => txnAmount, :fee => fee, :userName => userName, :IssuerID => issuerID, :tranID => tranID , :bankID => bankID, :mac => mac, :respUrl => respUrl}
+			data 			= {"merchantid": merchantid, "stan": stan, "termtxndatetime": termtxndatetime, "txnAmount": txnAmount, "fee": fee, "userName": userName, "IssuerID": issuerID, "tranID": tranID , "bankID": bankID, "mac": mac, "respUrl": respUrl}
 			result 			= soapClient.call(:deposit,  message: data )
-			puts '=============mac================'
+			puts '=============data================'
 			# puts merchantid
 			# puts stan
 			# puts termtxndatetime
@@ -24,11 +24,13 @@ module Megabank
 			# puts time.strftime('%Y%m%d%H%M%S')
 			# puts mac.length
 			# puts mac
-			# puts data
+			puts data
+			puts '=============data================'
+			puts '=============mac================'
 			puts result.body
 			puts mac
 			puts '=============mac================'
-			return true
+			return data
 		end
 
 		def confirm

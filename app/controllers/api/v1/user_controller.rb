@@ -256,11 +256,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
     paramDeposit.userName         = params[:userName]
     paramDeposit.bankID           = params[:bankID]
     result                        = paramDeposit._deposit
+
     # Settings.ary.each do |item|
     #   result = paramDeposit._deposit(item)
     #   SmsLog.create(:active_code => result , :moid => item)
     # end
-    render plain: "str", status: 200
+    render json: result
     # if ($result) {
     #   if ($result->DepositResult->responsecode == '00') {
     #     header('Location: '.$result->DepositResult->url);
