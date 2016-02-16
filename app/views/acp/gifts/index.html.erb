@@ -64,7 +64,7 @@
                 </td>
                 <td class="v-align-middle">
                   <% if FileTest.exist?("public#{item.image.square}") %>
-                        <img src="<%="#{request.base_url}#{item.image.square}"%>" alt="<%= item.name %>">
+                        <img src="<%="#{request.base_url}#{item.image.square}"%>" alt="<%= item.name %>" class="img-thumbnail">
                   <% else %>
                         No image
                   <% end%>
