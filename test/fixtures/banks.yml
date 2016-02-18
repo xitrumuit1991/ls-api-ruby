@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  bankID: MyString
+  name: MyString
+  status: false
+
+two:
+  bankID: MyString
+  name: MyString
+  status: false

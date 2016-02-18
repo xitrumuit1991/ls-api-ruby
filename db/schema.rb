@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160127042528) do
+ActiveRecord::Schema.define(version: 20160218111807) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -43,6 +43,14 @@ ActiveRecord::Schema.define(version: 20160127042528) do
 
   add_index "admins", ["email"], name: "index_admins_on_email", unique: true, using: :btree
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
+
+  create_table "banks", force: :cascade do |t|
+    t.string   "bankID",     limit: 255
+    t.string   "name",       limit: 255
+    t.boolean  "status"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "bct_images", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
@@ -205,6 +213,13 @@ ActiveRecord::Schema.define(version: 20160127042528) do
 
   add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
   add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
+
+  create_table "megabanks", force: :cascade do |t|
+    t.integer  "price",      limit: 4
+    t.integer  "coin",       limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
 
   create_table "monthly_top_bct_level_ups", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
