@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160218111807) do
+ActiveRecord::Schema.define(version: 20160219044659) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -213,6 +213,22 @@ ActiveRecord::Schema.define(version: 20160218111807) do
 
   add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
   add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
+
+  create_table "megabank_logs", force: :cascade do |t|
+    t.integer  "bank_id",       limit: 4
+    t.integer  "megabank_id",   limit: 4
+    t.integer  "user_id",       limit: 4
+    t.text     "descriptionvn", limit: 65535
+    t.text     "descriptionen", limit: 65535
+    t.string   "responsecode",  limit: 255
+    t.string   "status",        limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "megabank_logs", ["bank_id"], name: "index_megabank_logs_on_bank_id", using: :btree
+  add_index "megabank_logs", ["megabank_id"], name: "index_megabank_logs_on_megabank_id", using: :btree
+  add_index "megabank_logs", ["user_id"], name: "index_megabank_logs_on_user_id", using: :btree
 
   create_table "megabanks", force: :cascade do |t|
     t.integer  "price",      limit: 4
@@ -636,6 +652,9 @@ ActiveRecord::Schema.define(version: 20160218111807) do
   add_foreign_key "home_featureds", "broadcasters"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
+  add_foreign_key "megabank_logs", "banks"
+  add_foreign_key "megabank_logs", "megabanks"
+  add_foreign_key "megabank_logs", "users"
   add_foreign_key "monthly_top_bct_level_ups", "broadcasters"
   add_foreign_key "monthly_top_bct_received_gifts", "broadcasters"
   add_foreign_key "monthly_top_bct_received_hearts", "broadcasters"
