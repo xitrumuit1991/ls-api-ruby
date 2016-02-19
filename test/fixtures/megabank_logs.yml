@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  bank_id: 
+  megabank_id: 
+  user_id: 
+  descriptionvn: MyText
+  descriptionen: MyText
+  responsecode: MyString
+  status: MyString
+
+two:
+  bank_id: 
+  megabank_id: 
+  user_id: 
+  descriptionvn: MyText
+  descriptionen: MyText
+  responsecode: MyString
+  status: MyString
