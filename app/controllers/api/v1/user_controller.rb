@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :internetBank]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :internetBank, :getMegabanks, :getBanks]
 
   def profile
   end
@@ -237,14 +237,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def internetBank
     # epay cung cap
-    webservice    = "http://203.128.244.163:8015/Service.asmx?wsdl"
-    respUrl       = "http://localhost/megabank/response.php"
-    merchantid    = "TA123"
-    issuerID      = "18800110"
-    send_key      = "reesatersuusrtiy12312kty"
-    received_key  = "k43423553535gsgrthkladgt"
+    webservice    = Settings.magebankWS
+    respUrl       = Settings.magebankRespUrl
+    merchantid    = Settings.magebankMerchantid
+    issuerID      = Settings.magebankIssuerID
+    send_key      = Settings.magebankSend_key
+    received_key  = Settings.magebankReceived_key
     soapClient    = Savon.client(wsdl: webservice)
-    paramDeposit  = Megabank::Service.new
+    paramDeposit  = Megabanks::Service.new
     paramDeposit.respUrl          = respUrl
     paramDeposit.merchantid       = merchantid
     paramDeposit.issuerID         = issuerID
@@ -255,26 +255,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
     paramDeposit.fee              = params[:fee]
     paramDeposit.userName         = params[:userName]
     paramDeposit.bankID           = params[:bankID]
-    result                        = paramDeposit._deposit
 
-    # Settings.ary.each do |item|
-    #   result = paramDeposit._deposit(item)
-    #   SmsLog.create(:active_code => result , :moid => item)
-    # end
-    render json: result
-    # if ($result) {
-    #   if ($result->DepositResult->responsecode == '00') {
-    #     header('Location: '.$result->DepositResult->url);
-    #     exit;
-    #   } else {
-    #     $error .= $result->DepositResult->descriptionvn;
-    #   }
-    # }
-    if result
-      # toi day roi
-    else
-    end
-    # result = soapClient.call(:deposit,  message: { :merchantid => merchantid, :txnAmount => params[:txnAmount], :fee => params[:fee], :userName => params[:userName], :IssuerID => issuerID, :bankID => params[:bankID], :respUrl => respUrl})
+    @result = paramDeposit._deposit
+    puts '=============@result================='
+    puts @result
+    puts '=============@result================='
   end
 
   def sms
@@ -325,6 +310,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @providers = Provider::all
   end
 
+  def getBanks
+    @banks = Bank::all
+  end
+
+  def getMegabanks
+    @megabanks = Megabank::all
+  end
+
   def payments
     # nha mang cung cap 
     m_UserName    = "charging01"
@@ -371,6 +364,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   private
+    def megabank_logs(info)
+      MegabankLog.create()
+    end
+
     def card_logs(obj, info)
       provider  = Provider::find_by_name info[:provider]
       CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)

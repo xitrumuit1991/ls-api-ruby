@@ -1,4 +1,4 @@
-module Megabank
+module Megabanks
 	class Service
 		attr_accessor :respUrl, :merchantid, :issuerID, :send_key, :received_key, :txnAmount, :fee, :userName, :bankID, :soapClient
 		def _deposit
@@ -8,29 +8,25 @@ module Megabank
 			termtxndatetime = DateTime.now.strftime('%Y%m%d%H%M%S')
 			macData 		= merchantid + stan + termtxndatetime + txnAmount + fee + userName + issuerID + tranID + bankID + respUrl
 			mac 			= mDESMAC_3des(macData, send_key)
-			data 			= {"merchantid": merchantid, "stan": stan, "termtxndatetime": termtxndatetime, "txnAmount": txnAmount, "fee": fee, "userName": userName, "IssuerID": issuerID, "tranID": tranID , "bankID": bankID, "mac": mac, "respUrl": respUrl}
-			result 			= soapClient.call(:deposit,  message: data )
-			puts '=============data================'
-			# puts merchantid
-			# puts stan
-			# puts termtxndatetime
-			# puts txnAmount
-			# puts fee
-			# puts userName
-			# puts issuerID
-			# puts tranID
-			# puts bankID
-			# puts respUrl
-			# puts time.strftime('%Y%m%d%H%M%S')
-			# puts mac.length
-			# puts mac
-			puts data
-			puts '=============data================'
-			puts '=============mac================'
-			puts result.body
-			puts mac
-			puts '=============mac================'
-			return data
+			data 			= Hash.new
+
+			data["merchantid"] 		= merchantid
+			data["stan"] 			= stan
+			data["termtxndatetime"] = termtxndatetime
+			data["txnAmount"] 		= txnAmount
+			data["fee"] 			= fee
+			data["userName"] 		= userName
+			data["IssuerID"] 		= issuerID
+			data["tranID"] 			= tranID
+			data["bankID"] 			= bankID
+			data["mac"] 			= mac
+			data["respUrl"] 		= respUrl
+			begin
+				result 					= soapClient.call(:deposit,  message: data )
+				return result.body
+			rescue
+				return false
+			end
 		end
 
 		def confirm
