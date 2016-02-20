@@ -266,16 +266,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if @room.save then
       # Delete actions and lounges
       rActions = redis.keys("actions:#{@room.id}:*")
-      rLounges = redis.keys("lounges:#{@room.id}:*")
+      # rLounges = redis.keys("lounges:#{@room.id}:*")
       redis.del rActions if !rActions.empty?
-      redis.del rLounges if !rLounges.empty?
+      # redis.del rLounges if !rLounges.empty?
 
       # Broadcast to room
       emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
       emitter.of("/room").in(@room.id).emit("room off")
       return head 200
     else
-      render json: {error: "Can\'t start this room, please contact supporter"}, status: 400
+      render json: {error: "Can\'t end this room, please contact supporter"}, status: 400
     end
   end
 
