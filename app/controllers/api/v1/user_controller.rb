@@ -1,7 +1,9 @@
 class Api::V1::UserController < Api::V1::ApplicationController
+  require "./lib/payments/paygates"
+  require "./lib/payments/epaysms"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms]
 
   def profile
   end
@@ -90,7 +92,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 8 and params[:name].to_s.length <= 20
+    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6 and params[:name].to_s.length <= 20
       @user.name              = params[:name]
       @user.facebook_link     = params[:facebook]
       @user.twitter_link      = params[:twitter]
@@ -232,6 +234,134 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def payments
+  def sms
+    partnerid                 = "10004"
+    partnerpass               = "SMSP_PARTNER_PASSWORD"
+    data = Ebaysms::Sms.new
+    data.partnerid            = params[:partnerid]
+    data.moid                 = params[:moid]
+    data.userid               = params[:userid]
+    data.shortcode            = params[:shortcode]
+    data.keyword              = params[:keyword]
+    data.content              = params[:content]
+    data.transdate            = params[:transdate]
+    data.checksum             = params[:checksum]
+    data.amount               = params[:amount]
+    data.smspPartnerPassword  = params[:smspPartnerPassword]
+    data.partnerpass          = partnerpass
+    checksum = data._checksum
+    if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
+      if _checkmoid(params[:moid])
+        render plain: 'requeststatus=2', status: 400
+      else
+        if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+          str         = data.confirm
+
+          if str == "requeststatus=200"
+            render plain: str, status: 200
+          else
+            render plain: str, status: 400
+          end
+        else
+          #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+          #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
+          render plain: 'requeststatus=200', status: 200
+        end
+      end
+    else
+      #loi checksum
+      render plain: 'requeststatus=17', status: 400
+    end
   end
+
+  def _checkmoid(moid)
+    return SmsLog::find_by_moid(moid).present?
+  end
+
+  def getProviders
+    @providers = Provider::all
+  end
+
+  def payments
+    # nha mang cung cap 
+    m_UserName    = "charging01"
+    m_Pass        = "gmwtwjfws"
+    m_PartnerCode = "00477"
+    m_PartnerID   = "charging01"
+    m_MPIN        = "pajwtlzcb"
+
+    webservice   = "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
+    soapClient = Savon.client(wsdl: webservice)
+    m_Target = @user.username 
+
+    cardCharging              = Paygate::CardCharging.new
+    cardCharging.m_UserName   = m_UserName
+    cardCharging.m_PartnerID  = m_PartnerID
+    cardCharging.m_MPIN       = m_MPIN
+    cardCharging.m_Target     = m_Target
+    cardCharging.m_Card_DATA  = params[:serial].to_s + ":".to_s + params[:pin].to_s + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
+    cardCharging.m_Pass       = m_Pass
+    cardCharging.soapClient   = soapClient
+    transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
+    cardCharging.m_TransID    = transid
+
+    cardChargingResponse = Paygate::CardChargingResponse.new
+    cardChargingResponse = cardCharging.cardCharging
+    if cardChargingResponse.status == 200
+      card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
+      info = { pin: params[:pin], provider: params[:provider], serial: params[:serial], coin: card.coin.to_s }
+      if card_logs(cardChargingResponse, info)
+        if update_coin(info[:coin])
+          render plain: "Nạp tiền thành công.", status: 200
+        else
+          render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+        end
+      else
+        render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+      end
+    elsif cardChargingResponse.status == 400
+      render plain: cardChargingResponse.message, status: 400
+    else
+      render plain: cardChargingResponse.message, status: 500
+    end
+  end
+
+  private
+    def card_logs(obj, info)
+      provider  = Provider::find_by_name info[:provider]
+      CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
+    end
+
+    def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+      @user_sms = User::find_by_active_code(subkeyword)
+      if @user_sms.present?
+        SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
+      end
+    end
+
+    def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
+      @user_sms = User::find_by_active_code(subkeyword)
+      coin  = Card::find_by_price amount.to_i
+      money = @user_sms.money + coin.coin
+      if @user_sms.update(money: money)
+        if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+          return true
+        else
+          # loi xay ra khi ghi log
+          return false
+        end
+      else
+        # tai khoan khong ton tai 
+        return false 
+      end
+    end
+
+    def update_coin(coin)
+      money = @user.money + coin.to_i
+      if @user.update(money: money)
+        return true
+      else
+        return false 
+      end
+    end
 end

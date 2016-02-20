@@ -25,6 +25,11 @@
           <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
         </div>
       </div>
+      <div class="pull-right">
+        <div class="col-xs-12">
+          <%= link_to(new_acp_user_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
+        </div>
+      </div>
       <div class="clearfix"></div>
     </div>
     <div class="panel-body">
@@ -39,12 +44,11 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:25%">Bí danh</th>
-            <th style="width:25%">Họ tên</th>
-            <th style="width:10%">Cấp độ</th>
-            <th style="width:10%">Kinh nghiệm</th>
-            <th style="width:10%">Created</th>
-            <th style="width:10%">Updated</th>
+            <th style="width:15%">Avatar</th>
+            <th style="width:15%">Bí danh</th>
+            <th style="width:15%">Email</th>
+            <th style="width:15%">Cấp độ</th>
+            <th style="width:15%">Kinh nghiệm</th>
             <th style="width:7%">Action</th>
           </tr>
           </thead>
@@ -58,22 +62,25 @@
                   </div>
                 </td>
                 <td class="v-align-middle">
+                  <% if item.avatar? %>
+                    <img src="<%= item.avatar.minisquare.url %>" class="img-thumbnail">
+                  <% else %>
+                    <p>No Image</p>
+                  <% end %>
+                </td>
+                <td class="v-align-middle">
                   <%= link_to(edit_acp_user_path(item)) do %><p><%= item.username %></p><% end %>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.name %></p>
+                  <p><%= item.email %></p>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.user_level.level %></p>
+                  <% if item.user_level.present?%>
+                    <p><%= item.user_level.level %></p>
+                  <%end%>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.user_exp %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">

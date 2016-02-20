@@ -49,7 +49,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def profile
     @broadcaster = Broadcaster.find(params[:id])
     @user = @broadcaster.user
-    @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
+    @fan = @broadcaster.rooms.find_by_is_privated(false).heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
+    # @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
   end
 
   def defaultBackground
@@ -237,8 +238,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def getFeatured
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
-    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    @featured = Featured.order(weight: :asc).limit(6).offset(offset)
   end
 
   api! "get sticked broadcaster in homepage"
@@ -248,7 +249,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   api! "get suggest broadcaster in room"
   def getRoomFeatured
-    @featured = RoomFeatured.order(weight: :asc).limit(10)
+    @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
   end
 
   def search

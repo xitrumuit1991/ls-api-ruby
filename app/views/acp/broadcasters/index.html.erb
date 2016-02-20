@@ -25,6 +25,11 @@
               <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
           </div>
       </div>
+      <div class="pull-right">
+        <div class="col-xs-12">
+          <%= link_to(new_acp_broadcaster_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
+        </div>
+      </div>
       <div class="clearfix"></div>
     </div>
     <div class="panel-body">
@@ -39,13 +44,14 @@
                     <label for="check-all"></label>
                   </div>
                 </th>
-                <th style="width:30%">Name</th>
-                <th style="width:10%">Type</th>
-                <th style="width:10%">Level</th>
-                <th style="width:10%">Exp</th>
-                <th style="width:10%">Heart</th>
-                <th style="width:10%">Created</th>
-                <th style="width:10%">Updated</th>
+                <th style="width:15%">Avatar</th>
+                <th style="width:15%">Name</th>
+                <th style="width:15%">Email</th>
+                <th style="width:15%">Room Name</th>
+                <th style="width:15%">Type</th>
+                <th style="width:15%">Level</th>
+                <th style="width:15%">Exp</th>
+                <th style="width:15%">Heart</th>
                 <th style="width:7%">Action</th>
             </tr>
           </thead>
@@ -58,8 +64,25 @@
                       <label for="checkbox-<%= item.id %>"></label>
                   </div>
                 </td>
+                <td class="v-align-middle">
+                  <% if item.user.avatar? %>
+                    <img src="<%=item.user.avatar.minisquare.url%>" class="img-thumbnail">
+                  <% else %>
+                    <p>No Image</p>
+                  <% end %>
+                </td>
                 <td class="v-align-middle ">
                   <%= link_to(edit_acp_broadcaster_path(item)) do %><p><%= item.fullname %></p><% end %>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.user.email %></p>
+                </td>
+                <td class="v-align-middle">
+                  <% if item.rooms.find_by_is_privated(false).present? %>
+                      <p><%=item.rooms.find_by_is_privated(false).title%></p>
+                  <% else %>
+                      <p>Idol chưa có room</p>
+                  <% end %>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.bct_type.title %></p>
@@ -72,12 +95,6 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.recived_heart %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.updated_at.strftime('%d-%m-%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">

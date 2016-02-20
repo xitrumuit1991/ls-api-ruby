@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151229032045) do
+ActiveRecord::Schema.define(version: 20160219044659) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -43,6 +43,14 @@ ActiveRecord::Schema.define(version: 20151229032045) do
 
   add_index "admins", ["email"], name: "index_admins_on_email", unique: true, using: :btree
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
+
+  create_table "banks", force: :cascade do |t|
+    t.string   "bankID",     limit: 255
+    t.string   "name",       limit: 255
+    t.boolean  "status"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "bct_images", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
@@ -103,6 +111,28 @@ ActiveRecord::Schema.define(version: 20151229032045) do
   add_index "broadcasters", ["bct_type_id"], name: "index_broadcasters_on_bct_type_id", using: :btree
   add_index "broadcasters", ["broadcaster_level_id"], name: "index_broadcasters_on_broadcaster_level_id", using: :btree
   add_index "broadcasters", ["user_id"], name: "index_broadcasters_on_user_id", using: :btree
+
+  create_table "cards", force: :cascade do |t|
+    t.integer  "price",      limit: 4
+    t.integer  "coin",       limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  create_table "cart_logs", force: :cascade do |t|
+    t.integer  "user_id",     limit: 4
+    t.integer  "provider_id", limit: 4
+    t.string   "pin",         limit: 255
+    t.string   "serial",      limit: 255
+    t.integer  "price",       limit: 4
+    t.integer  "coin",        limit: 4
+    t.integer  "status",      limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "cart_logs", ["provider_id"], name: "index_cart_logs_on_provider_id", using: :btree
+  add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0, null: false
@@ -184,6 +214,29 @@ ActiveRecord::Schema.define(version: 20151229032045) do
   add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
   add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
 
+  create_table "megabank_logs", force: :cascade do |t|
+    t.integer  "bank_id",       limit: 4
+    t.integer  "megabank_id",   limit: 4
+    t.integer  "user_id",       limit: 4
+    t.text     "descriptionvn", limit: 65535
+    t.text     "descriptionen", limit: 65535
+    t.string   "responsecode",  limit: 255
+    t.string   "status",        limit: 255
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "megabank_logs", ["bank_id"], name: "index_megabank_logs_on_bank_id", using: :btree
+  add_index "megabank_logs", ["megabank_id"], name: "index_megabank_logs_on_megabank_id", using: :btree
+  add_index "megabank_logs", ["user_id"], name: "index_megabank_logs_on_user_id", using: :btree
+
+  create_table "megabanks", force: :cascade do |t|
+    t.integer  "price",      limit: 4
+    t.integer  "coin",       limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
   create_table "monthly_top_bct_level_ups", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.integer  "times",          limit: 4
@@ -243,6 +296,14 @@ ActiveRecord::Schema.define(version: 20151229032045) do
     t.integer  "weight",     limit: 4
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
+  end
+
+  create_table "providers", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.string   "slug",        limit: 255
+    t.text     "description", limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "room_actions", force: :cascade do |t|
@@ -331,6 +392,27 @@ ActiveRecord::Schema.define(version: 20151229032045) do
     t.string   "thumb",           limit: 255
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+  end
+
+  create_table "sms_logs", force: :cascade do |t|
+    t.string   "active_code", limit: 255
+    t.string   "moid",        limit: 255
+    t.string   "phone",       limit: 255
+    t.string   "shortcode",   limit: 255
+    t.string   "keyword",     limit: 255
+    t.text     "content",     limit: 65535
+    t.string   "trans_date",  limit: 255
+    t.string   "checksum",    limit: 255
+    t.integer  "amount",      limit: 4
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  create_table "sms_mobiles", force: :cascade do |t|
+    t.integer  "price",      limit: 4
+    t.integer  "coin",       limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "statuses", force: :cascade do |t|
@@ -465,6 +547,7 @@ ActiveRecord::Schema.define(version: 20151229032045) do
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.string   "gender",          limit: 6
+    t.string   "forgot_code",     limit: 255
   end
 
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
@@ -558,6 +641,8 @@ ActiveRecord::Schema.define(version: 20151229032045) do
   add_foreign_key "broadcasters", "bct_types"
   add_foreign_key "broadcasters", "broadcaster_levels"
   add_foreign_key "broadcasters", "users"
+  add_foreign_key "cart_logs", "providers"
+  add_foreign_key "cart_logs", "users"
   add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"
   add_foreign_key "gift_logs", "rooms"
@@ -567,6 +652,9 @@ ActiveRecord::Schema.define(version: 20151229032045) do
   add_foreign_key "home_featureds", "broadcasters"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
+  add_foreign_key "megabank_logs", "banks"
+  add_foreign_key "megabank_logs", "megabanks"
+  add_foreign_key "megabank_logs", "users"
   add_foreign_key "monthly_top_bct_level_ups", "broadcasters"
   add_foreign_key "monthly_top_bct_received_gifts", "broadcasters"
   add_foreign_key "monthly_top_bct_received_hearts", "broadcasters"

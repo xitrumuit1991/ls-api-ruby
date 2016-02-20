@@ -45,14 +45,10 @@ json.videos @broadcaster.videos do |video|
 	    json.thumb	"#{request.base_url}#{video.thumb.url}"
 	end
 end
-json.fans @followers do |follower|
-	json.id			follower.user_id
-	json.name		follower.name
-	json.vip 		0
-	json.username	follower.username
-	json.avatar		"#{request.base_url}/api/v1/users/#{follower.user_id}/avatar"
-  json.heart		follower.no_heart.nil? ? 0 : follower.no_heart
-	json.money		follower.total_money
-	json.user_exp	follower.user_exp
-	json.level		UserLevel.find(follower.user_level_id).level
+json.fan @fan do |item|
+	json.id				item.user.id
+	json.name			item.user.name
+	json.vip 			1
+	json.username	item.user.username
+  json.heart		item.total
 end

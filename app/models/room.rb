@@ -8,6 +8,7 @@ class Room < ActiveRecord::Base
 	has_many :action_logs
 	has_many :gift_logs
 	has_many :lounge_logs
+	has_many :screen_text_logs
 
 	validates :title, presence: true
 	validates :room_type_id, presence: true

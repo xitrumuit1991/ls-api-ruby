@@ -13,28 +13,22 @@
             <% end %>
 
             <div class="row">
-              <div class="col-sm-6">
+              <div class="col-sm-12">
                 <div class="form-group form-group-default required">
                   <label>Tên</label>
                   <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>" required>
                 </div>
               </div>
-              <div class="col-sm-6">
-                <div class="form-group form-group-default required">
-                  <label>Hình ảnh</label>
-                  <input type="file" class="form-control" name="data[image]" required>
-                </div>
-              </div>
             </div>
             <div class="row">
               <div class="col-sm-6">
-                <div class="form-group form-group-default">
+                <div class="form-group form-group-default required">
                   <label>Giá</label>
                   <input type="number" class="form-control" name="data[price]" value="<%= @data.price %>" required>
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group form-group-default">
+                <div class="form-group form-group-default required">
                   <label>Vote tối đa</label>
                   <input type="number" class="form-control" name="data[max_vote]" value="<%= @data.max_vote %>" required>
                 </div>
@@ -42,9 +36,16 @@
             </div>
             <div class="row">
               <div class="col-sm-6">
-                <div class="form-group form-group-default">
+                <div class="form-group form-group-default required">
                   <label>Giảm giá</label>
                   <input type="number" class="form-control" name="data[discount]" value="<%= @data.discount %>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Hình ảnh</label>
+                  <input type="file" class="form-control" name="data[image]" required>
+                  <img src="<%= @data.image.url %>">
                 </div>
               </div>
             </div>

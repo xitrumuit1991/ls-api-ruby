@@ -28,6 +28,22 @@ Rails.application.routes.draw do
 		# Rooms
     resources :rooms
 
+    # Sms mobile
+    resources :sms_mobiles
+    	post 	'/sms_mobiles/destroy_m' => 'sms_mobiles#destroy_m'
+
+    # Sms mobile
+    resources :sms_logs
+    	post 	'/sms_logs/destroy_m' => 'sms_logs#destroy_m'
+
+    # Sms mobile
+    resources :cart_logs
+    	post 	'/cart_logs/destroy_m' => 'cart_logs#destroy_m'
+
+    # Card 
+    resources :cards
+    	post 	'/cards/destroy_m' => 'cards#destroy_m'
+
     # Broadcaster Backgrounds
     resources :broadcaster_backgrounds
 
@@ -96,7 +112,8 @@ Rails.application.routes.draw do
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
-			get '/' => 'index#index'
+			get '/' 	=> 'index#index'
+			get '/sms'  => 'user#sms'
 
 			# auth
 			scope '/auth' do
@@ -119,17 +136,19 @@ Rails.application.routes.draw do
 				get  '/:id/cover'       	=> 'user#getBanner'
 				post '/active'           	=> 'user#active'
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
-				get  '/room'							=> 'room#getPublicRoom'
+				get  '/room'				=> 'room#getPublicRoom'
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
-				get  '/:id'								=> 'user#publicProfile'
+				get '/get-providers'       	=> 'user#getProviders'
+				get  '/:id'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
-				post '/cover-crop'        => 'user#coverCrop'
-				post '/avatar-crop'       => 'user#avatarCrop'
+				post '/cover-crop'        	=> 'user#coverCrop'
+				post '/avatar-crop'       	=> 'user#avatarCrop'
+				post '/payments'       		=> 'user#payments'
 			end
 
 			# broadcasters

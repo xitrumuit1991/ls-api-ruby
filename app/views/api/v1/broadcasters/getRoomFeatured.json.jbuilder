@@ -14,5 +14,12 @@ json.array! @featured do |val|
     json.slug		val.broadcaster.rooms.find_by_is_privated(false).slug
     json.thumb		"#{request.base_url}/api/v1/rooms/#{val.broadcaster.rooms.find_by_is_privated(false).id}/thumb"
     json.thumb_mb	 "#{request.base_url}/api/v1/rooms/#{val.broadcaster.rooms.find_by_is_privated(false).id}/thumb_mb"
+    json.schedule do
+      if val.broadcaster.rooms.find_by_is_privated(false).schedules.length > 0
+        json.start  val.broadcaster.rooms.find_by_is_privated(false).schedules.take.start.strftime('%d/%m')
+      else
+        json.start  ''
+      end
+    end
   end
 end

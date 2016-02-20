@@ -50,8 +50,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.username = params[:email].split("@")[0]
     user.email    = params[:email]
     user.password = params[:password].to_s
+    user.birthday = '2000-01-01'
     user.user_level_id       = UserLevel.first().id
-    user.money               = 0
+    user.money               = 1000
     user.user_exp            = 0
     user.actived             = 0
     user.no_heart            = 0
@@ -241,7 +242,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
         if user.present?
           new_password    = SecureRandom.hex(5)
-          if user.update(pasword: new_pasword)
+          if user.update(password: new_password)
             UserMailer.reset_password(user, new_password).deliver_now
             render json: user.password,status: 200
           end
