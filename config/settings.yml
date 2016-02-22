@@ -1,1 +1,7 @@
 hmac_secret: 'fQ+KY11&l624Bu5'
+# magebanks
+magebankWS: 			'http://203.128.244.163:8015/Service.asmx?wsdl'
+magebankMerchantid:		'TA123'
+magebankIssuerID:		'18800110'
+magebankSend_key:		'reesatersuusrtiy12312kty'
+magebankReceived_key:	'k43423553535gsgrthkladgt'

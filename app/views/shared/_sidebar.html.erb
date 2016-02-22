@@ -291,10 +291,10 @@
       <!--END Slides-->
 
       <!--BEGIN Epay-->
-      <li class="<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %>active<% end %>">
+      <li class="<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'banks' || controller_name == 'megabank_logs' || controller_name == 'megabanks' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %>active<% end %>">
         <a href="#">
           <span class="title">Epay</span>
-          <span class=" arrow<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %> open<% end %> "></span>
+          <span class=" arrow<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'banks' || controller_name == 'megabank_logs' || controller_name == 'megabanks' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %> open<% end %> "></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
@@ -303,7 +303,7 @@
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
           <li class="<% if controller_name == 'sms_mobiles' && action_name == 'new' %>active<% end %>">
-            <%= link_to(new_acp_sms_mobile_path) do %><span class="title">Add New SMS</span><% end %>
+            <%= link_to(new_acp_sms_mobile_path) do %><span class="title">New SMS</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
           <li class="<% if controller_name == 'sms_logs' && action_name == 'index' %>active<% end %>">
@@ -315,11 +315,31 @@
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
           <li class="<% if controller_name == 'cards' && action_name == 'new' %>active<% end %>">
-            <%= link_to(new_acp_card_path) do %><span class="title">Add New Card</span><% end %>
+            <%= link_to(new_acp_card_path) do %><span class="title">New Card</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
           <li class="<% if controller_name == 'cart_logs' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_cart_logs_path) do %><span class="title">List Card_Logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'banks' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_banks_path) do %><span class="title">List Banks</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'banks' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_bank_path) do %><span class="title">New Banks</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+          <li class="<% if controller_name == 'megabanks' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_megabanks_path) do %><span class="title">List Megabanks</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'megabanks' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_megabank_path) do %><span class="title">New Megabanks</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+          <li class="<% if controller_name == 'megabank_logs' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_megabank_logs_path) do %><span class="title">List Megabank_Logs</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
         </ul>
