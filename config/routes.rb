@@ -164,6 +164,7 @@ Rails.application.routes.draw do
 				post '/avatar-crop'       	=> 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
 				post '/internet-banking'    => 'user#internetBank'
+				post '/confirm'    			=> 'user#confirmEbay'
 			end
 
 			# broadcasters
