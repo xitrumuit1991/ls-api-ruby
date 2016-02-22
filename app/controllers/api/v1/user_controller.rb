@@ -1,9 +1,10 @@
 class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   require "./lib/payments/epaysms"
+  require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
 
   def profile
   end
@@ -234,6 +235,61 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def internetBank
+    # epay cung cap
+    webservice    = Settings.magebankWS
+    bank          = Bank.find_by_bankID(params[:bank_id])
+    megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
+    respUrl       = params[:respUrl] + "/" + megabanklog.id.to_s
+    merchantid    = Settings.magebankMerchantid
+    issuerID      = Settings.magebankIssuerID
+    send_key      = Settings.magebankSend_key
+    received_key  = Settings.magebankReceived_key
+    soapClient    = Savon.client(wsdl: webservice)
+    paramDeposit  = Megabanks::Service.new
+    megabank      = Megabank.find(params[:megabank_id])
+    paramDeposit.respUrl          = respUrl
+    paramDeposit.merchantid       = merchantid
+    paramDeposit.issuerID         = issuerID
+    paramDeposit.send_key         = send_key
+    paramDeposit.received_key     = received_key
+    paramDeposit.soapClient       = soapClient
+    paramDeposit.txnAmount        = megabank.price.to_s
+    paramDeposit.fee              = "0"
+    paramDeposit.userName         = @user.username
+    paramDeposit.bankID           = params[:bank_id].to_s
+
+    @result = paramDeposit._deposit
+  end
+
+  def confirmEbay
+    responCode    = params[:responCode]
+    transid       = params[:transid]
+    megabanklog   = MegabankLog.find(params[:id])
+    webservice    = Settings.magebankWS
+    soapClient    = Savon.client(wsdl: webservice)
+    paramConfirm                    = Megabanks::Service.new
+    paramConfirm.responCodeConfirm  = responCode
+    paramConfirm.merchantid         = Settings.magebankMerchantid
+    paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
+    paramConfirm.transidConfirm     = transid
+    paramConfirm.soapClient         = soapClient
+    paramConfirm.send_key           = Settings.magebankSend_key
+    @result                         = paramConfirm._confirm
+    @price                          = megabanklog.megabank.price.to_s
+    @coin                           = megabanklog.megabank.coin.to_s
+    if @result[:comfirm_response][:comfirm_result][:responsecode] != "03" && @result != false
+      megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
+      megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
+      megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
+      megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
+      megabanklog.save
+      user        = User.find(@user.id)
+      user.money  = user.money + megabanklog.megabank.coin
+      user.save
+    end
+  end
+
   def sms
     partnerid                 = "10004"
     partnerpass               = "SMSP_PARTNER_PASSWORD"
@@ -282,6 +338,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @providers = Provider::all
   end
 
+  def getBanks
+    @banks = Bank::all
+  end
+
+  def getMegabanks
+    @megabanks = Megabank::all
+  end
+
   def payments
     # nha mang cung cap 
     m_UserName    = "charging01"
@@ -291,6 +355,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     m_MPIN        = "pajwtlzcb"
 
     webservice   = "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
+
     soapClient = Savon.client(wsdl: webservice)
     m_Target = @user.username 
 
@@ -327,6 +392,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   private
+    def megabank_logs(info)
+      MegabankLog.create()
+    end
+
     def card_logs(obj, info)
       provider  = Provider::find_by_name info[:provider]
       CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)

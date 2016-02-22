@@ -28,6 +28,18 @@ Rails.application.routes.draw do
 		# Rooms
     resources :rooms
 
+    # banks
+    resources :banks
+    	post 	'/banks/destroy_m' => 'banks#destroy_m'
+
+    # megabanks
+    resources :megabanks
+    	post 	'/megabanks/destroy_m' => 'megabanks#destroy_m'
+
+    # megabank_logs
+    resources :megabank_logs
+    	post 	'/megabank_logs/destroy_m' => 'megabank_logs#destroy_m'
+
     # Sms mobile
     resources :sms_mobiles
     	post 	'/sms_mobiles/destroy_m' => 'sms_mobiles#destroy_m'
@@ -140,6 +152,8 @@ Rails.application.routes.draw do
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
 				get '/get-providers'       	=> 'user#getProviders'
+				get '/get-banks'       		=> 'user#getBanks'
+				get '/get-megabanks'       	=> 'user#getMegabanks'
 				get  '/:id'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
@@ -149,6 +163,8 @@ Rails.application.routes.draw do
 				post '/cover-crop'        	=> 'user#coverCrop'
 				post '/avatar-crop'       	=> 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
+				post '/internet-banking'    => 'user#internetBank'
+				post '/confirm'    			=> 'user#confirmEbay'
 			end
 
 			# broadcasters
@@ -208,12 +224,12 @@ Rails.application.routes.draw do
 				post  	'/thumb-crop'            		=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
 				put   	'/background-default'   => 'room#changeBackgroundDefault'
-				post  	'/background'       		=> 'room#uploadBackground'
+				post  	'/background'       		=> 'room#uploadBackground' # hien tai khong thay sai
 				post  	'/background-room'      => 'room#uploadBackgroundRoom'
 				post  	'/schedule'							=> 'room#updateSchedule'
-				get		'/actions'								=> 'room#getActions'
-				get		'/gifts'									=> 'room#getGifts'
-				get		'/lounges'								=> 'room#getLounges'
+				get		'/actions'								=> 'room#getActions' # trung voi o tren
+				get		'/gifts'									=> 'room#getGifts' # trung voi o tren
+				get		'/lounges'								=> 'room#getLounges' # trung voi o tren
 				get   	'/:id'              		=> 'room#detail'
 				delete  '/background'      			=> 'room#deleteBackground'
 			end
