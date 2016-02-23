@@ -79,10 +79,10 @@ Rails.application.configure do
 
   config.action_mailer.smtp_settings = {
   :enable_starttls_auto => true,
-  :address        => "smtp.gmail.com",
-  :port           => 587,
+  :address        => "smtp.sendgrid.net",
+  :port           => 465,
   :authentication => :plain,
-  :user_name      => "nguyendemo1234@gmail.com",
-  :password       => "delldell123"
+  :user_name      => "newsletter_livestar",
+  :password       => "9kyy6jBGriEp"
 }
 end

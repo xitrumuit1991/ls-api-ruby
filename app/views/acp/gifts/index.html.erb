@@ -44,9 +44,10 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:35%">Tên</th>
+            <th style="width:40%">Tên</th>
             <th style="width:25%">Hình ảnh</th>
             <th style="width:15%">Giá</th>
+            <th style="width:10%">Trạng thái</th>
             <th style="width:7%">Hành động</th>
           </tr>
           </thead>
@@ -54,12 +55,12 @@
           <% @data.each do |item| %>
               <tr id="row_page_<%= item.id %>">
                 <td class="v-align-middle">
-                  <div class="checkbox ">
+                  <div class="checkbox">
                     <input type="checkbox" name="item_id[]" value="<%= item.id %>" class="check-all" id="checkbox-<%= item.id %>">
                     <label for="checkbox-<%= item.id %>"></label>
                   </div>
                 </td>
-                <td class="v-align-middle ">
+                <td class="v-align-middle">
                   <%= link_to(acp_gift_path(item)) do %><p><%= item.name %></p><% end %>
                 </td>
                 <td class="v-align-middle">
@@ -71,6 +72,12 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.price %></p>
+                </td>
+                <td class="v-align-middle">
+                  <div class="checkbox check-success">
+                    <input type="checkbox" value="1" class="handle-checkbox" id="status-<%= item.id %>" data-field="status" <%= item.status ? "checked" : "" %>>
+                    <label for="status-<%= item.id %>"></label>
+                  </div>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">

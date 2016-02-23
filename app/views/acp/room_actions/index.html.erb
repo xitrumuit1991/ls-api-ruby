@@ -44,11 +44,12 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:30%">Tên</th>
+            <th style="width:25%">Tên</th>
             <th style="width:20%">Hình ảnh</th>
-            <th style="width:15%">Giá</th>
+            <th style="width:10%">Giá</th>
             <th style="width:15%">Vote tối đa</th>
             <th style="width:10%">Giảm giá</th>
+            <th style="width:10%">Trạng thái</th>
             <th style="width:7%">Hành động</th>
           </tr>
           </thead>
@@ -79,6 +80,12 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.discount %></p>
+                </td>
+                <td class="v-align-middle">
+                  <div class="checkbox check-success">
+                    <input type="checkbox" value="1" class="handle-checkbox" id="status-<%= item.id %>" data-field="status" <%= item.status ? "checked" : "" %>>
+                    <label for="status-<%= item.id %>"></label>
+                  </div>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">

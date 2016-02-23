@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160219044659) do
+ActiveRecord::Schema.define(version: 20160222073623) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -178,8 +178,9 @@ ActiveRecord::Schema.define(version: 20160219044659) do
     t.string   "image",      limit: 45
     t.integer  "price",      limit: 4
     t.float    "discount",   limit: 24
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.boolean  "status",                default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
   end
 
   create_table "heart_logs", force: :cascade do |t|
@@ -312,8 +313,9 @@ ActiveRecord::Schema.define(version: 20160219044659) do
     t.integer  "price",      limit: 8
     t.integer  "max_vote",   limit: 4
     t.float    "discount",   limit: 24
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.boolean  "status",                 default: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
   end
 
   create_table "room_backgrounds", force: :cascade do |t|
