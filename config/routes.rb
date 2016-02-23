@@ -65,6 +65,7 @@ Rails.application.routes.draw do
     # Gifts
 		resources :gifts
 		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+		post 	'/gifts/ajax_update_handle_checkbox/:id' => 'gifts#ajax_update_handle_checkbox'
 
 		# Gift Logs
 		resources :gift_logs
@@ -81,6 +82,7 @@ Rails.application.routes.draw do
 		# Room actions
 		resources :room_actions
 		post 	'/room_actions/destroy_m' => 'room_actions#destroy_m'
+		post 	'/room_actions/ajax_update_handle_checkbox/:id' => 'room_actions#ajax_update_handle_checkbox'
 
     # Featureds
 		resources :featureds

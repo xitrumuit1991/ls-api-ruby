@@ -1,6 +1,6 @@
 class Acp::GiftsController < Acp::ApplicationController
   before_filter :init
-  before_action :set_data, only: [:show, :edit, :update, :destroy]
+  before_action :set_data, only: [:show, :edit, :update, :destroy, :ajax_update_handle_checkbox]
 
   def index
     @data = @model.all.order('id desc')
@@ -37,6 +37,14 @@ class Acp::GiftsController < Acp::ApplicationController
   def destroy
     @data.destroy
     redirect_to({ action: 'index' }, notice: 'Gift was successfully destroyed.')
+  end
+
+  def ajax_update_handle_checkbox
+    if @data.update(params[:attrs].to_hash)
+      render plain: 'Success', status: 200
+    else
+      render plain: 'Error', status: 400
+    end
   end
 
   private
