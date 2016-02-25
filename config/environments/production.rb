@@ -78,11 +78,13 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.action_mailer.smtp_settings = {
-  :enable_starttls_auto => true,
-  :address        => "smtp.sendgrid.net",
-  :port           => 465,
-  :authentication => :plain,
-  :user_name      => "newsletter_livestar",
-  :password       => "9kyy6jBGriEp"
-}
+    :enable_starttls_auto => true,
+    :address        => "smtp.sendgrid.net",
+    :port           => 465,
+    :authentication => :login,
+    :user_name      => "newsletter_livestar",
+    :password       => "9kyy6jBGriEp",
+    :ssl            => true,
+    :tls            => true
+  }
 end
