@@ -140,8 +140,8 @@ Rails.application.routes.draw do
 				post  '/forgot'          => 'auth#forgotPassword'
 				post  '/verify-token'    => 'auth#verifyToken'
 				post  '/change'          => 'auth#changePassword'
-				post  '/forgot-code'     => 'auth#updateForgotCode'
-				post  '/check-forgot-code'     => 'auth#check_forgotCode'
+				post  '/update-forgot-code' => 'auth#updateForgotCode'
+				post  '/reset-password'     => 'auth#setNewPassword'
 			end
 
 			# users

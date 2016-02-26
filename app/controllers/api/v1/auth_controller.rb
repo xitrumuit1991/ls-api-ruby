@@ -221,6 +221,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def updateForgotCode
     user = User.find_by_email(params[:email])
     forgot_code = params[:forgot_code]
+
     if user.present?
       if user.update(forgot_code: forgot_code)
         UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
@@ -233,45 +234,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  def check_forgotCode
-    if params[:forgot_code].blank? || params[:forgot_code] == ""
-        return head 400
-    else 
-        #Update password
-        user = User.find_by_forgot_code(params[:forgot_code])
-
-        if user.present?
-          new_password    = SecureRandom.hex(5)
-          if user.update(password: new_password)
-            UserMailer.reset_password(user, new_password).deliver_now
-            render json: user.password,status: 200
-          end
-        else 
-          return head 404
-        end
-    end
-  end 
-
   def setNewPassword
-    user = User.find_by_forgot_code(params[:forgot_code])
-    if user.present?
-      new_password    = SecureRandom.hex(5)
-      user.password   = new_password
-      is_24h = User.where(:updated_at => 1.day.ago..DateTime.now , :forgot_code => params[:forgot_code])
+      user = User.find_by_forgot_code(params[:forgot_code])
 
-      if is_24h.present?
-        if user.save
+      if user.present?
+        new_password = SecureRandom.hex(5)
+        if user.update(password: new_password)
           UserMailer.reset_password(user, new_password).deliver_now
-          render json: user, status: 200
-        else
-          render json: user.errors.messages, status: 400
+          render head 200
         end
       else
-        render json: 'error', status: 200
+        return head 404
       end
-    else
-      return head 404
-    end
   end
 
   api! "change password"

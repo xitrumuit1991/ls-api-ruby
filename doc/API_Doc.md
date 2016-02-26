@@ -82,6 +82,24 @@
 - Response:
 	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
 
+### Forgot code (update forgot code to reset password)
+- URI: **/update-forgot-code**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Request: ```{ "email": "alex@email.com", "forgot_code" : "HIJKLMNO" }```
+- Response:
+	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
+
+### Reset Password (update forgot code to reset password)
+- URI: **/reset-password**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Request: ```{"forgot_code" : "HIJKLMNO" }```
+- Response:
+	+ status **200** *(OK)*, **404** *(User Not found)*
+
 ### Change password
 - URI: **/change**
 - Method: **POST**
