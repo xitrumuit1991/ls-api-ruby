@@ -102,7 +102,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.email                    = profile['email']
           user.gender                   = profile['gender']
           user.user_level_id            = UserLevel.first().id
-          user.money                    = 0
+          user.money                    = 1000
           user.user_exp                 = 0
           user.actived                  = 0
           user.no_heart                 = 0
