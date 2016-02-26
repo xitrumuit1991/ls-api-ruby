@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
 
 	validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
+	validates :name, presence: true, length: {minimum: 6, maximum: 20}
 	validates_uniqueness_of :active_code
 	has_secure_password
 	mount_uploader :avatar, AvatarUploader
