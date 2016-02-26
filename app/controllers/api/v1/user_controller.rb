@@ -34,20 +34,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def active
-    user = User.find_by_email(params[:email])
+    user = User.find_by_username(params[:username])
     if user.present?
-      if params[:active_code].blank? || params[:active_code] == ""
-        return head 400
-      else
-        if params[:active_code] == user.active_code
-          user.update(active_date: Time.now, actived: true)
-          return head 200
+      if user.actived == false
+        if defined? params[:active_code] && !params[:active_code].blank?
+          if params[:active_code] == user.active_code
+            user.update(active_date: Time.now, actived: true)
+            return head 200
+          else
+            render plain: 'Mã kích hoạt không hợp lệ !', status: 400
+          end
         else
-          return head 400
+          render plain: 'Vui lòng nhập mã kích hoạt !', status: 400
         end
+      else
+        render plain: 'Tài khoản này đã được kích hoạt !', status: 400
       end
     else
-      return head 404
+      render plain: 'Tài khoản này không tồn tại !', status: 404
     end
   end
 
