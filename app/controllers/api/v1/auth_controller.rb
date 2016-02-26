@@ -95,22 +95,23 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             render json: {token: token}, status: 200
           end
         else
-          activeCode = SecureRandom.hex(3).upcase
-          user = User.new
-          user.name                     = profile['name']
-          user.username                 = profile['email'].split("@")[0]
-          user.email                    = profile['email']
-          user.gender                   = profile['gender']
-          user.user_level_id            = UserLevel.first().id
-          user.money                    = 0
-          user.user_exp                 = 0
-          user.actived                  = 0
-          user.no_heart                 = 0
-          user.avatar                   = graph.get_picture(profile['id'], type: :large)
-          password                      = SecureRandom.hex(5)
-          user.password                 = password
-          user.fb_id                    = profile['id']
-          user.active_code              = activeCode
+          activeCode          = SecureRandom.hex(3).upcase
+          password            = SecureRandom.hex(5)
+          user                = User.new
+          user.name           = profile['name']
+          user.username       = profile['email'].split("@")[0]
+          user.email          = profile['email']
+          user.gender         = profile['gender']
+          user.birthday       = profile['birthday']
+          user.fb_id          = profile['id']
+          user.user_level_id  = UserLevel.first().id
+          user.avatar         = graph.get_picture(profile['id'], type: :large)
+          user.password       = password
+          user.active_code    = activeCode
+          user.money          = 1000
+          user.user_exp       = 0
+          user.actived        = 1
+          user.no_heart       = 0
           if user.save
             user = User.find_by_email(profile['email'])
             token = createToken(user)
