@@ -242,7 +242,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         new_password = SecureRandom.hex(5)
         if user.update(password: new_password)
           UserMailer.reset_password(user, new_password).deliver_now
-          render head 200
+          return head 200
         end
       else
         return head 404
