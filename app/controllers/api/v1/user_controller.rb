@@ -34,20 +34,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def active
-    user = User.find_by_email(params[:email])
+    user = User.find_by_username(params[:username])
     if user.present?
-      if params[:active_code].blank? || params[:active_code] == ""
-        return head 400
-      else
-        if params[:active_code] == user.active_code
-          user.update(active_date: Time.now, actived: true)
-          return head 200
+      if user.actived == false
+        if defined? params[:active_code] && !params[:active_code].blank?
+          if params[:active_code] == user.active_code
+            user.update(active_date: Time.now, actived: true)
+            return head 200
+          else
+            render plain: 'Mã kích hoạt không hợp lệ !', status: 400
+          end
         else
-          return head 400
+          render plain: 'Vui lòng nhập mã kích hoạt !', status: 400
         end
+      else
+        render plain: 'Tài khoản này đã được kích hoạt !', status: 400
       end
     else
-      return head 404
+      render plain: 'Tài khoản này không tồn tại !', status: 404
     end
   end
 
@@ -93,23 +97,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6 and params[:name].to_s.length <= 20
-      @user.name              = params[:name]
-      @user.facebook_link     = params[:facebook]
-      @user.twitter_link      = params[:twitter]
-      @user.instagram_link    = params[:instagram]
-      @user.birthday    = params[:birthday]
-      if @user.valid?
-        if @user.save
-          return head 200
-        else
-          render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
-        end
+    @user.name              = params[:name]
+    @user.birthday          = params[:birthday]
+    # Optinal
+    @user.facebook_link     = params[:facebook].present? ? params[:facebook] : ''
+    @user.twitter_link      = params[:twitter].present? ? params[:twitter] : ''
+    @user.instagram_link    = params[:instagram].present? ? params[:instagram] : ''
+
+    if @user.valid?
+      if @user.save
+        return head 200
       else
-        render json: @user.errors.messages, status: 400
+        render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
       end
     else
-      render plain: 'Tên Quá Ngắn ...', status: 400
+      render json: @user.errors.messages, status: 400
     end
   end
 

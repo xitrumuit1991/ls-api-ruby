@@ -1,7 +1,7 @@
 
 <h4>Dear <%= @user.name %>,</h4>
 <p>
-	You have registered to be a member of us, before you can login, you must active your account and here is your active code: <strong><%= @activeCode %></strong>.<br>
+	You have registered to be a member of us, before you can login, you must active your account and here is your link active: <strong><%= "#{Settings.redis_port}/active/#{@user.username}/active_code/#{@activeCode}" %></strong>.<br>
 </p>
 <p>Thanks for joining and have a great day!</p>
 <h4>Best regards.</h4>
