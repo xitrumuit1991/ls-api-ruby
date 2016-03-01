@@ -1,10 +1,15 @@
+require 'sidekiq/web'
+require 'sidetiq/web'
+
 Rails.application.routes.draw do
 
 	apipie
 	devise_for :admins, controllers: { sessions: "admins/sessions" }
 	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-
+	# Sidekiq monitor
+  	mount Sidekiq::Web => '/sidekiq'
+  	
   # ACP
   namespace :acp do
     get "/" => "index#index"
