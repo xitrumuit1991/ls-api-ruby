@@ -140,11 +140,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       split = key.split(':')
       @status[split[2].to_i] = redis.get(key).to_i
     end
-    @actions = RoomAction.all
+    @actions = RoomAction.find_by_status(1)
   end
 
   def getGifts
-    @gifts = Gift.all
+    @gifts = Gift.find_by_status(1)
   end
 
   def getLounges
