@@ -19,15 +19,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
-      # create token
-      token = createToken(@user)
+      if @user.actived
+        # create token
+        token = createToken(@user)
 
-      # update token
-      @user.update(last_login: Time.now, token: token)
+        # update token
+        @user.update(last_login: Time.now, token: token)
 
-      render json: {token: token}, status: 200
+        render json: {token: token}, status: 200
+      else
+        render plain: 'Tài khoản này chưa được kích hoạt !', status: 401
+      end
     else
-      return head 401
+      render plain: 'Tài khoản này không tồn tại !', status: 401
     end
   end
 
