@@ -12,7 +12,6 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def new
 		@data = @model.new
-		@users = User.all.order('id desc')
 	end
 
 	def edit
@@ -53,13 +52,23 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def create
-		@data = @model.new(parameters)
-		@data.user_id = params[:data][:user_id]
-		if @data.save
-			redirect_to({ action: 'index' }, notice: 'Idol was successfully created.')
+		if user = User.find(params[:data][:user_id])
+			@data = @model.new(parameters)
+			@data.user_id = params[:data][:user_id]
+			if @data.save
+				puts '================'
+				puts user.name
+				puts '================'
+				if user.update(is_broadcaster: true)
+					render :new
+				else
+					redirect_to({ action: 'index' }, notice: 'Idol was successfully updated.')
+				end
+			else
+				render :new
+			end
 		else
-			@users = User.all.order('id desc')
-			render :new
+			redirect_to({ action: 'create' }, alert: 'Tài khoản này không tồn tại.')
 		end
 	end
 
@@ -88,6 +97,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 		end
 
 		def load_data
+			@users 			= User.all.order('id desc')
 			@bct_types 	= BctType.all.order('id desc')
 			@levels 		= BroadcasterLevel.all
 		end
