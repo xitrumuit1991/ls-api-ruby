@@ -7,8 +7,6 @@ Rails.application.routes.draw do
 	devise_for :admins, controllers: { sessions: "admins/sessions" }
 	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-	# Sidekiq monitor
-  	mount Sidekiq::Web => '/sidekiq'
   	
   # ACP
   namespace :acp do
@@ -24,6 +22,10 @@ Rails.application.routes.draw do
 			get 		'/transactions' => 'broadcasters#transactions'
 			post 		'/ajax_change_background' => 'broadcasters#ajax_change_background'
 		end
+
+	authenticate do
+		mount Sidekiq::Web => '/sidekiq'
+	end
 
 		# Users
     resources :users

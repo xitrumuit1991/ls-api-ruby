@@ -54,6 +54,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
         # insert log
         @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
+        @user.user_logs.create(room_id: @room.id, money: cost)
 
         return head 201
       rescue => e
@@ -93,6 +94,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
           # insert log
           @user.action_logs.create(room_id: @room.id, room_action_id: action_id, cost: dbAction.price)
+          @user.user_logs.create(room_id: @room.id, money: dbAction.price)
 
           return head 201
         rescue => e
@@ -155,6 +157,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
+          @user.user_logs.create(room_id: @room.id, money: total)
 
           return head 201
         rescue => e
@@ -196,6 +199,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
           # insert log
           @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
+          @user.user_logs.create(room_id: @room.id, money: cost)
 
           return head 201
         rescue => e
