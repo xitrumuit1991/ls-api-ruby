@@ -1,7 +1,7 @@
 class TopAllUserSendGift
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
-	recurrence { daily().hour_of_day(17).minute_of_hour(20) }
+	recurrence { yearly }
 	def perform()
 		TopUserSendGift.destroy_all
 		TopUserSendGift.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
