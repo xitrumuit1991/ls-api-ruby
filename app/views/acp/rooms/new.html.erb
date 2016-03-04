@@ -50,7 +50,15 @@
                   <div class="row">
                     <label class="col-sm-12">Tên phòng</label>
                     <div class="col-sm-5">
-                        <input type="text" class="form-control" name="room[title]" value="<%= @data.title %>" >
+                        <input type="text" class="form-control slug" name="room[title]" value="<%= @data.title %>" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Slug</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="room[slug]" value="<%= @data.slug %>" placeholder="http://livestar.vn/rooms/livestar-vn">
                     </div>
                   </div>
                 </div>

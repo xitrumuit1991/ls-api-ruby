@@ -52,18 +52,12 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def create
-		if user = User.find(params[:data][:user_id])
+		if User.find(params[:data][:user_id]).present?
 			@data = @model.new(parameters)
 			@data.user_id = params[:data][:user_id]
 			if @data.save
-				puts '================'
-				puts user.name
-				puts '================'
-				if user.update(is_broadcaster: true)
-					render :new
-				else
-					redirect_to({ action: 'index' }, notice: 'Idol was successfully updated.')
-				end
+				User.find(params[:data][:user_id]).update(is_broadcaster: true)
+				redirect_to({ action: 'index' }, notice: 'Idol was successfully created.')
 			else
 				render :new
 			end

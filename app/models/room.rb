@@ -11,6 +11,7 @@ class Room < ActiveRecord::Base
 	has_many :screen_text_logs
 
 	validates :title, presence: true
+	validates :slug, presence: true, uniqueness: true
 	validates :room_type_id, presence: true
 	mount_uploader :thumb, RoomThumbUploader
 	mount_base64_uploader :thumb_crop, ThumbCropUploader

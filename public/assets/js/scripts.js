@@ -88,19 +88,9 @@ $(document).ready(function () {
     });
     
     // get slug
-    $('.slug').on('change', function(){
-        data = { text: $(this).val(), li_token: token };
-        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
-            $("input[name='slug']").val(resp);
-        });
-    });
-
-    // get slug
-    $('.slug-lang').on('change', function(){
-        data = { text: $(this).val(), li_token: token };
-        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
-            $("input[name='code']").val(resp);
-        });
+    $('form .slug').on('keyup', function(){
+        var slug = getSlug($(this).val(), { lang: 'vn' });
+        $("input[name*='slug']").val(slug);
     });
 
     $('#add-browse').on('click', function(event) {
