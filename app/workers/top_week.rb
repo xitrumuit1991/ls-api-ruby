@@ -1,13 +1,13 @@
 class TopBctReceivedHearts
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
-	recurrence { daily().hour_of_day(17).minute_of_hour(20) }
+	recurrence { weekly.day(:monday).hour_of_day(2).minute_of_hour(0) }
 	def perform()
 		TopBctReceivedHeart.destroy_all
 		TopBctReceivedHeart.connection.execute("ALTER TABLE top_bct_received_hearts AUTO_INCREMENT = 1")
-		users = User.where(is_broadcaster: 1).order('no_heart DESC').limit(10)
-		users.each do |user|
-			TopBctReceivedHeart.create(:broadcaster_id => user.broadcaster.id, :quantity => user.no_heart)
+		hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: DateTime.now.beginning_of_week..DateTime.now).group(:room_id).order('quantity DESC').limit(10)
+		hearts.each do |heart|
+			TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
 
 		WeeklyTopUserSendGift.destroy_all

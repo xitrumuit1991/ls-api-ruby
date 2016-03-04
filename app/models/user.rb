@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
 	has_many :gift_logs
 	has_many :lounge_logs
 
-	validates :username, presence: true, uniqueness: true
+	# validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :name, presence: true, length: {minimum: 6, maximum: 20}
 	with_options({on: :auth}) do |for_auth|

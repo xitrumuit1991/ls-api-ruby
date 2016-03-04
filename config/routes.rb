@@ -138,17 +138,17 @@ Rails.application.routes.draw do
 
 			# auth
 			scope '/auth' do
-				get   '/logout'          => 'auth#logout'
-				get  '/:forgot_code/get-password' => 'auth#setNewPassword'
-				post  '/login'           => 'auth#login'
-				post  '/register'        => 'auth#register'
-				post  '/fb-register'     => 'auth#fbRegister'
-				post  '/gp-register'     => 'auth#gpRegister'
-				post  '/forgot'          => 'auth#forgotPassword'
-				post  '/verify-token'    => 'auth#verifyToken'
-				post  '/change'          => 'auth#changePassword'
-				post  '/update-forgot-code' => 'auth#updateForgotCode'
-				post  '/reset-password'     => 'auth#setNewPassword'
+				get   '/logout'          			=> 'auth#logout'
+				get  '/:forgot_code/get-password' 	=> 'auth#setNewPassword'
+				post  '/login'           			=> 'auth#login'
+				post  '/register'        			=> 'auth#register'
+				post  '/fb-register'     			=> 'auth#fbRegister'
+				post  '/gp-register'     			=> 'auth#gpRegister'
+				post  '/forgot'          			=> 'auth#forgotPassword'
+				post  '/verify-token'    			=> 'auth#verifyToken'
+				post  '/change'          			=> 'auth#changePassword'
+				post  '/update-forgot-code' 		=> 'auth#updateForgotCode'
+				post  '/reset-password'     		=> 'auth#setNewPassword'
 			end
 
 			# users
@@ -205,15 +205,16 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/user-ranking'      					=> 'ranks#userRanking'
-				get     '/top-heart-broadcaster'      => 'ranks#topBroadcasterRevcivedHeart'
+				get     '/user-ranking'      			=> 'ranks#userRanking'
+				get     '/top-heart-broadcaster'      	=> 'ranks#topBroadcasterRevcivedHeart'
 				get     '/top-level-grow-broadcaster'	=> 'ranks#topBroadcasterLevelGrow'
-				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
-				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
-				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
-				get     '/update-datatime-top'				=> 'ranks#updateCreatedAtBroadcaster'
-				get			'/top-gift-user-in-room'			=> 'ranks#topUserSendGiftRoom'
-				get			'/:id/top-fans'								=> 'ranks#topUserFollowBroadcaster'
+				get     '/top-level-grow-user'			=> 'ranks#topUserLevelGrow'
+				get     '/top-gift-broadcaster'			=> 'ranks#topBroadcasterRevcivedGift'
+				get     '/top-gift-user'				=> 'ranks#topUserSendGift'
+				get     '/update-datatime-top'			=> 'ranks#updateCreatedAtBroadcaster'
+				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
+				get		'/:room_id/top-user-use-money'	=> 'ranks#topUserUseMoneyCurrent'
+				get		'/:id/top-fans'					=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
@@ -230,15 +231,15 @@ Rails.application.routes.draw do
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
-				post  	'/thumb-crop'            		=> 'room#thumbCrop'
+				post  	'/thumb-crop'            	=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
-				put   	'/background-default'   => 'room#changeBackgroundDefault'
+				put   	'/background-default'   	=> 'room#changeBackgroundDefault'
 				post  	'/background'       		=> 'room#uploadBackground' # hien tai khong thay sai
-				post  	'/background-room'      => 'room#uploadBackgroundRoom'
-				post  	'/schedule'							=> 'room#updateSchedule'
-				get		'/actions'								=> 'room#getActions' # trung voi o tren
-				get		'/gifts'									=> 'room#getGifts' # trung voi o tren
-				get		'/lounges'								=> 'room#getLounges' # trung voi o tren
+				post  	'/background-room'      	=> 'room#uploadBackgroundRoom'
+				post  	'/schedule'					=> 'room#updateSchedule'
+				get		'/actions'					=> 'room#getActions' # trung voi o tren
+				get		'/gifts'					=> 'room#getGifts' # trung voi o tren
+				get		'/lounges'					=> 'room#getLounges' # trung voi o tren
 				get   	'/:id'              		=> 'room#detail'
 				delete  '/background'      			=> 'room#deleteBackground'
 			end

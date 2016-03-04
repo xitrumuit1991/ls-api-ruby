@@ -112,6 +112,18 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		@top_fans = Broadcaster.find(params[:id]).users.order('users.money desc').limit(10)
 	end
 
+	def topUserUseMoneyCurrent
+		if params["on-air"] != "1"
+			Time.zone = 'UTC'
+			user_log = UserLog.where("room_id = ?", params[:room_id]).order("created_at desc").first
+			@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], user_log.created_at.beginning_of_day.to_s, user_log.created_at.end_of_day.to_s).group(:user_id).order('money desc').limit(3)
+		else
+			time = Time.now.to_s
+			schedule = Room.find(params[:room_id]).schedules.where("start < ? AND ? < end", time, time).take
+			@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], schedule.start, schedule.end).group(:user_id).order('money desc').limit(3)
+		end
+	end
+
 	def updateCreatedAtBroadcaster
 		# WeeklyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_week)
 		# MonthlyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_month)
@@ -127,7 +139,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 		# WeeklyTopUserSendGift.update_all(:created_at => DateTime.now.prev_week)
 		# Schedule.update_all(:end => '2016-10-16 06:47:44')
-		User.update_all(:money => 10000)
+		User.update_all(:money => 100000)
 		render plain: 'Done !', status: 200
 	end
 end
