@@ -34,6 +34,7 @@ en:
         #room
         room:
           title: ""
+          slug: ""
           room_type_id: ""
 
         #Idol
@@ -153,10 +154,13 @@ en:
           #room
           room:
             attributes:
-            title:
-              blank: "Vui lòng nhập tên phòng"
-            room_type_id:
-              blank: "Vui lòng nhập loại phòng"
+              title:
+                blank: "Vui lòng nhập tên phòng"
+              slug:
+                blank: "Vui lòng nhập slug"
+                taken: "Slug này đã được sử dụng, vui lòng dùng slug khác"
+              room_type_id:
+                blank: "Vui lòng nhập loại phòng"
 
           #Room type
           room_type:
