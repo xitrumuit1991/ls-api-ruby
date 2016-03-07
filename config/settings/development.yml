@@ -1,3 +1,3 @@
 redis_host: "localhost"
 redis_port: 6379
-livestar_path: "localhost"
+livestar_path: "http://localhost:5002"
