@@ -1,4 +1,5 @@
-json.array! @schedules do |schedule|
+json.totalPage @totalPage
+json.rooms @schedules do |schedule|
 	json.id			schedule.room.id
 	json.title		schedule.room.title
 	json.slug		schedule.room.slug

@@ -1,4 +1,5 @@
-json.array! @rooms do |room|
+json.totalPage @totalPage
+json.rooms @rooms do |room|
 	json.id			room.id
 	json.title		room.title
 	json.slug		room.slug
