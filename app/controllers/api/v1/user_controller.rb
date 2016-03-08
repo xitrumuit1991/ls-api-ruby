@@ -293,8 +293,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    partnerid                 = "10004"
-    partnerpass               = "SMSP_PARTNER_PASSWORD"
+    partnerid                 = Settings.partnerid
     data = Ebaysms::Sms.new
     data.partnerid            = params[:partnerid]
     data.moid                 = params[:moid]
@@ -306,7 +305,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     data.checksum             = params[:checksum]
     data.amount               = params[:amount]
     data.smspPartnerPassword  = params[:smspPartnerPassword]
-    data.partnerpass          = partnerpass
+    data.partnerpass          = Settings.partnerpass
     checksum = data._checksum
     if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
       if _checkmoid(params[:moid])
