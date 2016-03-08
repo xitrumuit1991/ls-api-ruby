@@ -5,3 +5,6 @@ magebankMerchantid:		'TA123'
 magebankIssuerID:		'18800110'
 magebankSend_key:		'reesatersuusrtiy12312kty'
 magebankReceived_key:	'k43423553535gsgrthkladgt'
+# SMS
+partnerid:				'10184'
+partnerpass:			'b1d12048be86cf96b767b8b739b2679e'
