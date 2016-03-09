@@ -19,8 +19,8 @@ class Acp::SchedulesController < Acp::ApplicationController
 	def create
 		params[:schedule].each do |item|
 			next if item['date_start'] == '' || item['date_end'] == '' || item['time_start'] == '' || item['time_end'] == ''
-			start_time = DateTime.parse(item['date_start'] + ' ' + item['time_start']).change(offset: "+0700")
-			end_time = DateTime.parse(item['date_end'] + ' ' + item['time_end']).change(offset: "+0700")
+			start_time = DateTime.parse(item['date_start'] + ' ' + item['time_start'])
+			end_time = DateTime.parse(item['date_end'] + ' ' + item['time_end'])
 			@model.create(start: start_time, end: end_time, room_id: params[:room_id])
 		end
 

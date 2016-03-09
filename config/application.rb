@@ -23,6 +23,9 @@ module Livestar
     # config.active_job.queue_adapter = :delayed_job
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    
+    config.active_record.default_timezone = :local
+    config.active_record.time_zone_aware_attributes = false 
 
     config.middleware.insert_before 0, "Rack::Cors" do
         allow do
