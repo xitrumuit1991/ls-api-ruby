@@ -8,7 +8,8 @@ json.rooms @schedules do |schedule|
 	json.date		schedule.start.strftime('%d/%m')
 	json.start		schedule.start.strftime('%H:%M')
 	json.broadcaster do
-		json.id		schedule.room.broadcaster.id
+		json.id		schedule.room.broadcaster.user.id
+		json.bct_id		schedule.room.broadcaster.id
 		json.name	schedule.room.broadcaster.user.name
 		json.avatar	"#{request.base_url}/api/v1/users/#{schedule.room.broadcaster.user.id}/avatar"
 		json.heart	schedule.room.broadcaster.recived_heart
