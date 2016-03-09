@@ -1,5 +1,5 @@
 json.array! @featured do |val|
-	json.id			val.broadcaster.user.id
+	json.id			val.broadcaster.id
 	json.name		val.broadcaster.user.name
 	json.username	val.broadcaster.user.username
 	json.avatar		"#{request.base_url}/api/v1/users/#{val.broadcaster.user.id}/avatar"
@@ -7,7 +7,7 @@ json.array! @featured do |val|
 	json.bct_exp	val.broadcaster.broadcaster_exp
 	json.level		val.broadcaster.broadcaster_level.level
   if @user != nil
-    json.isFollow		!@user.broadcasters.where(id: val.broadcaster.user.id).empty?
+    json.isFollow		!@user.broadcasters.where(id: val.broadcaster.id).empty?
   else
     json.isFollow		false
   end

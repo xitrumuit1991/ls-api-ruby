@@ -6,7 +6,7 @@ json.rooms @rooms do |room|
 	json.thumb		"#{request.base_url}/api/v1/rooms/#{room.id}/thumb"
 	json.thumb_mb	"#{request.base_url}/api/v1/rooms/#{room.id}/thumb_mb"
 	json.broadcaster do
-		json.id		room.broadcaster.user.id
+		json.id		room.broadcaster.id
 		json.name	room.broadcaster.user.name
 		json.avatar	"#{request.base_url}/api/v1/users/#{room.broadcaster.user.id}/avatar"
 		json.heart	room.broadcaster.recived_heart
@@ -14,7 +14,7 @@ json.rooms @rooms do |room|
 		json.level	room.broadcaster.broadcaster_level.level
 
     if @user != nil
-      json.isFollow		!@user.broadcasters.where(id: room.broadcaster.user.id).empty?
+      json.isFollow		!@user.broadcasters.where(id: room.broadcaster.id).empty?
     else
       json.isFollow		false
     end
