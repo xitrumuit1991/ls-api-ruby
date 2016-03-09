@@ -12,5 +12,11 @@ json.rooms @rooms do |room|
 		json.heart	room.broadcaster.recived_heart
 		json.exp	room.broadcaster.broadcaster_exp
 		json.level	room.broadcaster.broadcaster_level.level
+
+    if @user != nil
+      json.isFollow		!@user.broadcasters.where(id: room.broadcaster.user.id).empty?
+    else
+      json.isFollow		false
+    end
 	end
 end

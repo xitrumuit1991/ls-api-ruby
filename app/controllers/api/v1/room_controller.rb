@@ -5,6 +5,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
+    @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
     @getAllRecord = Room.where(on_air: true).length
@@ -12,6 +13,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def comingSoon
+    @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     if params[:category_id].nil?
       @getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).length

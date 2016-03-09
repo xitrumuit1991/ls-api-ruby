@@ -6,7 +6,11 @@ json.array! @featured do |val|
 	json.heart		val.broadcaster.recived_heart
 	json.bct_exp	val.broadcaster.broadcaster_exp
 	json.level		val.broadcaster.broadcaster_level.level
-
+  if @user != nil
+    json.isFollow		!@user.broadcasters.where(id: val.broadcaster.user.id).empty?
+  else
+    json.isFollow		false
+  end
   json.room do
     json.id			val.broadcaster.rooms.find_by_is_privated(false).id
     json.title		val.broadcaster.rooms.find_by_is_privated(false).title
