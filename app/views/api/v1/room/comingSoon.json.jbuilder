@@ -14,5 +14,10 @@ json.rooms @schedules do |schedule|
 		json.heart	schedule.room.broadcaster.recived_heart
 		json.exp	schedule.room.broadcaster.broadcaster_exp
 		json.level	schedule.room.broadcaster.broadcaster_level.level
+    if @user != nil
+      json.isFollow		!@user.broadcasters.where(id: schedule.room.broadcaster.user.id).empty?
+    else
+      json.isFollow		false
+    end
 	end
 end
