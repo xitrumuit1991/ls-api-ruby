@@ -1,5 +1,6 @@
 json.array! @featured do |val|
-	json.id			val.broadcaster.id
+	json.id			val.broadcaster.user.id
+	json.bct_id		val.broadcaster.id
 	json.name		val.broadcaster.user.name
 	json.username	val.broadcaster.user.username
 	json.avatar		"#{request.base_url}/api/v1/users/#{val.broadcaster.user.id}/avatar"
