@@ -393,15 +393,19 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def addHeartInRoom
+    maxHeart = @user.user_level.level
     userHeart = UserReceivedHeart.find_by_user_id(params[:user_id])
     if !userHeart
       userHeart = UserReceivedHeart.create(:user_id => params[:user_id],:hearts => 1)
     end
-    if (DateTime.now.to_i - userHeart.updated_at.to_i) >= 30
-      user = User.find(params[:user_id])
-      userHeart.update(:hearts => userHeart.hearts.to_i + 1)
-      user.update(:no_heart => user.no_heart.to_i + 1)
-      render plain: user.no_heart, status: 200
+    if (DateTime.now.to_i - userHeart.updated_at.to_i) >= Settings.timeAddHeart
+      if @user.no_heart < maxHeart
+        userHeart.update(:hearts => userHeart.hearts.to_i + 1)
+        @user.update(:no_heart => @user.no_heart.to_i + 1)
+        render plain: @user.no_heart, status: 200
+      else
+        render plain: 'Bạn đã đạt tim cao nhất, cần phải lên cấp để nhận thêm tim.', status: 400
+      end
     else
       render plain: 'Chưa đủ thời gian để tặng!', status: 400
     end
