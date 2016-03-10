@@ -149,21 +149,38 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	[
-      {
-        "id": 10,
-        "title": "Rosanna Paucek",
-        "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-        "broadcaster": {
-          "id": 10,
-          "name": "Rosanna Paucek",
-          "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-          "heart": 0,
-          "exp": 0,
-          "level": 0
-        }
-      }
-    ]
+    {
+        'totalPage':4,
+        'rooms':[
+          {
+            "id": 10,
+            "title": "Rosanna Paucek",
+            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
+            "broadcaster": {
+              "id": 10,
+              "name": "Rosanna Paucek",
+              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+            }
+          },
+          {
+            "id": 10,
+            "title": "Rosanna Paucek",
+            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
+            "broadcaster": {
+              "id": 10,
+              "name": "Rosanna Paucek",
+              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+            }
+          },
+          ...
+          ...
+        ]
 ```
 
 ### Get coming soon rooms
@@ -181,24 +198,42 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	[
-      {
-        "id": 1,
-        "title": "new room title",
-        "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-        "date": "25/11",
-        "start": "13:46",
-        "broadcaster": {
-          "id": 1,
-          "name": "Ansley Morissette",
-          "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-          "heart": 0,
-          "exp": 0,
-          "level": 0
-        }
-      },
-      ....
-      ....
+	{
+	  "totalPage": 1,
+      "rooms":[
+          {
+            "id": 1,
+            "title": "new room title",
+            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
+            "date": "25/11",
+            "start": "13:46",
+            "broadcaster": {
+              "id": 1,
+              "name": "Ansley Morissette",
+              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+          },
+          {
+            "id": 1,
+            "title": "new room title",
+            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
+            "date": "25/11",
+            "start": "13:46",
+            "broadcaster": {
+              "id": 1,
+              "name": "Ansley Morissette",
+              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+          },
+          ....
+          ....
+      ]
+    },
+
 ```
 
 ### Get room detail
