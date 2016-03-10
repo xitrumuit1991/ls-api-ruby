@@ -401,7 +401,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       user = User.find(params[:user_id])
       userHeart.update(:hearts => userHeart.hearts.to_i + 1)
       user.update(:no_heart => user.no_heart.to_i + 1)
-      render plain: 'Cộng tim thành công!', status: 200
+      render plain: user.no_heart, status: 200
     else
       render plain: 'Chưa đủ thời gian để tặng!', status: 400
     end
