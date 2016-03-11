@@ -116,7 +116,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	def topUserUseMoneyCurrent
 		if params["on-air"] != true
 			user_log = UserLog.where("room_id = ?", params[:room_id]).order("created_at desc").first
-			@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], user_log.created_at.beginning_of_day.to_s, user_log.created_at.end_of_day.to_s).group(:user_id).order('money desc').limit(3)
+			if !user_log
+				render status: 204
+			else
+				@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], user_log.created_at.beginning_of_day.to_s, user_log.created_at.end_of_day.to_s).group(:user_id).order('money desc').limit(3)
+			end
 		else
 			time = Time.now.to_s
 			schedule = Room.find(params[:room_id]).schedules.where("start < ? AND ? < end", time, time).take
