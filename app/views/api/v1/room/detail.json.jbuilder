@@ -1,8 +1,8 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb"
-json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb"
+json.thumb				"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb?timestamp=#{@room.updated_at.to_time.to_i}"
+json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb?timestamp=#{@room.updated_at.to_time.to_i}"
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
 json.link_stream		"http://210.245.125.6:80/livestar/#{@room.id}/playlist.m3u8"

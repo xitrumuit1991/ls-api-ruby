@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :addHeartInRoom]
 
   def profile
   end
@@ -34,20 +34,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def active
-    user = User.find_by_email(params[:email])
+    user = User.find_by_username(params[:username])
     if user.present?
-      if params[:active_code].blank? || params[:active_code] == ""
-        return head 400
-      else
-        if params[:active_code] == user.active_code
-          user.update(active_date: Time.now, actived: true)
-          return head 200
+      if user.actived == false
+        if defined? params[:active_code] && !params[:active_code].blank?
+          if params[:active_code] == user.active_code
+            user.update(active_date: Time.now, actived: true)
+            return head 200
+          else
+            render plain: 'Mã kích hoạt không hợp lệ !', status: 400
+          end
         else
-          return head 400
+          render plain: 'Vui lòng nhập mã kích hoạt !', status: 400
         end
+      else
+        render plain: 'Tài khoản này đã được kích hoạt !', status: 400
       end
     else
-      return head 404
+      render plain: 'Tài khoản này không tồn tại !', status: 404
     end
   end
 
@@ -93,23 +97,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def updateProfile
-    if (params[:name] != nil or params[:name] != '') and params[:name].to_s.length >= 6 and params[:name].to_s.length <= 20
-      @user.name              = params[:name]
-      @user.facebook_link     = params[:facebook]
-      @user.twitter_link      = params[:twitter]
-      @user.instagram_link    = params[:instagram]
-      @user.birthday    = params[:birthday]
-      if @user.valid?
-        if @user.save
-          return head 200
-        else
-          render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
-        end
+    @user.name              = params[:name]
+    @user.birthday          = params[:birthday]
+    # Optinal
+    @user.facebook_link     = params[:facebook].present? ? params[:facebook] : ''
+    @user.twitter_link      = params[:twitter].present? ? params[:twitter] : ''
+    @user.instagram_link    = params[:instagram].present? ? params[:instagram] : ''
+
+    if @user.valid?
+      if @user.save
+        return head 200
       else
-        render json: @user.errors.messages, status: 400
+        render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
       end
     else
-      render plain: 'Tên Quá Ngắn ...', status: 400
+      render json: @user.errors.messages, status: 400
     end
   end
 
@@ -291,8 +293,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    partnerid                 = "10004"
-    partnerpass               = "SMSP_PARTNER_PASSWORD"
+    partnerid                 = Settings.partnerid
     data = Ebaysms::Sms.new
     data.partnerid            = params[:partnerid]
     data.moid                 = params[:moid]
@@ -304,7 +305,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     data.checksum             = params[:checksum]
     data.amount               = params[:amount]
     data.smspPartnerPassword  = params[:smspPartnerPassword]
-    data.partnerpass          = partnerpass
+    data.partnerpass          = Settings.partnerpass
     checksum = data._checksum
     if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
       if _checkmoid(params[:moid])
@@ -388,6 +389,25 @@ class Api::V1::UserController < Api::V1::ApplicationController
       render plain: cardChargingResponse.message, status: 400
     else
       render plain: cardChargingResponse.message, status: 500
+    end
+  end
+
+  def addHeartInRoom
+    maxHeart = @user.user_level.level
+    userHeart = UserReceivedHeart.find_by_user_id(params[:user_id])
+    if !userHeart
+      userHeart = UserReceivedHeart.create(:user_id => params[:user_id],:hearts => 1)
+    end
+    if (DateTime.now.to_i - userHeart.updated_at.to_i) >= Settings.timeAddHeart
+      if @user.no_heart < maxHeart
+        userHeart.update(:hearts => userHeart.hearts.to_i + 1)
+        @user.update(:no_heart => @user.no_heart.to_i + 1)
+        render plain: @user.no_heart, status: 200
+      else
+        render plain: 'Bạn đã đạt tim cao nhất, cần phải lên cấp để nhận thêm tim.', status: 400
+      end
+    else
+      render plain: 'Chưa đủ thời gian để tặng!', status: 400
     end
   end
 

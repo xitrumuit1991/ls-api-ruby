@@ -70,6 +70,6 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		def parameters
-			params.require(:room).permit(:thumb, :broadcaster_id, :title, :room_type_id)
+			params.require(:room).permit(:thumb, :broadcaster_id, :title, :slug, :room_type_id)
 		end
 end

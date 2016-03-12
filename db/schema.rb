@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160219044659) do
+ActiveRecord::Schema.define(version: 20160308043938) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -178,8 +178,9 @@ ActiveRecord::Schema.define(version: 20160219044659) do
     t.string   "image",      limit: 45
     t.integer  "price",      limit: 4
     t.float    "discount",   limit: 24
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.boolean  "status",                default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
   end
 
   create_table "heart_logs", force: :cascade do |t|
@@ -312,8 +313,9 @@ ActiveRecord::Schema.define(version: 20160219044659) do
     t.integer  "price",      limit: 8
     t.integer  "max_vote",   limit: 4
     t.float    "discount",   limit: 24
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.boolean  "status",                 default: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
   end
 
   create_table "room_backgrounds", force: :cascade do |t|
@@ -516,6 +518,26 @@ ActiveRecord::Schema.define(version: 20160219044659) do
     t.datetime "updated_at",              null: false
   end
 
+  create_table "user_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.float    "money",      limit: 24
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "user_logs", ["room_id"], name: "index_user_logs_on_room_id", using: :btree
+  add_index "user_logs", ["user_id"], name: "index_user_logs_on_user_id", using: :btree
+
+  create_table "user_received_hearts", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "hearts",     limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "user_received_hearts", ["user_id"], name: "index_user_received_hearts_on_user_id", using: :btree
+
   create_table "users", force: :cascade do |t|
     t.string   "email",           limit: 255
     t.string   "password_digest", limit: 255
@@ -682,6 +704,9 @@ ActiveRecord::Schema.define(version: 20160219044659) do
   add_foreign_key "user_follow_bcts", "users"
   add_foreign_key "user_has_vip_packages", "users"
   add_foreign_key "user_has_vip_packages", "vip_packages"
+  add_foreign_key "user_logs", "rooms"
+  add_foreign_key "user_logs", "users"
+  add_foreign_key "user_received_hearts", "users"
   add_foreign_key "users", "user_levels"
   add_foreign_key "vip_packages", "vips"
   add_foreign_key "weekly_top_bct_level_ups", "broadcasters"

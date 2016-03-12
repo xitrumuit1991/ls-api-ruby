@@ -52,13 +52,16 @@ $(document).ready(function () {
     });
     
     // update status
-    $('table.data-table').on('change', '.status', function(){
+    $('table.data-table').on('change', '.handle-checkbox', function(){
         var result = $(this).attr('id').split('-');
-        var status = ($(this).is(':checked')) ? 1 : 0;
+        var field  = $(this).data('field');
+        var value  = $(this).is(':checked') ? 1 : 0;
         
-        data = { id: result[1], status: status, li_token: token };
-        $.post(module_url + '/ajax_update_status', data, function(resp){
-            console.log(resp.flag);
+        var data = {};
+        data["attrs"] = {};
+        data["attrs"][field] = value;
+        $.post(module_url + '/ajax_update_handle_checkbox/' + result[1], data, function(resp){
+            console.log(resp);
         }, 'json');
     });
     
@@ -85,19 +88,9 @@ $(document).ready(function () {
     });
     
     // get slug
-    $('.slug').on('change', function(){
-        data = { text: $(this).val(), li_token: token };
-        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
-            $("input[name='slug']").val(resp);
-        });
-    });
-
-    // get slug
-    $('.slug-lang').on('change', function(){
-        data = { text: $(this).val(), li_token: token };
-        $.post(base_url + 'ajax/ajax_get_slug', data, function(resp){
-            $("input[name='code']").val(resp);
-        });
+    $('form .slug').on('keyup', function(){
+        var slug = getSlug($(this).val(), { lang: 'vn' });
+        $("input[name*='slug']").val(slug);
     });
 
     $('#add-browse').on('click', function(event) {

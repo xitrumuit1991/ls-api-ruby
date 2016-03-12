@@ -82,6 +82,24 @@
 - Response:
 	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
 
+### Forgot code (update forgot code to reset password)
+- URI: **/update-forgot-code**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Request: ```{ "email": "alex@email.com", "forgot_code" : "HIJKLMNO" }```
+- Response:
+	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
+
+### Reset Password (update forgot code to reset password)
+- URI: **/reset-password**
+- Method: **POST**
+- Header:
+	+ Content-Type: application/json
+- Request: ```{"forgot_code" : "HIJKLMNO" }```
+- Response:
+	+ status **200** *(OK)*, **404** *(User Not found)*
+
 ### Change password
 - URI: **/change**
 - Method: **POST**
@@ -131,21 +149,38 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	[
-      {
-        "id": 10,
-        "title": "Rosanna Paucek",
-        "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-        "broadcaster": {
-          "id": 10,
-          "name": "Rosanna Paucek",
-          "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-          "heart": 0,
-          "exp": 0,
-          "level": 0
-        }
-      }
-    ]
+    {
+        'totalPage':4,
+        'rooms':[
+          {
+            "id": 10,
+            "title": "Rosanna Paucek",
+            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
+            "broadcaster": {
+              "id": 10,
+              "name": "Rosanna Paucek",
+              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+            }
+          },
+          {
+            "id": 10,
+            "title": "Rosanna Paucek",
+            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
+            "broadcaster": {
+              "id": 10,
+              "name": "Rosanna Paucek",
+              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+            }
+          },
+          ...
+          ...
+        ]
 ```
 
 ### Get coming soon rooms
@@ -163,24 +198,42 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	[
-      {
-        "id": 1,
-        "title": "new room title",
-        "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-        "date": "25/11",
-        "start": "13:46",
-        "broadcaster": {
-          "id": 1,
-          "name": "Ansley Morissette",
-          "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-          "heart": 0,
-          "exp": 0,
-          "level": 0
-        }
-      },
-      ....
-      ....
+	{
+	  "totalPage": 1,
+      "rooms":[
+          {
+            "id": 1,
+            "title": "new room title",
+            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
+            "date": "25/11",
+            "start": "13:46",
+            "broadcaster": {
+              "id": 1,
+              "name": "Ansley Morissette",
+              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+          },
+          {
+            "id": 1,
+            "title": "new room title",
+            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
+            "date": "25/11",
+            "start": "13:46",
+            "broadcaster": {
+              "id": 1,
+              "name": "Ansley Morissette",
+              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
+              "heart": 0,
+              "exp": 0,
+              "level": 0
+          },
+          ....
+          ....
+      ]
+    },
+
 ```
 
 ### Get room detail

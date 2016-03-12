@@ -102,14 +102,38 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		end
 	end
 
-	def topUserSendGiftRoom
-	    if params[:room] != nil and (params[:range] == nil or params[:range] == "week")
-	    	@top_gift_users = WeeklyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(room_id: params[:room].to_i, created_at: DateTime.now.prev_week.all_week).group(:user_id).order('quantity desc').limit(3)
+	def topUserFollowBroadcaster
+		@top_fans = Broadcaster.find(params[:id]).users.order('users.money desc').limit(10)
+	end
+
+	def topUserUseMoneyRoom
+	    @top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], 1.week.ago.beginning_of_week, 1.week.ago.end_of_week).group(:user_id).order('money desc').limit(3)
+	    if @top_users.length < 1
+	    	render status: 204
 	    end
 	end
 
-	def topUserFollowBroadcaster
-		@top_fans = Broadcaster.find(params[:id]).users.order('users.money desc').limit(10)
+	def topUserUseMoneyCurrent
+		if params["on-air"] != true
+			user_log = UserLog.where("room_id = ?", params[:room_id]).order("created_at desc").first
+			if !user_log
+				render status: 204
+			else
+				@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], user_log.created_at.beginning_of_day.to_s, user_log.created_at.end_of_day.to_s).group(:user_id).order('money desc').limit(3)
+			end
+		else
+			time = Time.now.to_s
+			schedule = Room.find(params[:room_id]).schedules.where("start < ? AND ? < end", time, time).take
+			if schedule
+				@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], schedule.start, schedule.end).group(:user_id).order('money desc').limit(3)
+			else
+				room = Room.find(params[:room_id])
+				@top_users = UserLog.select('*, sum(money) as money').where("room_id = ? AND created_at > ? AND created_at < ?", params[:room_id], room.updated_at.to_s, time).group(:user_id).order('money desc').limit(3)
+				if @top_users.length < 1
+					render status: 204
+				end
+			end
+		end
 	end
 
 	def updateCreatedAtBroadcaster
@@ -127,7 +151,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 		# WeeklyTopUserSendGift.update_all(:created_at => DateTime.now.prev_week)
 		# Schedule.update_all(:end => '2016-10-16 06:47:44')
-		User.update_all(:money => 1000)
+		User.update_all(:money => 100000, :actived => 1)
 		render plain: 'Done !', status: 200
 	end
 end

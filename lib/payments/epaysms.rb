@@ -3,9 +3,6 @@ module Ebaysms
 		attr_accessor :partnerid, :moid, :userid, :shortcode, :keyword, :content, :transdate, :checksum, :amount, :smspPartnerPassword, :partnerpass
 
 		def getMOChecksum
-			puts '==========Chuoi check sum ben ruby================'
-			puts Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
-			puts '==========Chuoi check sum ben ruby================'
 			return Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
 		end
 
@@ -36,7 +33,8 @@ module Ebaysms
 			url         += '&contenttype=0'
 			mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
 			url         += '&transdate=' + mt_transdate
-			url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + Digest::MD5.hexdigest(partnerpass))
+			# url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + Digest::MD5.hexdigest(partnerpass))
+			url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
 			url         += '&amount=' + amount
 			puts '=========confirm url=========='
 			puts url
@@ -47,9 +45,6 @@ module Ebaysms
 		def confirm
 			url = getUrl
 			str = Curl::Easy.perform('http://api.livestar.vn/api/v1/users/username_1')
-			puts '=========Status tra ve khi goi confirm=========='
-			puts str
-			puts '=========Status tra ve khi goi confirm=========='
 			return str.body_str
 		end
 	end
