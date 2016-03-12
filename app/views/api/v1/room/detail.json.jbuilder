@@ -1,8 +1,8 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb"
-json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb"
+json.thumb				@room.thumb_path
+json.thumb_mb			@room.thumb_path(true)
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
 json.link_stream		"http://210.245.18.154:80/livemix/#{@room.id}_aac/playlist.m3u8"
@@ -32,7 +32,7 @@ end
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
-	json.avatar			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/avatar"
+	json.avatar			@room.broadcaster.user.avatar_path
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp
