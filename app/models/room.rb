@@ -1,6 +1,4 @@
 class Room < ActiveRecord::Base
-	include Rails.application.routes.url_helpers
-
 	belongs_to :broadcaster
 	belongs_to :room_type
 	belongs_to :room_background
@@ -20,9 +18,9 @@ class Room < ActiveRecord::Base
 
 	def thumb_path(mobile = false)
 		if mobile
-			"#{root_url}#{self.thumb.thumb}?timestamp=#{self.updated_at.to_i}"
+			"#{Settings.base_url}#{self.thumb.thumb}?timestamp=#{self.updated_at.to_i}"
 		else
-			"#{root_url}#{self.thumb.thumb_mb}?timestamp=#{self.updated_at.to_i}"
+			"#{Settings.base_url}#{self.thumb.thumb_mb}?timestamp=#{self.updated_at.to_i}"
 		end
 	end
 end

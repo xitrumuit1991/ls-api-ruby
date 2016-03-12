@@ -1,6 +1,4 @@
 class User < ActiveRecord::Base
-	include Rails.application.routes.url_helpers
-	
 	belongs_to :user_level
 	has_one :broadcaster
 	has_many :statuses
@@ -27,7 +25,7 @@ class User < ActiveRecord::Base
 	mount_uploader :cover,  CoverUploader
 
 	def avatar_path
-		"#{root_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
+		"#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
 	end
 
 	def public_room
