@@ -100,3 +100,12 @@ gem 'savon', '~> 2.11.1'
 gem 'hex_string', '~> 1.0', '>= 1.0.1'
 
 gem 'curb', '~> 0.9.1'
+
+gem 'crypt', '~> 2.0'
+
+# Schedule worker
+gem 'sidekiq'
+
+gem 'sidetiq'
+
+gem 'sinatra', :require => nil

@@ -19,15 +19,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
-      # create token
-      token = createToken(@user)
+      if @user.actived
+        # create token
+        token = createToken(@user)
 
-      # update token
-      @user.update(last_login: Time.now, token: token)
+        # update token
+        @user.update(last_login: Time.now, token: token)
 
-      render json: {token: token}, status: 200
+        render json: {token: token}, status: 200
+      else
+        render plain: 'Tài khoản này chưa được kích hoạt !', status: 401
+      end
     else
-      return head 401
+      render plain: 'Tài khoản này không tồn tại !', status: 401
     end
   end
 
@@ -52,7 +56,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.password = params[:password].to_s
     user.birthday = '2000-01-01'
     user.user_level_id       = UserLevel.first().id
-    user.money               = 1000
+    user.money               = 100000
     user.user_exp            = 0
     user.actived             = 0
     user.no_heart            = 0
@@ -95,22 +99,23 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             render json: {token: token}, status: 200
           end
         else
-          activeCode = SecureRandom.hex(3).upcase
-          user = User.new
-          user.name                     = profile['name']
-          user.username                 = profile['email'].split("@")[0]
-          user.email                    = profile['email']
-          user.gender                   = profile['gender']
-          user.user_level_id            = UserLevel.first().id
-          user.money                    = 0
-          user.user_exp                 = 0
-          user.actived                  = 0
-          user.no_heart                 = 0
-          user.avatar                   = graph.get_picture(profile['id'], type: :large)
-          password                      = SecureRandom.hex(5)
-          user.password                 = password
-          user.fb_id                    = profile['id']
-          user.active_code              = activeCode
+          activeCode          = SecureRandom.hex(3).upcase
+          password            = SecureRandom.hex(5)
+          user                = User.new
+          user.name           = profile['name']
+          user.username       = profile['email'].split("@")[0]
+          user.email          = profile['email']
+          user.gender         = profile['gender']
+          user.birthday       = profile['birthday']
+          user.fb_id          = profile['id']
+          user.user_level_id  = UserLevel.first().id
+          user.avatar         = graph.get_picture(profile['id'], type: :large)
+          user.password       = password
+          user.active_code    = activeCode
+          user.money          = 100000
+          user.user_exp       = 0
+          user.actived        = 1
+          user.no_heart       = 0
           if user.save
             user = User.find_by_email(profile['email'])
             token = createToken(user)
@@ -221,6 +226,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def updateForgotCode
     user = User.find_by_email(params[:email])
     forgot_code = params[:forgot_code]
+
     if user.present?
       if user.update(forgot_code: forgot_code)
         UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
@@ -233,45 +239,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  def check_forgotCode
-    if params[:forgot_code].blank? || params[:forgot_code] == ""
-        return head 400
-    else 
-        #Update password
-        user = User.find_by_forgot_code(params[:forgot_code])
-
-        if user.present?
-          new_password    = SecureRandom.hex(5)
-          if user.update(password: new_password)
-            UserMailer.reset_password(user, new_password).deliver_now
-            render json: user.password,status: 200
-          end
-        else 
-          return head 404
-        end
-    end
-  end 
-
   def setNewPassword
-    user = User.find_by_forgot_code(params[:forgot_code])
-    if user.present?
-      new_password    = SecureRandom.hex(5)
-      user.password   = new_password
-      is_24h = User.where(:updated_at => 1.day.ago..DateTime.now , :forgot_code => params[:forgot_code])
+      user = User.find_by_forgot_code(params[:forgot_code])
 
-      if is_24h.present?
-        if user.save
+      if user.present?
+        new_password = SecureRandom.hex(5)
+        if user.update(password: new_password)
           UserMailer.reset_password(user, new_password).deliver_now
-          render json: user, status: 200
-        else
-          render json: user.errors.messages, status: 400
+          return head 200
         end
       else
-        render json: 'error', status: 200
+        return head 404
       end
-    else
-      return head 404
-    end
   end
 
   api! "change password"

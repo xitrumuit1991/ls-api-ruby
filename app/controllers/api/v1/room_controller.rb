@@ -5,17 +5,24 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
+    @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
+    @getAllRecord = Room.where(on_air: true).length
+    @totalPage =  (Float(@getAllRecord)/9).ceil
   end
 
   def comingSoon
+    @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     if params[:category_id].nil?
+      @getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
       @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     else
+      @getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).length      
       @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     end
+    @totalPage =  (Float(@getAllRecord)/9).ceil
   end
 
   def roomType
@@ -140,11 +147,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       split = key.split(':')
       @status[split[2].to_i] = redis.get(key).to_i
     end
-    @actions = RoomAction.all
+    @actions = RoomAction.where(status: 1)
   end
 
   def getGifts
-    @gifts = Gift.all
+    @gifts = Gift.where(status: 1)
   end
 
   def getLounges

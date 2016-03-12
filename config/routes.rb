@@ -1,10 +1,13 @@
+require 'sidekiq/web'
+require 'sidetiq/web'
+
 Rails.application.routes.draw do
 
 	apipie
 	devise_for :admins, controllers: { sessions: "admins/sessions" }
 	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-
+  	
   # ACP
   namespace :acp do
     get "/" => "index#index"
@@ -20,6 +23,10 @@ Rails.application.routes.draw do
 			post 		'/ajax_change_background' => 'broadcasters#ajax_change_background'
 		end
 
+	authenticate do
+		mount Sidekiq::Web => '/sidekiq'
+	end
+
 		# Users
     resources :users
   	get 	'/users/:id/transactions' => 'users#transactions'
@@ -27,6 +34,18 @@ Rails.application.routes.draw do
 
 		# Rooms
     resources :rooms
+
+    # banks
+    resources :banks
+    	post 	'/banks/destroy_m' => 'banks#destroy_m'
+
+    # megabanks
+    resources :megabanks
+    	post 	'/megabanks/destroy_m' => 'megabanks#destroy_m'
+
+    # megabank_logs
+    resources :megabank_logs
+    	post 	'/megabank_logs/destroy_m' => 'megabank_logs#destroy_m'
 
     # Sms mobile
     resources :sms_mobiles
@@ -65,6 +84,7 @@ Rails.application.routes.draw do
     # Gifts
 		resources :gifts
 		post 	'/gifts/destroy_m' => 'gifts#destroy_m'
+		post 	'/gifts/ajax_update_handle_checkbox/:id' => 'gifts#ajax_update_handle_checkbox'
 
 		# Gift Logs
 		resources :gift_logs
@@ -81,6 +101,7 @@ Rails.application.routes.draw do
 		# Room actions
 		resources :room_actions
 		post 	'/room_actions/destroy_m' => 'room_actions#destroy_m'
+		post 	'/room_actions/ajax_update_handle_checkbox/:id' => 'room_actions#ajax_update_handle_checkbox'
 
     # Featureds
 		resources :featureds
@@ -117,17 +138,17 @@ Rails.application.routes.draw do
 
 			# auth
 			scope '/auth' do
-				get   '/logout'          => 'auth#logout'
-				get  '/:forgot_code/get-password' => 'auth#setNewPassword'
-				post  '/login'           => 'auth#login'
-				post  '/register'        => 'auth#register'
-				post  '/fb-register'     => 'auth#fbRegister'
-				post  '/gp-register'     => 'auth#gpRegister'
-				post  '/forgot'          => 'auth#forgotPassword'
-				post  '/verify-token'    => 'auth#verifyToken'
-				post  '/change'          => 'auth#changePassword'
-				post  '/forgot-code'     => 'auth#updateForgotCode'
-				post  '/check-forgot-code'     => 'auth#check_forgotCode'
+				get   '/logout'          			=> 'auth#logout'
+				get  '/:forgot_code/get-password' 	=> 'auth#setNewPassword'
+				post  '/login'           			=> 'auth#login'
+				post  '/register'        			=> 'auth#register'
+				post  '/fb-register'     			=> 'auth#fbRegister'
+				post  '/gp-register'     			=> 'auth#gpRegister'
+				post  '/forgot'          			=> 'auth#forgotPassword'
+				post  '/verify-token'    			=> 'auth#verifyToken'
+				post  '/change'          			=> 'auth#changePassword'
+				post  '/update-forgot-code' 		=> 'auth#updateForgotCode'
+				post  '/reset-password'     		=> 'auth#setNewPassword'
 			end
 
 			# users
@@ -140,15 +161,20 @@ Rails.application.routes.draw do
 				get  '/'                 	=> 'user#profile'
 				get  '/expense-records'		=> 'user#expenseRecords'
 				get '/get-providers'       	=> 'user#getProviders'
+				get '/get-banks'       		=> 'user#getBanks'
+				get '/get-megabanks'       	=> 'user#getMegabanks'
 				get  '/:id'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
+				post '/add-heart'  			=> 'user#addHeartInRoom'
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
 				post '/cover-crop'        	=> 'user#coverCrop'
 				post '/avatar-crop'       	=> 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
+				post '/internet-banking'    => 'user#internetBank'
+				post '/confirm'    			=> 'user#confirmEbay'
 			end
 
 			# broadcasters
@@ -180,15 +206,16 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/user-ranking'      					=> 'ranks#userRanking'
-				get     '/top-heart-broadcaster'      => 'ranks#topBroadcasterRevcivedHeart'
-				get     '/top-level-grow-broadcaster'	=> 'ranks#topBroadcasterLevelGrow'
+				get     '/user-ranking'      				=> 'ranks#userRanking'
+				get     '/top-heart-broadcaster'      		=> 'ranks#topBroadcasterRevcivedHeart'
+				get     '/top-level-grow-broadcaster'		=> 'ranks#topBroadcasterLevelGrow'
 				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
 				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
-				get     '/top-gift-user'							=> 'ranks#topUserSendGift'
+				get     '/top-gift-user'					=> 'ranks#topUserSendGift'
 				get     '/update-datatime-top'				=> 'ranks#updateCreatedAtBroadcaster'
-				get			'/top-gift-user-in-room'			=> 'ranks#topUserSendGiftRoom'
-				get			'/:id/top-fans'								=> 'ranks#topUserFollowBroadcaster'
+				get		'/:room_id/top-user-use-in-room'	=> 'ranks#topUserUseMoneyRoom'
+				get		'/:room_id/top-user-use-money'		=> 'ranks#topUserUseMoneyCurrent'
+				get		'/:id/top-fans'						=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
@@ -205,15 +232,15 @@ Rails.application.routes.draw do
 				put   	'/'                 		=> 'room#updateSettings'
 				put   	'/thumb'            		=> 'room#uploadThumb'
 				post  	'/thumb'            		=> 'room#uploadThumb'
-				post  	'/thumb-crop'            		=> 'room#thumbCrop'
+				post  	'/thumb-crop'            	=> 'room#thumbCrop'
 				put   	'/background'       		=> 'room#changeBackground'
-				put   	'/background-default'   => 'room#changeBackgroundDefault'
-				post  	'/background'       		=> 'room#uploadBackground'
-				post  	'/background-room'      => 'room#uploadBackgroundRoom'
-				post  	'/schedule'							=> 'room#updateSchedule'
-				get		'/actions'								=> 'room#getActions'
-				get		'/gifts'									=> 'room#getGifts'
-				get		'/lounges'								=> 'room#getLounges'
+				put   	'/background-default'   	=> 'room#changeBackgroundDefault'
+				post  	'/background'       		=> 'room#uploadBackground' # hien tai khong thay sai
+				post  	'/background-room'      	=> 'room#uploadBackgroundRoom'
+				post  	'/schedule'					=> 'room#updateSchedule'
+				get		'/actions'					=> 'room#getActions' # trung voi o tren
+				get		'/gifts'					=> 'room#getGifts' # trung voi o tren
+				get		'/lounges'					=> 'room#getLounges' # trung voi o tren
 				get   	'/:id'              		=> 'room#detail'
 				delete  '/background'      			=> 'room#deleteBackground'
 			end

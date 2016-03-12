@@ -54,13 +54,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
         # insert log
         @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
+        @user.user_logs.create(room_id: @room.id, money: cost)
 
         return head 201
       rescue => e
         render json: {error: e.message}, status: 400
       end
     else
-      render json: {error: "You don\'t have enough money"}, status: 403
+      render json: {error: "Bạn không có đủ tiền"}, status: 403
     end
   end
 
@@ -93,6 +94,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
           # insert log
           @user.action_logs.create(room_id: @room.id, room_action_id: action_id, cost: dbAction.price)
+          @user.user_logs.create(room_id: @room.id, money: dbAction.price)
 
           return head 201
         rescue => e
@@ -124,10 +126,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         emitter.of("/room").in(@room.id).emit("action done", { id: dbAction.id, image: dbAction.image.square })
         return head 200
       else
-        render json: {error: "This action must be full before set to done"}, status: 400
+        render json: {error: "Hành động này phải được Vote trước khi được duyệt"}, status: 400
       end
     else
-      render json: {error: "Action doesn\'t exist"}, status: 404
+      render json: {error: "Hành động này không tồn tại"}, status: 404
     end
   end
 
@@ -155,13 +157,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
+          @user.user_logs.create(room_id: @room.id, money: total)
 
           return head 201
         rescue => e
           render json: {error: e.message}, status: 400
         end
       else
-        render json: {error: "Quantity must larger than 1"}, status: 400
+        render json: {error: "Số lượng phải lớn hơn 1"}, status: 400
       end
     else
       return head 404
@@ -196,16 +199,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
           # insert log
           @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
+          @user.user_logs.create(room_id: @room.id, money: cost)
 
           return head 201
         rescue => e
           render json: {error: e.message}, status: 400
         end
       else
-        render json: {error: "You don\'t have enough money"}, status: 400
+        render json: {error: "Bạn không có đủ tiền"}, status: 400
       end
     else
-      render json: {error: "This lounge doesn\'t exist"}, status: 404
+      render json: {error: "Ghế này không tồn tại"}, status: 404
     end
   end
 
@@ -232,16 +236,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
             return head 201
           else
-            render json: {error: "Heart already send, but broadcaster can\'t recive, please contact supporter!"}, status: 400
+            render json: {error: "Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!"}, status: 400
           end
         else
-          render json: {error: "can\'t send heart, please try again later"}, status: 400
+          render json: {error: "Không thể gửi trái tim, Vui lòng thử lại lần nữa"}, status: 400
         end
       rescue => e
         render json: {error: e.message}, status: 400
       end
     else
-      render json: {error: "You don\'t have enough hearts"}, status: 403
+      render json: {error: "Bạn không có đủ số trái tim"}, status: 403
     end
   end
 
@@ -254,7 +258,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       emitter.of("/room").in(@room.id).emit("room on-air")
       return head 200
     else
-      render json: {error: "Can\'t start this room, please contact supporter"}, status: 400
+      render json: {error: "Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ"}, status: 400
     end
   end
 
@@ -275,7 +279,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       emitter.of("/room").in(@room.id).emit("room off")
       return head 200
     else
-      render json: {error: "Can\'t end this room, please contact supporter"}, status: 400
+      render json: {error: "Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ"}, status: 400
     end
   end
 
@@ -296,22 +300,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         @room = Room.find(params[:room_id])
         getUsers
         if(!@userlist.has_key?(@user.email)) then
-          render json: {error: "You are not subscribe to this room"}, status: 403 and return
+          render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
         end
       else
-        render json: {error: "Missing room_id parameter"}, status: 404 and return
+        render json: {error: "Thiếu tham số room_id "}, status: 404 and return
       end
     end
 
     def checkStarted
       if !@room.on_air then
-        render json: {error: "This room is off"}, status: 403  and return
+        render json: {error: "Phòng này đã tắt"}, status: 403  and return
       end
     end
 
     def checkPermission
       if @user.email != @room.broadcaster.user.email then
-        render json: {error: "You don\'t has permission to access this function"}, status: 403 and return
+        render json: {error: "Bạn không đủ quyền để sử dụng chức năng này"}, status: 403 and return
       end
     end
 

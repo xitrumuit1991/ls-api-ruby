@@ -249,6 +249,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   api! "get suggest broadcaster in room"
   def getRoomFeatured
+    @user = check_authenticate
     @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
   end
 
