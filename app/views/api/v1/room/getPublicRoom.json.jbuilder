@@ -2,8 +2,8 @@ json.id					@room.id
 json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb 	 			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb?timestamp=#{@room.updated_at.to_time.to_i}"
-json.thumb_mb			"#{request.base_url}/api/v1/rooms/#{@room.id}/thumb_mb?timestamp=#{@room.updated_at.to_time.to_i}"
+json.thumb 	 			@room.thumb_path
+json.thumb_mb			@room.thumb_path(true)
 json.is_privated		@room.is_privated
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
@@ -26,7 +26,7 @@ end
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
-	json.avatar			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/avatar"
+	json.avatar			@room.broadcaster.user.avatar_path
 	json.name			@room.broadcaster.user.name
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp

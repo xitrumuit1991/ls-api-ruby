@@ -24,8 +24,12 @@ class User < ActiveRecord::Base
 	mount_base64_uploader :cover_crop, CoverCropUploader
 	mount_uploader :cover,  CoverUploader
 
+	def avatar_path
+		"#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
+	end
+
 	def public_room
-		self.broadcaster.rooms.find_by_is_privated(false)
+		self.broadcaster.public_room
 	end
 
 	def decreaseMoney(money)

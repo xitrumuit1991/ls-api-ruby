@@ -3,7 +3,7 @@ json.broadcasters @bcts do |bct|
 	json.id			bct.id
 	json.name		bct.user.name
 	json.username	bct.user.username
-	json.avatar		"#{request.base_url}/api/v1/users/#{bct.user_id}/avatar"
+	json.avatar		bct.user.avatar_path
 	json.heart		bct.user.no_heart
 	json.user_exp	bct.user.user_exp
 	if !bct.user.user_level.nil?

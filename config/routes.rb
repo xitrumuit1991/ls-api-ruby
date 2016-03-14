@@ -166,7 +166,7 @@ Rails.application.routes.draw do
 				get  '/:id'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
-				post '/add-heart'  			=> 'user#addHeartInRoom'
+				get '/:user_id/add-heart'  	=> 'user#addHeartInRoom'
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
@@ -206,16 +206,16 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/user-ranking'      			=> 'ranks#userRanking'
-				get     '/top-heart-broadcaster'      	=> 'ranks#topBroadcasterRevcivedHeart'
-				get     '/top-level-grow-broadcaster'	=> 'ranks#topBroadcasterLevelGrow'
-				get     '/top-level-grow-user'			=> 'ranks#topUserLevelGrow'
-				get     '/top-gift-broadcaster'			=> 'ranks#topBroadcasterRevcivedGift'
-				get     '/top-gift-user'				=> 'ranks#topUserSendGift'
-				get     '/update-datatime-top'			=> 'ranks#updateCreatedAtBroadcaster'
-				get		'/top-gift-user-in-room'		=> 'ranks#topUserSendGiftRoom'
-				get		'/:room_id/top-user-use-money'	=> 'ranks#topUserUseMoneyCurrent'
-				get		'/:id/top-fans'					=> 'ranks#topUserFollowBroadcaster'
+				get     '/user-ranking'      				=> 'ranks#userRanking'
+				get     '/top-heart-broadcaster'      		=> 'ranks#topBroadcasterRevcivedHeart'
+				get     '/top-level-grow-broadcaster'		=> 'ranks#topBroadcasterLevelGrow'
+				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
+				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
+				get     '/top-gift-user'					=> 'ranks#topUserSendGift'
+				get     '/update-datatime-top'				=> 'ranks#updateCreatedAtBroadcaster'
+				get		'/:room_id/top-user-use-in-room'	=> 'ranks#topUserUseMoneyRoom'
+				get		'/:room_id/top-user-use-money'		=> 'ranks#topUserUseMoneyCurrent'
+				get		'/:id/top-fans'						=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
