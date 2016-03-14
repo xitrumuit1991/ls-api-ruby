@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :addHeartInRoom]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
 
   def profile
   end
