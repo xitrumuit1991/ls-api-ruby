@@ -404,10 +404,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
         @user.update(:no_heart => @user.no_heart.to_i + 1)
         render plain: @user.no_heart, status: 200
       else
-        render plain: 'Bạn đã đạt tim cao nhất, cần phải lên cấp để nhận thêm tim.', status: 400
+        render status: 204
       end
     else
-      render plain: 'Chưa đủ thời gian để tặng!', status: 400
+      render status: 204
     end
   end
 
