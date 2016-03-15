@@ -1,0 +1,106 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
+          <% if @data.errors.any? %>
+             <div class="alert alert-danger" role="alert">
+               <button class="close" data-dismiss="alert"></button>
+               <p>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra</p>
+              <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Tên</label>
+                <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Mã</label>
+                <input type="text" class="form-control" name="data[code]" value="<%= @data.code %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Weight</label>
+                <input type="text" class="form-control" name="data[weight]" value="<%= @data.weight %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Số lượng ký tự chat</label>
+                <input type="text" class="form-control" name="data[no_char]" value="<%= @data.no_char %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Screen text time</label>
+                <input type="text" class="form-control" name="data[screen_text_time]" value="<%= @data.screen_text_time %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Screen text effect</label>
+                <input type="text" class="form-control" name="data[screen_text_effect]" value="<%= @data.screen_text_effect %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Kick</label>
+                <input type="text" class="form-control" name="data[kick_level]" value="<%= @data.kick_level %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Chặn bị kick</label>
+                <input type="text" class="form-control" name="data[clock_kick]" value="<%= @data.clock_kick %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Chặn bị quảng cáo</label>
+                <input type="text" class="form-control" name="data[clock_ads]" value="<%= @data.clock_ads %>" required>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Tỷ lệ tăng EXP</label>
+                <input type="text" class="form-control" name="data[exp_bonus]" value="<%= @data.exp_bonus %>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Biểu tượng</label>
+                <input type="file" class="form-control" name="data[image]">
+                <img src="<%= @data.image_url %>">
+              </div>
+            </div>
+            <div class="col-sm-6"></div>
+          </div>
+          
+          <div class="row">
+            <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+              <span>Lưu</span>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

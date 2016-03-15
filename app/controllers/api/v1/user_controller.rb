@@ -34,7 +34,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def active
-    user = User.find_by_username(params[:username])
+    user = User.find_by_email(params[:email])
     if user.present?
       if user.actived == false
         if defined? params[:active_code] && !params[:active_code].blank?
