@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: "from@example.com"
+  default from: "support@livestar.com"
  
   def reset_password(user, password)
     @user = user

@@ -31,7 +31,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         render plain: 'Tài khoản này chưa được kích hoạt !', status: 401
       end
     else
-      render plain: 'Tài khoản này không tồn tại !', status: 401
+      render plain: 'Email hoặc mật khẩu bạn vừa nhập không chính xác !', status: 401
     end
   end
 
