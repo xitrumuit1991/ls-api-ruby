@@ -3,6 +3,8 @@ json.rooms @rooms do |room|
 	json.id			room.id
 	json.title		room.title
 	json.slug		room.slug
+	json.slug		room.slug
+	json.totalUser		@totalUser[room.id]
 	json.thumb		room.thumb_path
 	json.thumb_mb	room.thumb_path(true)
 	json.broadcaster do
