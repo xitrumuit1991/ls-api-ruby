@@ -265,6 +265,11 @@ Rails.application.routes.draw do
 				post  '/kick-user'          => 'live#kickUser'
 			end
 
+			# Live functions
+			scope 'vip' do
+				post  '/buy-vip'       => 'vip#buyVip'
+			end
+
 			# Posters functions
 			scope 'posters' do 
 				get 	'/sliders'			=>	'posters#getSliders'

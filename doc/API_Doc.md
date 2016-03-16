@@ -1593,3 +1593,25 @@
 	    + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
+
+## Vip functions
+- Namespace URL: **/vip**
+
+### Buy vip packages
+- URI: **/buy-vip**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+  user_id: 123,
+  vip_package_id: 321
+}
+```
+- Response:
+  + status: **401**, **200**, **404**
+  + errors: 
+      + status 401: ```{error: "Bạn chưa đăng nhập!"}```
+      + status 404: ```{error: "Vip không tồn tại!"}```
