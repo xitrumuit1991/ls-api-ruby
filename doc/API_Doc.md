@@ -981,14 +981,17 @@
 ```
 	[
 		{
-			id: 123654789,
-			name: "Hoa hong",
-			image: "http://../image-rose.png",
-			created_at: "08/11/2015 20:10",
-			cost: 2000,
-			quantity: 10
-			total: 20000,
-		},
+            "name": "VIP_P 1",
+            "actived": true,
+            "active_date": "2016-03-16T00:00:00.000+07:00",
+            "expiry_date": "2017-01-12T00:00:00.000+07:00"
+          },
+          {
+            "name": "VIP_P 2",
+            "actived": true,
+            "active_date": "2016-03-16T00:00:00.000+07:00",
+            "expiry_date": "2017-01-12T00:00:00.000+07:00"
+          }
 		...
 	]
 ```
