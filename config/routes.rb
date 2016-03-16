@@ -183,28 +183,28 @@ Rails.application.routes.draw do
 
 			# broadcasters
 			scope '/broadcasters' do
-				get     '/'											=> 'broadcasters#myProfile'
-				get		'/followed'									=> 'broadcasters#followed'
+				get     '/'											=> 'broadcasters#myProfile' #
+				get		'/followed'									=> 'broadcasters#followed' #
 				get     '/featured'									=> 'broadcasters#getFeatured'
 				get     '/home-featured'							=> 'broadcasters#getHomeFeatured'
 				get     '/room-featured'							=> 'broadcasters#getRoomFeatured'
-				get     '/search'									=> 'broadcasters#search'
-				get     '/revcived-items'							=> 'broadcasters#broadcasterRevcivedItems'
+				get     '/search'									=> 'broadcasters#search' #
+				get     '/revcived-items'							=> 'broadcasters#broadcasterRevcivedItems' #
 				get     '/default-background'						=> 'broadcasters#defaultBackground'
 				get     '/broadcaster-background'					=> 'broadcasters#broadcasterBackground'
-				get     '/:id'										=> 'broadcasters#profile'
-				post    '/status'									=> 'broadcasters#status'
+				get     '/:id'										=> 'broadcasters#profile' #
+				post    '/status'									=> 'broadcasters#status' #
 				post    '/active-fb-gp'								=> 'broadcasters#activeFBGP'
-				post    '/pictures'									=> 'broadcasters#pictures'
-				post    '/videos'									=> 'broadcasters#videos'
+				post    '/pictures'									=> 'broadcasters#pictures' #
+				post    '/videos'									=> 'broadcasters#videos' #
 				post  	'/setdefault-background'					=> 'broadcasters#setDefaultBackgroundRoom'
 				post  	'/set-room-background'						=> 'broadcasters#setBackgroundRoom'
 				put     '/'											=> 'broadcasters#update'
 				put     '/avatar'									=> 'broadcasters#uploadAvatar'
 				put     '/cover'									=> 'broadcasters#uploadCover'
-				put		'/:id/follow'								=> 'broadcasters#follow'
-				delete  '/pictures'									=> 'broadcasters#deletePictures'
-				delete  '/videos'									=> 'broadcasters#deleteVideos'
+				put		'/:id/follow'								=> 'broadcasters#follow' #
+				delete  '/pictures'									=> 'broadcasters#deletePictures' #
+				delete  '/videos'									=> 'broadcasters#deleteVideos' #
 
 			end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160308043938) do
+ActiveRecord::Schema.define(version: 20160316093628) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -51,6 +51,26 @@ ActiveRecord::Schema.define(version: 20160308043938) do
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end
+
+  create_table "bct_actions", force: :cascade do |t|
+    t.integer  "room_id",        limit: 4
+    t.integer  "room_action_id", limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "bct_actions", ["room_action_id"], name: "index_bct_actions_on_room_action_id", using: :btree
+  add_index "bct_actions", ["room_id"], name: "index_bct_actions_on_room_id", using: :btree
+
+  create_table "bct_gifts", force: :cascade do |t|
+    t.integer  "room_id",    limit: 4
+    t.integer  "gift_id",    limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "bct_gifts", ["gift_id"], name: "index_bct_gifts_on_gift_id", using: :btree
+  add_index "bct_gifts", ["room_id"], name: "index_bct_gifts_on_room_id", using: :btree
 
   create_table "bct_images", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
@@ -657,6 +677,10 @@ ActiveRecord::Schema.define(version: 20160308043938) do
   add_foreign_key "action_logs", "room_actions"
   add_foreign_key "action_logs", "rooms"
   add_foreign_key "action_logs", "users"
+  add_foreign_key "bct_actions", "room_actions"
+  add_foreign_key "bct_actions", "rooms"
+  add_foreign_key "bct_gifts", "gifts"
+  add_foreign_key "bct_gifts", "rooms"
   add_foreign_key "bct_images", "broadcasters"
   add_foreign_key "bct_videos", "broadcasters"
   add_foreign_key "broadcaster_backgrounds", "broadcasters"
