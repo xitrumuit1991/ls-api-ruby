@@ -250,7 +250,14 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "get suggest broadcaster in room"
   def getRoomFeatured
     @user = check_authenticate
+    @totalUser = []
     @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+    @featured.each do |f|
+      if f.broadcaster.public_room.on_air
+        redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+        @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+      end
+    end
   end
 
   def search
