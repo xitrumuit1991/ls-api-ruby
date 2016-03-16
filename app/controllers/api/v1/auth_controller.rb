@@ -18,6 +18,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   example '{token: "this-is-sample-token"}'
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+    if (Time.now.to_i - @user.last_login.to_i) <= 86400
+      @user.increaseExp(20)
+    end
     if @user.present?
       if @user.actived
         # create token
