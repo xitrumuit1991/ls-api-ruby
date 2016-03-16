@@ -248,13 +248,23 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "get suggest broadcaster in room"
   def getRoomFeatured
     @user = check_authenticate
+    @totalUser = []
     @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+    @featured.each do |f|
+      if f.broadcaster.public_room.on_air
+        redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+        @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+      end
+    end
   end
 
   def search
     return head 400 if params[:q].nil?
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 12
-    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'")
+    @user = check_authenticate
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
+    @max_page = (Float(getAllRecord)/9).ceil
+    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(6).offset(offset)
   end
 
   private

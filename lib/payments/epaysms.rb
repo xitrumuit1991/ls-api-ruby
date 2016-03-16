@@ -44,7 +44,7 @@ module Ebaysms
 
 		def confirm
 			url = getUrl
-			str = Curl::Easy.perform('http://api.livestar.vn/api/v1/users/username_1')
+			str = Curl::Easy.perform(url)
 			return str.body_str
 		end
 	end
