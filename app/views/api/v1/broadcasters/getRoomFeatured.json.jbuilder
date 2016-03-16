@@ -16,7 +16,7 @@ json.array! @featured do |val|
     json.id			val.broadcaster.public_room.id
     json.title		val.broadcaster.public_room.title
     json.on_air		val.broadcaster.public_room.on_air
-    json.totalUser		@totalUser
+    json.totalUser		@totalUser[val.broadcaster.public_room.id]
     json.slug		val.broadcaster.public_room.slug
     json.thumb		val.broadcaster.public_room.thumb_path
     json.thumb_mb	 val.broadcaster.public_room.thumb_path(true)
