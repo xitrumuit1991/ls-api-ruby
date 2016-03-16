@@ -18,9 +18,11 @@ if !@rusers_followed.present?
 		end
 		if !followed.public_room.on_air and followed.public_room.schedules.length > 0
 			json.schedule do
-				json.date followed.public_room.schedules.take.start.strftime('%d/%m')
-				json.start followed.public_room.schedules.take.start.strftime('%H:%M')
+				json.date followed.public_room.schedules.last.start.strftime('%d/%m')
+				json.start followed.public_room.schedules.last.start.strftime('%H:%M')
 			end
+		else
+			json.schedule nil
 		end
 	end
 end
