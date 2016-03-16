@@ -1002,7 +1002,7 @@
 *under construction*
 
 ### Get featured broadcasters
-- URI: **/featured-broadcaster**
+- URI: **/featured**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
@@ -1013,20 +1013,28 @@
 ```
 [
 	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
+        "id": 133,
+        "name": "bct_002",
+        "username": "bct_002",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/133/avatar?timestamp=1449539146",
+        "heart": 0,
+        "bct_exp": 0,
+        "level": 31,
+        "room": {
+          "id": 33,
+          "title": "Room BCT 002",
+          "slug": "room-bct-002",
+          "on_air": false,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_mb_cute_girl_4.jpg?timestamp=1449102738",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_cute_girl_4.jpg?timestamp=1449102738"
+        }
+      },
 	...
 ]
 ```
 
 ### Home Get featured broadcasters
-- URI: **/home-featured-broadcaster**
+- URI: **/home-featured**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
@@ -1037,34 +1045,52 @@
 ```
 [
 	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	room:{
-			id: 321654,
-			name: "room so 1",
-			on_air: "true/false",
-			thumb: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-			thumb_mb: "http://cdn.domain.com/broadcaters/bct-id/mb_avatar.jpg"
-		},
-	videos: [
-		{
-			start: "2015-10-21 03:35:00",
-			end: "2015-10-30 18:35:00"
-		},
-		...
-	]
+        "id": 2,
+        "name": "Thị Màu",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/2/avatar?timestamp=1449132581",
+        "heart": 2,
+        "bct_exp": 953,
+        "level": 10,
+        "room": {
+          "id": 2,
+          "title": "Room LiveStar",
+          "on_air": true,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/2/thumb_mb_anh-thien-nhien-12-351x185.jpg?timestamp=1451332262",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/2/thumb_anh-thien-nhien-12-351x185.jpg?timestamp=1451332262"
+        },
+        "schedules": []
+      },
+      {
+        "id": 1,
+        "name": "Hot Girl Demo",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/1/avatar?timestamp=1449124014",
+        "heart": 22,
+        "bct_exp": 956,
+        "level": 49,
+        "room": {
+          "id": 3,
+          "title": "Hello World",
+          "on_air": true,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/3/thumb_mb_cute_girl_40.jpg?timestamp=1449104500",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/3/thumb_cute_girl_40.jpg?timestamp=1449104500"
+        },
+        "schedules": [
+          {
+            "date": "09/03",
+            "start": "23:30"
+          },
+          {
+            "date": "09/03",
+            "start": "23:30"
+          }
+        ]
+      },
 	...
 ]
 ```
 
 ### Room Get featured broadcasters
-- URI: **/room-featured-broadcaster**
+- URI: **/room-featured**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
@@ -1075,14 +1101,51 @@
 ```
 [
 	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
+        "id": 141,
+        "bct_id": 42,
+        "name": "Liem12312321",
+        "username": "bct_010",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/141/avatar?timestamp=1458096683",
+        "heart": 0,
+        "bct_exp": 0,
+        "level": 21,
+        "isFollow": false,
+        "room": {
+          "id": 42,
+          "title": "Developer2",
+          "on_air": true,
+          "totalUser": 0,
+          "slug": "room-bct-010",
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/42/thumb_mb_1631435.jpg?timestamp=1451338004",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/42/thumb_1631435.jpg?timestamp=1451338004",
+          "schedule": {
+            "start": "09/03"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "bct_id": 1,
+        "name": "AngCo(*_^) 1",
+        "username": "username_4",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/5/avatar?timestamp=1449123703",
+        "heart": 526,
+        "bct_exp": 3767,
+        "level": 49,
+        "isFollow": false,
+        "room": {
+          "id": 1,
+          "title": "room 1",
+          "on_air": false,
+          "totalUser": null,
+          "slug": "room-11",
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/1/thumb_mb_1631435.jpg?timestamp=1451276934",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/1/thumb_1631435.jpg?timestamp=1451276934",
+          "schedule": {
+            "start": "09/03"
+          }
+        }
+      },
 	...
 ]
 ```
