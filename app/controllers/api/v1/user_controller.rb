@@ -424,6 +424,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def getTradeHistory
+
+  end
+
   private
     def megabank_logs(info)
       MegabankLog.create()

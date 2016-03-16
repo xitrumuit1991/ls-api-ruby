@@ -1,3 +1,4 @@
+require "redis"
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
@@ -6,8 +7,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def onair
     @user = check_authenticate
+    @totalUser = []
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
+    @rooms.each do |room|
+      @totalUser[room.id] = redis.hgetall(room.id).length
+    end
     @getAllRecord = Room.where(on_air: true).length
     @totalPage =  (Float(@getAllRecord)/9).ceil
   end
