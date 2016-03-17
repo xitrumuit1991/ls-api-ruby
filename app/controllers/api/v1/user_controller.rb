@@ -10,27 +10,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def publicProfile
-    return head 400 if params[:id].nil?
-    @user = User.find_by_username(params[:id])
-    @horoscope = horoscope(@user.birthday.zodiac_sign)
-  end
-
-  def horoscope(birthday)
-    arr = {
-      "Aries"       =>  "Bạch Dương",
-      "Taurus"      =>  "Kim Ngưu",
-      "Gemini"      =>  "Song Tử",
-      "Cancer"      =>  "Cự Giải",
-      "Leo"         =>  "Sư Tử",
-      "Virgo"       =>  "Thất Nữ",
-      "Libra"       =>  "Thiên Xứng",
-      "Scorpio"     =>  "Thiên Yết",
-      "Sagittarius" =>  "Nhân Mã",
-      "Capricornus" =>  "Ma Kết",
-      "Aquarius"    =>  "Bảo Bình",
-      "Pisces"      =>  "Song Ngư"
-    }
-    return arr[birthday]
+    return head 400 if params[:username].nil?
+    @user = User.find_by_username(params[:username])
+    return head 400 if !@user.present?
   end
 
   def active
