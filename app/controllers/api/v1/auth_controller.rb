@@ -106,8 +106,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           activeCode          = SecureRandom.hex(3).upcase
           password            = SecureRandom.hex(5)
           user                = User.new
-          user.name           = profile['name']
-          user.username       = profile['email'].split("@")[0]
+          user.name           = profile['name'] + SecureRandom.hex(3).upcase
+          user.username       = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
           user.email          = profile['email']
           user.gender         = profile['gender']
           user.birthday       = profile['birthday']
