@@ -7,9 +7,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
 
   def profile
-    getVip = @user.user_has_vip_packages.find_by_actived(true)
-    @limitChar = getVip.present? ? getVip.vip_package.vip.no_char : 40
-    @screenTextTime = getVip.present? ? getVip.vip_package.vip.screen_text_time : ''
+    @vipInfo = @user.user_has_vip_packages.find_by_actived(true).vip_package.vip.present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : ''
   end
 
   def publicProfile
