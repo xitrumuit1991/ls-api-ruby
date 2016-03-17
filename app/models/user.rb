@@ -10,6 +10,8 @@ class User < ActiveRecord::Base
 	has_many :action_logs
 	has_many :gift_logs
 	has_many :lounge_logs
+	has_many :user_has_vip_packages
+	has_many :vip_packages, through: :user_has_vip_packages
 
 	# validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}

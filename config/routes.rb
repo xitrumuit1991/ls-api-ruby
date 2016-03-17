@@ -159,6 +159,8 @@ Rails.application.routes.draw do
 			scope '/users' do
 				get  '/:id/avatar'       	=> 'user#getAvatar'
 				get  '/:id/cover'       	=> 'user#getBanner'
+				get '/trades'							=> 'user#getTradeHistory'
+				get '/get-vip-package'		=> 'user#getVipPackageByUser'
 				post '/active'           	=> 'user#active' #
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
 				get  '/room'							=> 'room#getPublicRoom'
@@ -261,6 +263,11 @@ Rails.application.routes.draw do
 				post  '/start-room'         => 'live#startRoom'
 				post  '/end-room'           => 'live#endRoom'
 				post  '/kick-user'          => 'live#kickUser'
+			end
+
+			# Live functions
+			scope 'vip' do
+				post  '/buy-vip'       => 'vip#buyVip'
 			end
 
 			# Posters functions

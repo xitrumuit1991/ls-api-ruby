@@ -406,6 +406,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def getTradeHistory
+
+  end
+
+  def getVipPackageByUser
+    @getVIP = @user.user_has_vip_packages.find_by_actived(true)
+  end
+
   private
     def megabank_logs(info)
       MegabankLog.create()

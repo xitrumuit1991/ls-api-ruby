@@ -1135,17 +1135,43 @@
 ```
 	[
 		{
-			id: 123654789,
-			name: "Hoa hong",
-			image: "http://../image-rose.png",
-			created_at: "08/11/2015 20:10",
-			cost: 2000,
-			quantity: 10
-			total: 20000,
-		},
+            "name": "VIP_P 1",
+            "actived": true,
+            "active_date": "2016-03-16T00:00:00.000+07:00",
+            "expiry_date": "2017-01-12T00:00:00.000+07:00"
+          },
+          {
+            "name": "VIP_P 2",
+            "actived": true,
+            "active_date": "2016-03-16T00:00:00.000+07:00",
+            "expiry_date": "2017-01-12T00:00:00.000+07:00"
+          }
 		...
 	]
 ```
+
+
+### Get VIP Information of User
+- URI: **/get-vip-package**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+    {
+        "id": 1,
+         "actived": true,
+         "active_date": "2016-03-16T00:00:00.000+07:00",
+         "expiry_date": "2017-01-12T00:00:00.000+07:00",
+         "limitChar": 12,
+         "screen_text_time": 12
+    }
+```
+
+
 
 ## Payment
 - Namespace URL: **/payments**
@@ -1596,3 +1622,25 @@
 	    + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
+
+## Vip functions
+- Namespace URL: **/vip**
+
+### Buy vip packages
+- URI: **/buy-vip**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+  user_id: 123,
+  vip_package_id: 321
+}
+```
+- Response:
+  + status: **401**, **200**, **404**
+  + errors: 
+      + status 401: ```{error: "Bạn chưa đăng nhập!"}```
+      + status 404: ```{error: "Vip không tồn tại!"}```
