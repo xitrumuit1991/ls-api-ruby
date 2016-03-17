@@ -22,7 +22,12 @@ json.user_exp		@user.user_exp
 json.percent		@user.percent
 json.user_level		@user.user_level.level
 json.active_code	@user.active_code
-json.vipInfo      @vipInfo
+if !@vipInfo.nil?
+  json.vip do
+    json.no_char 	    @vipInfo.no_char
+    json.screen_time 	@vipInfo.screen_text_time
+  end
+end
 if @user.is_broadcaster
 	json.room do
 		json.slug 	@user.broadcaster.rooms.order("is_privated DESC").first.slug
