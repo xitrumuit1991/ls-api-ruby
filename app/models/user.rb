@@ -24,13 +24,35 @@ class User < ActiveRecord::Base
 	mount_base64_uploader :cover_crop, CoverCropUploader
 	mount_uploader :cover,  CoverUploader
 
+	def public_room
+		self.broadcaster.public_room
+	end
+
 	def avatar_path
 		"#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
 	end
 
-	def public_room
-		self.broadcaster.public_room
+	def cover_path
+		"#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
 	end
+
+	def horoscope
+    arr = {
+      "Aries"       =>  "Bạch Dương",
+      "Taurus"      =>  "Kim Ngưu",
+      "Gemini"      =>  "Song Tử",
+      "Cancer"      =>  "Cự Giải",
+      "Leo"         =>  "Sư Tử",
+      "Virgo"       =>  "Thất Nữ",
+      "Libra"       =>  "Thiên Xứng",
+      "Scorpio"     =>  "Thiên Yết",
+      "Sagittarius" =>  "Nhân Mã",
+      "Capricornus" =>  "Ma Kết",
+      "Aquarius"    =>  "Bảo Bình",
+      "Pisces"      =>  "Song Ngư"
+    }
+    arr[self.birthday.zodiac_sign]
+  end
 
 	def decreaseMoney(money)
 		if self.money >= money then

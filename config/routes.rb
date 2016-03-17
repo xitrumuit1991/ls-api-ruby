@@ -159,26 +159,26 @@ Rails.application.routes.draw do
 			scope '/users' do
 				get  '/:id/avatar'       	=> 'user#getAvatar'
 				get  '/:id/cover'       	=> 'user#getBanner'
-				post '/active'           	=> 'user#active'
+				post '/active'           	=> 'user#active' #
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
-				get  '/room'				=> 'room#getPublicRoom'
-				get  '/'                 	=> 'user#profile'
-				get  '/expense-records'		=> 'user#expenseRecords'
-				get '/get-providers'       	=> 'user#getProviders'
+				get  '/room'							=> 'room#getPublicRoom'
+				get  '/'                 	=> 'user#profile' #
+				get  '/expense-records'		=> 'user#expenseRecords' #
+				get '/get-providers'      => 'user#getProviders'
 				get '/get-banks'       		=> 'user#getBanks'
-				get '/get-megabanks'       	=> 'user#getMegabanks'
-				get  '/:id'					=> 'user#publicProfile'
+				get '/get-megabanks'      => 'user#getMegabanks'
+				get  '/:username'					=> 'user#publicProfile'
 				put  '/'                 	=> 'user#update'
 				post '/update-profile'  	=> 'user#updateProfile'
-				get '/:user_id/add-heart'  	=> 'user#addHeartInRoom'
+				get '/:user_id/add-heart' => 'user#addHeartInRoom'
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar'
 				post '/cover'           	=> 'user#uploadCover'
-				post '/cover-crop'        	=> 'user#coverCrop'
-				post '/avatar-crop'       	=> 'user#avatarCrop'
+				post '/cover-crop'        => 'user#coverCrop'
+				post '/avatar-crop'       => 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
-				post '/internet-banking'    => 'user#internetBank'
-				post '/confirm'    			=> 'user#confirmEbay'
+				post '/internet-banking'  => 'user#internetBank'
+				post '/confirm'    				=> 'user#confirmEbay'
 			end
 
 			# broadcasters
