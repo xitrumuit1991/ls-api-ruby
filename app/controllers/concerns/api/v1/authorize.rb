@@ -23,6 +23,9 @@ module Api::V1::Authorize extend ActiveSupport::Concern
         begin
           decoded_token = JWT.decode token, Settings.hmac_secret, true
           @user = User.find_by(token: token)
+          if @user.user_has_vip_packages.where(:actived => true).present? and !@user.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
+            @user.user_has_vip_packages.where(:actived => true).take.update(actived: false)
+          end
         rescue => ex # or rescue Exception
           return head 401
         end
