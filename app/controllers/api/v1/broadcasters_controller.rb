@@ -3,7 +3,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include YoutubeHelper
 
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :search, :getRoomFeatured]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured]
 
   resource_description do
     short 'Broadcaster (idol)'
@@ -54,15 +54,11 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def defaultBackground
-    if @user.is_broadcaster
-      @images = RoomBackground.all
-    end
+    @images = RoomBackground.all
   end
 
   def broadcasterBackground
-    if @user.is_broadcaster
-      @images = @user.broadcaster.broadcaster_backgrounds
-    end
+    @images = @user.broadcaster.broadcaster_backgrounds
   end
 
   def setDefaultBackgroundRoom

@@ -22,7 +22,7 @@ json.array! @featured do |val|
     json.thumb_mb	 val.broadcaster.public_room.thumb_path(true)
     json.schedule do
       if val.broadcaster.public_room.schedules.length > 0
-        json.start  val.broadcaster.public_room.schedules.take.start.strftime('%d/%m')
+        json.start  val.broadcaster.public_room.schedules.last.start.strftime('%d/%m')
       else
         json.start  ''
       end
