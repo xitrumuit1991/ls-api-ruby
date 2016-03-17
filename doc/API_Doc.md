@@ -1144,6 +1144,29 @@
 	]
 ```
 
+
+### Get VIP Information of User
+- URI: **/get-vip-package**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+    {
+        "id": 1,
+         "actived": true,
+         "active_date": "2016-03-16T00:00:00.000+07:00",
+         "expiry_date": "2017-01-12T00:00:00.000+07:00",
+         "limitChar": 12,
+         "screen_text_time": 12
+    }
+```
+
+
+
 ## Payment
 - Namespace URL: **/payments**
 ### SMS 
