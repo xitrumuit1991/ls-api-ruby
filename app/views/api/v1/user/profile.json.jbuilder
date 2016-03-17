@@ -12,7 +12,7 @@ json.address		@user.address
 json.phone			@user.phone
 json.is_bct			@user.is_broadcaster
 json.avatar			@user.avatar_path
-json.cover			"#{request.base_url}/api/v1/users/#{@user.id}/cover?timestamp=#{@user.updated_at.to_i}"
+json.cover			@user.cover_path
 json.facebook		@user.facebook_link
 json.twitter		@user.twitter_link
 json.instagram		@user.instagram_link

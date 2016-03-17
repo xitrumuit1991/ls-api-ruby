@@ -936,15 +936,17 @@
 	+ status: **200**, **400**
 	+ body:
 ```
-{
-	id: 321,
-	name: "abc",
-	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
-	quantity: 1000,
-	cost: 100,
-	total_cost: 100000,
-	created_at: "2015-10-06 00:00:00"
-}
+[
+  {
+  	id: 321,
+  	name: "abc",
+  	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+  	quantity: 1000,
+  	cost: 100,
+  	total_cost: 100000,
+  	created_at: "2015-10-06 00:00:00"
+  }
+]
 ```
 
 ### Active user
@@ -989,25 +991,29 @@
 	+ body:
 ```
 {
-  "id": 1,
-  "name": "Ansley Morissette",
-  "username": "ansley.morissette",
-  "email": "ansley_morissette@yahoo.com",
-  "birthday": "2006-01-20",
-  "gender": "nam",
-  "address": "167 Montana Pass",
-  "phone": "207-790-8731 x06816",
+  "id": 7,
+  "name": "VanA",
+  "username": "vana",
+  "email": "vana@gmail.com",
+  "birthday": "30-12-1991",
+  "gender": male,
+  "address": "7987 Chesley Pines",
+  "phone": "1-682-553-6817 x06458",
   "is_bct": true,
-  "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-  "cover": "http://localhost:3000/uploads/user/cover/1/banner_Cover_.jpeg",
-  "facebook": null,
-  "twitter": null,
-  "instagram": null,
+  "avatar": "http://.../avatar?timestamp=1458100253",
+  "cover": "http://.../cover?timestamp=1458100253",
+  "facebook": "",
+  "twitter": "",
+  "instagram": "",
   "heart": 0,
-  "money": 1000,
-  "user_exp": 0,
-  "percent": 0,
-  "user_level": 0
+  "money": 50000,
+  "user_exp": 224,
+  "percent": 40,
+  "user_level": 22,
+  "active_code": "F20773",
+  "room": {
+      "slug": "room-vana"
+  }
 }
 ```
 
@@ -1143,6 +1149,29 @@
 		...
 	]
 ```
+
+
+### Get VIP Information of User
+- URI: **/get-vip-package**
+- Method: **GET**
+- Header:
+	+ Content-Type: application/json
+	+ Authorization: Token token="this-is-jwt-token"
+- Response:
+	+ status: **200**, **400**, **401**
+	+ body:
+```
+    {
+        "id": 1,
+         "actived": true,
+         "active_date": "2016-03-16T00:00:00.000+07:00",
+         "expiry_date": "2017-01-12T00:00:00.000+07:00",
+         "limitChar": 12,
+         "screen_text_time": 12
+    }
+```
+
+
 
 ## Payment
 - Namespace URL: **/payments**
