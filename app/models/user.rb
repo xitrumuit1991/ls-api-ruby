@@ -57,9 +57,10 @@ class User < ActiveRecord::Base
   end
   #check vip su dung ham o authorize
   def checkVip
-  	if self.user_has_vip_packages.where(:actived => true).present? and !self.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
+  	if self.user_has_vip_packages.find_by_actived(true).present? and !self.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
       self.user_has_vip_packages.find_by_actived(true).update(actived: false)
     end
+    return true
   end
 
 	def decreaseMoney(money)
