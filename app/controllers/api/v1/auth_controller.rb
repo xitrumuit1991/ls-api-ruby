@@ -18,9 +18,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   example '{token: "this-is-sample-token"}'
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
-    if @user.user_has_vip_packages.where(:actived => true).present? and !@user.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
-      @user.user_has_vip_packages.where(:actived => true).take.update(actived: false)
-    end
+    @user.checkVip
     if (Time.now.to_i - @user.last_login.to_i) <= 86400
       @user.increaseExp(20)
     end
