@@ -3,7 +3,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include YoutubeHelper
 
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :getFeatured, :getHomeFeatured, :search, :getRoomFeatured]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured]
 
   resource_description do
     short 'Broadcaster (idol)'
@@ -54,15 +54,11 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def defaultBackground
-    if @user.is_broadcaster
-      @images = RoomBackground.all
-    end
+    @images = RoomBackground.all
   end
 
   def broadcasterBackground
-    if @user.is_broadcaster
-      @images = @user.broadcaster.broadcaster_backgrounds
-    end
+    @images = @user.broadcaster.broadcaster_backgrounds
   end
 
   def setDefaultBackgroundRoom
@@ -123,11 +119,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "Upload pictures"
   def pictures
     return head 400 if params.nil?
-    pictures = []
+    @pictures = []
     params[:pictures].each do |picture|
-      pictures << @user.broadcaster.images.create({image: picture})
+      @pictures << @user.broadcaster.images.create({image: picture})
     end
-    render json: pictures, status: 201
   end
 
   api! "Delete pictures"
@@ -136,7 +131,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 400, :desc => "can't delete picture"
   def deletePictures
     if @user.broadcaster.images.present?
-      if @user.broadcaster.images.where(:id => params[:image_id]).destroy_all
+      if @user.broadcaster.images.where(:id => params[:id]).destroy_all
         return head 200
       else
         return head 400
@@ -149,13 +144,12 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "Create video"
   def videos
     return head 400 if params[:videos].nil?
-    response_videos = []
+    @videos = []
     params[:videos].each do |key, video|
       id = youtubeID video[:link]
       link = 'https://www.youtube.com/embed/'+id
-      response_videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
+      @videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
     end
-    render json:response_videos, status: 201
   end
 
   api! "Delete videos"
@@ -209,13 +203,13 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def follow
     if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i)
       if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
-        return head 200
+        render plain: 'Unfollow !', status: 200
       else
         return head 400
       end
     else
       if @user.user_follow_bcts.create(broadcaster_id: params[:id].to_i)
-        return head 201
+        render plain: 'Follow !', status: 201
       else
         return head 400
       end
@@ -250,13 +244,23 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   api! "get suggest broadcaster in room"
   def getRoomFeatured
     @user = check_authenticate
+    @totalUser = []
     @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+    @featured.each do |f|
+      if f.broadcaster.public_room.on_air
+        redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+        @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+      end
+    end
   end
 
   def search
     return head 400 if params[:q].nil?
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 12
-    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'")
+    @user = check_authenticate
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
+    @max_page = (Float(getAllRecord)/9).ceil
+    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(6).offset(offset)
   end
 
   private

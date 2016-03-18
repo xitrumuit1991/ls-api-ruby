@@ -11,8 +11,8 @@ json.gender			@user.gender
 json.address		@user.address
 json.phone			@user.phone
 json.is_bct			@user.is_broadcaster
-json.avatar			"#{request.base_url}/api/v1/users/#{@user.id}/avatar"
-json.cover			"#{request.base_url}/api/v1/users/#{@user.id}/cover"
+json.avatar			@user.avatar_path
+json.cover			@user.cover_path
 json.facebook		@user.facebook_link
 json.twitter		@user.twitter_link
 json.instagram		@user.instagram_link
@@ -22,6 +22,12 @@ json.user_exp		@user.user_exp
 json.percent		@user.percent
 json.user_level		@user.user_level.level
 json.active_code	@user.active_code
+if !@vipInfo.nil?
+  json.vip do
+    json.no_char 	    @vipInfo.no_char
+    json.screen_time 	@vipInfo.screen_text_time
+  end
+end
 if @user.is_broadcaster
 	json.room do
 		json.slug 	@user.broadcaster.rooms.order("is_privated DESC").first.slug

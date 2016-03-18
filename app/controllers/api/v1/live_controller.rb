@@ -26,6 +26,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendMessage
     message = params[:message]
+    @user.increaseExp(1)
     if message.length <= 150
       emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
       user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
@@ -42,12 +43,11 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def sendScreenText
     cost = 1
     message = params[:message]
-
     if @user.money >= cost then
       begin
         @user.decreaseMoney(cost)
-        @user.increaseExp(cost)
-        @room.broadcaster.increaseExp(cost)
+        @user.increaseExp(10)
+        @room.broadcaster.increaseExp(10)
         user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
         emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
@@ -80,10 +80,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         new_value = rAction + 1
         percent = new_value * 100 / dbAction.max_vote
         redis.set("actions:#{@room.id}:#{action_id}", new_value);
+        expUser = formulaExpForUser(dbAction.price, 1)
+        expBct = formulaExpForBct(dbAction.price, 1)
         begin
           @user.decreaseMoney(dbAction.price)
-          @user.increaseExp(dbAction.price)
-          @room.broadcaster.increaseExp(dbAction.price)
+          @user.increaseExp(expUser)
+          @room.broadcaster.increaseExp(expBct)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           if dbAction.max_vote == new_value
@@ -145,11 +147,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     dbGift = Gift.find(gift_id)
     if dbGift then
       if quantity >= 1 then
+        expUser = formulaExpForUser(dbGift.price, quantity)
+        if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
+          expUser += 10
+        end
         total = dbGift.price * quantity
+        expBct = formulaExpForBct(dbGift.price, quantity)
         begin
           @user.decreaseMoney(total)
-          @user.increaseExp(total)
-          @room.broadcaster.increaseExp(total)
+          @user.increaseExp(expUser)
+          @room.broadcaster.increaseExp(expBct)
           
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
@@ -189,9 +196,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
               render json: {error: "Your bit must larger than curent cost"}, status: 400 and return
             end
           end
+          expUser = formulaExpForUser(cost, 1)
+          if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
+            expUser += 10
+          end
+          expBct = formulaExpForBct(cost, 1)
           @user.decreaseMoney(cost)
-          @user.increaseExp(cost)
-          @room.broadcaster.increaseExp(cost)
+          @user.increaseExp(expUser)
+          @room.broadcaster.increaseExp(expBct)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
@@ -224,7 +236,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       begin
         @user.no_heart -= hearts
         @room.broadcaster.recived_heart += hearts
-        @user.increaseExp(hearts)
+        @user.increaseExp(10)
         @room.broadcaster.increaseExp(hearts)
         if @user.save then
           if @room.broadcaster.save then
@@ -287,6 +299,21 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
+    def formulaExpForUser(price, quantity)
+      vip = UserHasVipPackage::find_by_user_id(@user.id)
+      if vip
+        exp = price * quantity * vip.vip_package.vip.exp_bonus
+        return exp
+      else
+        exp = price * quantity * 1
+        return exp
+      end
+    end
+
+    def formulaExpForBct(price, quantity)
+      return price * quantity * 10
+    end
+
     def getUsers
       redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
       @userlist = redis.hgetall(@room.id)
@@ -299,9 +326,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if(params.has_key?(:room_id)) then
         @room = Room.find(params[:room_id])
         getUsers
-        if(!@userlist.has_key?(@user.email)) then
-          render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
-        end
+        # if(!@userlist.has_key?(@user.email)) then
+        #   render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
+        # end
       else
         render json: {error: "Thiếu tham số room_id "}, status: 404 and return
       end

@@ -4,37 +4,20 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :addHeartInRoom]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
 
   def profile
+    @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
 
   def publicProfile
-    return head 400 if params[:id].nil?
-    @user = User.find_by_username(params[:id])
-    @horoscope = horoscope(@user.birthday.zodiac_sign)
-  end
-
-  def horoscope(birthday)
-    arr = {
-      "Aries"       =>  "Bạch Dương",
-      "Taurus"      =>  "Kim Ngưu",
-      "Gemini"      =>  "Song Tử",
-      "Cancer"      =>  "Cự Giải",
-      "Leo"         =>  "Sư Tử",
-      "Virgo"       =>  "Thất Nữ",
-      "Libra"       =>  "Thiên Xứng",
-      "Scorpio"     =>  "Thiên Yết",
-      "Sagittarius" =>  "Nhân Mã",
-      "Capricornus" =>  "Ma Kết",
-      "Aquarius"    =>  "Bảo Bình",
-      "Pisces"      =>  "Song Ngư"
-    }
-    return arr[birthday]
+    return head 400 if params[:username].nil?
+    @user = User.find_by_username(params[:username])
+    return head 400 if !@user.present?
   end
 
   def active
-    user = User.find_by_username(params[:username])
+    user = User.find_by_email(params[:email])
     if user.present?
       if user.actived == false
         if defined? params[:active_code] && !params[:active_code].blank?
@@ -293,46 +276,59 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    partnerid                 = Settings.partnerid
-    data = Ebaysms::Sms.new
-    data.partnerid            = params[:partnerid]
-    data.moid                 = params[:moid]
-    data.userid               = params[:userid]
-    data.shortcode            = params[:shortcode]
-    data.keyword              = params[:keyword]
-    data.content              = params[:content]
-    data.transdate            = params[:transdate]
-    data.checksum             = params[:checksum]
-    data.amount               = params[:amount]
-    data.smspPartnerPassword  = params[:smspPartnerPassword]
-    data.partnerpass          = Settings.partnerpass
-    checksum = data._checksum
-    if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
-      if _checkmoid(params[:moid])
-        render plain: 'requeststatus=2', status: 400
+    if params[:moid].nil?
+      activecode = params[:content].split(' ')[4]
+      if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
+        render plain: "1| noi dung hop le", status: 200
       else
-        if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
-          str         = data.confirm
-
-          if str == "requeststatus=200"
-            render plain: str, status: 200
-          else
-            render plain: str, status: 400
-          end
-        else
-          #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
-          #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
-          render plain: 'requeststatus=200', status: 200
-        end
+        render plain: "0| noi dung khong hop le", status: 200
       end
     else
-      #loi checksum
-      render plain: 'requeststatus=17', status: 400
+      partnerid                 = Settings.partnerid
+      data = Ebaysms::Sms.new
+      data.partnerid            = params[:partnerid]
+      data.moid                 = params[:moid]
+      data.userid               = params[:userid]
+      data.shortcode            = params[:shortcode]
+      data.keyword              = params[:keyword]
+      data.content              = params[:content]
+      data.transdate            = params[:transdate]
+      data.checksum             = params[:checksum]
+      data.amount               = params[:amount]
+      data.smspPartnerPassword  = params[:smspPartnerPassword]
+      data.partnerpass          = Settings.partnerpass
+      checksum = data._checksum
+      if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
+        if _checkmoid(params[:moid])
+          render plain: 'requeststatus=2', status: 400
+        else
+          if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+            str         = data.confirm
+
+            if str == "requeststatus=200"
+              render plain: str, status: 200
+            else
+              render plain: str, status: 400
+            end
+          else
+            #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+            #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
+            render plain: 'requeststatus=200', status: 200
+          end
+        end
+      else
+        #loi checksum
+        render plain: 'requeststatus=17', status: 400
+      end
     end
   end
 
+  def _checkuser(active_code)
+    return !User::find_by_active_code(active_code).nil?
+  end
+
   def _checkmoid(moid)
-    return SmsLog::find_by_moid(moid).present?
+    return SmsLog::find_by_moid(moid).nil?
   end
 
   def getProviders
@@ -349,13 +345,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def payments
     # nha mang cung cap 
-    m_UserName    = "charging01"
-    m_Pass        = "gmwtwjfws"
-    m_PartnerCode = "00477"
-    m_PartnerID   = "charging01"
-    m_MPIN        = "pajwtlzcb"
+    m_UserName    = Settings.chargingUsername
+    m_Pass        = Settings.chargingPassword
+    m_PartnerCode = Settings.chargingPartnerCode
+    m_PartnerID   = Settings.chargingPartnerId
+    m_MPIN        = Settings.chargingMpin
 
-    webservice   = "http://charging-test.megapay.net.vn:10001/CardChargingGW_V2.0/services/Services?wsdl"
+    webservice   = Settings.chargingWebservice
 
     soapClient = Savon.client(wsdl: webservice)
     m_Target = @user.username 
@@ -404,11 +400,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
         @user.update(:no_heart => @user.no_heart.to_i + 1)
         render plain: @user.no_heart, status: 200
       else
-        render plain: 'Bạn đã đạt tim cao nhất, cần phải lên cấp để nhận thêm tim.', status: 400
+        render status: 204
       end
     else
-      render plain: 'Chưa đủ thời gian để tặng!', status: 400
+      render status: 204
     end
+  end
+
+  def getTradeHistory
+
   end
 
   private
