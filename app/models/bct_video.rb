@@ -3,5 +3,5 @@ class BctVideo < ActiveRecord::Base
 
   mount_uploader :thumb, BctVideoThumbUploader
 
-	validates :video, :thumb, presence: true
+	validates :video, presence: true
 end

@@ -149,38 +149,30 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-    {
-        'totalPage':4,
-        'rooms':[
-          {
-            "id": 10,
-            "title": "Rosanna Paucek",
-            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-            "broadcaster": {
-              "id": 10,
-              "name": "Rosanna Paucek",
-              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-            }
-          },
-          {
-            "id": 10,
-            "title": "Rosanna Paucek",
-            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-            "broadcaster": {
-              "id": 10,
-              "name": "Rosanna Paucek",
-              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-            }
-          },
-          ...
-          ...
-        ]
+{
+    "totalPage":4,
+    "rooms":[
+      {
+        "id": 2,
+        "title": "Room LiveStar",
+        "slug": "room-2",
+        "totalUser": 0,
+        "thumb": "http://.../thumb_cute_girl_12.jpg?timestamp=1449103220",
+        "thumb_mb": "http://.../thumb_mb_cute_girl_12.jpg?timestamp=1449103220",
+        "broadcaster": {
+            "id": 2,
+            "bct_id": 2,
+            "name": "Thị Màu",
+            "avatar": "http://.../avatar?timestamp=1449132581",
+            "heart": 2,
+            "exp": 953,
+            "level": 10,
+            "isFollow": false
+        }
+      },
+      ...
+    ]
+}
 ```
 
 ### Get coming soon rooms
@@ -198,41 +190,31 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-	  "totalPage": 1,
-      "rooms":[
-          {
-            "id": 1,
-            "title": "new room title",
-            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-            "date": "25/11",
-            "start": "13:46",
-            "broadcaster": {
-              "id": 1,
-              "name": "Ansley Morissette",
-              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-          },
-          {
-            "id": 1,
-            "title": "new room title",
-            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-            "date": "25/11",
-            "start": "13:46",
-            "broadcaster": {
-              "id": 1,
-              "name": "Ansley Morissette",
-              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-          },
-          ....
-          ....
-      ]
-    },
+{
+  "totalPage": 1,
+  "rooms":[
+      {
+          "id": 46,
+          "title": "Trâm Anh (Teddy Baby)",
+          "slug": "huynh-ngoc-tram-anh",
+          "thumb": "http://.../thumb?timestamp=1458189010",
+          "thumb_mb": "http://.../thumb_mb?timestamp=1458189010",
+          "date": "17/03",
+          "start": "10:00",
+          "broadcaster": {
+              "id": 220,
+              "bct_id": 49,
+              "name": "Trâm Anh",
+              "avatar": "http://api.livestar.vn/api/v1/users/220/avatar",
+              "heart": 283,
+              "exp": 5586988,
+              "level": 9,
+              "isFollow": true
+          }
+      },
+      ....
+  ]
+}
 
 ```
 
@@ -248,41 +230,40 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-      "id": 1,
-      "title": "new room title",
-      "slug": "ansley_morissette",
-      "thumb": "/uploads/room/thumb/1/thumb_nature.jpeg",
-      "thumb_mb": "/uploads/room/thumb/1/thumb_mb_nature.jpeg",
-      "background": null,
-      "is_privated": false,
-      "on_air": false,
-      "link_stream": "rtmp://210.245.18.154:80/livemix/android/playlist.m3u8",
-      "broadcaster": {
+{
+    "id": 1,
+    "title": "room 1",
+    "slug": "room-1",
+    "thumb": "http://.../thumb_cute_girl_1.jpg?timestamp=1456279838",
+    "thumb_mb": "http://.../thumb_mb_cute_girl_1.jpg?timestamp=1456279838",
+    "is_privated": false,
+    "on_air": false,
+    "link_stream": "http://210.245.125.6:80/livestar/1/playlist.m3u8",
+    "background": "http://.../Background_1.jpg",
+    "broadcaster": {
         "broadcaster_id": 1,
-        "user_id": 1,
-        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-        "name": "Ansley Morissette",
-        "heart": 0,
-        "exp": 0,
-        "percent": 0,
-        "level": 0,
-        "facebook": null,
-        "twitter": null,
-        "instagram": null,
-        "status": "this is my update status",
+        "user_id": 5,
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/5/avatar?timestamp=1449123703",
+        "name": "AngCo(*_^) 1",
+        "heart": 526,
+        "exp": 3967,
+        "percent": 100,
+        "level": 49,
+        "facebook": "https://www.facebook.com/danhbunanco",
+        "twitter": "https://www.facebook.com/danhbunanco",
+        "instagram": "https://www.facebook.com/danhbunanco",
+        "status": null,
         "isFollow": true
-      },
-      "schedules": [
+    },
+    "schedules": [
         {
-          "date": "20/11/2015",
-          "start": "13:46",
-          "end": "15:46"
+            "date": "31/10/2015",
+            "start": "16:15",
+            "end": "06:47"
         },
         ...
-        ...
-      ]
-    }
+    ]
+}
 ```
 
 ### Update room settings
@@ -311,6 +292,12 @@
 	+ thumb: image/jpeg
 - Resoponse
 	+ status: **200**, **400**, **404**, **401**
+  + body (status: 200):
+```
+{
+  "thumb":"http://.../thumb_firefox.jpg?timestamp=1458211433"
+}
+```
 
 ### Upload backgroud
 - URI: **/backgound**
@@ -322,6 +309,13 @@
 	+ background: image/jpeg
 - Response
 	+ status: **200**, **400**, **404**, **401**
+  + body (status: 200):
+```
+{
+  "id":22,
+  "image":"http://.../square_97fc0ac09d.jpg?timestamp=1458214918"
+}
+```
 
 ### Change backgroud
 - URI: **/backgound**
@@ -447,6 +441,53 @@
 ## Broadcasters
 - Namespace URL: **/broadcasters**
 
+### My Profile,
+- URI: **/**
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Response:
+  + status: **200**, **401**
+  + body:
+```
+{
+    "id": 7,
+    "name": "VietDanh",
+    "fullname": "Vo Danh",
+    "username": "vodanh",
+    "email": "vd@gmail.com",
+    "birthday": "1991-12-30",
+    "gender": null,
+    "address": "7987 Chesley Pines",
+    "phone": "1-682-553-6817 x06458",
+    "avatar": "http://.../users/7/avatar?timestamp=1458100253",
+    "cover": "http://.../users/7/cover?timestamp=1458100253",
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "heart": 6969,
+    "user_exp": 224,
+    "bct_exp": 6969,
+    "description": "Vo Danh",
+    "status": "this is my update status",
+    "photos": [
+        {
+            "id": 68,
+            "link_square": "http://.../bct_image/image/32/square_05.png",
+            "link": "http://.../bct_image/image/32/05.png"
+        }
+    ],
+    "videos": [
+        {
+            "id": 28,
+            "link": "https://www.youtube.com/embed/co4YpHTqmfQ",
+            "thumb": "http://img.youtube.com/vi/co4YpHTqmfQ/hqdefault.jpg"
+        }
+    ]
+}
+```
+
 ### Broadcaster Revcived Items,
 - URI: **/revcived-items**
 - Method: **GET**
@@ -457,15 +498,18 @@
 	+ status: **200**, **400**
 	+ body:
 ```
-{
-	id: 321,
-	name: "abc",
-	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
-	quantity: 1000,
-	cost: 100,
-	total_cost: 100000,
-	created_at: "2015-10-06 00:00:00"
-}
+[
+  {
+  	id: 321,
+  	name: "abc",
+  	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+  	quantity: 1000,
+  	cost: 100,
+  	total_cost: 100000,
+  	created_at: "2015-10-06 00:00:00"
+  },
+  ...
+]
 ```
 
 ### Get profile
@@ -551,9 +595,11 @@
 	+ status: **401**
 	+ body:
 ```
-{
-	photos: [ {link: "http://.../photo_1.jpg" }, {link: "http://.../photo_1.jpg" }, ..]
-}
+[ 
+  {link: "http://.../photo_1.jpg" }, 
+  {link: "http://.../photo_1.jpg" },
+  ...
+]
 ```
 
 ### Delete pictures
@@ -570,11 +616,31 @@
 - URI: **/videos**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+	+ Content-Type: multipart/form-data
 	+ Authorization: Token token="this-is-jwt-token"
-- Request: ```[{ video: "http://youtube.com/AbcXyZ" }, ...]```
+- Request:
+  + videos (array): image/jpeg
+  + videos[0][link]   = string( https://www.youtube.com/watch?v=Q4KkfiLRLdQ )
+  + videos[0][image]  = file
+  + videos[1][link]   = string( https://www.youtube.com/watch?v=Q4KkfiLRLdQ )
+  + videos[1][image]  = file
 - Response:
-	+ status: **201**, **400**, **401**
+	+ status: **200**, **400**, **401**
+  + body:
+```
+[
+    {
+        "id": 14,
+        "video": "https://www.youtube.com/embed/Q4KkfiLRLdQ",
+        "thumb": "http://.../thumb_12.png"
+    },
+    {
+        "id": 15,
+        "video": "https://www.youtube.com/embed/lhRuelm-vFU",
+        "thumb": "http://.../thumb_11.png"
+    }
+]
+```
 
 ### Delete videos
 - URI: **/videos**
@@ -608,32 +674,45 @@
 ```
 [
     {
-        "id": 18,
-        "name": "Wisoky",
-        "username": "Wisoky",
-        "avatar": "http://localhost:3000/api/v1/users/18/avatar",
-        "heart": 88,
-        "user_exp": 8889546,
-        "level": 12,
-        "room_id": 5,
-        "onair": true,
-        "room_slug":room-2
+        "id": 1,
+        "name": "AngCo(*_^) 1",
+        "username": "username_4",
+        "avatar": "http://.../users/5/avatar?timestamp=1449123703",
+        "heart": 0,
+        "user_exp": 3147,
+        "bct_exp": 3967,
+        "level": 49,
+        "room": {
+            "id": 1,
+            "title": "room 1",
+            "slug": "room-1",
+            "on_air": false,
+            "thumb": "http://.../thumb/1/thumb_mb_cute_girl_1.jpg?timestamp=1456279838",
+            "thumb_mb": "http://.../thumb/1/thumb_cute_girl_1.jpg?timestamp=1456279838"
+        },
+        "schedule": {
+            "date": "17/11",
+            "start": "18:15"
+        }
     },
     {
-        "id": 1,
-        "name": "Danh Nguyen",
-        "username": "vdnguyen",
-        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-        "heart": 99489,
-        "user_exp": 14996585,
-        "level": 19,
-        "room_id": 3,
-        "onair": false,
-        "room_slug":room-3
-        "schedule": {
-            "date": "02/11",
-            "start": "10:00"
-        }
+        "id": 2,
+        "name": "AngCo(*_^) 1",
+        "username": "username_4",
+        "avatar": "http://.../users/5/avatar?timestamp=1449123703",
+        "heart": 0,
+        "user_exp": 3147,
+        "bct_exp": 3967,
+        "level": 49,
+        "room": {
+            "id": 2,
+            "title": "room 1",
+            "slug": "room-1",
+            "on_air": false,
+            "thumb": "http://.../thumb/1/thumb_mb_cute_girl_1.jpg?timestamp=1456279838",
+            "thumb_mb": "http://.../thumb/1/thumb_cute_girl_1.jpg?timestamp=1456279838"
+        },
+        "schedule": null
     },
     ...
 ]
@@ -641,43 +720,202 @@
 
 ### Search broadcasters
 - URI: **/search?q=keyword**
-- Method: **POST**
+- Method: **GET**
 - Header:
 	+ Content-Type: application/json
 - Response:
 	+ status: **200**, **400**, **401**
 	+ body:
 ```
-[
+{
+  totalPage: 3,
+  broadcasters: [
     {
-        "id": 18,
-        "name": "Wisoky",
-        "username": "Wisoky",
-        "avatar": "http://localhost:3000/api/v1/users/18/avatar",
-        "heart": 88,
-        "user_exp": 8889546,
-        "level": 12,
-        "room_id": 5,
-        "onair": true
-    },
-    {
-        "id": 1,
-        "name": "Danh Nguyen",
-        "username": "vdnguyen",
-        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-        "heart": 99489,
-        "user_exp": 14996585,
-        "level": 19,
-        "room_id": 3,
-        "onair": false,
+        "id": 32,
+        "name": "VietDanh",
+        "username": "vodanh",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/7/avatar?timestamp=1458100253",
+        "heart": 0,
+        "user_exp": 224,
+        "level": 22,
+        "isFollow": true
+        "room": {
+            "id": 31,
+            "title": "Room VDNguyen",
+            "slug" : "btc-01",
+            "on_air": false,
+            "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/31/thumb_mb_cute_girl_2.jpg?timestamp=1456282757",
+            "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/31/thumb_cute_girl_2.jpg?timestamp=1456282757"
+        },
         "schedule": {
-            "date": "02/11",
-            "start": "10:00"
+            "date": "01/03",
+            "start": "02:00"
         }
     },
+    {
+        "id": 32,
+        "name": "VietDanh",
+        "username": "vodanh",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/7/avatar?timestamp=1458100253",
+        "heart": 0,
+        "user_exp": 224,
+        "level": 22,
+        "isFollow": true
+        "room": null,
+        "schedule": null
+    },
     ...
+  ]
+}
+```
+
+### Get featured broadcasters
+- URI: **/featured**
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+- Response:
+  + status: **200**, **400**, **401**
+  + body:
+```
+[
+  {
+        "id": 133,
+        "name": "bct_002",
+        "username": "bct_002",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/133/avatar?timestamp=1449539146",
+        "heart": 0,
+        "bct_exp": 0,
+        "level": 31,
+        "room": {
+          "id": 33,
+          "title": "Room BCT 002",
+          "slug": "room-bct-002",
+          "on_air": false,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_mb_cute_girl_4.jpg?timestamp=1449102738",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_cute_girl_4.jpg?timestamp=1449102738"
+        }
+      },
+  ...
 ]
 ```
+
+### Home Get featured broadcasters
+- URI: **/home-featured**
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+- Response:
+  + status: **200**, **400**, **401**
+  + body:
+```
+[
+  {
+        "id": 2,
+        "name": "Thị Màu",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/2/avatar?timestamp=1449132581",
+        "heart": 2,
+        "bct_exp": 953,
+        "level": 10,
+        "room": {
+          "id": 2,
+          "title": "Room LiveStar",
+          "on_air": true,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/2/thumb_mb_anh-thien-nhien-12-351x185.jpg?timestamp=1451332262",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/2/thumb_anh-thien-nhien-12-351x185.jpg?timestamp=1451332262"
+        },
+        "schedules": []
+      },
+      {
+        "id": 1,
+        "name": "Hot Girl Demo",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/1/avatar?timestamp=1449124014",
+        "heart": 22,
+        "bct_exp": 956,
+        "level": 49,
+        "room": {
+          "id": 3,
+          "title": "Hello World",
+          "on_air": true,
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/3/thumb_mb_cute_girl_40.jpg?timestamp=1449104500",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/3/thumb_cute_girl_40.jpg?timestamp=1449104500"
+        },
+        "schedules": [
+          {
+            "date": "09/03",
+            "start": "23:30"
+          },
+          {
+            "date": "09/03",
+            "start": "23:30"
+          }
+        ]
+      },
+  ...
+]
+```
+
+### Room Get featured broadcasters
+- URI: **/room-featured**
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Response:
+  + status: **200**, **400**, **401**
+  + body:
+```
+[
+  {
+        "id": 141,
+        "bct_id": 42,
+        "name": "Liem12312321",
+        "username": "bct_010",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/141/avatar?timestamp=1458096683",
+        "heart": 0,
+        "bct_exp": 0,
+        "level": 21,
+        "isFollow": false,
+        "room": {
+          "id": 42,
+          "title": "Developer2",
+          "on_air": true,
+          "totalUser": 0,
+          "slug": "room-bct-010",
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/42/thumb_mb_1631435.jpg?timestamp=1451338004",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/42/thumb_1631435.jpg?timestamp=1451338004",
+          "schedule": {
+            "start": "09/03"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "bct_id": 1,
+        "name": "AngCo(*_^) 1",
+        "username": "username_4",
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/5/avatar?timestamp=1449123703",
+        "heart": 526,
+        "bct_exp": 3767,
+        "level": 49,
+        "isFollow": false,
+        "room": {
+          "id": 1,
+          "title": "room 1",
+          "on_air": false,
+          "totalUser": null,
+          "slug": "room-11",
+          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/1/thumb_mb_1631435.jpg?timestamp=1451276934",
+          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/1/thumb_1631435.jpg?timestamp=1451276934",
+          "schedule": {
+            "start": "09/03"
+          }
+        }
+      },
+  ...
+]
+```
+
 
 ## Users
 - Namespace URL: **/users**
@@ -692,15 +930,17 @@
 	+ status: **200**, **400**
 	+ body:
 ```
-{
-	id: 321,
-	name: "abc",
-	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
-	quantity: 1000,
-	cost: 100,
-	total_cost: 100000,
-	created_at: "2015-10-06 00:00:00"
-}
+[
+  {
+  	id: 321,
+  	name: "abc",
+  	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+  	quantity: 1000,
+  	cost: 100,
+  	total_cost: 100000,
+  	created_at: "2015-10-06 00:00:00"
+  }
+]
 ```
 
 ### Active user
@@ -745,30 +985,34 @@
 	+ body:
 ```
 {
-  "id": 1,
-  "name": "Ansley Morissette",
-  "username": "ansley.morissette",
-  "email": "ansley_morissette@yahoo.com",
-  "birthday": "2006-01-20",
-  "gender": "nam",
-  "address": "167 Montana Pass",
-  "phone": "207-790-8731 x06816",
+  "id": 7,
+  "name": "VanA",
+  "username": "vana",
+  "email": "vana@gmail.com",
+  "birthday": "30-12-1991",
+  "gender": male,
+  "address": "7987 Chesley Pines",
+  "phone": "1-682-553-6817 x06458",
   "is_bct": true,
-  "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-  "cover": "http://localhost:3000/uploads/user/cover/1/banner_Cover_.jpeg",
-  "facebook": null,
-  "twitter": null,
-  "instagram": null,
+  "avatar": "http://.../avatar?timestamp=1458100253",
+  "cover": "http://.../cover?timestamp=1458100253",
+  "facebook": "",
+  "twitter": "",
+  "instagram": "",
   "heart": 0,
-  "money": 1000,
-  "user_exp": 0,
-  "percent": 0,
-  "user_level": 0
+  "money": 50000,
+  "user_exp": 224,
+  "percent": 40,
+  "user_level": 22,
+  "active_code": "F20773",
+  "room": {
+      "slug": "room-vana"
+  }
 }
 ```
 
 ### Get user's public profile
-- URI: **/:id**
+- URI: **/:username**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
@@ -778,34 +1022,41 @@
 	+ body:
 ```
 {
-	"id": 5,
-      "name": "Ahmad Kris Jr.",
-      "username": "jr.ahmad.kris",
-      "email": "jr.kris.ahmad@yahoo.com",
-      "birthday": "2010-12-20",
-      "gender": "nam",
-      "address": "6485 Kelsie Roads",
-      "phone": "(855) 827-5667 x63308",
-      "is_bct": true,
-      "avatar": "http://localhost:3000/api/v1/users/5/avatar",
-      "cover": "http://localhost:3000/uploads/user/cover/5/banner_Cover_.jpeg",
-      "facebook": null,
-      "twitter": null,
-      "instagram": null,
-      "heart": 0,
-      "money": 1000,
-      "user_exp": 0,
-      "percent": 0,
-      "user_level": 0,
-	  photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
-	  videos: [
-		{
-			id: 321654,
-			thumb: "http://api.youtube.com/thumb/AbcXyZ",
-			link: "http://youtube.com/AbcXyZ"
-		},
-		...
-	  ]
+    "id": 2,
+    "name": "Thị Màu",
+    "username": "username_1",
+    "email": "bct2@gmail.com",
+    "birthday": "2015-11-30",
+    "horoscope": "Nhân Mã",
+    "gender": null,
+    "address": "5585 Rolfson Greens",
+    "phone": "1-415-641-3976 x700",
+    "is_bct": true,
+    "avatar": "http://.../avatar?timestamp=1449132581",
+    "cover": "http://.../cover?timestamp=1449132581",
+    "facebook": "facebook.com/ncvphuong/",
+    "twitter": "",
+    "instagram": "",
+    "heart": 0,
+    "money": 10000,
+    "user_exp": 222,
+    "percent": 20,
+    "user_level": 22,
+    "description": "",
+    "photos": [
+        {
+            "id": 50,
+            "link": "http://.../banner2.jpg",
+            "link_square": "http://.../square_banner2.jpg"
+        }
+    ],
+    "videos": [
+        {
+            "id": 28,
+            "link": "https://www.youtube.com/embed/co4YpHTqmfQ",
+            "thumb": "http://localhost:3000"
+        }
+    ]
 }
 ```
 
@@ -819,12 +1070,13 @@
 ```
 {
 	name: "Rainie Bui",
-	nickname: "Zit"
-	birthday: "09/10/1991",
-	facebook-link: "http://fb.me/whatthefuck",
-	instagram-link: "...",
-	twitter: "...",
-	description: "too long description..."
+  birthday: "09/10/1991",
+  gender: "male",
+  address: "123 Nguyen Trai",
+	phone: 0969696969,
+	facebook: "...",
+  twitter: "...",
+	instagram: "...",
 }
 ```
 - Response:
@@ -832,7 +1084,7 @@
 
 ### Update avatar
 - URI: **/avatar**
-- Method: **PUT**
+- Method: **POST**
 - Header:
 	+ Content-Type: multipart/form-data
 	+ Authorization: Token token="this-is-jwt-token"
@@ -843,7 +1095,7 @@
 
 ### Update cover
 - URI: **/cover**
-- Method: **PUT**
+- Method: **POST**
 - Header:
 	+ Content-Type: multipart/form-data
 	+ Authorization: Token token="this-is-jwt-token"
@@ -885,14 +1137,17 @@
 ```
 	[
 		{
-			id: 123654789,
-			name: "Hoa hong",
-			image: "http://../image-rose.png",
-			created_at: "08/11/2015 20:10",
-			cost: 2000,
-			quantity: 10
-			total: 20000,
-		},
+      "name": "VIP_P 1",
+      "actived": true,
+      "active_date": "2016-03-16T00:00:00.000+07:00",
+      "expiry_date": "2017-01-12T00:00:00.000+07:00"
+    },
+    {
+      "name": "VIP_P 2",
+      "actived": true,
+      "active_date": "2016-03-16T00:00:00.000+07:00",
+      "expiry_date": "2017-01-12T00:00:00.000+07:00"
+    }
 		...
 	]
 ```
@@ -990,91 +1245,6 @@
 ### Get room's weekly rank
 *under construction*
 
-### Get featured broadcasters
-- URI: **/featured-broadcaster**
-- Method: **GET**
-- Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
-- Response:
-	+ status: **200**, **400**, **401**
-	+ body:
-```
-[
-	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	...
-]
-```
-
-### Home Get featured broadcasters
-- URI: **/home-featured-broadcaster**
-- Method: **GET**
-- Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
-- Response:
-	+ status: **200**, **400**, **401**
-	+ body:
-```
-[
-	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	room:{
-			id: 321654,
-			name: "room so 1",
-			on_air: "true/false",
-			thumb: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-			thumb_mb: "http://cdn.domain.com/broadcaters/bct-id/mb_avatar.jpg"
-		},
-	videos: [
-		{
-			start: "2015-10-21 03:35:00",
-			end: "2015-10-30 18:35:00"
-		},
-		...
-	]
-	...
-]
-```
-
-### Room Get featured broadcasters
-- URI: **/room-featured-broadcaster**
-- Method: **GET**
-- Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
-- Response:
-	+ status: **200**, **400**, **401**
-	+ body:
-```
-[
-	{
-		id: 321,
-		name: "Rainie Bui",
-		nickname: "Zit",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	...
-]
-```
 
 ### Get top broadcaster revcived heart
 - URI: **/room-type**
@@ -1431,3 +1601,25 @@
 	    + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
+
+## Vip functions
+- Namespace URL: **/vip**
+
+### Buy vip packages
+- URI: **/buy-vip**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+  user_id: 123,
+  vip_package_id: 321
+}
+```
+- Response:
+  + status: **401**, **200**, **404**
+  + errors: 
+      + status 401: ```{error: "Bạn chưa đăng nhập!"}```
+      + status 404: ```{error: "Vip không tồn tại!"}```

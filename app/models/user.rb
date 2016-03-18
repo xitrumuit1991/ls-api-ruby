@@ -10,8 +10,10 @@ class User < ActiveRecord::Base
 	has_many :action_logs
 	has_many :gift_logs
 	has_many :lounge_logs
+	has_many :user_has_vip_packages
+	has_many :vip_packages, through: :user_has_vip_packages
 
-	# validates :username, presence: true, uniqueness: true
+	validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :name, presence: true, length: {minimum: 6, maximum: 20}
 	with_options({on: :auth}) do |for_auth|
@@ -25,8 +27,41 @@ class User < ActiveRecord::Base
 	mount_uploader :cover,  CoverUploader
 
 	def public_room
-		self.broadcaster.rooms.find_by_is_privated(false)
+		self.broadcaster.public_room
 	end
+
+	def avatar_path
+		"#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
+	end
+
+	def cover_path
+		"#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
+	end
+
+	def horoscope
+    arr = {
+      "Aries"       =>  "Bạch Dương",
+      "Taurus"      =>  "Kim Ngưu",
+      "Gemini"      =>  "Song Tử",
+      "Cancer"      =>  "Cự Giải",
+      "Leo"         =>  "Sư Tử",
+      "Virgo"       =>  "Thất Nữ",
+      "Libra"       =>  "Thiên Xứng",
+      "Scorpio"     =>  "Thiên Yết",
+      "Sagittarius" =>  "Nhân Mã",
+      "Capricornus" =>  "Ma Kết",
+      "Aquarius"    =>  "Bảo Bình",
+      "Pisces"      =>  "Song Ngư"
+    }
+    arr[self.birthday.zodiac_sign]
+  end
+  #check vip su dung ham o authorize
+  def checkVip
+  	if self.user_has_vip_packages.find_by_actived(true).present? and !self.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
+      self.user_has_vip_packages.find_by_actived(true).update(actived: false)
+    end
+    return true
+  end
 
 	def decreaseMoney(money)
 		if self.money >= money then

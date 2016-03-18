@@ -1,7 +1,7 @@
 json.array! @actions do |action|
 	json.id			action.id
 	json.name		action.name
-	json.image		"#{request.base_url}/#{action.image.square}"
+	json.image		"#{request.base_url}/#{action.image.square}?timestamp=#{action.updated_at.to_i}"
 	json.price		action.price
 	json.max_vote	action.max_vote
 	json.voted		@status[action.id].nil? ? 0 : @status[action.id]
