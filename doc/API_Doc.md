@@ -189,9 +189,9 @@
 	+ errors:
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
-<blockquote>
+```javascript
 {
-  "totalPage": 2,
+  "totalPage": 1,
   "rooms":[
       {
           "id": 46,
@@ -215,4 +215,4 @@
       ....
   ]
 }
-</blockquote>
+```
