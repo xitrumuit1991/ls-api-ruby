@@ -23,9 +23,9 @@ Rails.application.routes.draw do
 			post 		'/ajax_change_background' => 'broadcasters#ajax_change_background'
 		end
 
-	authenticate do
-		mount Sidekiq::Web => '/sidekiq'
-	end
+		authenticate do
+			mount Sidekiq::Web => '/sidekiq'
+		end
 
 		# Users
     resources :users
@@ -210,16 +210,16 @@ Rails.application.routes.draw do
 
 			# ranks
 			scope '/ranks' do
-				get     '/user-ranking'      				=> 'ranks#userRanking'
-				get     '/top-heart-broadcaster'      		=> 'ranks#topBroadcasterRevcivedHeart'
-				get     '/top-level-grow-broadcaster'		=> 'ranks#topBroadcasterLevelGrow'
-				get     '/top-level-grow-user'				=> 'ranks#topUserLevelGrow'
-				get     '/top-gift-broadcaster'				=> 'ranks#topBroadcasterRevcivedGift'
-				get     '/top-gift-user'					=> 'ranks#topUserSendGift'
-				get     '/update-datatime-top'				=> 'ranks#updateCreatedAtBroadcaster'
+				get   '/user-ranking'      							=> 'ranks#userRanking'
+				get   '/top-heart-broadcaster'      		=> 'ranks#topBroadcasterRevcivedHeart'
+				get   '/top-level-grow-broadcaster'			=> 'ranks#topBroadcasterLevelGrow'
+				get   '/top-level-grow-user'						=> 'ranks#topUserLevelGrow'
+				get   '/top-gift-broadcaster'						=> 'ranks#topBroadcasterRevcivedGift'
+				get   '/top-gift-user'									=> 'ranks#topUserSendGift'
+				get 	'/update-datatime-top'						=> 'ranks#updateCreatedAtBroadcaster'
 				get		'/:room_id/top-user-use-in-room'	=> 'ranks#topUserUseMoneyRoom'
 				get		'/:room_id/top-user-use-money'		=> 'ranks#topUserUseMoneyCurrent'
-				get		'/:id/top-fans'						=> 'ranks#topUserFollowBroadcaster'
+				get		'/:id/top-fans'										=> 'ranks#topUserFollowBroadcaster'
 			end
 
 			# rooms
@@ -228,11 +228,11 @@ Rails.application.routes.draw do
 				get   	'/coming-soon'     		=> 'room#comingSoon' #
 				get   	'/room-type'       		=> 'room#roomType'
 				get   	'/slug/:slug'      		=> 'room#detailBySlug'
-				get   	'/actions'         		=> 'room#getActions'
-				get   	'/gifts'            	=> 'room#getGifts'
-				get   	'/lounges'          	=> 'room#getLounges'
-				get  	'/:id/thumb'       			=> 'room#getThumb'
-				get 	'/:id/thumb_mb'					=> 'room#getThumbMb'
+				get   	'/actions'         		=> 'room#getActions' #
+				get   	'/gifts'            	=> 'room#getGifts' #
+				get   	'/lounges'          	=> 'room#getLounges' #
+				get  		'/:id/thumb'       		=> 'room#getThumb'
+				get 		'/:id/thumb_mb'				=> 'room#getThumbMb'
 				put   	'/'                 	=> 'room#updateSettings' #
 				put   	'/thumb'            	=> 'room#uploadThumb' #
 				post  	'/thumb'            	=> 'room#uploadThumb' #
