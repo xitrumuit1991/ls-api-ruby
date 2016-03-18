@@ -138,7 +138,7 @@ Rails.application.routes.draw do
 		namespace :v1 do
 			# root
 			get '/' 		=> 'index#index'
-			get '/msisdn' 	=> "index#msisdn"
+			get '/msisdn' 	=> 'index#msisdn'
 			get '/sms'  	=> 'user#sms'
 
 			# auth

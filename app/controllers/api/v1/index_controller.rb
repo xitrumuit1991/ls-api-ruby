@@ -6,6 +6,6 @@ class Api::V1::IndexController < Api::V1::ApplicationController
   end
 
   def msisdn
-  	render json: request.headers
+  	render plain: "msisdn: #{request.headers['msisdn']}", status: 200 and return
   end
 end
