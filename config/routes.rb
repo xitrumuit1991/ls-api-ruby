@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 	devise_for :admins, controllers: { sessions: "admins/sessions" }
 	root 'index#index'
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+
+	get "/msisdn" => "index#msisdn"
   	
   # ACP
   namespace :acp do

@@ -4,4 +4,8 @@ class Api::V1::IndexController < Api::V1::ApplicationController
   def index
     render plain: 'Livestar API Version 1.1.0'
   end
+
+  def msisdn
+  	render json: request.headers
+  end
 end
