@@ -240,10 +240,7 @@ Rails.application.routes.draw do
 				put   	'/background'       	=> 'room#changeBackground'
 				put   	'/background-default'	=> 'room#changeBackgroundDefault'
 				post  	'/background'       	=> 'room#uploadBackground' #
-				post  	'/schedule'						=> 'room#updateSchedule'
-				get		'/actions'							=> 'room#getActions' # trung voi o tren
-				get		'/gifts'								=> 'room#getGifts' # trung voi o tren
-				get		'/lounges'							=> 'room#getLounges' # trung voi o tren
+				post  	'/schedule'						=> 'room#updateSchedule' #
 				get   	'/:id'              	=> 'room#detail' #
 				delete  '/background'      		=> 'room#deleteBackground'
 			end

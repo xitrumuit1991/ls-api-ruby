@@ -357,30 +357,15 @@
     + status: **200**
     + body (status: 200):
 ```
-    [
-      {
-        "id": 1,
-        "name": "Donnelly",
-        "image": "http://localhost:3000//uploads/room_action/image/1/square_action-0.jpg",
-        "price": 1,
-        "max_vote": 10,
-        "voted": 0,
-        "percent": 0,
-        "discount": 0
-      },
-      {
-        "id": 2,
-        "name": "Stamm",
-        "image": "http://localhost:3000//uploads/room_action/image/2/square_action-1.jpg",
-        "price": 1,
-        "max_vote": 10,
-        "voted": 0,
-        "percent": 0,
-        "discount": 0
-      },
-    ...
-    ...
-    ...
+[
+  {
+    "id": 20,
+    "name": "Kim cương xanh",
+    "image": "http://.../gift/image/20/square_Lacmong.png?timestamp=1456195423",
+    "price": 121,
+    "discount": 0
+  },
+  ...
 ]
 ```
 
@@ -394,25 +379,19 @@
     + status: **200**
     + body (status: 200):
 ```
-    [
-      {
-        "id": 1,
-        "name": "Dicki",
-        "image": "http://localhost:3000//uploads/gift/image/1/square_gift-0.jpg",
-        "price": 1,
-        "discount": 0
-      },
-      {
-        "id": 2,
-        "name": "Johnson",
-        "image": "http://localhost:3000//uploads/gift/image/2/square_gift-1.jpg",
-        "price": 4,
-        "discount": 0
-      },
-     ...
-     ...
-     ...
-    ]
+[
+  {
+    "id": 18,
+    "name": "Múa bale",
+    "image": "http://.../room_action/image/18/square_17.png?timestamp=1456195819",
+    "price": 1,
+    "max_vote": 10,
+    "voted": 0,
+    "percent": 0,
+    "discount": 0
+  },
+  ...
+]
 ```
 
 ### Get lounges
@@ -425,17 +404,16 @@
     + status: **200**
     + body (status: 200):
 ```
-    [
-      {
-        "user": {
-          "id": 0,
-          "name": ""
-        },
-        "cost": 0
-      },
-      ...
-      ...
-    ]
+[
+  {
+    "user": {
+      "id": 0,
+      "name": ""
+    },
+    "cost": 0
+  },
+  ...
+]
 ```
 
 ## Broadcasters
