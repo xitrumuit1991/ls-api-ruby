@@ -149,38 +149,30 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-    {
-        'totalPage':4,
-        'rooms':[
-          {
-            "id": 10,
-            "title": "Rosanna Paucek",
-            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-            "broadcaster": {
-              "id": 10,
-              "name": "Rosanna Paucek",
-              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-            }
-          },
-          {
-            "id": 10,
-            "title": "Rosanna Paucek",
-            "thumb": "http://localhost:3000/uploads/room/thumb/10/thumb_nature.jpeg",
-            "broadcaster": {
-              "id": 10,
-              "name": "Rosanna Paucek",
-              "avatar": "http://localhost:3000/api/v1/users/10/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-            }
-          },
-          ...
-          ...
-        ]
+{
+    "totalPage":4,
+    "rooms":[
+      {
+        "id": 2,
+        "title": "Room LiveStar",
+        "slug": "room-2",
+        "totalUser": 0,
+        "thumb": "http://.../thumb_cute_girl_12.jpg?timestamp=1449103220",
+        "thumb_mb": "http://.../thumb_mb_cute_girl_12.jpg?timestamp=1449103220",
+        "broadcaster": {
+            "id": 2,
+            "bct_id": 2,
+            "name": "Thị Màu",
+            "avatar": "http://.../avatar?timestamp=1449132581",
+            "heart": 2,
+            "exp": 953,
+            "level": 10,
+            "isFollow": false
+        }
+      },
+      ...
+    ]
+}
 ```
 
 ### Get coming soon rooms
@@ -198,41 +190,31 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-	  "totalPage": 1,
-      "rooms":[
-          {
-            "id": 1,
-            "title": "new room title",
-            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-            "date": "25/11",
-            "start": "13:46",
-            "broadcaster": {
-              "id": 1,
-              "name": "Ansley Morissette",
-              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-          },
-          {
-            "id": 1,
-            "title": "new room title",
-            "thumb": "http://localhost:3000/uploads/room/thumb/1/thumb_nature.jpeg",
-            "date": "25/11",
-            "start": "13:46",
-            "broadcaster": {
-              "id": 1,
-              "name": "Ansley Morissette",
-              "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-              "heart": 0,
-              "exp": 0,
-              "level": 0
-          },
-          ....
-          ....
-      ]
-    },
+{
+  "totalPage": 1,
+  "rooms":[
+      {
+          "id": 46,
+          "title": "Trâm Anh (Teddy Baby)",
+          "slug": "huynh-ngoc-tram-anh",
+          "thumb": "http://.../thumb?timestamp=1458189010",
+          "thumb_mb": "http://.../thumb_mb?timestamp=1458189010",
+          "date": "17/03",
+          "start": "10:00",
+          "broadcaster": {
+              "id": 220,
+              "bct_id": 49,
+              "name": "Trâm Anh",
+              "avatar": "http://api.livestar.vn/api/v1/users/220/avatar",
+              "heart": 283,
+              "exp": 5586988,
+              "level": 9,
+              "isFollow": true
+          }
+      },
+      ....
+  ]
+}
 
 ```
 
@@ -248,41 +230,40 @@
 		+ status 400: ```{error: "an awnsome fucking error"}```
 	+ body (status: 200):
 ```
-	{
-      "id": 1,
-      "title": "new room title",
-      "slug": "ansley_morissette",
-      "thumb": "/uploads/room/thumb/1/thumb_nature.jpeg",
-      "thumb_mb": "/uploads/room/thumb/1/thumb_mb_nature.jpeg",
-      "background": null,
-      "is_privated": false,
-      "on_air": false,
-      "link_stream": "rtmp://210.245.18.154:80/livemix/android/playlist.m3u8",
-      "broadcaster": {
+{
+    "id": 1,
+    "title": "room 1",
+    "slug": "room-1",
+    "thumb": "http://.../thumb_cute_girl_1.jpg?timestamp=1456279838",
+    "thumb_mb": "http://.../thumb_mb_cute_girl_1.jpg?timestamp=1456279838",
+    "is_privated": false,
+    "on_air": false,
+    "link_stream": "http://210.245.125.6:80/livestar/1/playlist.m3u8",
+    "background": "http://.../Background_1.jpg",
+    "broadcaster": {
         "broadcaster_id": 1,
-        "user_id": 1,
-        "avatar": "http://localhost:3000/api/v1/users/1/avatar",
-        "name": "Ansley Morissette",
-        "heart": 0,
-        "exp": 0,
-        "percent": 0,
-        "level": 0,
-        "facebook": null,
-        "twitter": null,
-        "instagram": null,
-        "status": "this is my update status",
+        "user_id": 5,
+        "avatar": "http://api.dev.livestar.vn//api/v1/users/5/avatar?timestamp=1449123703",
+        "name": "AngCo(*_^) 1",
+        "heart": 526,
+        "exp": 3967,
+        "percent": 100,
+        "level": 49,
+        "facebook": "https://www.facebook.com/danhbunanco",
+        "twitter": "https://www.facebook.com/danhbunanco",
+        "instagram": "https://www.facebook.com/danhbunanco",
+        "status": null,
         "isFollow": true
-      },
-      "schedules": [
+    },
+    "schedules": [
         {
-          "date": "20/11/2015",
-          "start": "13:46",
-          "end": "15:46"
+            "date": "31/10/2015",
+            "start": "16:15",
+            "end": "06:47"
         },
         ...
-        ...
-      ]
-    }
+    ]
+}
 ```
 
 ### Update room settings
@@ -311,6 +292,12 @@
 	+ thumb: image/jpeg
 - Resoponse
 	+ status: **200**, **400**, **404**, **401**
+  + body (status: 200):
+```
+{
+  "thumb":"http://.../thumb_firefox.jpg?timestamp=1458211433"
+}
+```
 
 ### Upload backgroud
 - URI: **/backgound**
@@ -322,6 +309,13 @@
 	+ background: image/jpeg
 - Response
 	+ status: **200**, **400**, **404**, **401**
+  + body (status: 200):
+```
+{
+  "id":22,
+  "image":"http://.../square_97fc0ac09d.jpg?timestamp=1458214918"
+}
+```
 
 ### Change backgroud
 - URI: **/backgound**
@@ -1018,7 +1012,7 @@
 ```
 
 ### Get user's public profile
-- URI: **/:id**
+- URI: **/:username**
 - Method: **GET**
 - Header:
 	+ Content-Type: application/json
@@ -1028,34 +1022,41 @@
 	+ body:
 ```
 {
-	"id": 5,
-      "name": "Ahmad Kris Jr.",
-      "username": "jr.ahmad.kris",
-      "email": "jr.kris.ahmad@yahoo.com",
-      "birthday": "2010-12-20",
-      "gender": "nam",
-      "address": "6485 Kelsie Roads",
-      "phone": "(855) 827-5667 x63308",
-      "is_bct": true,
-      "avatar": "http://localhost:3000/api/v1/users/5/avatar",
-      "cover": "http://localhost:3000/uploads/user/cover/5/banner_Cover_.jpeg",
-      "facebook": null,
-      "twitter": null,
-      "instagram": null,
-      "heart": 0,
-      "money": 1000,
-      "user_exp": 0,
-      "percent": 0,
-      "user_level": 0,
-	  photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
-	  videos: [
-		{
-			id: 321654,
-			thumb: "http://api.youtube.com/thumb/AbcXyZ",
-			link: "http://youtube.com/AbcXyZ"
-		},
-		...
-	  ]
+    "id": 2,
+    "name": "Thị Màu",
+    "username": "username_1",
+    "email": "bct2@gmail.com",
+    "birthday": "2015-11-30",
+    "horoscope": "Nhân Mã",
+    "gender": null,
+    "address": "5585 Rolfson Greens",
+    "phone": "1-415-641-3976 x700",
+    "is_bct": true,
+    "avatar": "http://.../avatar?timestamp=1449132581",
+    "cover": "http://.../cover?timestamp=1449132581",
+    "facebook": "facebook.com/ncvphuong/",
+    "twitter": "",
+    "instagram": "",
+    "heart": 0,
+    "money": 10000,
+    "user_exp": 222,
+    "percent": 20,
+    "user_level": 22,
+    "description": "",
+    "photos": [
+        {
+            "id": 50,
+            "link": "http://.../banner2.jpg",
+            "link_square": "http://.../square_banner2.jpg"
+        }
+    ],
+    "videos": [
+        {
+            "id": 28,
+            "link": "https://www.youtube.com/embed/co4YpHTqmfQ",
+            "thumb": "http://localhost:3000"
+        }
+    ]
 }
 ```
 
@@ -1069,12 +1070,13 @@
 ```
 {
 	name: "Rainie Bui",
-	nickname: "Zit"
-	birthday: "09/10/1991",
-	facebook-link: "http://fb.me/whatthefuck",
-	instagram-link: "...",
-	twitter: "...",
-	description: "too long description..."
+  birthday: "09/10/1991",
+  gender: "male",
+  address: "123 Nguyen Trai",
+	phone: 0969696969,
+	facebook: "...",
+  twitter: "...",
+	instagram: "...",
 }
 ```
 - Response:
@@ -1082,7 +1084,7 @@
 
 ### Update avatar
 - URI: **/avatar**
-- Method: **PUT**
+- Method: **POST**
 - Header:
 	+ Content-Type: multipart/form-data
 	+ Authorization: Token token="this-is-jwt-token"
@@ -1093,7 +1095,7 @@
 
 ### Update cover
 - URI: **/cover**
-- Method: **PUT**
+- Method: **POST**
 - Header:
 	+ Content-Type: multipart/form-data
 	+ Authorization: Token token="this-is-jwt-token"
@@ -1135,17 +1137,17 @@
 ```
 	[
 		{
-            "name": "VIP_P 1",
-            "actived": true,
-            "active_date": "2016-03-16T00:00:00.000+07:00",
-            "expiry_date": "2017-01-12T00:00:00.000+07:00"
-          },
-          {
-            "name": "VIP_P 2",
-            "actived": true,
-            "active_date": "2016-03-16T00:00:00.000+07:00",
-            "expiry_date": "2017-01-12T00:00:00.000+07:00"
-          }
+      "name": "VIP_P 1",
+      "actived": true,
+      "active_date": "2016-03-16T00:00:00.000+07:00",
+      "expiry_date": "2017-01-12T00:00:00.000+07:00"
+    },
+    {
+      "name": "VIP_P 2",
+      "actived": true,
+      "active_date": "2016-03-16T00:00:00.000+07:00",
+      "expiry_date": "2017-01-12T00:00:00.000+07:00"
+    }
 		...
 	]
 ```

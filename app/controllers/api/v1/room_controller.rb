@@ -65,7 +65,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def updateSettings
     return head 400 if params[:title].nil? || params[:cat].nil?
-    if Room.where("broadcaster_id = #{@user.broadcaster.id}").update_all(title: params[:title], room_type_id: params[:cat])
+    if @user.broadcaster.rooms.find_by_is_privated(false).update(title: params[:title], room_type_id: params[:cat])
       return head 200
     else
       render plain: 'System error !', status: 400
@@ -73,41 +73,37 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def uploadThumb
-    return head 400 if params[:room_thumb].nil?
-    if @user.broadcaster.rooms.order("is_privated ASC").first.update(thumb: params[:room_thumb])
-      render json: @user.broadcaster.rooms.order("is_privated ASC").first, status: 200
+    return head 400 if params[:thumb].nil?
+    room = @user.broadcaster.rooms.find_by_is_privated(false)
+    if room.present?
+      if room.update(thumb: params[:thumb])
+        render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
+      else
+        return head 400
+      end
     else
-      render plain: 'System error !', status: 400
+      return head 404
     end
   end
 
   def thumbCrop
     return head 400 if params[:thumb_crop].nil?
-    if @user.broadcaster.rooms.order("is_privated ASC").first.update(thumb_crop: params[:thumb_crop])
-      render json: @user.broadcaster.rooms.order("is_privated ASC").first.thumb_crop, status: 200
+    room = @user.broadcaster.rooms.find_by_is_privated(false)
+    if room.present?
+      if room.update(thumb_crop: params[:thumb_crop])
+        render json: {thumb_crop: "#{request.base_url}#{room.thumb_crop}?timestamp=#{room.updated_at.to_i}"}, status: 200
+      else
+        return head 400
+      end
     else
-      return head 401
+      return head 404
     end
   end
 
   def uploadBackground
     return head 400 if params[:background].nil?
-    if room = Room.where("broadcaster_id = #{@user.broadcaster.id}").take
-      room.background = params[:background]
-      if room.save
-        return head 200
-      else
-        render plain: 'System error !', status: 400
-      end
-    else
-      render plain: 'System error !', status: 400
-    end
-  end
-
-  def uploadBackgroundRoom
-    return head 400 if params[:background].nil?
     background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
-    render json: background, status: 201
+    render json: {id: background.id, image: "#{request.base_url}#{background.image.square}?timestamp=#{background.updated_at.to_i}"}, status: 201
   end
 
   def deleteBackground

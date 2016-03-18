@@ -159,7 +159,7 @@ Rails.application.routes.draw do
 			scope '/users' do
 				get  '/:id/avatar'       	=> 'user#getAvatar'
 				get  '/:id/cover'       	=> 'user#getBanner'
-				get '/trades'							=> 'user#getTradeHistory'
+				get '/trades'							=> 'user#getTradeHistory' #
 				get '/get-vip-package'		=> 'user#getVipPackageByUser'
 				post '/active'           	=> 'user#active' #
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
@@ -169,13 +169,13 @@ Rails.application.routes.draw do
 				get '/get-providers'      => 'user#getProviders'
 				get '/get-banks'       		=> 'user#getBanks'
 				get '/get-megabanks'      => 'user#getMegabanks'
-				get  '/:username'					=> 'user#publicProfile'
-				put  '/'                 	=> 'user#update'
+				get  '/:username'					=> 'user#publicProfile' #
+				put  '/'                 	=> 'user#update' #
 				post '/update-profile'  	=> 'user#updateProfile'
 				get '/:user_id/add-heart' => 'user#addHeartInRoom'
 				post '/update-password'  	=> 'user#updatePassword'
-				post '/avatar'          	=> 'user#uploadAvatar'
-				post '/cover'           	=> 'user#uploadCover'
+				post '/avatar'          	=> 'user#uploadAvatar' #
+				post '/cover'           	=> 'user#uploadCover' #
 				post '/cover-crop'        => 'user#coverCrop'
 				post '/avatar-crop'       => 'user#avatarCrop'
 				post '/payments'       		=> 'user#payments'
@@ -225,29 +225,28 @@ Rails.application.routes.draw do
 
 			# rooms
 			scope 'rooms' do
-				get   	'/on-air'           		=> 'room#onair'
-				get   	'/coming-soon'      		=> 'room#comingSoon'
-				get   	'/room-type'        		=> 'room#roomType'
-				get   	'/slug/:slug'       		=> 'room#detailBySlug'
-				get   	'/actions'          		=> 'room#getActions'
-				get   	'/gifts'            		=> 'room#getGifts'
-				get   	'/lounges'          		=> 'room#getLounges'
+				get   	'/on-air'          		=> 'room#onair' #
+				get   	'/coming-soon'     		=> 'room#comingSoon' #
+				get   	'/room-type'       		=> 'room#roomType'
+				get   	'/slug/:slug'      		=> 'room#detailBySlug'
+				get   	'/actions'         		=> 'room#getActions'
+				get   	'/gifts'            	=> 'room#getGifts'
+				get   	'/lounges'          	=> 'room#getLounges'
 				get  	'/:id/thumb'       			=> 'room#getThumb'
-				get 	'/:id/thumb_mb'				=> 'room#getThumbMb'
-				put   	'/'                 		=> 'room#updateSettings'
-				put   	'/thumb'            		=> 'room#uploadThumb'
-				post  	'/thumb'            		=> 'room#uploadThumb'
-				post  	'/thumb-crop'            	=> 'room#thumbCrop'
-				put   	'/background'       		=> 'room#changeBackground'
-				put   	'/background-default'   	=> 'room#changeBackgroundDefault'
-				post  	'/background'       		=> 'room#uploadBackground' # hien tai khong thay sai
-				post  	'/background-room'      	=> 'room#uploadBackgroundRoom'
-				post  	'/schedule'					=> 'room#updateSchedule'
-				get		'/actions'					=> 'room#getActions' # trung voi o tren
-				get		'/gifts'					=> 'room#getGifts' # trung voi o tren
-				get		'/lounges'					=> 'room#getLounges' # trung voi o tren
-				get   	'/:id'              		=> 'room#detail'
-				delete  '/background'      			=> 'room#deleteBackground'
+				get 	'/:id/thumb_mb'					=> 'room#getThumbMb'
+				put   	'/'                 	=> 'room#updateSettings' #
+				put   	'/thumb'            	=> 'room#uploadThumb' #
+				post  	'/thumb'            	=> 'room#uploadThumb' #
+				post  	'/thumb-crop'         => 'room#thumbCrop'
+				put   	'/background'       	=> 'room#changeBackground'
+				put   	'/background-default'	=> 'room#changeBackgroundDefault'
+				post  	'/background'       	=> 'room#uploadBackground' #
+				post  	'/schedule'						=> 'room#updateSchedule'
+				get		'/actions'							=> 'room#getActions' # trung voi o tren
+				get		'/gifts'								=> 'room#getGifts' # trung voi o tren
+				get		'/lounges'							=> 'room#getLounges' # trung voi o tren
+				get   	'/:id'              	=> 'room#detail' #
+				delete  '/background'      		=> 'room#deleteBackground'
 			end
 
 			# Live functions
