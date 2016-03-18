@@ -8,28 +8,28 @@
 - URI: **/login**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"password": "******"
+  "email": "peter@gmail.com",
+  "password": "******"
 }
 ```
 - Response:
-	+ status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-	+ body: ```{"token": "this-is-jwt-token"}```
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + body: ```{"token": "this-is-jwt-token"}```
 
 ### Register
 - URI: **/register**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"password": "*********"
+  "email": "peter@gmail.com",
+  "password": "*********"
 }
 ```
 
@@ -37,100 +37,100 @@
 - URI: **/fb-register**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"access_token": "this-is-facebook-access-token"
+  "email": "peter@gmail.com",
+  "access_token": "this-is-facebook-access-token"
 }
 ```
 - Response:
-	+ status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-	+ body: ```{"token": "this-is-jwt-token"}```
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + body: ```{"token": "this-is-jwt-token"}```
 
 ### Register by Google Plus
 - URI: **/fb-register**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"access_token": "this-is-facebook-access-token"
+  "email": "peter@gmail.com",
+  "access_token": "this-is-facebook-access-token"
 }
 ```
 - Response:
-	+ status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-	+ body: ```{"token": "this-is-jwt-token"}```
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + body: ```{"token": "this-is-jwt-token"}```
 
 ### Logout
 - URI: **/logout**
 - Method: **GET**
 - Header:
-	+ Authorization: Token token="this-is-jwt-token"
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status **200** *(OK)*, **401** *(Unauthorize)*
+  + status **200** *(OK)*, **401** *(Unauthorize)*
 
 ### Forgot password (reset password)
 - URI: **/forgot**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request: ```{ "email": "alex@email.com" }```
 - Response:
-	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
+  + status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
 
 ### Forgot code (update forgot code to reset password)
 - URI: **/update-forgot-code**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request: ```{ "email": "alex@email.com", "forgot_code" : "HIJKLMNO" }```
 - Response:
-	+ status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
+  + status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
 
 ### Reset Password (update forgot code to reset password)
 - URI: **/reset-password**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request: ```{"forgot_code" : "HIJKLMNO" }```
 - Response:
-	+ status **200** *(OK)*, **404** *(User Not found)*
+  + status **200** *(OK)*, **404** *(User Not found)*
 
 ### Change password
 - URI: **/change**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
 ```
 {
-	"old_password": "aaaaaaaa",
-	"password": "bbbbbbb"
+  "old_password": "aaaaaaaa",
+  "password": "bbbbbbb"
 }
 ```
 - Response:
-	+ status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-	+ body: ```{"token": "this-is-jwt-token"}```
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + body: ```{"token": "this-is-jwt-token"}```
 
 ### Verify token
 - URI: **/verify-token**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"token": "this-is-jwt-token"
+  "email": "peter@gmail.com",
+  "token": "this-is-jwt-token"
 }
 ```
 - Response:
-	+ status: **200**, **400**
+  + status: **200**, **400**
 
 ## Rooms
 - Namespace URL: **/rooms**
@@ -139,15 +139,15 @@
 - URI: **/on-air**
 - Method: **GET**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
-	+ page: page number
+  + page: page number
 - Resoponse
-	+ status: **200**, **400**,  **401**
-	+ errors:
-		+ status 400: ```{error: "an awnsome fucking error"}```
-	+ body (status: 200):
+  + status: **200**, **400**,  **401**
+  + errors:
+    + status 400: ```{error: "an awnsome fucking error"}```
+  + body (status: 200):
 ```
 {
     "totalPage":4,
@@ -179,16 +179,16 @@
 - URI: **/coming-soon**
 - Method: **GET**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
-	+ cat: room category id
-	+ page: page number
+  + cat: room category id
+  + page: page number
 - Response
-	+ status: **200**, **400**,  **401**
-	+ errors:
-		+ status 400: ```{error: "an awnsome fucking error"}```
-	+ body (status: 200):
+  + status: **200**, **400**,  **401**
+  + errors:
+    + status 400: ```{error: "an awnsome fucking error"}```
+  + body (status: 200):
 ```
 {
   "totalPage": 1,
@@ -215,20 +215,19 @@
       ....
   ]
 }
-
 ```
 
 ### Get room detail
 - URI: **/room-id**
 - Method: **GET**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response
-	+ status: **200**, **400**, **404**, **401**
-	+ errors:
-		+ status 400: ```{error: "an awnsome fucking error"}```
-	+ body (status: 200):
+  + status: **200**, **400**, **404**, **401**
+  + errors:
+    + status 400: ```{error: "an awnsome fucking error"}```
+  + body (status: 200):
 ```
 {
     "id": 1,
@@ -270,28 +269,28 @@
 - URI: **/**
 - Method: **PUT**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
 ```
 {
-	title: "new room title",
-	cat: 2, // New category id
+  title: "new room title",
+  cat: 2, // New category id
 }
 ```
 - Resoponse
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
 
 ### Upload thumb
 - URI: **/thumb**
 - Method: **POST** / **PUT**
 - Header
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ thumb: image/jpeg
+  + thumb: image/jpeg
 - Resoponse
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
   + body (status: 200):
 ```
 {
@@ -303,12 +302,12 @@
 - URI: **/backgound**
 - Method: **POST**
 - Header
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ background: image/jpeg
+  + background: image/jpeg
 - Response
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
   + body (status: 200):
 ```
 {
@@ -321,31 +320,31 @@
 - URI: **/backgound**
 - Method: **PUT**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request: ```{ background: "new filename" }```
 - Resoponse
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
 
 
 ### Update show schedule
 - URI: **/schedule**
 - Method: **POST**
 - Header
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
 ```
 {
-	schedule: [
-		{"start":"01/11/2015 00:00:00", "end":"30/11/2015 00:00:00"},
-		{"start":"01/12/2015 00:00:00", "end":"30/12/2015 00:00:00"},
-		...
-	]
+  schedule: [
+    {"start":"01/11/2015 00:00:00", "end":"30/11/2015 00:00:00"},
+    {"start":"01/12/2015 00:00:00", "end":"30/12/2015 00:00:00"},
+    ...
+  ]
 }
 ```
 - Resoponse
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
 
 ### Get gifts
 - URI: **/gifts**
@@ -470,21 +469,21 @@
 - URI: **/revcived-items**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**
-	+ body:
+  + status: **200**, **400**
+  + body:
 ```
 [
   {
-  	id: 321,
-  	name: "abc",
-  	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
-  	quantity: 1000,
-  	cost: 100,
-  	total_cost: 100000,
-  	created_at: "2015-10-06 00:00:00"
+    id: 321,
+    name: "abc",
+    thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+    quantity: 1000,
+    cost: 100,
+    total_cost: 100000,
+    created_at: "2015-10-06 00:00:00"
   },
   ...
 ]
@@ -494,14 +493,14 @@
 - URI: **/broadcaster-id**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **404**, **401**
-	+ body:
+  + status: **200**, **400**, **404**, **401**
+  + body:
 ```
 {
-	  id: 8,
+    id: 8,
       name: "Marie Cummerata",
       fullname: "Marie Cummerata",
       username: "marie_cummerata",
@@ -555,23 +554,23 @@
 - URI: **/status**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request: ```{ status: "this is my update status" }```
 - Response:
-	+ status: **201**, **400**, **401**
+  + status: **201**, **400**, **401**
 
 ### Upload pictures
 - URI: **/pictures**
 - Method: **POST**
 - Header:
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ pictures (array): image/jpeg
+  + pictures (array): image/jpeg
 - Response:
-	+ status: **401**
-	+ body:
+  + status: **401**
+  + body:
 ```
 [ 
   {link: "http://.../photo_1.jpg" }, 
@@ -584,18 +583,18 @@
 - URI: **/pictures**
 - Method: **DELETE**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
-- Request:	```{ id :[ 123654, 654123 ] }```
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:  ```{ id :[ 123654, 654123 ] }```
 - Response:
-	+ status: **200**, **400**, **401**
+  + status: **200**, **400**, **401**
 
 ### Create video
 - URI: **/videos**
 - Method: **POST**
 - Header:
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
   + videos (array): image/jpeg
   + videos[0][link]   = string( https://www.youtube.com/watch?v=Q4KkfiLRLdQ )
@@ -603,7 +602,7 @@
   + videos[1][link]   = string( https://www.youtube.com/watch?v=Q4KkfiLRLdQ )
   + videos[1][image]  = file
 - Response:
-	+ status: **200**, **400**, **401**
+  + status: **200**, **400**, **401**
   + body:
 ```
 [
@@ -624,31 +623,31 @@
 - URI: **/videos**
 - Method: **DELETE**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
-- Request:	```{ id :[ 123654, 654123 ] }```
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:  ```{ id :[ 123654, 654123 ] }```
 - Response:
-	+ status: **200**, **400**, **401**
+  + status: **200**, **400**, **401**
 
 ### Follow / Unfollow
 - URI: **/broadcaster-id/follow**
 - Method: **PUT**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **404**, **401**
-	+ body: ```{ status: 'Follow' // or "Unfollow" }```
+  + status: **200**, **400**, **404**, **401**
+  + body: ```{ status: 'Follow' // or "Unfollow" }```
 
 ### Get followed broadcasters
 - URI: **/followed**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
     {
@@ -700,10 +699,10 @@
 - URI: **/search?q=keyword**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 {
   totalPage: 3,
@@ -902,21 +901,21 @@
 - URI: **/expense-records**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**
-	+ body:
+  + status: **200**, **400**
+  + body:
 ```
 [
   {
-  	id: 321,
-  	name: "abc",
-  	thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
-  	quantity: 1000,
-  	cost: 100,
-  	total_cost: 100000,
-  	created_at: "2015-10-06 00:00:00"
+    id: 321,
+    name: "abc",
+    thumb: "http://cdn.domain.com/user/user-id/avatar.jpg",
+    quantity: 1000,
+    cost: 100,
+    total_cost: 100000,
+    created_at: "2015-10-06 00:00:00"
   }
 ]
 ```
@@ -925,42 +924,42 @@
 - URI: **/active**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"active_code": "AAAAAAA"
+  "email": "peter@gmail.com",
+  "active_code": "AAAAAAA"
 }
 ```
 - Response:
-	+ status: **200**, **400**
+  + status: **200**, **400**
 
 
 ### Active user who registered by facebook, google plus
 - URI: **/active-fb-gp**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Request:
 ```
 {
-	"email": "peter@gmail.com",
-	"id": "AAAAAAA" //fb_id or gp_id
+  "email": "peter@gmail.com",
+  "id": "AAAAAAA" //fb_id or gp_id
 }
 ```
 - Response:
-	+ status: **200** *(OK)*, **400** *(Bad request)*
+  + status: **200** *(OK)*, **400** *(Bad request)*
 
 ### Get user's profile
 - URI: **/**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **404**, **401**
-	+ body:
+  + status: **200**, **400**, **404**, **401**
+  + body:
 ```
 {
   "id": 7,
@@ -993,11 +992,11 @@
 - URI: **/:username**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**
-	+ body:
+  + status: **200**, **400**
+  + body:
 ```
 {
     "id": 2,
@@ -1042,79 +1041,79 @@
 - URI: **/**
 - Method: **PUT**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
 ```
 {
-	name: "Rainie Bui",
+  name: "Rainie Bui",
   birthday: "09/10/1991",
   gender: "male",
   address: "123 Nguyen Trai",
-	phone: 0969696969,
-	facebook: "...",
+  phone: 0969696969,
+  facebook: "...",
   twitter: "...",
-	instagram: "...",
+  instagram: "...",
 }
 ```
 - Response:
-	+ status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**, **404**, **401**
 
 ### Update avatar
 - URI: **/avatar**
 - Method: **POST**
 - Header:
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ avatar: image/jpeg
+  + avatar: image/jpeg
 - Response:
-	+ status: **201**, **400**, **401**
+  + status: **201**, **400**, **401**
 
 ### Update cover
 - URI: **/cover**
 - Method: **POST**
 - Header:
-	+ Content-Type: multipart/form-data
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: multipart/form-data
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ cover: image/jpeg
+  + cover: image/jpeg
 - Response:
-	+ status: **201**, **400**, **401**
+  + status: **201**, **400**, **401**
 
 ### Get payment history
 - URI: **/payments**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
-	[
-		{
-			id: 123654789,
-			created_at: "08/11/2015 20:10",
-			amount: 20000,
-			description: "this is some description"
-		},
-		...
-	]
+  [
+    {
+      id: 123654789,
+      created_at: "08/11/2015 20:10",
+      amount: 20000,
+      description: "this is some description"
+    },
+    ...
+  ]
 ```
 
 ### Get trade history
 - URI: **/trades**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
-	[
-		{
+  [
+    {
       "name": "VIP_P 1",
       "actived": true,
       "active_date": "2016-03-16T00:00:00.000+07:00",
@@ -1126,8 +1125,8 @@
       "active_date": "2016-03-16T00:00:00.000+07:00",
       "expiry_date": "2017-01-12T00:00:00.000+07:00"
     }
-		...
-	]
+    ...
+  ]
 ```
 
 ## Payment
@@ -1149,22 +1148,22 @@
 - URI: **/**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
-	[
-		{
-			id: 123654789,
-			from: "System",
-			title: "Welcome to LiveStar",
-			content: "This is welcome content",
-			created_at: "08/11/2015 20:10"
-		},
-		...
-	]
+  [
+    {
+      id: 123654789,
+      from: "System",
+      title: "Welcome to LiveStar",
+      content: "This is welcome content",
+      created_at: "08/11/2015 20:10"
+    },
+    ...
+  ]
 ```
 
 ### Send system message (for admin only)
@@ -1177,22 +1176,22 @@
 - URI: **/sliders**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Response:
-	+ body:
+  + body:
 ```
 [
-	{
-		id: 321,
-		title: "Danh An Co",
-		description: "Danh An Co la la la",
-		sub_description: "Danh An Co +18",
-		start_time: "15:20",
-		link: "http://puresolutions.com.vn/",
-		banner: "http://cdn.domain.com/broadcaters/bct-id/abc.jpg"
-		thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
-	},
-	...
+  {
+    id: 321,
+    title: "Danh An Co",
+    description: "Danh An Co la la la",
+    sub_description: "Danh An Co +18",
+    start_time: "15:20",
+    link: "http://puresolutions.com.vn/",
+    banner: "http://cdn.domain.com/broadcaters/bct-id/abc.jpg"
+    thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
+  },
+  ...
 ]
 ```
 
@@ -1200,19 +1199,19 @@
 - URI: **/posters**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
+  + Content-Type: application/json
 - Response:
-	+ body:
+  + body:
 ```
 [
-	{
-		id: 321,
-		title: "Danh An Co",
-		sub_title: "Danh An Co la la la",
-		link: "http://puresolutions.com.vn/",
-		thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
-	},
-	...
+  {
+    id: 321,
+    title: "Danh An Co",
+    sub_title: "Danh An Co la la la",
+    link: "http://puresolutions.com.vn/",
+    thumb: "http://cdn.domain.com/broadcaters/bct-id/thumb_abc.jpg"
+  },
+  ...
 ]
 ```
 
@@ -1228,19 +1227,19 @@
 - URI: **/room-type**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ body:
+  + body:
 ```
 [
-	{
-		id:				123
-		title:			"Room ABC"
-		slug:			"room-abc"
-		description:	"Room AbC Room AbC"
-	},
-	...
+  {
+    id:       123
+    title:      "Room ABC"
+    slug:     "room-abc"
+    description:  "Room AbC Room AbC"
+  },
+  ...
 ]
 ```
 
@@ -1248,24 +1247,24 @@
 - URI: **/top-heart-broadcaster**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ range: week, month, all (default: week)
+  + range: week, month, all (default: week)
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
-	{
-		id: 321,
-		name: "Rainie Bui",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	...
+  {
+    id: 321,
+    name: "Rainie Bui",
+    avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+    heart: 1020,
+    exp: 1231231,
+    level: 10
+  },
+  ...
 ]
 ```
 
@@ -1273,24 +1272,24 @@
 - URI: **/top-level-grow-broadcaster**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ range: week, month, all (default: week)
+  + range: week, month, all (default: week)
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
-	{
-		id: 321,
-		name: "Rainie Bui",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	...
+  {
+    id: 321,
+    name: "Rainie Bui",
+    avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+    heart: 1020,
+    exp: 1231231,
+    level: 10
+  },
+  ...
 ]
 ```
 
@@ -1298,22 +1297,22 @@
 - URI: **/top-gift-broadcaster**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ range: week, month (default: week)
+  + range: week, month (default: week)
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
-	{
-		id: 321,
-		name: "Rainie Bui",
-		avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-		total-money: 250000
-	},
-	...
+  {
+    id: 321,
+    name: "Rainie Bui",
+    avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
+    total-money: 250000
+  },
+  ...
 ]
 ```
 
@@ -1321,24 +1320,24 @@
 - URI: **/top-level-grow-user**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ range: week, month, all (default: week)
+  + range: week, month, all (default: week)
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
-	{
-		id: 123,
-		name: "Peter Nguyen",
-		avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
-		heart: 1020,
-		exp: 1231231,
-		level: 10
-	},
-	...
+  {
+    id: 123,
+    name: "Peter Nguyen",
+    avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
+    heart: 1020,
+    exp: 1231231,
+    level: 10
+  },
+  ...
 ]
 ```
 
@@ -1346,22 +1345,22 @@
 - URI: **/top-gift-user**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request:
-	+ range: week, month, all (default: week)
+  + range: week, month, all (default: week)
 - Response:
-	+ status: **200**, **400**, **401**
-	+ body:
+  + status: **200**, **400**, **401**
+  + body:
 ```
 [
-	{
-		id: 123,
-		name: "Peter Nguyen",
-		avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
-		total-money: 250000
-	},
-	...
+  {
+    id: 123,
+    name: "Peter Nguyen",
+    avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
+    total-money: 250000
+  },
+  ...
 ]
 ```
 
@@ -1369,23 +1368,23 @@
 - URI: **/:id/top-fans**
 - Method: **GET**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Response:
-	+ body:
+  + body:
 ```
 [
-	{
-		id: 123,
-		name: "Peter Nguyen",
-		username: "Peter Nguyen",
-		avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
-		heart: 250,
-		money: 20000,
-		user_exp: 123456,
-		level: 19
-	},
-	...
+  {
+    id: 123,
+    name: "Peter Nguyen",
+    username: "Peter Nguyen",
+    avatar: "http://cdn.domain.com/user/user-id/avatar.jpg",
+    heart: 250,
+    money: 20000,
+    user_exp: 123456,
+    level: 19
+  },
+  ...
 ]
 ```
 
@@ -1400,39 +1399,39 @@
 - URI: **/send-message**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
 ```
 {
-	room_id: 123,
-	message: 'send message'
+  room_id: 123,
+  message: 'send message'
 }
 ```
 - Response:
-	+ status: **401**, **404**, **403**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
-	    + status 404: ```{error: "Room not found "}```
-	
+  + status: **401**, **404**, **403**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
+      + status 404: ```{error: "Room not found "}```
+  
 ### Send screen text
 - URI: **/send-screentext **
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
 ```
 {
-	room_id: 123,
-	message: 'send message'
+  room_id: 123,
+  message: 'send message'
 }
 ```
 - Response:
-	+ status: **401**, **404**, **403**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
+  + status: **401**, **404**, **403**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
         + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
         + status 404: ```{error: "Room not found "}```
 
@@ -1440,8 +1439,8 @@
 - URI: **/vote-action**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1450,19 +1449,19 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or action has been full"}```
-	    + status 404: ```{error: "Action not found"}```
-	    + status 400: ```{error: "Bad request"}```
-	
+  + status: **401**, **403**, **404**, **400**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 403: ```{error: "Maybe you miss subscribe room or room not started or action has been full"}```
+      + status 404: ```{error: "Action not found"}```
+      + status 400: ```{error: "Bad request"}```
+  
 ### Done action
 - URI: **/done-action**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1471,19 +1470,19 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or you is'nt broadcaster "}```
-	    + status 404: ```{error: "Action not found"}```
-	    + status 400: ```{error: "Action not full"}```
-	
+  + status: **401**, **403**, **404**, **400**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 403: ```{error: "Maybe you miss subscribe room or room not started or you is'nt broadcaster "}```
+      + status 404: ```{error: "Action not found"}```
+      + status 400: ```{error: "Action not full"}```
+  
 ### Send gifts
 - URI: **/send-gifts**
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1493,19 +1492,19 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
-	    + status 404: ```{error: "gift not found"}```
-	    + status 400: ```{error: "Action not full"}```
+  + status: **401**, **403**, **404**, **400**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
+      + status 404: ```{error: "gift not found"}```
+      + status 400: ```{error: "Action not full"}```
 
 ### Buy VIP lounge
 - URI: **/buy-lounge  **
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1515,18 +1514,18 @@
     }
     ```
 - Response:
-	+ status: **401**, **404**, **400**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 404: ```{error: "Invalid lounge index "}```
-	    + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
+  + status: **401**, **404**, **400**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 404: ```{error: "Invalid lounge index "}```
+      + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
 
 ### Send heart
 - URI: **/send-hearts **
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1535,19 +1534,19 @@
     }
     ```
 - Response:
-	+ status: **401**, **403**, **404**, **400**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough heart "}```
-	    + status 404: ```{error: "Room not found "}```
-	    + status 400: ```{error: "Bad request "}```
+  + status: **401**, **403**, **404**, **400**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 403: ```{error: "Maybe you miss subscribe room or room not started or dont have enough heart "}```
+      + status 404: ```{error: "Room not found "}```
+      + status 400: ```{error: "Bad request "}```
 
 ### Start room
 - URI: **/start-room  **
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1555,17 +1554,17 @@
     }
     ```
 - Response:
-	+ status: **401**, **404**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 404: ```{error: "Room not found "}```
-	    
+  + status: **401**, **404**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 404: ```{error: "Room not found "}```
+      
 ### End room
 - URI: **/end-room  **
 - Method: **POST**
 - Header:
-	+ Content-Type: application/json
-	+ Authorization: Token token="this-is-jwt-token"
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
 - Request
     ```
     {
@@ -1573,10 +1572,10 @@
     }
     ```
 - Response:
-	+ status: **401**, **404**
-	+ errors: 
-	    + status 401: ```{error: "Unauthorized "}```
-	    + status 404: ```{error: "Room not found "}```
+  + status: **401**, **404**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
 
