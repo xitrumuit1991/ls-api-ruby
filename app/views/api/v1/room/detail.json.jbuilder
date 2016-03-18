@@ -9,13 +9,13 @@ json.link_stream		"http://210.245.125.6:80/livestar/#{@room.id}/playlist.m3u8"
 
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
-		json.background 	@room.broadcaster_background.image.url
+		json.background 	"#{request.base_url}#{@room.broadcaster_background.image.url}"
 	else
 		json.background 	false
 	end
 else
 	if !@room.room_background_id.nil? 
-		json.background 	@room.room_background.image.url
+		json.background 	"#{request.base_url}#{@room.room_background.image.url}"
 	else
 		json.background 	false
 	end
