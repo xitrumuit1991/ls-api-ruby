@@ -6,9 +6,10 @@ class Api::V1::IndexController < Api::V1::ApplicationController
   end
 
   def msisdn
+  	msisdn = []
   	request.headers.each do |key, value|
-  		Rails.logger.info "#{key}: #{value}"
+  		msisdn << "#{key}: #{value}"
   	end
-  	render plain: "msisdn: #{request.headers['msisdn']} | #{request.headers['MSISDN']}", status: 200 and return
+  	render json: msisdn, status: 200 and return
   end
 end
