@@ -137,8 +137,9 @@ Rails.application.routes.draw do
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
-			get '/' 	=> 'index#index'
-			get '/sms'  => 'user#sms'
+			get '/' 		=> 'index#index'
+			get '/msisdn' 	=> 'index#msisdn'
+			get '/sms'  	=> 'user#sms'
 
 			# auth
 			scope '/auth' do
