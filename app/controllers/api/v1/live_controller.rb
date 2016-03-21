@@ -320,8 +320,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       @userlist.each do |key, val|
         @userlist[key] = eval(val)
         puts "+++++++++++++++++++++++++++++++++"
-        puts key.pretty_inspect
-        puts val.pretty_inspect
+        puts key
+        puts val
         puts "+++++++++++++++++++++++++++++++++"
       end
     end
