@@ -6,7 +6,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   before_action :authenticate
   before_action :checkSubscribed
-  before_action :checkStarted, only: [:voteAction, :getActionStatus, :sendScreenText, :sendGifts, :buyLounge, :endRoom, :doneAction, :sendHearts]
+  before_action :checkStarted, only: [:voteAction, :getActionStatus, :sendScreenText, :sendGifts, :buyLounge, :endRoom, :doneAction, :sendHearts, :addHeartInRoom]
   before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction]
 
   resource_description do
@@ -19,6 +19,33 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def getUserList
     render json: @userlist 
+  end
+
+  def addHeartInRoom
+    maxHeart  = @user.user_level.level
+    userHeart = UserReceivedHeart.find_by_user_id(@user.id)
+    hearts    = params[:hearts].to_i
+    if !userHeart
+      userHeart = UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
+    end
+    if (DateTime.now.to_i - userHeart.updated_at.to_i) >= Settings.timeAddHeart
+      if @user.no_heart < maxHeart
+        begin
+          userHeart.update(:hearts => userHeart.hearts.to_i + 1)
+          @user.update(:no_heart => @user.no_heart.to_i + 1)
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+          emitter.of("/room").in(@room.id).emit("add hearts", {hearts: hearts, sender: user})
+          return head 201
+        rescue => e
+          render json: {error: e.message}, status: 400
+        end
+      else
+        return head 204
+      end
+    else
+      return head 204
+    end
   end
 
   api! "send normal message"
@@ -330,9 +357,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if(params.has_key?(:room_id)) then
         @room = Room.find(params[:room_id])
         getUsers
-        # if(!@userlist.has_key?(@user.email)) then
-        #   render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
-        # end
+        if(!@userlist.has_key?(@user.email)) then
+          render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
+        end
       else
         render json: {error: "Thiếu tham số room_id "}, status: 404 and return
       end

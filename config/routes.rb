@@ -137,23 +137,23 @@ Rails.application.routes.draw do
 	namespace :api, defaults: { format: :json} do
 		namespace :v1 do
 			# root
-			get '/' 		=> 'index#index'
+			get '/' 				=> 'index#index'
 			get '/msisdn' 	=> 'index#msisdn'
-			get '/sms'  	=> 'user#sms'
+			get '/sms'  		=> 'user#sms'
 
 			# auth
 			scope '/auth' do
-				get   '/logout'          			=> 'auth#logout'
+				get   '/logout'          						=> 'auth#logout'
 				get  '/:forgot_code/get-password' 	=> 'auth#setNewPassword'
-				post  '/login'           			=> 'auth#login'
-				post  '/register'        			=> 'auth#register'
-				post  '/fb-register'     			=> 'auth#fbRegister'
-				post  '/gp-register'     			=> 'auth#gpRegister'
-				post  '/forgot'          			=> 'auth#forgotPassword'
-				post  '/verify-token'    			=> 'auth#verifyToken'
-				post  '/change'          			=> 'auth#changePassword'
-				post  '/update-forgot-code' 		=> 'auth#updateForgotCode'
-				post  '/reset-password'     		=> 'auth#setNewPassword'
+				post  '/login'           						=> 'auth#login'
+				post  '/register'        						=> 'auth#register'
+				post  '/fb-register'     						=> 'auth#fbRegister'
+				post  '/gp-register'     						=> 'auth#gpRegister'
+				post  '/forgot'          						=> 'auth#forgotPassword'
+				post  '/verify-token'    						=> 'auth#verifyToken'
+				post  '/change'          						=> 'auth#changePassword'
+				post  '/update-forgot-code' 				=> 'auth#updateForgotCode'
+				post  '/reset-password'     				=> 'auth#setNewPassword'
 			end
 
 			# users
@@ -172,7 +172,6 @@ Rails.application.routes.draw do
 				get  '/:username'					=> 'user#publicProfile' #
 				put  '/'                 	=> 'user#update' #
 				post '/update-profile'  	=> 'user#updateProfile'
-				get '/:user_id/add-heart' => 'user#addHeartInRoom'
 				post '/update-password'  	=> 'user#updatePassword'
 				post '/avatar'          	=> 'user#uploadAvatar' #
 				post '/cover'           	=> 'user#uploadCover' #
@@ -249,6 +248,7 @@ Rails.application.routes.draw do
 			# Live functions
 			scope 'live' do
 				get   '/userlist'           => 'live#getUserList'
+				post 	'/add-heart' 					=> 'live#addHeartInRoom'
 				post  '/send-message'       => 'live#sendMessage'
 				post  '/send-screentext'    => 'live#sendScreenText'
 				post  '/send-hearts'        => 'live#sendHearts'
