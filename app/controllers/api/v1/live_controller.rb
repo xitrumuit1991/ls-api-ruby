@@ -319,6 +319,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       @userlist = redis.hgetall(@room.id)
       @userlist.each do |key, val|
         @userlist[key] = eval(val)
+        puts "+++++++++++++++++++++++++++++++++"
+        puts key.pretty_inspect
+        puts val.pretty_inspect
+        puts "+++++++++++++++++++++++++++++++++"
       end
     end
 
