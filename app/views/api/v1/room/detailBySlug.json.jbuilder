@@ -5,7 +5,7 @@ json.thumb				@room.thumb_path
 json.thumb_mb			@room.thumb_path(true)
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
-json.link_stream		"http://210.245.125.6:80/livestar/#{@room.id}/playlist.m3u8"
+json.link_stream		"http://stream.livestar.vn:80/livestar-open/#{@room.id}/playlist.m3u8"
 
 if !@room.broadcaster_background_id.nil?
 	if !@room.broadcaster_background_id.nil?
