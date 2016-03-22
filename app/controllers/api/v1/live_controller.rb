@@ -33,7 +33,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     no_char = vipPackage.present? ? vipPackage.vip_package.vip.no_char : 40
     last_message = redis.get("last_message:#{room_id}:#{@user.id}")
     timeLastMsg = !last_message.blank? ? last_message : 0
-    duration = Time.now.to_i - timeLastMsg.to_i
+    duration = params[:timestamp].to_i - timeLastMsg.to_i
 
     if @user.is_broadcaster && @user.broadcaster.rooms.find_by_is_privated(false).id == room_id.to_i
       timeChat = 0
@@ -51,7 +51,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
 
-          render json: {last_message: Time.now.to_i}, status: 201
+          return head 201
         else
           render json:{message: "Vui lòng gửi tin nhắn sau #{timeChat - duration} s!"}, status: 200
         end
