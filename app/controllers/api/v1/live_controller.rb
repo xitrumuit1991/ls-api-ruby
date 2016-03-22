@@ -53,8 +53,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
           render json: {last_message: Time.now.to_i}, status: 201
         else
-          time = (timeChat - duration).to_s
-          render json:{message: "Vui lòng gửi tin nhắn sau #{time} s!"}, status: 200
+          render json:{message: "Vui lòng gửi tin nhắn sau #{timeChat - duration} s!"}, status: 200
         end
       else
         render json:{error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
