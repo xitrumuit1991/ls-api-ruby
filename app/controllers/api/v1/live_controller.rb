@@ -46,15 +46,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if message.length > 0
       if message.length <= no_char
         if duration >= timeChat
-          redis.set("last_message:#{room_id}:#{@user.id}", Time.now.to_i);
+          redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
 
           render json: {last_message: Time.now.to_i}, status: 201
         else
-          time = (timeChat - duration).to_s
-          render json:{message: "Vui lòng gửi tin nhắn sau #{time}! s"}, status: 200
+          render json:{message: "Vui lòng gửi tin nhắn sau #{timeChat - duration} s!"}, status: 200
         end
       else
         render json:{error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
