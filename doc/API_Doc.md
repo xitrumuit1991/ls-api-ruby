@@ -91,6 +91,23 @@
 - Response:
   + status **200** *(OK)*, **404** *(User Not found)*
 
+### Change password
+- URI: **/change**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+```
+{
+  "old_password": "aaaaaaaa",
+  "password": "bbbbbbb"
+}
+```
+- Response:
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + body: ```{"token": "this-is-jwt-token"}```
+
 ### Verify token
 - URI: **/verify-token**
 - Method: **POST**

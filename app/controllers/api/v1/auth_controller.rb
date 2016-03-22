@@ -240,6 +240,36 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       end
   end
 
+  api! "change password"
+  param :password, String, :desc => "new password", :required => true
+  param :old_password, String, :desc => "current password", :required => true
+  error :code => 401, :desc => "Unauthorized"
+  error :code => 400, :desc => "Can't chnage password"
+  error :code => 400, :desc => "Input invalid"
+  def changePassword
+    user = User.find_by(email: @user[:email]).try(:authenticate, params[:old_password])
+    if user.present?
+      user.password = params[:password]
+      if user.valid?
+        if user.save
+          # create token
+          token = createToken(@user)
+
+          # update token
+          @user.update(last_login: Time.now, token: token)
+
+          render json: {token: token}, status: 200
+        else
+          render plain: 'System error !', status: 400
+        end
+      else
+        render json: user.errors.messages, status: 400
+      end
+    else
+      return head 401
+    end
+  end
+
   private
     def createToken(user)
       payload = {id: user.id, email: user.email, name: user.name, exp: Time.now.to_i + 24 * 3600}
