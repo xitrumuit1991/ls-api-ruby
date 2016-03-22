@@ -149,7 +149,6 @@ Rails.application.routes.draw do
 				post  '/register'        			=> 'auth#register'
 				post  '/fb-register'     			=> 'auth#fbRegister'
 				post  '/gp-register'     			=> 'auth#gpRegister'
-				post  '/forgot'          			=> 'auth#forgotPassword'
 				post  '/verify-token'    			=> 'auth#verifyToken'
 				post  '/change'          			=> 'auth#changePassword'
 				post  '/update-forgot-code' 		=> 'auth#updateForgotCode'

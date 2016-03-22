@@ -73,25 +73,16 @@
 - Response:
   + status **200** *(OK)*, **401** *(Unauthorize)*
 
-### Forgot password (reset password)
-- URI: **/forgot**
-- Method: **POST**
-- Header:
-  + Content-Type: application/json
-- Request: ```{ "email": "alex@email.com" }```
-- Response:
-  + status **200** *(OK)*, **400** *(Bad request)*, **404** *(Not found)*
-
 ### Forgot code (update forgot code to reset password)
 - URI: **/update-forgot-code**
 - Method: **POST**
 - Header:
   + Content-Type: application/json
-- Request: ```{ "email": "alex@email.com", "forgot_code" : "HIJKLMNO" }```
+- Request: ```{ "email": "alex@email.com"}```
 - Response:
   + status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
 
-### Reset Password (update forgot code to reset password)
+### Set new password
 - URI: **/reset-password**
 - Method: **POST**
 - Header:
@@ -1409,10 +1400,11 @@
 }
 ```
 - Response:
-  + status: **401**, **404**, **403**
+  + status: **400**, **401**, **404**, **200**
   + errors: 
+      + status 200: ```{message: "Vui lòng gửi tin nhắn sau 3 s! "}```
+      + status 400: ```{error: "Nội dung chat không được vượt quá số kí tư cho phép hoặc vui lòng nhập tin nhắn trước khi gửi "}```
       + status 401: ```{error: "Unauthorized "}```
-      + status 403: ```{error: "Maybe you miss subscribe room or room not started "}```
       + status 404: ```{error: "Room not found "}```
   
 ### Send screen text
