@@ -18,7 +18,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def getUserList
-    render json: @userlist 
+    render json: @userlist
   end
 
   def addHeartInRoom
@@ -52,15 +52,42 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   param :message, String, :required => true
   error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendMessage
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     message = params[:message]
-    @user.increaseExp(1)
-    if message.length <= 150
-      emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-      user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-      emitter.of("/room").in(@room.id).emit('message', {message: message, sender: user});
-      return head 201
+    room_id = params[:room_id]
+
+    vipPackage = @user.user_has_vip_packages.find_by_actived(true)
+    no_char = vipPackage.present? ? vipPackage.vip_package.vip.no_char : 40
+    last_message = redis.get("last_message:#{room_id}:#{@user.id}")
+    timeLastMsg = !last_message.blank? ? last_message : 0
+    duration = Time.now.to_i - timeLastMsg.to_i
+
+    if @user.is_broadcaster && @user.broadcaster.rooms.find_by_is_privated(false).id == room_id.to_i
+      timeChat = 0
+    elsif vipPackage.present?
+      timeChat = vipPackage.vip_package.vip.screen_text_time
     else
-      return head 400
+      timeChat = 200
+    end
+    @user.increaseExp(1)
+    if message.length > 0
+      if message.length <= no_char
+        if duration >= timeChat
+          redis.set("last_message:#{room_id}:#{@user.id}", Time.now.to_i);
+          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
+
+          render json: {last_message: Time.now.to_i}, status: 201
+        else
+          time = (timeChat - duration).to_s
+          render json:{message: "Vui lòng gửi tin nhắn sau #{time}! s"}, status: 200
+        end
+      else
+        render json:{error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
+      end
+    else
+      render json:{error: "Vui lòng nhập nội dung chat trước khi gởi !"}, status: 400
     end
   end
 
@@ -184,11 +211,11 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(expUser)
           @room.broadcaster.increaseExp(expBct)
-          
+
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image_url}, quantity:quantity, total: total, sender: user})
-          
+
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
           @user.user_logs.create(room_id: @room.id, money: total)
@@ -326,55 +353,51 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
-    def formulaExpForUser(price, quantity)
-      vip = UserHasVipPackage::find_by_user_id(@user.id)
-      if vip
-        exp = price * quantity * vip.vip_package.vip.exp_bonus
-        return exp
-      else
-        exp = price * quantity * 1
-        return exp
-      end
+  def formulaExpForUser(price, quantity)
+    vip = UserHasVipPackage::find_by_user_id(@user.id)
+    if vip
+      exp = price * quantity * vip.vip_package.vip.exp_bonus
+      return exp
+    else
+      exp = price * quantity * 1
+      return exp
     end
+  end
 
-    def formulaExpForBct(price, quantity)
-      return price * quantity * 10
-    end
+  def formulaExpForBct(price, quantity)
+    return price * quantity * 10
+  end
 
-    def getUsers
-      redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-      @userlist = redis.hgetall(@room.id)
-      @userlist.each do |key, val|
-        @userlist[key] = eval(val)
-        puts "+++++++++++++++++++++++++++++++++"
-        puts key
-        puts val
-        puts "+++++++++++++++++++++++++++++++++"
-      end
+  def getUsers
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+    @userlist = redis.hgetall(@room.id)
+    @userlist.each do |key, val|
+      @userlist[key] = eval(val)
     end
+  end
 
-    def checkSubscribed
-      if(params.has_key?(:room_id)) then
-        @room = Room.find(params[:room_id])
-        getUsers
-        if(!@userlist.has_key?(@user.email)) then
-          render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
-        end
-      else
-        render json: {error: "Thiếu tham số room_id "}, status: 404 and return
+  def checkSubscribed
+    if(params.has_key?(:room_id)) then
+      @room = Room.find(params[:room_id])
+      getUsers
+      if(!@userlist.has_key?(@user.email)) then
+        render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
       end
+    else
+      render json: {error: "Thiếu tham số room_id "}, status: 404 and return
     end
+  end
 
-    def checkStarted
-      if !@room.on_air then
-        render json: {error: "Phòng này đã tắt"}, status: 403  and return
-      end
+  def checkStarted
+    if !@room.on_air then
+      render json: {error: "Phòng này đã tắt"}, status: 403  and return
     end
+  end
 
-    def checkPermission
-      if @user.email != @room.broadcaster.user.email then
-        render json: {error: "Bạn không đủ quyền để sử dụng chức năng này"}, status: 403 and return
-      end
+  def checkPermission
+    if @user.email != @room.broadcaster.user.email then
+      render json: {error: "Bạn không đủ quyền để sử dụng chức năng này"}, status: 403 and return
     end
+  end
 
 end
