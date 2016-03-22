@@ -46,7 +46,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if message.length > 0
       if message.length <= no_char
         if duration >= timeChat
-          redis.set("last_message:#{room_id}:#{@user.id}", Time.now.to_i);
+          redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
