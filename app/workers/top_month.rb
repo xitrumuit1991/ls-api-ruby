@@ -1,4 +1,4 @@
-class TopMonthlyUserSendGift
+class TopMonth
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
 	recurrence { monthly }
