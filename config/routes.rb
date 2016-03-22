@@ -127,9 +127,13 @@ Rails.application.routes.draw do
     resources :slides
 		post 	'/slides/destroy_m' => 'slides#destroy_m'
 
-		# Room Backgrounds
-    resources :vips
+		# Vips
+		resources :vips
 		post 	'/vips/destroy_m' => 'vips#destroy_m'
+
+		# Vips
+		resources :vip_packages
+		post 	'/vip_packages/destroy_m' => 'vip_packages#destroy_m'
 
   end
 
