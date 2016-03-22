@@ -210,27 +210,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   param :email, String,:required => true
   error :code => 404, :desc => "Email not found"
   error :code => 400, :desc => "Can't create new password"
-  def forgotPassword
-    user = User.find_by_email(params[:email])
-    if user.present?
-      new_password    = SecureRandom.hex(5)
-      user.password   = new_password
-      user.token      = ''
-      if user.save
-        UserMailer.reset_password(user, new_password).deliver_now
-        return head 200
-      else
-        render json: user.errors.messages, status: 400
-      end
-    else
-      return head 404
-    end
-  end
-
   def updateForgotCode
     user = User.find_by_email(params[:email])
-    forgot_code = params[:forgot_code]
-
+    forgot_code = SecureRandom.hex(4)
     if user.present?
       if user.update(forgot_code: forgot_code)
         UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
@@ -245,12 +227,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def setNewPassword
       user = User.find_by_forgot_code(params[:forgot_code])
-
       if user.present?
-        new_password = SecureRandom.hex(5)
-        if user.update(password: new_password)
-          UserMailer.reset_password(user, new_password).deliver_now
-          return head 200
+        new_password = SecureRandom.hex(4)
+        if user.update(password: new_password, token: '')
+          if UserMailer.reset_password(user, new_password).deliver_now
+            user.update(forgot_code: SecureRandom.hex(4))
+            return head 200
+          end
         end
       else
         return head 404

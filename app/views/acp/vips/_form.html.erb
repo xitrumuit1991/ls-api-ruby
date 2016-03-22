@@ -72,7 +72,8 @@
             <div class="col-sm-6">
               <div class="form-group form-group-default required">
                 <label>Chặn bị quảng cáo</label>
-                <input type="text" class="form-control" name="data[clock_ads]" value="<%= @data.clock_ads %>" required>
+                <input type="radio" name="data[clock_ads]" value="1" <%= @data.clock_ads ? "checked":"" %>>Yes
+                <input type="radio" name="data[clock_ads]" value="0" <%= !@data.clock_ads ? "checked":"" %>>No
               </div>
             </div>
             <div class="col-sm-6">

@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
+          <% if @data.errors.any? %>
+             <div class="alert alert-danger" role="alert">
+               <button class="close" data-dismiss="alert"></button>
+               <p>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra</p>
+              <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Tên</label>
+                <select class="form-control select2" name="data[vip_id]">
+                    <% @vips.each do |vip| %>
+                    <option value="<%= vip.id %>" <% if vip.id == @data.vip_id %>selected<% end %>><%= vip.name %></option>
+                    <% end %>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Tên</label>
+                <input type="text" class="form-control" name="data[name]" value="<%= @data.name %>" >
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Mã</label>
+                <input type="text" class="form-control" name="data[code]" value="<%= @data.code %>" >
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Ngày</label>
+                <input type="text" class="form-control" name="data[no_day]" value="<%= @data.no_day %>" >
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Giá</label>
+                <input type="text" class="form-control" name="data[price]" value="<%= @data.price %>" >
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group form-group-default required">
+                <label>Giảm Giá</label>
+                <input type="text" class="form-control" name="data[discount]" value="<%= @data.discount %>" >
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+              <span>Lưu</span>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>
