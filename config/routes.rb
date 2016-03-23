@@ -131,9 +131,13 @@ Rails.application.routes.draw do
 		resources :vips
 		post 	'/vips/destroy_m' => 'vips#destroy_m'
 
-		# Vips
+		# Vip Packages
 		resources :vip_packages
 		post 	'/vip_packages/destroy_m' => 'vip_packages#destroy_m'
+
+		# Trade Logs
+		resources :trade_logs
+		post 	'/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
   end
 
@@ -172,6 +176,7 @@ Rails.application.routes.draw do
 				get '/get-providers'      => 'user#getProviders'
 				get '/get-banks'       		=> 'user#getBanks'
 				get '/get-megabanks'      => 'user#getMegabanks'
+				get  '/check-captcha'			=> 'user#checkRecaptcha' #
 				get  '/:username'					=> 'user#publicProfile' #
 				put  '/'                 	=> 'user#update' #
 				post '/update-profile'  	=> 'user#updateProfile'
