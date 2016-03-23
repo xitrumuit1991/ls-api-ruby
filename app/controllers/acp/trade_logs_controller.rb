@@ -1,6 +1,5 @@
-class Acp::VipPackagesController < Acp::ApplicationController
+class Acp::TradeLogsController < Acp::ApplicationController
 	before_filter :init
-	before_action :load_data, only: [:new, :create, :edit, :update]
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
 	def index
@@ -20,7 +19,7 @@ class Acp::VipPackagesController < Acp::ApplicationController
 	def create
 		@data = @model.new(parameters)
 		if @data.save
-			redirect_to({ action: 'index' }, notice: 'Vip package was successfully created.')
+			redirect_to({ action: 'index' }, notice: 'Vip was successfully created.')
 		else
 			render :new
 		end
@@ -28,7 +27,7 @@ class Acp::VipPackagesController < Acp::ApplicationController
 
 	def update
 		if @data.update(parameters)
-			redirect_to({ action: 'index' }, notice: 'Vip package was successfully updated.')
+			redirect_to({ action: 'index' }, notice: 'Vip was successfully updated.')
 		else
 			render :edit
 		end
@@ -36,12 +35,12 @@ class Acp::VipPackagesController < Acp::ApplicationController
 
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Vip package was successfully destroyed.')
+		redirect_to({ action: 'index' }, notice: 'Vip was successfully destroyed.')
 	end
 
 	def destroy_m
 		@model.destroy(params[:item_id])
-		redirect_to({ action: 'index' }, notice: 'Vip packages were successfully destroyed.')
+		redirect_to({ action: 'index' }, notice: 'Vips were successfully destroyed.')
 	end
 
 	private
@@ -49,15 +48,11 @@ class Acp::VipPackagesController < Acp::ApplicationController
 			@model = controller_name.classify.constantize
 		end
 
-		def load_data
-			@vips = Vip.all
-		end
-
 		def set_data
 			@data = @model.find(params[:id])
 		end
 
 		def parameters
-			params.require(:data).permit(:vip_id, :name, :code, :no_day, :price, :discount)
+			params.require(:data).permit(:name, :code, :image, :weight, :no_char, :screen_text_time, :screen_text_effect, :kick_level, :clock_kick, :clock_ads, :exp_bonus)
 		end
 end
