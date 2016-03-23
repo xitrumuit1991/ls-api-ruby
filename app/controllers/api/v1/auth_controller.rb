@@ -54,7 +54,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def register
     activeCode = SecureRandom.hex(3).upcase
     user = User.new
-    user.name     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
+    user.name     = params[:email].split("@")[0]
     user.username = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
     user.email    = params[:email]
     user.password = params[:password].to_s
