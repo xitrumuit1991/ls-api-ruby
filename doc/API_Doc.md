@@ -746,26 +746,52 @@
   + status: **200**, **400**, **401**
   + body:
 ```
-[
-  {
-        "id": 133,
-        "name": "bct_002",
-        "username": "bct_002",
-        "avatar": "http://api.dev.livestar.vn//api/v1/users/133/avatar?timestamp=1449539146",
-        "heart": 0,
-        "bct_exp": 0,
-        "level": 31,
-        "room": {
-          "id": 33,
-          "title": "Room BCT 002",
-          "slug": "room-bct-002",
-          "on_air": false,
-          "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_mb_cute_girl_4.jpg?timestamp=1449102738",
-          "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_cute_girl_4.jpg?timestamp=1449102738"
-        }
-      },
-  ...
-]
+{
+  "totalPage": 2,
+  "broadcasters": [
+    {
+      "id": 133,
+      "bct_id": 34,
+      "name": "bct_002",
+      "username": "bct_002",
+      "avatar": "http://api.dev.livestar.vn//api/v1/users/133/avatar?timestamp=1458293884",
+      "heart": 0,
+      "bct_exp": 0,
+      "level": 31,
+      "isFollow": true,
+      "room": {
+        "id": 33,
+        "totalUser": 0,
+        "title": "Room BCT 002",
+        "slug": "room-bct-002",
+        "on_air": false,
+        "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_cute_girl_4.jpg?timestamp=1449102738",
+        "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/33/thumb_mb_cute_girl_4.jpg?timestamp=1449102738"
+      }
+    },
+    {
+      "id": 134,
+      "bct_id": 35,
+      "name": "bct_003",
+      "username": "bct_003",
+      "avatar": "http://api.dev.livestar.vn//api/v1/users/134/avatar?timestamp=1449451367",
+      "heart": 0,
+      "bct_exp": 0,
+      "level": 25,
+      "isFollow": true,
+      "room": {
+        "id": 35,
+        "totalUser": 0,
+        "title": "Room BCT 003",
+        "slug": "room-bct-003",
+        "on_air": true,
+        "thumb": "http://api.dev.livestar.vn//uploads/room/thumb/35/thumb_cute_girl_5.jpg?timestamp=1449102745",
+        "thumb_mb": "http://api.dev.livestar.vn//uploads/room/thumb/35/thumb_mb_cute_girl_5.jpg?timestamp=1449102745"
+      }
+    },
+    ....
+  ]
+}
 ```
 
 ### Home Get featured broadcasters

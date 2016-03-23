@@ -1,4 +1,4 @@
-class TopAllUserSendGift
+class TopYear
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
 	recurrence { yearly }

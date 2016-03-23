@@ -1,3 +1,4 @@
+require "redis"
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include YoutubeHelper
@@ -232,8 +233,17 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     ]
   EOS
   def getFeatured
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
-    @featured = Featured.order(weight: :asc).limit(6).offset(offset)
+    @user = check_authenticate
+    @totalUser = []
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
+    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
+    getAllRecord = Featured.all.length
+    @totalPage =  (Float(getAllRecord)/4).ceil
+
+    @featured.each do |f|
+      @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+    end
   end
 
   api! "get sticked broadcaster in homepage"

@@ -1,4 +1,4 @@
-class TopBctReceivedHearts
+class TopWeek
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
 	recurrence { weekly.day(:monday).hour_of_day(2).minute_of_hour(0) }
