@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha]
 
   def profile
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
@@ -321,6 +321,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
         render plain: 'requeststatus=17', status: 400
       end
     end
+  end
+
+  def checkRecaptcha
+    uri = URI('https://www.google.com/recaptcha/api/siteverify?secret=' + Settings.secret_key_captcha + '&response=' + params[:key])
+    res = Net::HTTP.get(uri)
+    render json: res, status: 200
   end
 
   def _checkuser(active_code)
