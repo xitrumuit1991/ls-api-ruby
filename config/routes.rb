@@ -176,6 +176,7 @@ Rails.application.routes.draw do
 				get '/get-providers'      => 'user#getProviders'
 				get '/get-banks'       		=> 'user#getBanks'
 				get '/get-megabanks'      => 'user#getMegabanks'
+				get  '/check-captcha'			=> 'user#checkRecaptcha' #
 				get  '/:username'					=> 'user#publicProfile' #
 				put  '/'                 	=> 'user#update' #
 				post '/update-profile'  	=> 'user#updateProfile'
