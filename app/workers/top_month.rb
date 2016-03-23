@@ -14,7 +14,7 @@ class TopMonth
 		MonthlyTopUserSendGift.connection.execute("ALTER TABLE monthly_top_user_send_gifts AUTO_INCREMENT = 1")
 		monthly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: DateTime.now.beginning_of_month..DateTime.now).group(:user_id).order('money DESC').limit(10)
 		monthly_user_logs.each do |monthly_user_log|
-			MonthlyTopUserSendGift.create(:user_id => monthly_user_log.user_id, :money => 1, :money => monthly_user_log.money)
+			MonthlyTopUserSendGift.create(:user_id => monthly_user_log.user_id, :money => monthly_user_log.money)
 		end
 	end
 end
