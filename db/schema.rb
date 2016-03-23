@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160316093628) do
+ActiveRecord::Schema.define(version: 20160323045838) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -506,6 +506,17 @@ ActiveRecord::Schema.define(version: 20160316093628) do
   add_index "top_user_send_gifts", ["room_id"], name: "index_top_user_send_gifts_on_room_id", using: :btree
   add_index "top_user_send_gifts", ["user_id"], name: "index_top_user_send_gifts_on_user_id", using: :btree
 
+  create_table "trade_logs", force: :cascade do |t|
+    t.integer  "user_id",        limit: 4
+    t.integer  "vip_package_id", limit: 4
+    t.boolean  "status"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "trade_logs", ["user_id"], name: "index_trade_logs_on_user_id", using: :btree
+  add_index "trade_logs", ["vip_package_id"], name: "index_trade_logs_on_vip_package_id", using: :btree
+
   create_table "user_follow_bcts", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
     t.integer  "broadcaster_id", limit: 4
@@ -724,6 +735,8 @@ ActiveRecord::Schema.define(version: 20160316093628) do
   add_foreign_key "top_user_send_gifts", "broadcasters"
   add_foreign_key "top_user_send_gifts", "rooms"
   add_foreign_key "top_user_send_gifts", "users"
+  add_foreign_key "trade_logs", "users"
+  add_foreign_key "trade_logs", "vip_packages"
   add_foreign_key "user_follow_bcts", "broadcasters"
   add_foreign_key "user_follow_bcts", "users"
   add_foreign_key "user_has_vip_packages", "users"

@@ -4,7 +4,7 @@
       <!-- START BREADCRUMB -->
       <ul class="breadcrumb">
         <li><a href="/acp">Home</a></li>
-        <li><a href="#" class="active">Vip Packages</a></li>
+        <li><a href="#" class="active">Trade Logs</a></li>
       </ul>
       <!-- END BREADCRUMB -->
     </div>
@@ -25,11 +25,6 @@
               <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
           </div>
       </div>
-      <div class="pull-right">
-        <div class="col-xs-12">
-          <%= link_to(new_acp_vip_package_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
-        </div>
-      </div>
       <div class="clearfix"></div>
     </div>
     <div class="panel-body">
@@ -44,12 +39,11 @@
                     <label for="check-all"></label>
                   </div>
                 </th>
+                <th style="width:30%">User</th>
                 <th style="width:15%">Vip</th>
-                <th style="width:15%">Tên</th>
-                <th style="width:15%">Mã</th>
-                <th style="width:15%">Ngày</th>
-                <th style="width:15%">Giá</th>
-                <th style="width:15%">Giảm Giá</th>
+                <th style="width:15%">Package</th>
+                <th style="width:15%">Status</th>
+                <th style="width:15%">Created</th>
                 <th style="width:7%">Hành động</th>
             </tr>
           </thead>
@@ -63,27 +57,23 @@
                   </div>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.vip.name %></p>
+                  <p><%= item.user.name %></p>
                 </td>
                 <td class="v-align-middle ">
-                  <p><%= item.name %></p>
+                  <p><%= item.vip_package.vip.name %></p>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.code %></p>
+                  <p><%= item.vip_package.name %></p>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.no_day %></p>
+                  <p><%= item.status %></p>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.price %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.discount %></p>
+                  <p><%= item.created_at.strftime('%d/%m/%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">
-                    <%= link_to(edit_acp_vip_package_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
-                    <%= link_to(acp_vip_package_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                    <%= link_to(acp_trade_log_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                   </div>
                 </td>
               </tr>

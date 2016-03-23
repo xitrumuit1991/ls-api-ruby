@@ -131,9 +131,13 @@ Rails.application.routes.draw do
 		resources :vips
 		post 	'/vips/destroy_m' => 'vips#destroy_m'
 
-		# Vips
+		# Vip Packages
 		resources :vip_packages
 		post 	'/vip_packages/destroy_m' => 'vip_packages#destroy_m'
+
+		# Trade Logs
+		resources :trade_logs
+		post 	'/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
   end
 
