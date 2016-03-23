@@ -136,6 +136,50 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		end
 	end
 
+	def topWeek
+		TopBctReceivedHeart.destroy_all
+		TopBctReceivedHeart.connection.execute("ALTER TABLE top_bct_received_hearts AUTO_INCREMENT = 1")
+		hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: DateTime.now.beginning_of_week..DateTime.now).group(:room_id).order('quantity DESC').limit(10)
+		hearts.each do |heart|
+			TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+		end
+
+		WeeklyTopUserSendGift.destroy_all
+		WeeklyTopUserSendGift.connection.execute("ALTER TABLE weekly_top_user_send_gifts AUTO_INCREMENT = 1")
+		weekly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: DateTime.now.beginning_of_week..DateTime.now).group(:user_id).order('money DESC').limit(10)
+		weekly_user_logs.each do |weekly_user_log|
+			WeeklyTopUserSendGift.create(:user_id => weekly_user_log.user_id, :money => weekly_user_log.money)
+		end
+		return head 200
+	end
+
+	def topMonth
+		MonthlyTopBctReceivedHeart.destroy_all
+		MonthlyTopBctReceivedHeart.connection.execute("ALTER TABLE monthly_top_bct_received_hearts AUTO_INCREMENT = 1")
+		hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: DateTime.now.beginning_of_month..DateTime.now).group(:room_id).order('quantity DESC').limit(10)
+		hearts.each do |heart|
+			MonthlyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+		end
+		
+		MonthlyTopUserSendGift.destroy_all
+		MonthlyTopUserSendGift.connection.execute("ALTER TABLE monthly_top_user_send_gifts AUTO_INCREMENT = 1")
+		monthly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: DateTime.now.beginning_of_month..DateTime.now).group(:user_id).order('money DESC').limit(10)
+		monthly_user_logs.each do |monthly_user_log|
+			MonthlyTopUserSendGift.create(:user_id => monthly_user_log.user_id, :money => monthly_user_log.money)
+		end
+		return head 200
+	end
+
+	def topYear
+		TopUserSendGift.destroy_all
+		TopUserSendGift.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
+		all_user_logs = UserLog.select('user_id, sum(money) as money').group(:user_id).order('money DESC').limit(10)
+		all_user_logs.each do |all_user_log|
+			TopUserSendGift.create(:user_id => all_user_log.user_id, :money => all_user_log.money)
+		end
+		return head 200
+	end
+
 	def updateCreatedAtBroadcaster
 		# WeeklyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_week)
 		# MonthlyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_month)
