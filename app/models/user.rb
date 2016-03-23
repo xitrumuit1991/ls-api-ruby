@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
 			self.update(money: value)
 			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else
-			raise "You don\'t have enough money"
+			raise "Bạn không có đủ tiền"
 		end
 	end
 
