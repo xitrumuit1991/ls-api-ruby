@@ -69,6 +69,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     else
       timeChat = 200
     end
+    timeChat = 0
     @user.increaseExp(1)
     if message.length > 0
       if message.length <= no_char
