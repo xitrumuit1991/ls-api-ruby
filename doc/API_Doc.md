@@ -1614,7 +1614,7 @@
 }
 ```
 - Response:
-  + status: **401**, **200**, **404**
+  + status: **401**, **200**, **403**
   + errors: 
       + status 401: ```{error: "Bạn chưa đăng nhập!"}```
-      + status 404: ```{error: "Vip không tồn tại!"}```
+      + status 403: ```{error: "Thông báo lỗi"}```
