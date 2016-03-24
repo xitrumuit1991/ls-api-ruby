@@ -60,7 +60,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.password = params[:password].to_s
     user.birthday = '2000-01-01'
     user.user_level_id       = UserLevel.first().id
-    user.money               = 100000
+    user.money               = 100
     user.user_exp            = 0
     user.actived             = 0
     user.no_heart            = 0
@@ -106,7 +106,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           activeCode          = SecureRandom.hex(3).upcase
           password            = SecureRandom.hex(5)
           user                = User.new
-          user.name           = profile['name'] + SecureRandom.hex(3).upcase
+          user.name           = profile['name']
           user.username       = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
           user.email          = profile['email']
           user.gender         = profile['gender']
@@ -116,7 +116,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.avatar         = graph.get_picture(profile['id'], type: :large)
           user.password       = password
           user.active_code    = activeCode
-          user.money          = 100000
+          user.money          = 100
           user.user_exp       = 0
           user.actived        = 1
           user.no_heart       = 0

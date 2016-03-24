@@ -228,6 +228,9 @@ Rails.application.routes.draw do
 				get		'/:room_id/top-user-use-in-room'	=> 'ranks#topUserUseMoneyRoom'
 				get		'/:room_id/top-user-use-money'		=> 'ranks#topUserUseMoneyCurrent'
 				get		'/:id/top-fans'										=> 'ranks#topUserFollowBroadcaster'
+				get		'/topWeek'												=> 'ranks#topWeek'
+				get		'/topMonth'												=> 'ranks#topMonth'
+				get		'/topYear'												=> 'ranks#topYear'
 			end
 
 			# rooms
