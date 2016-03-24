@@ -244,8 +244,13 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if lounge >= 0 && lounge <= 11
       if @user.money >= cost then
         begin
+          puts '========================'
+          puts redis.get("lounges:#{@room.id}:#{lounge}")
+          puts '++++++++++++++++++++++++'
           if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
             current_lounge = eval(current_lounge)
+            puts current_lounge
+            puts '========================'
             if current_lounge[:cost].to_i >= cost
               render json: {error: "Your bit must larger than curent cost"}, status: 400 and return
             end
