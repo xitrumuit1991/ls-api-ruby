@@ -241,41 +241,39 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     cost = params[:cost].to_i
     lounge = params[:lounge].to_i
-    puts '========================'
-    puts redis.get("lounges:#{@room.id}:#{lounge}")
-    puts '++++++++++++++++++++++++'
     if lounge >= 0 && lounge <= 11
       if @user.money >= cost then
-        begin
-          
-          if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
-            current_lounge = eval(current_lounge)
-            puts current_lounge
-            puts '========================'
-            if current_lounge[:cost].to_i >= cost
-              render json: {error: "Your bit must larger than curent cost"}, status: 400 and return
+        if cost > 50
+          begin
+            if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
+              current_lounge = eval(current_lounge)
+              if current_lounge[:cost].to_i >= cost
+                render json: {error: "Giá mua của bạn phải lớn hơn giá hiện tại"}, status: 400 and return
+              end
             end
-          end
-          expUser = formulaExpForUser(cost, 1)
-          if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
-            expUser += 10
-          end
-          expBct = formulaExpForBct(cost, 1)
-          @user.decreaseMoney(cost)
-          @user.increaseExp(expUser)
-          @room.broadcaster.increaseExp(expBct)
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
+            expUser = formulaExpForUser(cost, 1)
+            if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
+              expUser += 10
+            end
+            expBct = formulaExpForBct(cost, 1)
+            @user.decreaseMoney(cost)
+            @user.increaseExp(expUser)
+            @room.broadcaster.increaseExp(expBct)
+            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
+            emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
 
-          # insert log
-          @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
-          @user.user_logs.create(room_id: @room.id, money: cost)
+            # insert log
+            @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
+            @user.user_logs.create(room_id: @room.id, money: cost)
 
-          return head 201
-        rescue => e
-          render json: {error: e.message}, status: 400
+            return head 201
+          rescue => e
+            render json: {error: e.message}, status: 400
+          end
+        else
+          render json: {error: "Giá mua phải lớn hơn 50"}, status: 400
         end
       else
         render json: {error: "Bạn không có đủ tiền"}, status: 400
