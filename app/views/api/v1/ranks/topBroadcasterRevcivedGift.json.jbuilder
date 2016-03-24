@@ -1,8 +1,8 @@
-json.array! @top_gift_broadcasters do |top_gift_broadcaster|
-	json.id				top_gift_broadcaster.broadcaster.user.id
-	json.name			top_gift_broadcaster.broadcaster.user.name
-  json.username	top_gift_broadcaster.broadcaster.user.username
-	json.avatar			top_gift_broadcaster.broadcaster.user.avatar_path
-	json.quantity		top_gift_broadcaster.quantity
-	json.total_money	top_gift_broadcaster.total_money
+json.array! @top_users do |top_user|
+	json.id						top_user.user.id
+	json.name					top_user.user.name
+  json.username			top_user.user.username
+	json.avatar				top_user.user.avatar_path
+	json.quantity			top_user.quantity
+	json.total_money	top_user.money
 end
