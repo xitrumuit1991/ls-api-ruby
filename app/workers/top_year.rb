@@ -3,11 +3,11 @@ class TopYear
 	include Sidetiq::Schedulable
 	recurrence { yearly }
 	def perform()
-		TopUserSendGift.destroy_all
-		TopUserSendGift.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
-		all_user_logs = UserLog.select('user_id, sum(money) as money').group(:user_id).order('money DESC').limit(10)
-		all_user_logs.each do |all_user_log|
-			TopUserSendGift.create(:user_id => all_user_log.user_id, :money => all_user_log.money)
+		TopBctReceivedHeart.destroy_all
+		TopBctReceivedHeart.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
+		hearts = HeartLog.select('room_id, sum(quantity) as quantity').group(:room_id).order('quantity DESC').limit(5)
+		hearts.each do |heart|
+			TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
 	end
 end
