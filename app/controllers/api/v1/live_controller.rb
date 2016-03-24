@@ -23,7 +23,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def addHeartInRoom
     maxHeart  = @user.user_level.level
-    userHeart = UserReceivedHeart.find_by_user_id(@user.id)
+    userHeart = @user.user_level.heart_per_day
     hearts    = params[:hearts].to_i
     if !userHeart
       userHeart = UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
