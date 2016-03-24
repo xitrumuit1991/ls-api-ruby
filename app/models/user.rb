@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 
 	validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
-	validates :name, presence: true, length: {minimum: 6, maximum: 20}
+	validates :name, presence: true, length: {minimum: 6, maximum: 150}
 	with_options({on: :auth}) do |for_auth|
 		for_auth.validates :forgot_code, presence: true
 	end
