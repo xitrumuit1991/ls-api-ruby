@@ -13,13 +13,13 @@ class User < ActiveRecord::Base
 	has_many :user_has_vip_packages
 	has_many :vip_packages, through: :user_has_vip_packages
 
-	validates :username, presence: true, uniqueness: true
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
-	validates :name, presence: true, length: {minimum: 6, maximum: 150}
+	validates :username, presence: true, uniqueness: true, on: :update
+	validates :name, presence: true, length: {minimum: 6, maximum: 150}, on: :update
+	validates :active_code, uniqueness: true
 	with_options({on: :auth}) do |for_auth|
 		for_auth.validates :forgot_code, presence: true
 	end
-	validates_uniqueness_of :active_code
 	has_secure_password
 	mount_uploader :avatar, AvatarUploader
 	mount_base64_uploader :avatar_crop, AvatarCropUploader

@@ -18,6 +18,8 @@
 ```
 - Response:
   + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+    + 401: { error: "Tài khoản này chưa được kích hoạt !" }
+    + 401: { error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }
   + body: ```{"token": "this-is-jwt-token"}```
 
 ### Register

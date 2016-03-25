@@ -30,12 +30,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         # update token
         @user.update(last_login: Time.now, token: token)
 
-        render json: {token: token}, status: 200
+        render json: { token: token }, status: 200
       else
-        render plain: 'Tài khoản này chưa được kích hoạt !', status: 401
+        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
       end
     else
-      render plain: 'Email hoặc mật khẩu bạn vừa nhập không chính xác !', status: 401
+      render json: { error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }, status: 401
     end
   end
 
@@ -70,7 +70,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         SendCodeJob.perform_later(user, activeCode)
         return head 201
       else
-        render plain: 'System error !', status: 400
+        render json: { error: "System error !" }, status: 400
       end
     else
       render json: user.errors.messages, status: 400
