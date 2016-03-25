@@ -54,26 +54,26 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def register
     activeCode = SecureRandom.hex(3).upcase
     user = User.new
-    user.name     = params[:email].split("@")[0]
-    user.username = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
-    user.email    = params[:email]
-    user.password = params[:password].to_s
-    user.birthday = '2000-01-01'
-    user.user_level_id       = UserLevel.first().id
-    user.money               = 100
-    user.user_exp            = 0
-    user.actived             = 0
-    user.no_heart            = 0
-    user.active_code         = activeCode
+    user.email        = params[:email]
+    user.password     = params[:password].to_s
+    user.active_code  = activeCode
     if user.valid?
+      user.name           = params[:email].split("@")[0]
+      user.username       = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
+      user.birthday       = '2000-01-01'
+      user.user_level_id  = UserLevel.first().id
+      user.money          = 100
+      user.user_exp       = 0
+      user.actived        = 0
+      user.no_heart       = 0
       if user.save
         SendCodeJob.perform_later(user, activeCode)
-        return head 201
+        render json: { success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }, status: 201
       else
-        render json: { error: "System error !" }, status: 400
+        render json: { error: "System error !" }, status: 500
       end
     else
-      render json: user.errors.messages, status: 400
+      render json: { error: user.errors.messages }, status: 400
     end
   end
 
@@ -103,30 +103,30 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             render json: {token: token}, status: 200
           end
         else
-          activeCode          = SecureRandom.hex(3).upcase
-          password            = SecureRandom.hex(5)
-          user                = User.new
-          user.name           = profile['name']
-          user.username       = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
-          user.email          = profile['email']
-          user.gender         = profile['gender']
-          user.birthday       = profile['birthday']
-          user.fb_id          = profile['id']
-          user.user_level_id  = UserLevel.first().id
-          user.avatar         = graph.get_picture(profile['id'], type: :large)
-          user.password       = password
-          user.active_code    = activeCode
-          user.money          = 100
-          user.user_exp       = 0
-          user.actived        = 1
-          user.no_heart       = 0
+          activeCode              = SecureRandom.hex(3).upcase
+          password                = SecureRandom.hex(5)
+          user                    = User.new
+          user.name               = profile['name']
+          user.username           = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
+          user.email              = profile['email']
+          user.gender             = profile['gender']
+          user.birthday           = profile['birthday']
+          user.fb_id              = profile['id']
+          user.user_level_id      = UserLevel.first().id
+          user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
+          user.password           = password
+          user.active_code        = activeCode
+          user.money              = 100
+          user.user_exp           = 0
+          user.actived            = 1
+          user.no_heart           = 0
           if user.save
             user = User.find_by_email(profile['email'])
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
-            render json: {token: token}, status: 200
+            render json: { token: token }, status: 200
           else
-            render json: user.errors.messages, status: 400
+            render json: { error: user.errors.messages }, status: 400
           end
         end
     rescue Koala::Facebook::APIError => exc
