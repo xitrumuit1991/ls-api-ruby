@@ -64,8 +64,9 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSettings
-    return head 400 if params[:title].nil? || params[:cat].nil?
-    if @user.broadcaster.rooms.find_by_is_privated(false).update(title: params[:title], room_type_id: params[:cat])
+    return head 400 if params[:title].nil? || params[:cat].nil? || params[:bct_desc].nil?
+    bct = @user.broadcaster
+    if bct.rooms.find_by_is_privated(false).update(title: params[:title], room_type_id: params[:cat]) && bct.update(description: params[:bct_desc])
       return head 200
     else
       render plain: 'System error !', status: 400
