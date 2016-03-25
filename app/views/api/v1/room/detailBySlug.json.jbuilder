@@ -41,27 +41,9 @@ json.broadcaster do
 	json.exp			@room.broadcaster.broadcaster_exp
 	json.percent		@room.broadcaster.percent
 	json.level			@room.broadcaster.broadcaster_level.level
-
-  if @room.broadcaster.user.facebook_link.to_s.include?('http') == false || @room.broadcaster.user.facebook_link.to_s.include?('https') == false
-    json.facebook		' http://' + @room.broadcaster.user.facebook_link
-  else
-    json.facebook		@room.broadcaster.user.facebook_link
-  end
-
-  #twitter
-  if @room.broadcaster.user.twitter_link.to_s.include?('http') == false || @room.broadcaster.user.twitter_link.to_s.include?('https') == false
-    json.twitter		' http://' + @room.broadcaster.user.twitter_link
-  else
-    json.twitter		@room.broadcaster.user.twitter_link
-  end
-
-  #instagram
-  if @room.broadcaster.user.instagram_link.to_s.include?('http') == false || @room.broadcaster.user.instagram_link.to_s.include?('https') == false
-    json.instagram		' http://' + @room.broadcaster.user.instagram_link
-  else
-    json.instagram		@room.broadcaster.user.instagram_link
-  end
-
+  json.facebook		@room.broadcaster.user.facebook_link
+  json.twitter		@room.broadcaster.user.twitter_link
+  json.instagram		@room.broadcaster.user.instagram_link
 	json.status			@room.broadcaster.user.statuses.blank? ? nil : @room.broadcaster.user.statuses[0].content
 	if @user != nil
 		json.isFollow		!@user.broadcasters.where(id: @room.broadcaster.id).empty?

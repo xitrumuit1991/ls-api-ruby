@@ -82,10 +82,41 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def updateProfile
     @user.name              = params[:name]
     @user.birthday          = params[:birthday]
+
     # Optinal
-    @user.facebook_link     = params[:facebook].present? ? params[:facebook] : ''
-    @user.twitter_link      = params[:twitter].present? ? params[:twitter] : ''
-    @user.instagram_link    = params[:instagram].present? ? params[:instagram] : ''
+    fb_link = params[:facebook]
+    twitter_link = params[:twitter]
+    instagram_link = params[:instagram]
+
+    if !fb_link.to_s.empty?
+      if !fb_link.to_s.include?('http') || !fb_link.to_s.include?('https')
+        @user.facebook_link  = ' http://' + fb_link
+      else
+        @user.facebook_link  = fb_link
+      end
+    else
+      @user.facebook_link = ''
+    end
+
+    if !twitter_link.to_s.empty?
+      if !twitter_link.to_s.include?('http') || !twitter_link.to_s.include?('https')
+        @user.twitter_link  = ' http://' + twitter_link
+      else
+        @user.twitter_link  = twitter_link
+      end
+    else
+      @user.twitter_link = ''
+    end
+
+    if !instagram_link.to_s.empty?
+      if !instagram_link.to_s.include?('http') || !instagram_link.to_s.include?('https')
+        @user.instagram_link = ' http://' + instagram_link
+      else
+        @user.instagram_link = instagram_link
+      end
+    else
+      @user.instagram_link = ''
+    end
 
     if @user.valid?
       if @user.save
