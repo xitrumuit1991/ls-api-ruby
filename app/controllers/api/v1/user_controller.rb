@@ -307,13 +307,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    puts '=========================='
-    puts params[:moid]
-    puts '=========================='
     if params[:moid].nil?
-      puts '=========================='
-      puts params[:moid]
-      puts '=========================='
       activecode = params[:content].split(' ')[4]
       if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
         render plain: "1| noi dung hop le", status: 200
@@ -321,9 +315,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
         render plain: "0| noi dung khong hop le", status: 200
       end
     else
-      puts '=========================='
-      puts params[:moid]
-      puts '=========================='
       partnerid                 = Settings.partnerid
       data = Ebaysms::Sms.new
       data.partnerid            = params[:partnerid]
