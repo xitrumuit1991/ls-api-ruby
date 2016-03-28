@@ -60,7 +60,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.password = params[:password].to_s
     user.birthday = '2000-01-01'
     user.user_level_id       = UserLevel.first().id
-    user.money               = 100
+    user.money               = 8
     user.user_exp            = 0
     user.actived             = 0
     user.no_heart            = 0
