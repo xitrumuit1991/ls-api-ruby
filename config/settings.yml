@@ -9,8 +9,8 @@ chargingPartnerCode: '01085'
 chargingWebservice: 'http://charging-service.megapay.net.vn/CardChargingGW_V2.0/services/Services?wsdl'
 # magebanks
 magebankWS: 'http://bank.megapay.net.vn:10001/service.asmx?wsdl'
-magebankMerchantid: 'Livestar'
-magebankIssuerID: '88000095'
+magebankMerchantid: '88000095'
+magebankIssuerID: 'Livestar'
 magebankSend_key: 'X9557IMmIMRKOPVs6twAqQOi'
 magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
 # SMS
