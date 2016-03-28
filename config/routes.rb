@@ -147,7 +147,6 @@ Rails.application.routes.draw do
 			# root
 			get '/' 				=> 'index#index'
 			get '/msisdn' 	=> 'index#msisdn'
-			get '/sms'  		=> 'user#sms'
 
 			# auth
 			scope '/auth' do
@@ -170,6 +169,7 @@ Rails.application.routes.draw do
 				get '/trades'							=> 'user#getTradeHistory' #
 				post '/active'           	=> 'user#active' #
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
+				get '/sms'  							=> 'user#sms'
 				get  '/room'							=> 'room#getPublicRoom'
 				get  '/'                 	=> 'user#profile' #
 				get  '/expense-records'		=> 'user#expenseRecords' #
@@ -274,6 +274,7 @@ Rails.application.routes.draw do
 
 			# Live functions
 			scope 'vip' do
+				get  '/:day/list-vip'       => 'vip#listVip'
 				post  '/buy-vip'       => 'vip#buyVip'
 			end
 

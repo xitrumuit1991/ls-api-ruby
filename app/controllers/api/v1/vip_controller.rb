@@ -1,6 +1,6 @@
 class Api::V1::VipController < Api::V1::ApplicationController
   include Api::V1::Authorize
-  before_action :authenticate
+  before_action :authenticate, except: [:listVip]
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
@@ -29,5 +29,10 @@ class Api::V1::VipController < Api::V1::ApplicationController
     else
       render json: {error: "Bạn không có đủ tiền"}, status: 403
     end
+  end
+
+  def listVip
+    @vips = Vip::all
+    @day = params[:day].to_i
   end
 end
