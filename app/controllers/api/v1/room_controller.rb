@@ -41,7 +41,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       @backgrounds = RoomBackground.all
       @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
     else
-      render plain: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !', status: 400
+      render json: {error: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
     end
   end
 

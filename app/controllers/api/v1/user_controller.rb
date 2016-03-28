@@ -13,7 +13,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def publicProfile
     return head 400 if params[:username].nil?
     @user = User.find_by_username(params[:username])
-    return head 400 if !@user.present?
+    render json: {error: 'User không tồn tại'}, status: 400
   end
 
   def active
@@ -25,16 +25,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
             user.update(active_date: Time.now, actived: true)
             return head 200
           else
-            render plain: 'Mã kích hoạt không hợp lệ !', status: 400
+            render json: {error: 'Mã kích hoạt không hợp lệ !'} , status: 400
           end
         else
-          render plain: 'Vui lòng nhập mã kích hoạt !', status: 400
+          render json: {error: 'Vui lòng nhập mã kích hoạt !'}, status: 400
         end
       else
-        render plain: 'Tài khoản này đã được kích hoạt !', status: 400
+        render json: {error: 'Tài khoản này đã được kích hoạt !'}, status: 400
       end
     else
-      render plain: 'Tài khoản này không tồn tại !', status: 404
+      render json: {error: 'Tài khoản này không tồn tại !'}, status: 404
     end
   end
 
@@ -72,10 +72,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if @user.save
         return head 200
       else
-        render plain: 'System error !', status: 400
+        render json: {error: 'System error !'}, status: 400
       end
     else
-      render json: @user.errors.messages, status: 400
+      render json: {error: @user.errors.full_messages}, status: 400
     end
   end
 
@@ -122,10 +122,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if @user.save
         return head 200
       else
-        render plain: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !', status: 400
+        render json: {error: 'Hệ thống đang bị lổi, vui lòng làm lại lần nữa !'}, status: 400
       end
     else
-      render json: @user.errors.messages, status: 400
+      render json: {error: t('error'), bug: @user.errors.full_messages}, status: 400
     end
   end
 
@@ -137,13 +137,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
           @user.save
           return head 200
         else
-          render json: @user.errors.messages, status: 400
+          render json:{error: t('error') , bug: @user.errors.full_messages}, status: 400
         end
       else
-        render plain: 'Vui lòng nhập mật khẩu mới có độ dài tối thiểu là 6 kí tự', status: 400
+        render json: {error: 'Vui lòng nhập mật khẩu mới có độ dài tối thiểu là 6 kí tự'}, status: 400
       end
     else
-      render plain: 'Mật khẩu hiện tại không đúng!', status: 400
+      render json: {error: 'Mật khẩu hiện tại không đúng!'}, status: 400
     end
   end
 
@@ -176,38 +176,50 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def uploadAvatar
-    return head 400 if params[:avatar].nil?
-    if @user.update(avatar: params[:avatar])
-      return head 201
+    if params[:avatar].present?
+      if @user.update(avatar: params[:avatar])
+        return head 201
+      else
+        render json: {error: t('error_auth')}, status: 401
+      end
     else
-      return head 401
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def avatarCrop
-    return head 400 if params[:avatar_crop].nil?
-    if @user.update(avatar_crop: params[:avatar_crop])
-      render json: @user.avatar_crop, status: 200
+    if params[:avatar_crop].present?
+      if @user.update(avatar_crop: params[:avatar_crop])
+        render json: @user.avatar_crop, status: 200
+      else
+        render json: {error: t('error_auth')}, status: 401
+      end
     else
-      return head 401
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end 
 
   def uploadCover
-    return head 400 if params[:cover].nil?
-    if @user.update(cover: params[:cover])
-      return head 201
+    if params[:cover].present?
+      if @user.update(cover: params[:cover])
+        return head 201
+      else
+        render json: {error: t('error_auth')}, status: 401
+      end
     else
-      return head 401
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def coverCrop
-    return head 400 if params[:cover_crop].nil?
-    if @user.update(cover_crop: params[:cover_crop])
-      render json: @user.cover_crop, status: 200
+    if params[:cover_crop].present?
+      if @user.update(cover_crop: params[:cover_crop])
+        render json: @user.cover_crop, status: 200
+      else
+        render json: {error: t('error_auth')}, status: 401
+      end
     else
-      return head 401
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
