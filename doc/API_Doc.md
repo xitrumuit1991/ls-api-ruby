@@ -18,8 +18,8 @@
 ```
 - Response:
   + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-    + 401: { error: "Tài khoản này chưa được kích hoạt !" }
-    + 401: { error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }
+    + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }```
+    + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
   + body: ```{"token": "this-is-jwt-token"}```
 
 ### Register
@@ -34,6 +34,23 @@
   "password": "*********"
 }
 ```
+- Response:
+  + status: **201** *(OK)*, **400** *(Bad request)*
+    + 201: ```{ success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }```
+    + 400: 
+    ```
+    {
+        "error": {
+            "email": [
+                "Vui lòng nhập email",
+                "Vui lòng nhập đúng định dạng Email"
+            ],
+            "password": [
+                "Vui lòng nhập mật khẩu"
+            ]
+        }
+    }
+    ```
 
 ### Register by Facebook
 - URI: **/fb-register**
