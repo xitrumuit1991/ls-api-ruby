@@ -21,6 +21,9 @@
 
 en:
   hello: "Hello world"
+  error: "Có lỗi xảy ra, bạn không thể lưu được nội dung, Vui lòng kiểm tra lại!"
+  error_auth: "Vui lòng đăng nhập trước khi sử dụng"
+  error_empty_image: "Vui lòng chọn hình ảnh"
   activerecord:
       attributes:
         #User

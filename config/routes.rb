@@ -171,23 +171,23 @@ Rails.application.routes.draw do
 				post '/active-fb-gp'     	=> 'user#activeFBGP'
 				get '/sms'  							=> 'user#sms'
 				get  '/room'							=> 'room#getPublicRoom'
-				get  '/'                 	=> 'user#profile' #
-				get  '/expense-records'		=> 'user#expenseRecords' #
+				get  '/'                 	=> 'user#profile'
+				get  '/expense-records'		=> 'user#expenseRecords'
 				get '/get-providers'      => 'user#getProviders'
 				get '/get-banks'       		=> 'user#getBanks'
 				get '/get-megabanks'      => 'user#getMegabanks'
 				get  '/check-captcha'			=> 'user#checkRecaptcha' #
-				get  '/:username'					=> 'user#publicProfile' #
-				put  '/'                 	=> 'user#update' #
+				get  '/:username'					=> 'user#publicProfile'
+				put  '/'                 	=> 'user#update' # liem ko thay dung route nay ben web -
 				post '/update-profile'  	=> 'user#updateProfile'
 				post '/update-password'  	=> 'user#updatePassword'
-				post '/avatar'          	=> 'user#uploadAvatar' #
-				post '/cover'           	=> 'user#uploadCover' #
+				post '/avatar'          	=> 'user#uploadAvatar'
+				post '/cover'           	=> 'user#uploadCover'
 				post '/cover-crop'        => 'user#coverCrop'
 				post '/avatar-crop'       => 'user#avatarCrop'
-				post '/payments'       		=> 'user#payments'
-				post '/internet-banking'  => 'user#internetBank'
-				post '/confirm'    				=> 'user#confirmEbay'
+				post '/payments'       		=> 'user#payments' # Để sau, chưa đổi
+				post '/internet-banking'  => 'user#internetBank' # Để sau, chưa đổi
+				post '/confirm'    				=> 'user#confirmEbay' # Để sau, chưa đổi
 			end
 
 			# broadcasters
