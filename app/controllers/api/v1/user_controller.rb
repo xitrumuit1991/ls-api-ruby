@@ -11,9 +11,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def publicProfile
-    return head 400 if params[:username].nil?
-    @user = User.find_by_username(params[:username])
-    render json: {error: 'User không tồn tại'}, status: 400
+    if params[:username].present?
+      @user = User.find_by_username(params[:username])
+
+      if !@user.present?
+        render json: {error: 'User không tồn tại'}, status: 400
+      end
+    else
+      render json: {error: 'Vui lòng nhập username'}, status: 400
+    end
   end
 
   def active
@@ -60,26 +66,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def update
-    @user.name                 = params[:name]
-    @user.birthday             = params[:birthday]
-    @user.gender               = params[:gender]
-    @user.address              = params[:address]
-    @user.phone                = params[:phone]
-    @user.facebook_link        = params[:facebook]
-    @user.twitter_link         = params[:twitter]
-    @user.instagram_link       = params[:instagram]
-    if @user.valid?
-      if @user.save
-        return head 200
-      else
-        render json: {error: 'System error !'}, status: 400
-      end
-    else
-      render json: {error: @user.errors.full_messages}, status: 400
-    end
-  end
-
-  def updateProfile
     @user.name              = params[:name]
     @user.birthday          = params[:birthday]
 

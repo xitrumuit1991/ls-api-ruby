@@ -483,6 +483,8 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**
+  + errors:
+   + status 400: ```{error: 'Thông báo lỗi'}```
   + body:
 ```
 [
@@ -580,6 +582,8 @@
   + pictures (array): image/jpeg
 - Response:
   + status: **401**
+  + errors:
+    + status 400: ```{error: "Thông báo lỗi" }```
   + body:
 ```
 [ 
@@ -613,6 +617,8 @@
   + videos[1][image]  = file
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+    + status 400: ```{error: Thông báo lỗi}```
   + body:
 ```
 [
@@ -647,6 +653,8 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**, **404**, **401**
+  + errors:
+    + status 400: ```{ error: 'Thông báo lỗi' }```
   + body: ```{ status: 'Follow' // or "Unfollow" }```
 
 ### Get followed broadcasters
@@ -969,8 +977,10 @@
 }
 ```
 - Response:
-  + status: **200**, **400**
-
+  + status: **200**, **400**, **404**
+  + errors:
+    + status 400: ```{error: "Thong bao loi "}```
+    + status 404: ```{error: "Không tìm thấy user "}```
 
 ### Active user who registered by facebook, google plus
 - URI: **/active-fb-gp**
@@ -1032,6 +1042,8 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**
+  + errors:
+    + status 400: ```{error: "Thông báo lỗi "}```
   + body:
 ```
 {
@@ -1084,16 +1096,15 @@
 {
   name: "Rainie Bui",
   birthday: "09/10/1991",
-  gender: "male",
-  address: "123 Nguyen Trai",
-  phone: 0969696969,
   facebook: "...",
   twitter: "...",
   instagram: "...",
 }
 ```
 - Response:
-  + status: **200**, **400**, **404**, **401**
+  + status: **200**, **400**
+  + errors:
+    + status 400: ```{error: "Thông báo lỗi "}```
 
 ### Update avatar
 - URI: **/avatar**
@@ -1105,6 +1116,9 @@
   + avatar: image/jpeg
 - Response:
   + status: **201**, **400**, **401**
+  + errors:
+    + status 400: ```{error: "Thông báo lỗi "}```
+    + status 401: ```{error: "Thông báo lỗi chưa đăng nhập "}```
 
 ### Update cover
 - URI: **/cover**
@@ -1125,6 +1139,9 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+      + status 400: ```{error: "Thông báo lỗi "}```
+      + status 401: ```{error: "Thông báo lỗi chưa đăng nhập "}```
   + body:
 ```
   [
