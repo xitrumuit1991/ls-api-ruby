@@ -11,9 +11,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def publicProfile
-    return head 400 if params[:username].nil?
-    @user = User.find_by_username(params[:username])
-    render json: {error: 'User không tồn tại'}, status: 400
+    if params[:username].present?
+      @user = User.find_by_username(params[:username])
+      if !@user.present?
+        render json: {error: 'User không tồn tại'}, status: 400
+      end
+    else
+      render json: {error: 'Vui lòng nhập username'}, status: 400
+    end
   end
 
   def active
