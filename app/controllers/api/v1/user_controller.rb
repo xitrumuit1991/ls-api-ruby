@@ -60,26 +60,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def update
-    @user.name                 = params[:name]
-    @user.birthday             = params[:birthday]
-    @user.gender               = params[:gender]
-    @user.address              = params[:address]
-    @user.phone                = params[:phone]
-    @user.facebook_link        = params[:facebook]
-    @user.twitter_link         = params[:twitter]
-    @user.instagram_link       = params[:instagram]
-    if @user.valid?
-      if @user.save
-        return head 200
-      else
-        render json: {error: 'System error !'}, status: 400
-      end
-    else
-      render json: {error: @user.errors.full_messages}, status: 400
-    end
-  end
-
-  def updateProfile
     @user.name              = params[:name]
     @user.birthday          = params[:birthday]
 
@@ -128,6 +108,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       render json: {error: t('error'), bug: @user.errors.full_messages}, status: 400
     end
   end
+
 
   def updatePassword
     if @user.authenticate(params[:password]) != false
