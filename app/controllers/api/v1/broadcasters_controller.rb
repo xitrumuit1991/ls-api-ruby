@@ -62,46 +62,31 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @images = @user.broadcaster.broadcaster_backgrounds
   end
 
-  def setDefaultBackgroundRoom
-    return head 400 if params[:background_id].nil?
-    if @user.broadcaster.rooms.order("is_privated DESC").first.update(room_background_id: params[:background_id].to_i)
-      render json: {status: true}, status: 200
-    else
-      render json: @user.errors.messages, status: 400      
-    end
-  end
-
-  def setBackgroundRoom
-    return head 400 if params[:background_id].nil?
-    if @user.broadcaster.rooms.order("is_privated DESC").first.update(broadcaster_background_id: params[:background_id].to_i)
-      render json: {status: true}, status: 200
-    else
-      render json: @user.errors.messages, status: 400      
-    end
-  end
-
   def broadcasterRevcivedItems
-    return head 400 if !@user.is_broadcaster
-    giftLogs = @user.broadcaster.rooms.order("is_privated DESC").first.gift_logs
-    @records = Array.new
-    giftLogs.each do |giftLog|
-      aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image.square}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
-      @records = @records.push(aryLog)
-    end
+    if @user.is_broadcaster
+      giftLogs = @user.broadcaster.rooms.find_by_is_privated(false).gift_logs
+      @records = Array.new
+      giftLogs.each do |giftLog|
+        aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image.square}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+        @records = @records.push(aryLog)
+      end
 
-    heartLogs = @user.broadcaster.rooms.order("is_privated DESC").first.heart_logs
-    heartLogs.each do |heartLog|
-      aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
-      @records = @records.push(aryLog)
-    end
+      heartLogs = @user.broadcaster.rooms.find_by_is_privated(false).heart_logs
+      heartLogs.each do |heartLog|
+        aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
+        @records = @records.push(aryLog)
+      end
 
-    actionLogs = @user.broadcaster.rooms.order("is_privated DESC").first.action_logs
-    actionLogs.each do |actionLog|
-      aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image.square}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
-      @records = @records.push(aryLog)
-    end
+      actionLogs = @user.broadcaster.rooms.find_by_is_privated(false).action_logs
+      actionLogs.each do |actionLog|
+        aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image.square}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+        @records = @records.push(aryLog)
+      end
 
-    @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
+      @records = @records.sort{|a,b| b[:created_at] <=> a[:created_at]}
+    else
+      render json: {error: t('error_not_bct')}, status: 400
+    end
   end
 
   api! "post status"
@@ -110,19 +95,26 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 401, :desc => "Unauthorized"
   error :code => 400, :desc => "Can't save status"
   def status
-    if @user.statuses.create(content: params[:status])
-      return head 201
+    if params[:status].present?
+      if @user.statuses.create(content: params[:status])
+        return head 201
+      else
+        render json: {error: t('error_system')}, status: 400
+      end
     else
-      render plain: 'System error !', status: 400
+      render json: {error: 'Vui lòng nhập trạng thái'}, status: 400
     end
   end
 
   api! "Upload pictures"
   def pictures
-    return head 400 if params.nil?
-    @pictures = []
-    params[:pictures].each do |picture|
-      @pictures << @user.broadcaster.images.create({image: picture})
+    if params[:pictures].present?
+      @pictures = []
+      params[:pictures].each do |picture|
+        @pictures << @user.broadcaster.images.create({image: picture})
+      end
+    else
+      render json: {error: t('error_empty_image') }, status: 400
     end
   end
 
@@ -131,25 +123,32 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 401, :desc => "Unauthorized"
   error :code => 400, :desc => "can't delete picture"
   def deletePictures
-    if @user.broadcaster.images.present?
-      if @user.broadcaster.images.where(:id => params[:id]).destroy_all
-        return head 200
+    if params[:id].present?
+      if @user.broadcaster.images.where(:id => params[:id]).present?
+        if @user.broadcaster.images.where(:id => params[:id]).destroy_all
+          return head 200
+        else
+          render json: {error: t('error_system')}, status: 400
+        end
       else
-        return head 400
+        render json: {error: 'Không tồn tại ảnh này!'}, status: 400
       end
     else
-      return head 400
+      render json: {error: t('error_empty_image') }, status: 400
     end
   end
 
   api! "Create video"
   def videos
-    return head 400 if params[:videos].nil?
-    @videos = []
-    params[:videos].each do |key, video|
-      id = youtubeID video[:link]
-      link = 'https://www.youtube.com/embed/'+id
-      @videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
+    if params[:videos].present?
+      @videos = []
+      params[:videos].each do |key, video|
+        id = youtubeID video[:link]
+        link = 'https://www.youtube.com/embed/'+id
+        @videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
+      end
+    else
+      render json: {error: 'Vui lòng nhập video!' }, status: 400
     end
   end
 
@@ -158,14 +157,18 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   error :code => 401, :desc => "Unauthorized"
   error :code => 400, :desc => "can't delete video"
   def deleteVideos
-    if @user.broadcaster.videos.present?
-      if @user.broadcaster.videos.where(:id => params[:id]).destroy_all
-        return head 200
+    if params[:id].present?
+      if @user.broadcaster.videos.where(:id => params[:id]).present?
+        if @user.broadcaster.videos.where(:id => params[:id]).destroy_all
+          return head 200
+        else
+          render json: {error: t('error_system') }, status: 400
+        end
       else
-        return head 400
+        render json: {error: 'Không tồn tại video này!'}, status: 400
       end
     else
-      return head 400
+      render json: {error: 'Vui lòng chọn video để xóa'}, status: 400
     end
   end
 
@@ -206,13 +209,13 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
       if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
         render plain: 'Unfollow !', status: 200
       else
-        return head 400
+        render json: {error: t('error_system'), bugs: @user.errors.full_messages}, status: 400
       end
     else
       if @user.user_follow_bcts.create(broadcaster_id: params[:id].to_i)
         render plain: 'Follow !', status: 201
       else
-        return head 400
+        render json: {error: t('error_system'), bugs: @user.errors.full_messages}, status: 400
       end
     end
   end
@@ -276,7 +279,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
-        return head 400
+        render json: {error: t('error_not_bct')}, status: 400
       end
     end
 
