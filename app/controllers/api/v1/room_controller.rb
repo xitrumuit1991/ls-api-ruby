@@ -14,21 +14,21 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @rooms.each do |room|
       @totalUser[room.id] = redis.hgetall(room.id).length
     end
-    @getAllRecord = Room.where(on_air: true).length
-    @totalPage =  (Float(@getAllRecord)/9).ceil
+    getAllRecord = Room.where(on_air: true).length
+    @totalPage =  (Float(getAllRecord)/9).ceil
   end
 
   def comingSoon
     @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     if params[:category_id].nil?
-      @getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
+      getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
       @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     else
-      @getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).length      
+      getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
       @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
     end
-    @totalPage =  (Float(@getAllRecord)/9).ceil
+    @totalPage =  (Float(getAllRecord)/9).ceil
   end
 
   def roomType
