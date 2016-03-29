@@ -4,22 +4,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay]
 
   def profile
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
 
   def publicProfile
-    if params[:username].present?
-      @user = User.find_by_username(params[:username])
-
-      if !@user.present?
-        render json: {error: 'User không tồn tại'}, status: 400
-      end
-    else
-      render json: {error: 'Vui lòng nhập username'}, status: 400
-    end
+    return head 400 if params[:username].nil?
+    @user = User.find_by_username(params[:username])
+    render json: {error: 'User không tồn tại'}, status: 400
   end
 
   def active
@@ -66,6 +60,26 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def update
+    @user.name                 = params[:name]
+    @user.birthday             = params[:birthday]
+    @user.gender               = params[:gender]
+    @user.address              = params[:address]
+    @user.phone                = params[:phone]
+    @user.facebook_link        = params[:facebook]
+    @user.twitter_link         = params[:twitter]
+    @user.instagram_link       = params[:instagram]
+    if @user.valid?
+      if @user.save
+        return head 200
+      else
+        render json: {error: 'System error !'}, status: 400
+      end
+    else
+      render json: {error: @user.errors.full_messages}, status: 400
+    end
+  end
+
+  def updateProfile
     @user.name              = params[:name]
     @user.birthday          = params[:birthday]
 
@@ -278,29 +292,111 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def confirmEbay
     responCode    = params[:responCode]
-    transid       = params[:transid]
-    megabanklog   = MegabankLog.find(params[:id])
-    webservice    = Settings.magebankWS
-    soapClient    = Savon.client(wsdl: webservice)
-    paramConfirm                    = Megabanks::Service.new
-    paramConfirm.responCodeConfirm  = responCode
-    paramConfirm.merchantid         = Settings.magebankMerchantid
-    paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
-    paramConfirm.transidConfirm     = transid
-    paramConfirm.soapClient         = soapClient
-    paramConfirm.send_key           = Settings.magebankSend_key
-    @result                         = paramConfirm._confirm
-    @price                          = megabanklog.megabank.price.to_s
-    @coin                           = megabanklog.megabank.coin.to_s
-    if @result[:comfirm_response][:comfirm_result][:responsecode] != "03" && @result != false
-      megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
-      megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
-      megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
-      megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
-      megabanklog.save
-      user        = User.find(@user.id)
-      user.money  = user.money + megabanklog.megabank.coin
-      user.save
+    if responCode == "00"
+      transid             = params[:transid]
+      megabanklog         = MegabankLog.find(params[:id])
+      megabanklog.transid = transid
+      megabanklog.mac     = params[:mac]
+      webservice          = Settings.magebankWS
+      soapClient          = Savon.client(wsdl: webservice)
+      paramConfirm                    = Megabanks::Service.new
+      paramConfirm.responCodeConfirm  = responCode
+      paramConfirm.merchantid         = Settings.magebankMerchantid
+      paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
+      paramConfirm.transidConfirm     = transid
+      paramConfirm.soapClient         = soapClient
+      paramConfirm.send_key           = Settings.magebankSend_key
+      @result                         = paramConfirm._confirm
+      @price                          = megabanklog.megabank.price.to_s
+      @coin                           = megabanklog.megabank.coin.to_s
+      if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
+        megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
+        megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
+        megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
+        megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
+        megabanklog.save
+        user        = User.find(megabanklog.user_id)
+        user.money  = user.money + megabanklog.megabank.coin
+        user.save
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
+        render json: {error: "Thất bại"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
+        render json: {error: "Chưa confirm được"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "03" && @result != false
+        render json: {error: "Đã confirm trước đó"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "04" && @result != false
+        render json: {error: "Giao dịch Pending"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "05" && @result != false
+        render json: {error: "Sai MAC"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "06" && @result != false
+        render json: {error: "Không xác định mã lỗi"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "07" && @result != false
+        render json: {error: "Giao dịch không tồn tại"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "08" && @result != false
+        render json: {error: "Thông tin không đầy đủ"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "09" && @result != false
+        render json: {error: "Đại lý không tồn tại"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "10" && @result != false
+        render json: {error: "Sai định dạng"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "11" && @result != false
+        render json: {error: "Sai thông tin"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "12" && @result != false
+        render json: {error: "Ngân hàng tạm khóa hoặc không tồn tại"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "13" && @result != false
+        render json: {error: "Có lỗi"}, status: 403
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "14" && @result != false
+        render json: {error: "Code không hợp lệ"}, status: 403
+      else
+        render json: {error: "confirm false"}, status: 403
+      end
+    elsif responCode == "801"
+      render json: {error: "Ngân hàng từ chối giao dịch"}, status: 403
+    elsif responCode == "803"
+      render json: {error: "Mã đơn vị không tồn tại"}, status: 403
+    elsif responCode == "804"
+      render json: {error: "Không đúng acces code"}, status: 403
+    elsif responCode == "805"
+      render json: {error: "Số tiền không hợp lệ"}, status: 403
+    elsif responCode == "806"
+      render json: {error: "Mã tiền tệ không tồn tại"}, status: 403
+    elsif responCode == "807"
+      render json: {error: "Lỗi không xác định"}, status: 403
+    elsif responCode == "808"
+      render json: {error: "Số thẻ không đúng"}, status: 403
+    elsif responCode == "809"
+      render json: {error: "Tên chủ thẻ không đúng"}, status: 403
+    elsif responCode == "810"
+      render json: {error: "Thẻ hết hạn/thẻ bị khóa"}, status: 403
+    elsif responCode == "811"
+      render json: {error: "Thẻ chưa đăng ký dịch vụ Internet banking"}, status: 403
+    elsif responCode == "812"
+      render json: {error: "Ngày phát hành/hết hạn không đúng"}, status: 403
+    elsif responCode == "813"
+      render json: {error: "Vượt quá hạn mức thanh toán"}, status: 403
+    elsif responCode == "821"
+      render json: {error: "Số tiền không đủ để thanh toán"}, status: 403
+    elsif responCode == "899"
+      render json: {error: "Người sử dụng cancel"}, status: 403
+    elsif responCode == "901"
+      render json: {error: "Merchant_code không hợp lệ"}, status: 403
+    elsif responCode == "902"
+      render json: {error: "Chuỗi mã hóa không hợp lệ"}, status: 403
+    elsif responCode == "903"
+      render json: {error: "Merchant_tran_id không hợp lệ"}, status: 403
+    elsif responCode == "904"
+      render json: {error: "Không tìm thấy giao dịch trong hệ thống"}, status: 403
+    elsif responCode == "906"
+      render json: {error: "Đã xác nhận trước đó"}, status: 403
+    elsif responCode == "908"
+      render json: {error: "Lỗi timeout xảy ra do không nhận thông điệp trả về"}, status: 403
+    elsif responCode == "911"
+      render json: {error: "Số tiền không hợp lệ"}, status: 403
+    elsif responCode == "912"
+      render json: {error: "Phí không hợp lệ"}, status: 403
+    elsif responCode == "913"
+      render json: {error: "Tax không hợp lệ"}, status: 403
+    else
+      render json: {error: "Link không hợp lệ"}, status: 403   
     end
   end
 
