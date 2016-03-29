@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha]
 
   def profile
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
@@ -296,7 +296,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
         megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
         megabanklog.save
-        user        = User.find(megabanklog.user_id)
+        user        = User.find(@user.id)
         user.money  = user.money + megabanklog.megabank.coin
         user.save
       elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
