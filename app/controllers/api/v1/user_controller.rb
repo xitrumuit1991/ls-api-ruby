@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay]
 
   def profile
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
@@ -292,30 +292,114 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def confirmEbay
     responCode    = params[:responCode]
-    transid       = params[:transid]
-    megabanklog   = MegabankLog.find(params[:id])
-    webservice    = Settings.magebankWS
-    soapClient    = Savon.client(wsdl: webservice)
-    paramConfirm                    = Megabanks::Service.new
-    paramConfirm.responCodeConfirm  = responCode
-    paramConfirm.merchantid         = Settings.magebankMerchantid
-    paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
-    paramConfirm.transidConfirm     = transid
-    paramConfirm.soapClient         = soapClient
-    paramConfirm.send_key           = Settings.magebankSend_key
-    @result                         = paramConfirm._confirm
-    @price                          = megabanklog.megabank.price.to_s
-    @coin                           = megabanklog.megabank.coin.to_s
-    if @result[:comfirm_response][:comfirm_result][:responsecode] != "03" && @result != false
-      megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
-      megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
-      megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
-      megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
-      megabanklog.save
-      user        = User.find(@user.id)
-      user.money  = user.money + megabanklog.megabank.coin
-      user.save
+    if responCode == "00"
+      transid       = params[:transid]
+      megabanklog   = MegabankLog.find(params[:id])
+      megabanklog.transid = transid
+      megabanklog.mac     = params[:mac]
+      webservice    = Settings.magebankWS
+      soapClient    = Savon.client(wsdl: webservice)
+      paramConfirm                    = Megabanks::Service.new
+      paramConfirm.responCodeConfirm  = responCode
+      paramConfirm.merchantid         = Settings.magebankMerchantid
+      paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
+      paramConfirm.transidConfirm     = transid
+      paramConfirm.soapClient         = soapClient
+      paramConfirm.send_key           = Settings.magebankSend_key
+      @result                         = paramConfirm._confirm
+      @price                          = megabanklog.megabank.price.to_s
+      @coin                           = megabanklog.megabank.coin.to_s
+      if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
+        megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
+        megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
+        megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
+        megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
+        megabanklog.save
+        user        = User.find(megabanklog.user_id)
+        user.money  = user.money + megabanklog.megabank.coin
+        user.save
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
+        message = "Thất bại"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
+        message = "Chưa confirm được. Vui lòng tải lại trang hoặc nhấn F5 khi gặp thông báo này"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "03" && @result != false
+        message = "Đã confirm trước đó"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "04" && @result != false
+        message = "Giao dịch Pending. Vui lòng liên hệ admin livestar để được hổ trợ."
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "05" && @result != false
+        message = "Sai MAC"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "06" && @result != false
+        message = "Không xác định mã lỗi"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "07" && @result != false
+        message = "Giao dịch không tồn tại"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "08" && @result != false
+        message = "Thông tin không đầy đủ"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "09" && @result != false
+        message = "Đại lý không tồn tại"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "10" && @result != false
+        message = "Sai định dạng"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "11" && @result != false
+        message = "Sai thông tin"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "12" && @result != false
+        message = "Ngân hàng tạm khóa hoặc không tồn tại"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "13" && @result != false
+        message = "Có lỗi"
+      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "14" && @result != false
+        message = "Code không hợp lệ"
+      else
+        message = "confirm false"
+      end
+      render json: {error: message}, status: 403
+    elsif responCode == "801"
+      message = "Ngân hàng từ chối giao dịch"
+    elsif responCode == "803"
+      message = "Mã đơn vị không tồn tại"
+    elsif responCode == "804"
+      message = "Không đúng acces code"
+    elsif responCode == "805"
+      message = "Số tiền không hợp lệ"
+    elsif responCode == "806"
+      message = "Mã tiền tệ không tồn tại"
+    elsif responCode == "807"
+      message = "Lỗi không xác định"
+    elsif responCode == "808"
+      message = "Số thẻ không đúng"
+    elsif responCode == "809"
+      message = "Tên chủ thẻ không đúng"
+    elsif responCode == "810"
+      message = "Thẻ hết hạn/thẻ bị khóa"
+    elsif responCode == "811"
+      message = "Thẻ chưa đăng ký dịch vụ Internet banking"
+    elsif responCode == "812"
+      message = "Ngày phát hành/hết hạn không đúng"
+    elsif responCode == "813"
+      message = "Vượt quá hạn mức thanh toán"
+    elsif responCode == "821"
+      message = "Số tiền không đủ để thanh toán"
+    elsif responCode == "899"
+      message = "Người sử dụng cancel"
+    elsif responCode == "901"
+      message = "Merchant_code không hợp lệ"
+    elsif responCode == "902"
+      message = "Chuỗi mã hóa không hợp lệ"
+    elsif responCode == "903"
+      message = "Merchant_tran_id không hợp lệ"
+    elsif responCode == "904"
+      message = "Không tìm thấy giao dịch trong hệ thống"
+    elsif responCode == "906"
+      message = "Đã xác nhận trước đó"
+    elsif responCode == "908"
+      message = "Lỗi timeout xảy ra do không nhận thông điệp trả về"
+    elsif responCode == "911"
+      message = "Số tiền không hợp lệ"
+    elsif responCode == "912"
+      message = "Phí không hợp lệ"
+    elsif responCode == "913"
+      message = "Tax không hợp lệ"
+    else
+      message = "Link không hợp lệ"
     end
+    render json: {error: message}, status: 403
   end
 
   def sms
