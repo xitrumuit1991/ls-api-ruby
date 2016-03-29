@@ -483,6 +483,8 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**
+  + errors:
+   + status 400: ```{error: 'Thông báo lỗi'}```
   + body:
 ```
 [
@@ -580,6 +582,8 @@
   + pictures (array): image/jpeg
 - Response:
   + status: **401**
+  + errors:
+    + status 400: ```{error: "Thông báo lỗi" }```
   + body:
 ```
 [ 
@@ -613,6 +617,8 @@
   + videos[1][image]  = file
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+    + status 400: ```{error: Thông báo lỗi}```
   + body:
 ```
 [
@@ -647,6 +653,8 @@
   + Authorization: Token token="this-is-jwt-token"
 - Response:
   + status: **200**, **400**, **404**, **401**
+  + errors:
+    + status 400: ```{ error: 'Thông báo lỗi' }```
   + body: ```{ status: 'Follow' // or "Unfollow" }```
 
 ### Get followed broadcasters

@@ -201,12 +201,10 @@ Rails.application.routes.draw do
 				get     '/default-background'			=> 'broadcasters#defaultBackground' # api is not using
 				get     '/broadcaster-background'	=> 'broadcasters#broadcasterBackground' # api is not using
 				get     '/:id'										=> 'broadcasters#profile' #
-				post    '/status'									=> 'broadcasters#status' #
+				post    '/status'									=> 'broadcasters#status' # #Liem - Không thấy dùng bên web
 				post    '/pictures'								=> 'broadcasters#pictures' #
 				post    '/videos'									=> 'broadcasters#videos' #
-				post  	'/setdefault-background'	=> 'broadcasters#setDefaultBackgroundRoom' # api is not using
-				post  	'/set-room-background'		=> 'broadcasters#setBackgroundRoom' # api is not using
-				put     '/'												=> 'broadcasters#update'
+				put     '/'												=> 'broadcasters#update' # Liem khong thay function nay trong broadcasters_controller
 				put     '/avatar'									=> 'broadcasters#uploadAvatar' # api is not using
 				put     '/cover'									=> 'broadcasters#uploadCover' # api is not using
 				put			'/:id/follow'							=> 'broadcasters#follow' #
