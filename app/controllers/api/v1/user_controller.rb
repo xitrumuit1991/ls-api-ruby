@@ -396,7 +396,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       else
         render plain: "0| noi dung khong hop le", status: 200
       end
-    elsif !params[:partnerid].empty? and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and !params[:subkeyword].empty?
+    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] and params[:subkeyword]
       Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
       partnerid                 = Settings.partnerid
       data = Ebaysms::Sms.new
