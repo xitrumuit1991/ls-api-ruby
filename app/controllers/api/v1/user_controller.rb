@@ -396,7 +396,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       else
         render plain: "0| noi dung khong hop le", status: 200
       end
-    else
+    elsif !params[:partnerid].empty? and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and !params[:subkeyword].empty?
       Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
       partnerid                 = Settings.partnerid
       data = Ebaysms::Sms.new
@@ -434,6 +434,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
         #loi checksum
         render plain: 'requeststatus=17', status: 200
       end
+    else
+      render plain: 'requeststatus=400', status: 400
     end
   end
 
