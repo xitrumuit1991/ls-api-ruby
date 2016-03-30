@@ -6,47 +6,9 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
   before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured]
 
-  resource_description do
-    short 'Broadcaster (idol)'
-  end
-
   def myProfile
   end
 
-  api! "get full profile of broadcaster by their id"
-  param :id, :number, :desc => "broadcaster's id", :required => true
-  error :code => 401, :desc => "Unauthorized"
-  example <<-EOS
-    {
-      id: 321,
-      name: "Rainie Bui",
-      birthday: "09/10/1991",
-      horoscope: "Thien Binh",
-      avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-      cover: "http://cdn.domain.com/broadcaters/bct-id/cover.jpg",
-      heart: 1020,
-      exp: 1231231,
-      level: 10,
-      facebook-link: "http://fb.me/whatthefuck",
-      instagram-link: "...",
-      twitter: "...",
-      status: "This is updated status",
-      description: "too long description...",
-      photos: [ { id: 123123, link: "http://.../photo_1.jpg" }, ..],
-      videos: [
-        {
-          id: 321654,
-          thumb: "http://api.youtube.com/thumb/AbcXyZ",
-          link: "http://youtube.com/AbcXyZ"
-        },
-        ...
-      ],
-      fans: [
-        {id: 456, name: "Nacy babie", vip: "V1", heart: 253},
-        ...
-      ]
-    }
-  EOS
   def profile
     @broadcaster = Broadcaster.find(params[:id])
     @user = @broadcaster.user
@@ -89,11 +51,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "post status"
-  description "Broadcaster can post status to their timeline and latest status will display in room"
-  param :status, String, :required => true
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "Can't save status"
   def status
     if params[:status].present?
       if @user.statuses.create(content: params[:status])
@@ -106,7 +63,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "Upload pictures"
   def pictures
     if params[:pictures].present?
       @pictures = []
@@ -118,10 +74,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "Delete pictures"
-  # param :pictures, :number, :desc => "array of picture's id", :required => true
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "can't delete picture"
   def deletePictures
     if params[:id].present?
       if @user.broadcaster.images.where(:id => params[:id]).present?
@@ -138,7 +90,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "Create video"
   def videos
     if params[:videos].present?
       @videos = []
@@ -152,10 +103,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "Delete videos"
-  param :videos, :number, :desc => "array of video's id"
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "can't delete video"
   def deleteVideos
     if params[:id].present?
       if @user.broadcaster.videos.where(:id => params[:id]).present?
@@ -172,23 +119,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "Get all fans"
-  description "Get all user followed current broadcaster"
-  error :code => 401, :desc => "Unauthorized"
-  example <<-EOS
-    [
-      {
-        id: 321,
-        name: "Rainie Bui",
-        avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-        heart: 1020,
-        exp: 12312,
-        level: 10,
-        status: ""
-      },
-      ...
-    ]
-  EOS
   def followed
     max_page = (Float( @user.broadcasters.count )/5).ceil
     if !params[:page].nil?
@@ -200,10 +130,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @users_followed = @user.broadcasters.limit(5).offset(offset)
   end
 
-  api! "Follow broadcaster"
-  param :id, :number, :desc => "broadcaster's id", :required => true
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "Can't follow"
   def follow
     if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i)
       if @user.user_follow_bcts.find_by_broadcaster_id(params[:id].to_i).destroy
@@ -220,21 +146,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "get hot broadcaster"
-  example <<-EOS
-    [
-      {
-        id: 321,
-        name: "Rainie Bui",
-        nickname: "Zit",
-        avatar: "http://cdn.domain.com/broadcaters/bct-id/avatar.jpg",
-        heart: 1020,
-        exp: 1231231,
-        level: 10
-      },
-      ...
-    ]
-  EOS
   def getFeatured
     @user = check_authenticate
     @totalUser = []
@@ -249,12 +160,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
-  api! "get sticked broadcaster in homepage"
   def getHomeFeatured
     @featured = HomeFeatured.order(weight: :asc).limit(5)
   end
-
-  api! "get suggest broadcaster in room"
+  
   def getRoomFeatured
     @user = check_authenticate
     @totalUser = []

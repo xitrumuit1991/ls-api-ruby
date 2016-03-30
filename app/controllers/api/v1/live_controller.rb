@@ -4,18 +4,9 @@ require "redis"
 class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate
-  before_action :checkSubscribed
-  before_action :checkStarted, only: [:voteAction, :getActionStatus, :sendScreenText, :sendGifts, :buyLounge, :endRoom, :doneAction, :sendHearts, :addHeartInRoom]
+  before_action :authenticate, :checkSubscribed
+  before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList]
   before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction]
-
-  resource_description do
-    short 'Live function'
-    param :room_id, :number, :desc => "Room's id", :required => true
-    error :code => 401, :desc => "Unauthorized"
-    error :code => 404, :desc => "Room not found"
-    formats ['json']
-  end
 
   def getUserList
     render json: @userlist
@@ -48,9 +39,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "send normal message"
-  param :message, String, :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendMessage
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     message = params[:message]
@@ -62,7 +50,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     timeLastMsg = !last_message.blank? ? last_message : 0
     duration = params[:timestamp].to_i - timeLastMsg.to_i
 
-    if @user.is_broadcaster && @user.broadcaster.rooms.find_by_is_privated(false).id == room_id.to_i
+    if @user.is_broadcaster && @user.public_room.id == room_id.to_i
       timeChat = 0
     elsif vipPackage.present?
       timeChat = vipPackage.vip_package.vip.screen_text_time
@@ -91,9 +79,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "send screentext message"
-  param :message, String, :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
   def sendScreenText
     cost = 1
     message = params[:message]
@@ -119,11 +104,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "vote action"
-  param :action_id, :number, :desc => "Action's id", :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started or action has been full"
-  error :code => 404, :desc => "action not found"
-  error :code => 400, :desc => "Bad request"
   def voteAction
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     action_id = params[:action_id]
@@ -164,12 +144,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "done action"
-  description "make action done, for room's broadcaster only"
-  param :action_id, :number, :desc => "Action's id", :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started or you is'nt broadcaster"
-  error :code => 404, :desc => "action not found"
-  error :code => 400, :desc => "action not full"
   def doneAction
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     action_id = params[:action_id]
@@ -189,12 +163,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "send gifts"
-  param :gift_id, :number, :desc => "gift's id", :required => true
-  param :quantity, :number, :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started"
-  error :code => 404, :desc => "gift not found"
-  error :code => 400, :desc => "Bad request"
   def sendGifts
     gift_id = params[:gift_id].to_i
     quantity = params[:quantity].to_i
@@ -232,11 +200,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "buy VIP lounge"
-  param :lounge, :number, :desc => "Longe index", :required => true
-  param :cost, :number, :desc => "cost to buy lounge", :required => true
-  error :code => 404, :desc => "Invalid lounge index"
-  error :code => 400, :desc => "Bad request or maybe you miss subscribe room or room not started or dont have enough money"
   def buyLounge
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     cost = params[:cost].to_i
@@ -283,10 +246,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "send heart"
-  param :hearts, :number, :desc => "number of heart", :required => true
-  error :code => 403, :desc => "Maybe you miss subscribe room or room not started or dont have enough heart"
-  error :code => 400, :desc => "Bad request"
   def sendHearts
     emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
     hearts = params[:hearts].to_i
@@ -319,8 +278,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "start room"
-  description "for broadcaster only"
   def startRoom
     @room.on_air = true
     if @room.save then
@@ -332,8 +289,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
-  api! "end room"
-  description "for broadcaster only"
   def endRoom
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     @room.on_air = false

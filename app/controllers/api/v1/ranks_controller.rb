@@ -179,21 +179,5 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	end
 
 	def updateCreatedAtBroadcaster
-		# WeeklyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_week)
-		# MonthlyTopBctReceivedHeart.update_all(:created_at => DateTime.now.prev_month)
-
-		# WeeklyTopBctReceivedGift.update_all(:created_at => DateTime.now.prev_week)
-		# MonthlyTopBctReceivedGift.update_all(:created_at => DateTime.now.prev_month)
-
-		# WeeklyTopBctLevelUp.update_all(:created_at => DateTime.now.prev_week)
-		# MonthlyTopBctLevelUp.update_all(:created_at => DateTime.now.prev_month)
-		
-		# WeeklyTopUserLevelUp.update_all(:created_at => DateTime.now.prev_week)
-		# MonthlyTopUserLevelUp.update_all(:created_at => DateTime.now.prev_month)
-
-		# WeeklyTopUserSendGift.update_all(:created_at => DateTime.now.prev_week)
-		# Schedule.update_all(:end => '2016-10-16 06:47:44')
-		User.update_all(:money => 100000, :actived => 1)
-		render plain: 'Done !', status: 200
 	end
 end
