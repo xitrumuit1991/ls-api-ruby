@@ -33,7 +33,6 @@ module Ebaysms
 			url         += '&contenttype=0'
 			mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
 			url         += '&transdate=' + mt_transdate
-			# url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + Digest::MD5.hexdigest(partnerpass))
 			url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
 			url         += '&amount=' + amount
 			puts '=========confirm url=========='

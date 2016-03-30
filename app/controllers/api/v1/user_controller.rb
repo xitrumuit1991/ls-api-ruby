@@ -413,23 +413,22 @@ class Api::V1::UserController < Api::V1::ApplicationController
         if _checkmoid(params[:moid])
           render plain: 'requeststatus=2', status: 400
         else
-          if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
-            str         = data.confirm
-
-            if str == "requeststatus=200"
+          str = data.confirm
+          if str == "requeststatus=200"
+            if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               render plain: str, status: 200
             else
-              render plain: str, status: 400
+              #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+              #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
+              render plain: str, status: 200
             end
           else
-            #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
-            #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
-            render plain: 'requeststatus=200', status: 200
+            render plain: str, status: 200
           end
         end
       else
         #loi checksum
-        render plain: 'requeststatus=17', status: 400
+        render plain: 'requeststatus=17', status: 200
       end
     end
   end
