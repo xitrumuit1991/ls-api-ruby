@@ -165,6 +165,7 @@ Rails.application.routes.draw do
 			# users
 			scope '/users' do
 				get  '/:id/avatar'       	=> 'user#getAvatar'
+				get  '/:id/real-avatar'     => 'user#real_avatar'
 				get  '/:id/cover'       	=> 'user#getBanner'
 				get '/trades'							=> 'user#getTradeHistory' #
 				post '/active'           	=> 'user#active' #
