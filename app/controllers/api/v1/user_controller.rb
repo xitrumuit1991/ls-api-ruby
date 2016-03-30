@@ -275,7 +275,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     responCode    = params[:responCode]
     if responCode == "00"
       megabanklog         = MegabankLog::find_by_id(params[:id])
-      Rails.logger.info "ANGCO DEBUG URL: #{!megabanklog.nil?}"
+      Rails.logger.info "ANGCO DEBUG megabanklog: #{megabanklog}"
       if !megabanklog.nil?
         transid             = params[:transid]
         megabanklog.transid = transid
@@ -387,7 +387,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    Rails.logger.info "ANGCO DEBUG URL: #{params[:moid].nil?}"
+    Rails.logger.info "ANGCO DEBUG moid: #{!defined? params[:moid]}"
     if !defined? params[:moid]
       Rails.logger.info "ANGCO DEBUG SMS: mang viettel"
       activecode = params[:content].split(' ')[4]
@@ -412,7 +412,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       data.smspPartnerPassword  = params[:smspPartnerPassword]
       data.partnerpass          = Settings.partnerpass
       checksum = data._checksum
-      Rails.logger.info "ANGCO DEBUG URL: #{!megabanklog.nil?}"
+      Rails.logger.info "ANGCO DEBUG checksum: #{checksum}"
       if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
         if _checkmoid(params[:moid])
           render plain: 'requeststatus=2', status: 200
