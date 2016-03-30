@@ -4,7 +4,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
   helper YoutubeHelper
-  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha]
+  before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay]
 
   def profile
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
@@ -274,61 +274,65 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def confirmEbay
     responCode    = params[:responCode]
     if responCode == "00"
-      transid             = params[:transid]
-      megabanklog         = MegabankLog.find(params[:id])
-      megabanklog.transid = transid
-      megabanklog.mac     = params[:mac]
-      webservice          = Settings.magebankWS
-      soapClient          = Savon.client(wsdl: webservice)
-      paramConfirm                    = Megabanks::Service.new
-      paramConfirm.responCodeConfirm  = responCode
-      paramConfirm.merchantid         = Settings.magebankMerchantid
-      paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
-      paramConfirm.transidConfirm     = transid
-      paramConfirm.soapClient         = soapClient
-      paramConfirm.send_key           = Settings.magebankSend_key
-      @result                         = paramConfirm._confirm
-      @price                          = megabanklog.megabank.price.to_s
-      @coin                           = megabanklog.megabank.coin.to_s
-      if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
-        megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
-        megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
-        megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
-        megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
-        megabanklog.save
-        user        = User.find(@user.id)
-        user.money  = user.money + megabanklog.megabank.coin
-        user.save
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
-        render json: {error: "Thất bại"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
-        render json: {error: "Chưa confirm được"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "03" && @result != false
-        render json: {error: "Đã confirm trước đó"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "04" && @result != false
-        render json: {error: "Giao dịch Pending"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "05" && @result != false
-        render json: {error: "Sai MAC"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "06" && @result != false
-        render json: {error: "Không xác định mã lỗi"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "07" && @result != false
-        render json: {error: "Giao dịch không tồn tại"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "08" && @result != false
-        render json: {error: "Thông tin không đầy đủ"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "09" && @result != false
-        render json: {error: "Đại lý không tồn tại"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "10" && @result != false
-        render json: {error: "Sai định dạng"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "11" && @result != false
-        render json: {error: "Sai thông tin"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "12" && @result != false
-        render json: {error: "Ngân hàng tạm khóa hoặc không tồn tại"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "13" && @result != false
-        render json: {error: "Có lỗi"}, status: 403
-      elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "14" && @result != false
-        render json: {error: "Code không hợp lệ"}, status: 403
+      megabanklog         = MegabankLog::find_by_id(params[:id])
+      if !megabanklog.nil?
+        transid             = params[:transid]
+        megabanklog.transid = transid
+        megabanklog.mac     = params[:mac]
+        webservice          = Settings.magebankWS
+        soapClient          = Savon.client(wsdl: webservice)
+        paramConfirm                    = Megabanks::Service.new
+        paramConfirm.responCodeConfirm  = responCode
+        paramConfirm.merchantid         = Settings.magebankMerchantid
+        paramConfirm.txnAmount          = megabanklog.megabank.price.to_s
+        paramConfirm.transidConfirm     = transid
+        paramConfirm.soapClient         = soapClient
+        paramConfirm.send_key           = Settings.magebankSend_key
+        @result                         = paramConfirm._confirm
+        @price                          = megabanklog.megabank.price.to_s
+        @coin                           = megabanklog.megabank.coin.to_s
+        if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
+          megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
+          megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
+          megabanklog.responsecode      = @result[:comfirm_response][:comfirm_result][:responsecode]
+          megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
+          megabanklog.save
+          user        = User.find(megabanklog.user_id)
+          user.money  = user.money + megabanklog.megabank.coin
+          user.save
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
+          render json: {error: "Thất bại"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
+          render json: {error: "Chưa confirm được"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "03" && @result != false
+          render json: {error: "Đã confirm trước đó"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "04" && @result != false
+          render json: {error: "Giao dịch Pending"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "05" && @result != false
+          render json: {error: "Sai MAC"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "06" && @result != false
+          render json: {error: "Không xác định mã lỗi"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "07" && @result != false
+          render json: {error: "Giao dịch không tồn tại"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "08" && @result != false
+          render json: {error: "Thông tin không đầy đủ"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "09" && @result != false
+          render json: {error: "Đại lý không tồn tại"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "10" && @result != false
+          render json: {error: "Sai định dạng"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "11" && @result != false
+          render json: {error: "Sai thông tin"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "12" && @result != false
+          render json: {error: "Ngân hàng tạm khóa hoặc không tồn tại"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "13" && @result != false
+          render json: {error: "Có lỗi"}, status: 403
+        elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "14" && @result != false
+          render json: {error: "Code không hợp lệ"}, status: 403
+        else
+          render json: {error: "confirm false"}, status: 403
+        end
       else
-        render json: {error: "confirm false"}, status: 403
+        render json: {error: "Chưa ghi được lịch sử."}, status: 403
       end
     elsif responCode == "801"
       render json: {error: "Ngân hàng từ chối giao dịch"}, status: 403
