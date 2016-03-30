@@ -77,7 +77,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if fb_link.to_s.include?('http') || fb_link.to_s.include?('https')
         @user.facebook_link  = fb_link
       else
-        @user.facebook_link  = ' https://' + fb_link
+        @user.facebook_link  = 'https://' + fb_link
       end
     else
       @user.facebook_link = ''
@@ -88,7 +88,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if twitter_link.to_s.include?('http') || twitter_link.to_s.include?('https')
         @user.twitter_link  = twitter_link
       else
-        @user.twitter_link  = ' http://' + twitter_link
+        @user.twitter_link  = 'https://' + twitter_link
       end
     else
       @user.twitter_link = ''
@@ -98,7 +98,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if instagram_link.to_s.include?('http') || instagram_link.to_s.include?('https')
         @user.instagram_link = instagram_link
       else
-        @user.instagram_link = ' http://' + instagram_link
+        @user.instagram_link = 'https://' + instagram_link
       end
     else
       @user.instagram_link = ''
