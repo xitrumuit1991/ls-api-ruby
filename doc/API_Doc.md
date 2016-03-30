@@ -1306,6 +1306,8 @@
   + range: week, month, all (default: week)
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+    + status 400: {error: "Thông báo lỗi"}
   + body:
 ```
 [
@@ -1331,6 +1333,8 @@
   + range: week, month, all (default: week)
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+      + status 400: ```{error: "Thông báo lỗi"}```
   + body:
 ```
 [
@@ -1356,6 +1360,8 @@
   + range: week, month (default: week)
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+          + status 400: ```{error: "Thông báo lỗi"}```
   + body:
 ```
 [
@@ -1379,6 +1385,8 @@
   + range: week, month, all (default: week)
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+        + status 400: ```{error: "Thông báo lỗi"}```
   + body:
 ```
 [
@@ -1404,6 +1412,8 @@
   + range: week, month, all (default: week)
 - Response:
   + status: **200**, **400**, **401**
+  + errors:
+          + status 400: ```{error: "Thông báo lỗi"}```
   + body:
 ```
 [

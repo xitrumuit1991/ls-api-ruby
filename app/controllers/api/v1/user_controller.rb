@@ -11,9 +11,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def publicProfile
-    return head 400 if params[:username].nil?
-    @user = User.find_by_username(params[:username])
-    render json: {error: 'User không tồn tại'}, status: 400
+    if params[:username].present?
+      @user = User.find_by_username(params[:username])
+      if !@user.present?
+        render json: {error: 'User không tồn tại'}, status: 400
+      end
+    else
+      render json: {error: 'Vui lòng nhập username'}, status: 400
+    end
   end
 
   def active
@@ -69,30 +74,31 @@ class Api::V1::UserController < Api::V1::ApplicationController
     instagram_link = params[:instagram]
 
     if !fb_link.to_s.empty?
-      if !fb_link.to_s.include?('http') || !fb_link.to_s.include?('https')
-        @user.facebook_link  = ' http://' + fb_link
-      else
+      if fb_link.to_s.include?('http') || fb_link.to_s.include?('https')
         @user.facebook_link  = fb_link
+      else
+        @user.facebook_link  = 'https://' + fb_link
       end
     else
       @user.facebook_link = ''
     end
 
+
     if !twitter_link.to_s.empty?
-      if !twitter_link.to_s.include?('http') || !twitter_link.to_s.include?('https')
-        @user.twitter_link  = ' http://' + twitter_link
-      else
+      if twitter_link.to_s.include?('http') || twitter_link.to_s.include?('https')
         @user.twitter_link  = twitter_link
+      else
+        @user.twitter_link  = 'https://' + twitter_link
       end
     else
       @user.twitter_link = ''
     end
 
     if !instagram_link.to_s.empty?
-      if !instagram_link.to_s.include?('http') || !instagram_link.to_s.include?('https')
-        @user.instagram_link = ' http://' + instagram_link
-      else
+      if instagram_link.to_s.include?('http') || instagram_link.to_s.include?('https')
         @user.instagram_link = instagram_link
+      else
+        @user.instagram_link = 'https://' + instagram_link
       end
     else
       @user.instagram_link = ''
@@ -178,7 +184,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     else
       render json: {error: t('error_empty_image')}, status: 400
     end
-  end 
+  end
 
   def uploadCover
     if params[:cover].present?
@@ -214,7 +220,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         elsif FileTest.file?("public#{@u.avatar.square}")
           send_file "public#{@u.avatar.square}", type: 'image/png', disposition: 'inline'
         else
-          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'  
+          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
         end
       else
         send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
@@ -234,7 +240,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         elsif FileTest.file?("public#{@u.cover.banner}")
           send_file "public#{@u.cover.banner}", type: 'image/jpg', disposition: 'inline'
         else
-          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'  
+          send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
         end
       else
         send_file 'public/default/no-cover.jpg', type: 'image/jpg', disposition: 'inline'
@@ -382,7 +388,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     elsif responCode == "913"
       render json: {error: "Tax không hợp lệ"}, status: 403
     else
-      render json: {error: "Link không hợp lệ"}, status: 403   
+      render json: {error: "Link không hợp lệ"}, status: 403
     end
   end
 
@@ -476,7 +482,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     webservice   = Settings.chargingWebservice
 
     soapClient = Savon.client(wsdl: webservice)
-    m_Target = @user.username 
+    m_Target = @user.username
 
     cardCharging              = Paygate::CardCharging.new
     cardCharging.m_UserName   = m_UserName
@@ -515,45 +521,45 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   private
-    def megabank_logs(info)
-      MegabankLog.create()
-    end
+  def megabank_logs(info)
+    MegabankLog.create()
+  end
 
-    def card_logs(obj, info)
-      provider  = Provider::find_by_name info[:provider]
-      CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
-    end
+  def card_logs(obj, info)
+    provider  = Provider::find_by_name info[:provider]
+    CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
+  end
 
-    def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
-      @user_sms = User::find_by_active_code(subkeyword)
-      if @user_sms.present?
-        SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
-      end
+  def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+    @user_sms = User::find_by_active_code(subkeyword)
+    if @user_sms.present?
+      SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
     end
+  end
 
-    def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
-      @user_sms = User::find_by_active_code(subkeyword)
-      coin  = Card::find_by_price amount.to_i
-      money = @user_sms.money + coin.coin
-      if @user_sms.update(money: money)
-        if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
-          return true
-        else
-          # loi xay ra khi ghi log
-          return false
-        end
-      else
-        # tai khoan khong ton tai 
-        return false 
-      end
-    end
-
-    def update_coin(coin)
-      money = @user.money + coin.to_i
-      if @user.update(money: money)
+  def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
+    @user_sms = User::find_by_active_code(subkeyword)
+    coin  = Card::find_by_price amount.to_i
+    money = @user_sms.money + coin.coin
+    if @user_sms.update(money: money)
+      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
         return true
       else
-        return false 
+        # loi xay ra khi ghi log
+        return false
       end
+    else
+      # tai khoan khong ton tai
+      return false
     end
+  end
+
+  def update_coin(coin)
+    money = @user.money + coin.to_i
+    if @user.update(money: money)
+      return true
+    else
+      return false
+    end
+  end
 end
