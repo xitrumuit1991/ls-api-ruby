@@ -50,7 +50,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		elsif params[:range] == "month"
 			@top_heart = MonthlyTopBctReceivedHeart::all
 		else
-			render plain: 'Range error !', status: 400
+			render json: {error: 'Range error !'}, status: 400
 		end
 	end
 
@@ -60,7 +60,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		elsif params[:range] == "month"
 			@top_users = MonthlyTopUserSendGift::all
 		else
-			render plain: 'Range error !', status: 400
+			render json: {error: 'Range error !'}, status: 400
 		end
 	end
 
@@ -72,7 +72,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		elsif params[:range] == "month"
 			@top_gift_users = MonthlyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(created_at: DateTime.now.prev_month.all_month).group(:broadcaster_id).order('total_money desc').limit(5)
 		else
-			render plain: 'Range error !', status: 400
+			render json: {error: 'Range error !'}, status: 400
 		end
 	end
 
@@ -84,7 +84,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		elsif params[:range] == "month"
 			@top_broadcaster_level = MonthlyTopBctLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.all_month).group(:broadcaster_id).order('times desc').limit(5)
 		else
-			render plain: 'Range error !', status: 400
+			render json: {error: 'Range error !'}, status: 400
 		end
 	end
 
@@ -96,7 +96,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		elsif params[:range] == "month"
 			@top_user_level = MonthlyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.beginning_of_month..DateTime.now.prev_month.end_of_month).group(:user_id).order('times desc').limit(5)
 		else
-			render plain: 'Range error !', status: 400
+			render json: {error: 'Range error !'}, status: 400
 		end
 	end
 
