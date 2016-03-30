@@ -234,7 +234,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if params[:id].present?
       @u = User.find(params[:id])
       if @u
-        render plain: "#{request.base_url}#{u.avatar.url}", status: 200 and return
+        render plain: "#{request.base_url}#{@u.avatar.url}", status: 200 and return
       end
     end
     render plain: "#{request.base_url}default/no-avatar.png", status: 200 and return
