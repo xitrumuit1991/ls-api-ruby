@@ -237,6 +237,7 @@
   + status: **200**, **400**, **404**, **401**
   + errors:
     + status 400: ```{error: "an awnsome fucking error"}```
+    + status 404: ```{error: "an awnsome fucking error"}```
   + body (status: 200):
 ```
 {
@@ -290,6 +291,9 @@
 ```
 - Resoponse
   + status: **200**, **400**, **404**, **401**
+  + errors: 
+    + status 400: ```{error: "Error message"}```
+    + status 404: ```{error: "Error message"}```
 
 ### Upload thumb
 - URI: **/thumb**
@@ -301,6 +305,9 @@
   + thumb: image/jpeg
 - Resoponse
   + status: **200**, **400**, **404**, **401**
+  + errors: 
+    + status 400: ```{error: "Error message"}```
+    + status 404: ```{error: "Error message"}```
   + body (status: 200):
 ```
 {
@@ -309,7 +316,7 @@
 ```
 
 ### Upload backgroud
-- URI: **/backgound**
+- URI: **/background**
 - Method: **POST**
 - Header
   + Content-Type: multipart/form-data
@@ -326,15 +333,31 @@
 }
 ```
 
-### Change backgroud
-- URI: **/backgound**
+### Change background
+- URI: **/background**
 - Method: **PUT**
 - Header
   + Content-Type: application/json
   + Authorization: Token token="this-is-jwt-token"
-- Request: ```{ background: "new filename" }```
+- Request: ```{ background_id: 12 }```
 - Resoponse
   + status: **200**, **400**, **404**, **401**
+  + errors :
+    + status 400: ```{error: "Error message"}```
+    + status 404: ```{error: "Error message"}```
+
+### Delete background
+- URI: **/background**
+- Method: **DELETE**
+- Header
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request: ```{ background_id: 13 }```
+- Resoponse
+  + status: **200**, **400**, **404**, **401**
+  + errors :
+    + status 400: ```{error: "Error message"}```
+    + status 404: ```{error: "Error message"}```
 
 
 ### Update show schedule
@@ -355,6 +378,9 @@
 ```
 - Resoponse
   + status: **200**, **400**, **404**, **401**
+  + errors:
+    + status 400: ```{error: "Error message"}```
+    + status 404: ```{error: "Error message"}```
 
 ### Get gifts
 - URI: **/gifts**

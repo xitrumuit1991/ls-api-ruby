@@ -26,6 +26,7 @@ en:
   error_empty_image: "Vui lòng chọn hình ảnh"
   error_system: "Lỗi hệ thống, Vui lòng thao tác lại!"
   error_not_bct: "Bạn không phải là idol"
+  error_room_not_found: "Phòng này không tồn tại, bạn vui lòng kiếm tra lại nhé!"
   activerecord:
       attributes:
         #User
