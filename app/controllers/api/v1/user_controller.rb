@@ -281,6 +281,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     responCode    = params[:responCode]
     if responCode == "00"
       megabanklog         = MegabankLog::find_by_id(params[:id])
+      Rails.logger.info "ANGCO DEBUG megabanklog: #{megabanklog}"
       if !megabanklog.nil?
         transid             = params[:transid]
         megabanklog.transid = transid
@@ -392,14 +393,17 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    if params[:moid].nil?
+    Rails.logger.info "ANGCO DEBUG moid: #{!defined? params[:moid]}"
+    if !defined? params[:moid]
+      Rails.logger.info "ANGCO DEBUG SMS: mang viettel"
       activecode = params[:content].split(' ')[4]
       if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
         render plain: "1| noi dung hop le", status: 200
       else
         render plain: "0| noi dung khong hop le", status: 200
       end
-    else
+    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] and params[:subkeyword]
+      Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
       partnerid                 = Settings.partnerid
       data = Ebaysms::Sms.new
       data.partnerid            = params[:partnerid]
@@ -414,9 +418,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       data.smspPartnerPassword  = params[:smspPartnerPassword]
       data.partnerpass          = Settings.partnerpass
       checksum = data._checksum
+      Rails.logger.info "ANGCO DEBUG checksum: #{checksum}"
       if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
         if _checkmoid(params[:moid])
-          render plain: 'requeststatus=2', status: 400
+          render plain: 'requeststatus=2', status: 200
         else
           str = data.confirm
           if str == "requeststatus=200"
@@ -435,6 +440,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
         #loi checksum
         render plain: 'requeststatus=17', status: 200
       end
+    else
+      render plain: 'requeststatus=400', status: 400
     end
   end
 
