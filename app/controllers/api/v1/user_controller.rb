@@ -296,8 +296,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
         paramConfirm.soapClient         = soapClient
         paramConfirm.send_key           = Settings.magebankSend_key
         @result                         = paramConfirm._confirm
+        Rails.logger.info "ANGCO DEBUG result: #{@result}"
         @price                          = megabanklog.megabank.price.to_s
         @coin                           = megabanklog.megabank.coin.to_s
+        Rails.logger.info "ANGCO DEBUG price: #{@price}"
+        Rails.logger.info "ANGCO DEBUG coin: #{@coin}"
         if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
           megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
           megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
@@ -419,15 +422,19 @@ class Api::V1::UserController < Api::V1::ApplicationController
       data.partnerpass          = Settings.partnerpass
       checksum = data._checksum
       Rails.logger.info "ANGCO DEBUG checksum: #{checksum}"
-      if !params[:partnerid].empty? and params[:partnerid].to_s == partnerid and !params[:moid].empty? and !params[:userid].empty? and !params[:shortcode].empty? and !params[:keyword].empty? and !params[:content].empty? and !params[:transdate].empty? and !params[:checksum].empty? and !params[:amount].empty? and checksum and !params[:subkeyword].empty?
+      Rails.logger.info "ANGCO DEBUG partnerid: #{partnerid}"
+      if params[:partnerid].to_s == partnerid and checksum 
+        Rails.logger.info "ANGCO DEBUG checkmoid: #{_checkmoid(params[:moid])}"
         if _checkmoid(params[:moid])
           render plain: 'requeststatus=2', status: 200
         else
           str = data.confirm
+          Rails.logger.info "ANGCO DEBUG confirm: #{str}"
           if str == "requeststatus=200"
             if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               render plain: str, status: 200
             else
+              update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
               #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
               render plain: str, status: 200
@@ -456,7 +463,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def _checkmoid(moid)
-    return SmsLog::find_by_moid(moid).nil?
+    return !SmsLog::find_by_moid(moid).nil?
   end
 
   def getProviders
@@ -539,7 +546,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
     @user_sms = User::find_by_active_code(subkeyword)
-    coin  = Card::find_by_price amount.to_i
+    coin  = SmsMobile::find_by_price(amount.to_i)
     money = @user_sms.money + coin.coin
     if @user_sms.update(money: money)
       if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
