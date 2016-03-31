@@ -396,10 +396,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def sms
-    Rails.logger.info "ANGCO DEBUG moid: #{!defined? params[:moid]}"
-    if !defined? params[:moid]
+    Rails.logger.info "ANGCO DEBUG moid: #{defined? params[:moid]}"
+    if !params[:moid]
       Rails.logger.info "ANGCO DEBUG SMS: mang viettel"
-      activecode = params[:content].split(' ')[4]
+      activecode = params[:content].split(' ')[2]
+      Rails.logger.info "ANGCO DEBUG content: #{params[:content]}"
+      Rails.logger.info "ANGCO DEBUG activecode: #{activecode}"
+      Rails.logger.info "ANGCO DEBUG _checkuser: #{_checkuser(activecode)}"
+      Rails.logger.info "ANGCO DEBUG amount: #{params[:amount].match(/[^0-9]/).nil?}"
       if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
         render plain: "1| noi dung hop le", status: 200
       else
