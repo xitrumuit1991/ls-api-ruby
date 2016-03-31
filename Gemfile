@@ -109,3 +109,6 @@ gem 'sidekiq'
 gem 'sidetiq'
 
 gem 'sinatra', :require => nil
+
+# SOAP
+gem 'wash_out'
