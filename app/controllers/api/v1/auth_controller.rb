@@ -58,7 +58,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user.password     = params[:password].to_s
     user.active_code  = activeCode
     if user.valid?
-      user.name           = params[:email].split("@")[0]
+      user.name           = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
       user.username       = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
       user.birthday       = '2000-01-01'
       user.user_level_id  = UserLevel.first().id
@@ -86,49 +86,50 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
-        user = User.find_by_email(profile['email'])
-        if user.present?
-          if user.fb_id.blank?
-            user.fb_id  = profile['id']
-            if user.save
-              token = createToken(user)
-              user.update(last_login: Time.now, token: token)
-              render json: {token: token}, status: 200
-            else
-              render json: user.errors.messages, status: 400
-            end
-          else
+      user = User.find_by_email(profile['email'])
+      if user.present?
+        if user.fb_id.blank?
+          user.fb_id  = profile['id']
+          if user.save
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
             render json: {token: token}, status: 200
+          else
+            render json: user.errors.messages, status: 400
           end
         else
-          activeCode              = SecureRandom.hex(3).upcase
-          password                = SecureRandom.hex(5)
-          user                    = User.new
-          user.name               = profile['name']
-          user.username           = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
-          user.email              = profile['email']
-          user.gender             = profile['gender']
-          user.birthday           = profile['birthday']
-          user.fb_id              = profile['id']
-          user.user_level_id      = UserLevel.first().id
-          user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
-          user.password           = password
-          user.active_code        = activeCode
-          user.money              = 8
-          user.user_exp           = 0
-          user.actived            = 1
-          user.no_heart           = 0
-          if user.save
-            user = User.find_by_email(profile['email'])
-            token = createToken(user)
-            user.update(last_login: Time.now, token: token)
-            render json: { token: token }, status: 200
-          else
-            render json: { error: user.errors.messages }, status: 400
-          end
+          token = createToken(user)
+          user.update(last_login: Time.now, token: token)
+          render json: {token: token}, status: 200
         end
+      else
+        activeCode              = SecureRandom.hex(3).upcase
+        password                = SecureRandom.hex(5)
+        user                    = User.new
+        user.name               = profile['name'].length >= 6 ? profile['name'] : profile['name'] + SecureRandom.hex(3)
+        user.username           = profile['email'].split("@")[0] + SecureRandom.hex(3).upcase
+        user.email              = profile['email']
+        user.gender             = profile['gender']
+        user.birthday           = profile['birthday'].present? ? profile['birthday'] : '2000-01-01'
+        user.fb_id              = profile['id']
+        user.user_level_id      = UserLevel.first().id
+        user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
+        user.password           = password
+        user.active_code        = activeCode
+        user.money              = 8
+        user.user_exp           = 0
+        user.no_heart           = 0
+        user.actived            = 1
+        user.active_date        = Time.now
+        if user.save
+          user = User.find_by_email(profile['email'])
+          token = createToken(user)
+          user.update(last_login: Time.now, token: token)
+          render json: { token: token }, status: 200
+        else
+          render json: { error: user.errors.messages }, status: 400
+        end
+      end
     rescue Koala::Facebook::APIError => exc
       render json: exc, status: 400
     end
