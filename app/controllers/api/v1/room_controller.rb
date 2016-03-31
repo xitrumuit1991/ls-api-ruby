@@ -41,104 +41,161 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       @backgrounds = RoomBackground.all
       @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
     else
-      render json: {error: 'Bạn không phải Broadcaster, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
+      render json: {error: 'Bạn không phải Idol, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
     end
   end
 
   def detail
-    return head 400 if params[:id].nil?
-    @user = check_authenticate
-    if @user.nil?
-      create_tmp_token
+    if (params[:id].present?) && (params[:id].to_i.is_a? Integer)
+      @user = check_authenticate
+      if @user.nil?
+        create_tmp_token
+      end
+      @room = Room.find(params[:id])
+
+      if !@room.present?
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
+    else
+      render json: {error: 'Vui lòng chọn phòng!'}, status: 400
     end
-    @room = Room.find(params[:id])
   end
 
   def detailBySlug
-    return head 400 if params[:slug].nil?
-    @user = check_authenticate
-    if @user.nil?
-      create_tmp_token
+    if params[:slug].present?
+      @user = check_authenticate
+      if @user.nil?
+        create_tmp_token
+      end
+      @room = Room.find_by_slug(params[:slug])
+      if !@room.present?
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
+    else
+      render json: {error: 'Vui lòng nhập slug'}, status: 400
     end
-    @room = Room.find_by_slug(params[:slug])
   end
 
   def updateSettings
-    return head 400 if params[:title].nil? || params[:cat].nil? || params[:bct_desc].nil?
-    bct = @user.broadcaster
-    if bct.rooms.find_by_is_privated(false).update(title: params[:title], room_type_id: params[:cat]) && bct.update(description: params[:bct_desc])
-      return head 200
+    room = @user.broadcaster.rooms.find_by_is_privated(false)
+
+    if room.present?
+      if room.update(title: params[:title], room_type_id: params[:cat])
+        @user.broadcaster.update(description: params[:bct_desc])
+        return head 200
+      else
+        render json: {error: t('error'), bugs: room.errors.full_messages}, status: 400
+      end
     else
-      render plain: 'System error !', status: 400
+      render json: {error: t('error_room_not_found')}, status: 404
     end
   end
 
   def uploadThumb
-    return head 400 if params[:thumb].nil?
-    room = @user.broadcaster.rooms.find_by_is_privated(false)
-    if room.present?
-      if room.update(thumb: params[:thumb])
-        render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
+    if params[:thumb].present?
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+
+      if room.present?
+        if room.update(thumb: params[:thumb])
+          render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
+        else
+          render json: {error: t('error')}, status: 400
+        end
       else
-        return head 400
+        render json: {error: t('error_room_not_found')}, status: 404
       end
     else
-      return head 404
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def thumbCrop
-    return head 400 if params[:thumb_crop].nil?
-    room = @user.broadcaster.rooms.find_by_is_privated(false)
-    if room.present?
-      if room.update(thumb_crop: params[:thumb_crop])
-        render json: {thumb_crop: "#{request.base_url}#{room.thumb_crop}?timestamp=#{room.updated_at.to_i}"}, status: 200
+    if params[:thumb_crop].present?
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+
+      if room.present?
+        if room.update(thumb_crop: params[:thumb_crop])
+          render json: {thumb_crop: "#{request.base_url}#{room.thumb_crop}?timestamp=#{room.updated_at.to_i}"}, status: 200
+        else
+          render json: {error: t('error')}, status: 400
+        end
       else
-        return head 400
+        render json: {error: t('error_room_not_found')}, status: 404
       end
     else
-      return head 404
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def uploadBackground
-    return head 400 if params[:background].nil?
-    background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
-    render json: {id: background.id, image: "#{request.base_url}#{background.image.square}?timestamp=#{background.updated_at.to_i}"}, status: 201
+    if params[:background].present?
+      background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
+      render json: {id: background.id, image: "#{request.base_url}#{background.image.square}?timestamp=#{background.updated_at.to_i}"}, status: 201
+    else
+      render json: {error: t('error_empty_image')}, status: 400
+    end
   end
 
   def deleteBackground
-    return head 400 if params[:background_id].nil?
-    if @user.broadcaster.broadcaster_backgrounds.where(:id => params[:background_id]).destroy_all
-      return head 200
+    if params[:background_id].present?
+      if @user.broadcaster.broadcaster_backgrounds.where(:id => params[:background_id]).destroy_all
+        return head 200
+      else
+        render json: {error: t('error_system')}, status: 400
+      end
+    else
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def changeBackground
-    return head 400 if params[:background_id].nil?
-    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: params[:background_id])
-      return head 200
+    if params[:background_id].present?
+
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      if room.present?
+        room.update(broadcaster_background_id: params[:background_id])
+        return head 200
+      else
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
     else
-      render plain: 'System error !', status: 400
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def changeBackgroundDefault
-    return head 400 if params[:background_id].nil?
-    if @user.broadcaster.rooms.find_by_is_privated(false).update(broadcaster_background_id: nil,room_background_id: params[:background_id])
-      return head 200
+    if params[:background_id].present?
+
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      if room.present?
+        room.update(broadcaster_background_id: nil,room_background_id: params[:background_id])
+
+        return head 200
+      else
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
     else
-      render plain: 'System error !', status: 400
+      render json: {error: t('error_empty_image')}, status: 400
     end
   end
 
   def updateSchedule
-    return head 400 if params[:schedule].nil?
-    @user.broadcaster.rooms.find_by_is_privated(false).schedules.destroy_all
-    if room = @user.broadcaster.rooms.find_by_is_privated(false).schedules.create(JSON.parse(params[:schedule].to_json))
-      return head 201
+    if params[:schedule].present?
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+
+      if room.present?
+        room.schedules.destroy_all
+
+        if @user.broadcaster.rooms.find_by_is_privated(false).schedules.create(JSON.parse(params[:schedule].to_json))
+          return head 201
+        else
+          render json: {error: t('error_system')}, status: 400
+        end
+      else
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
     else
-      render plain: 'System error !', status: 400
+      render json: {error: 'Vui lòng nhập lịch diễn cho phòng'}, status: 400
     end
   end
 
@@ -211,7 +268,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
-        return head 400
+        render json: {error: t('error_not_bct')}, status: 400
       end
     end
 
