@@ -196,7 +196,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         render json: {error: "Số lượng phải lớn hơn 1"}, status: 400
       end
     else
-      return head 404
+      render json: {error: 'Quà tặng này không tồn tại'}, status: 404
     end
   end
 
