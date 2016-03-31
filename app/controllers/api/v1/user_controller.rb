@@ -232,12 +232,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def real_avatar
     if params[:id].present?
-      @u = User.find(params[:id])
-      if @u
-        render plain: "#{request.base_url}#{@u.avatar.url}", status: 200 and return
+      begin
+        @u = User.find(params[:id])
+        if @u
+          avatar_path = @u.avatar.url ? "#{@u.avatar.url}" : "/default/no-avatar.png"
+          render plain: "#{request.base_url}#{avatar_path}", status: 200 and return
+        end
+      rescue Exception => e
+        render plain: "#{request.base_url}/default/no-avatar.png", status: 200 and return
       end
     end
-    render plain: "#{request.base_url}default/no-avatar.png", status: 200 and return
   end
 
   def getBanner
