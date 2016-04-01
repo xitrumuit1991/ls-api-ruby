@@ -26,6 +26,12 @@ class Acp::UsersController < Acp::ApplicationController
     @data.password = params[:password]
     @data.password_confirmation = params[:password_confirmation]
     @data.active_code = SecureRandom.hex(3).upcase
+
+    if params[:actived].present?
+      @data.active_date = Time.now
+      @data.actived = 1
+    end
+
     if @data.save
       redirect_to({ action: 'index' }, notice: 'User was successfully created.')
     else
@@ -35,6 +41,7 @@ class Acp::UsersController < Acp::ApplicationController
 
   def update
     prev_path = Rails.application.routes.recognize_path(request.referrer)
+    @data.actived = params[:actived]
     if @data.update(parameters)
       if prev_path[:controller] == 'acp/users'
         redirect_to({ action: 'index' }, notice: "Thông tin tài khoản '#{@data.username}' được cập nhật thành công.")
