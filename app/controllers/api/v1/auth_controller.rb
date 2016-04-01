@@ -199,10 +199,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           decoded_token = JWT.decode params[:token], Settings.hmac_secret
           return head 200
         rescue Exception => e
-          return head 400 
+          render json: {error: e.message}, status: 400
         end
       else
-        return head 401
+        render json: {error: 'User không tồn tại!'}, status: 401
       end
     end
   end
@@ -219,10 +219,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
         return head 200
       else
-        render json: user.errors.messages, status: 400
+        render json: {error:  t('error'), bugs: user.errors.full_messages}, status: 400
       end
     else
-      return head 404
+      render json: {error: 'Email không tồn tại, vui lòng nhập lại nhé!'}, status: 404
     end
   end
 
@@ -235,9 +235,11 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             user.update(forgot_code: SecureRandom.hex(4))
             return head 200
           end
+        else
+          render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
         end
       else
-        return head 404
+        render json: {error: 'Mã code không tồn tại, vui lòng nhập lại nhé!'}, status: 404
       end
   end
 
@@ -261,13 +263,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
           render json: {token: token}, status: 200
         else
-          render plain: 'System error !', status: 400
+          render json: {error: t('error_system')}, status: 400
         end
       else
-        render json: user.errors.messages, status: 400
+        render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
       end
     else
-      return head 401
+      render json: {error: 'Vui lòng đăng nhập lại để sử dụng'}, status: 401
     end
   end
 
