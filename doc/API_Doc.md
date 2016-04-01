@@ -100,6 +100,9 @@
 - Request: ```{ "email": "alex@email.com"}```
 - Response:
   + status **200** *(OK)*, **400** *(Bad request)*, **404** *(User Not found)*
+  + errors:
+      + status 400: ```{error : "error message" }```
+      + status 404: ```{error : "error message" }```
 
 ### Set new password
 - URI: **/reset-password**
@@ -108,7 +111,10 @@
   + Content-Type: application/json
 - Request: ```{"forgot_code" : "HIJKLMNO" }```
 - Response:
-  + status **200** *(OK)*, **404** *(User Not found)*
+  + status **200** *(OK)*,  **400**, **404** *(User Not found)*
+  + errors:
+    + status 400: ```{error : "error message" }```
+    + status 404: ```{error : "error message" }```
 
 ### Change password
 - URI: **/change**
@@ -125,6 +131,9 @@
 ```
 - Response:
   + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+  + errors:
+    + status 400: ```{error: "error message"}```
+    + status 401: ```{error: "error message"}```
   + body: ```{"token": "this-is-jwt-token"}```
 
 ### Verify token
@@ -140,7 +149,10 @@
 }
 ```
 - Response:
-  + status: **200**, **400**
+  + status: **200**, **400**, **401**
+  + errors:
+    + status 400: ```{error: 'error message'}```
+    + status 401: ```{error: 'error message'}```
 
 ## Rooms
 - Namespace URL: **/rooms**

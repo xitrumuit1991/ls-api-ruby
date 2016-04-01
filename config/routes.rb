@@ -152,7 +152,6 @@ Rails.application.routes.draw do
       # auth
       scope '/auth' do
         get '/logout' => 'auth#logout'
-        get '/:forgot_code/get-password' => 'auth#setNewPassword'
         post '/login' => 'auth#login'
         post '/register' => 'auth#register'
         post '/fb-register' => 'auth#fbRegister'
