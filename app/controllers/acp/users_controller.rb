@@ -41,7 +41,9 @@ class Acp::UsersController < Acp::ApplicationController
 
   def update
     prev_path = Rails.application.routes.recognize_path(request.referrer)
-    @data.actived = params[:actived]
+    if params[:actived].nil?
+      @data.actived = 0
+    end
     if @data.update(parameters)
       if prev_path[:controller] == 'acp/users'
         redirect_to({ action: 'index' }, notice: "Thông tin tài khoản '#{@data.username}' được cập nhật thành công.")
