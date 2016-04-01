@@ -5,6 +5,11 @@ class Vip < ActiveRecord::Base
 	mount_uploader :image,  VipImageUploader
 
 	def priceVip(day)
-		return self.vip_packages.where(no_day: day).take.price
+		Rails.logger.info "ANGCO DEBUG vip_packages: #{self.vip_packages.where(no_day: day).take.nil?}"
+		if self.vip_packages.where(no_day: day).take.nil?
+			return false 
+		else
+			return self.vip_packages.where(no_day: day).take
+		end
 	end
 end
