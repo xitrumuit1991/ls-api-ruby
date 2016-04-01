@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160329094844) do
+ActiveRecord::Schema.define(version: 20160401111550) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -258,6 +258,34 @@ ActiveRecord::Schema.define(version: 20160329094844) do
     t.integer  "coin",       limit: 4
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
+  end
+
+  create_table "mobifone_users", force: :cascade do |t|
+    t.string   "SubID",              limit: 255
+    t.string   "SenderName",         limit: 255
+    t.datetime "RegisterTime"
+    t.string   "PartnerID",          limit: 255
+    t.datetime "LastRegTime"
+    t.string   "RegisterChannel",    limit: 255
+    t.string   "PkgCode",            limit: 255
+    t.datetime "LastCharged"
+    t.datetime "LastSuccessCharged"
+    t.integer  "RemainChargeVolume", limit: 4
+    t.integer  "NextChargeVolume",   limit: 4
+    t.datetime "NextCharging"
+    t.integer  "FailedRetryCount",   limit: 4
+    t.datetime "LastCancel"
+    t.boolean  "OldStatus"
+    t.boolean  "Status"
+    t.boolean  "PaidType"
+    t.boolean  "MBF_Status"
+    t.boolean  "IsCharging"
+    t.float    "Point",              limit: 24
+    t.integer  "DayFlag",            limit: 4
+    t.datetime "BirdDate"
+    t.string   "Password",           limit: 255
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
   end
 
   create_table "monthly_top_bct_level_ups", force: :cascade do |t|
