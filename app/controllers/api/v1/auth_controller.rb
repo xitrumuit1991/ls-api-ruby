@@ -10,12 +10,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     formats ['json']
   end
 
-  api! "Get token"
-  param :email, String, :required => true
-  param :password, String, :required => true
-  error :code => 401, :desc => "Wrong email or password"
-  description "Login by email and password to get token"
-  example '{token: "this-is-sample-token"}'
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
@@ -39,18 +33,11 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  api! "Logout and empty token"
-  error :code => 401, :desc => "Wrong email or password"
   def logout
     @user.update(token: '')
     return head 200
   end
 
-  api! "Register"
-  param :email, String, :desc => "User email", :required => true
-  param :password, String, :desc => "User password", :required => true
-  error :code => 400, :desc => "Can't not save user"
-  error :code => 400, :desc => "Invalid input"
   def register
     activeCode = SecureRandom.hex(3).upcase
     user = User.new
@@ -77,11 +64,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  api! "Login/Signup by facebook account"
-  param :access_token, String, :desc => "access token get from facebook login API"
-  error :code => 400, :desc => "Can't not save user to database"
-  error :code => 400, :desc => "Can't not fetch user info from facebook"
-  example '{token: "this-is-sample-token"}'
   def fbRegister
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
@@ -178,11 +160,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  api! "verify token"
-  description "Use for socket or thirtparty verify token"
-  param :email, String, :desc => "Email of token owner", :required => true
-  param :token, String, :required => true
-  error :code => 400, :desc => "token not exist or expired"
   def verifyToken
     user = User.find_by(email: params[:email], token: params[:token])
     if user.present?
@@ -207,10 +184,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  api! "forgot password"
-  param :email, String,:required => true
-  error :code => 404, :desc => "Email not found"
-  error :code => 400, :desc => "Can't create new password"
   def updateForgotCode
     user = User.find_by_email(params[:email])
     forgot_code = SecureRandom.hex(4)
@@ -243,12 +216,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       end
   end
 
-  api! "change password"
-  param :password, String, :desc => "new password", :required => true
-  param :old_password, String, :desc => "current password", :required => true
-  error :code => 401, :desc => "Unauthorized"
-  error :code => 400, :desc => "Can't chnage password"
-  error :code => 400, :desc => "Input invalid"
   def changePassword
     user = User.find_by(email: @user[:email]).try(:authenticate, params[:old_password])
     if user.present?

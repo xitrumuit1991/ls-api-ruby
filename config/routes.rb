@@ -4,7 +4,7 @@ require 'sidetiq/web'
 Rails.application.routes.draw do
 
   wash_out :vas
-
+  apipie
   devise_for :admins, controllers: { sessions: "admins/sessions" }
   root 'index#index'
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
