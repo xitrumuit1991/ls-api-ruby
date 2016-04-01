@@ -1,6 +1,6 @@
 class Api::V1::VipController < Api::V1::ApplicationController
   include Api::V1::Authorize
-  before_action :authenticate, except: [:listVip]
+  before_action :authenticate, except: [:listVip, :testSoap]
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
@@ -34,5 +34,13 @@ class Api::V1::VipController < Api::V1::ApplicationController
   def listVip
     @vips = Vip::all
     @day = params[:day].to_i
+  end
+
+  def testSoap
+    data          = Hash.new
+    data["input"] = "dulieu"
+    soapClient    = Savon.client(wsdl: "http://api.dev.livestar.vn/vas/wsdl")
+    result          = soapClient.call(:buy_vip_package,  message: data )
+    render json: result, status: 200
   end
 end

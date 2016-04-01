@@ -8,6 +8,7 @@ class VasController < ApplicationController
               return: :string
 
   def buy_vip_package
+    puts ""
     puts params[:username]
     render soap: true
   end
