@@ -17,6 +17,21 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     end
   end
 
+  def check_mbf_auth
+    if request.headers['HTTP_MSISDN'].present? and request.headers['HTTP_X_FORWARDED_FOR'].present?
+      ip = request.headers['HTTP_X_FORWARDED_FOR']
+      if scan_ip ip
+        @msisdn = request.headers['HTTP_MSISDN']
+        if MobifoneUser.where(SubID: @msisdn).exists?
+          # TODO return User if exist
+          @mbf_user = MobifoneUser.find_by_SubID(@msisdn)
+        end
+        return true
+      end
+    end
+    return false
+  end
+
   private
     def authenticate_token
       authenticate_with_http_token do |token, options|
@@ -33,6 +48,11 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     def render_unauthorized
       self.headers['WWW-Authenticate'] = 'Token realm="Application"'
       return head 401
+    end
+
+    def scan_ip(ip)
+      # TODO
+      return true
     end
 
 end

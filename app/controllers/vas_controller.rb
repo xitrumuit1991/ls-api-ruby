@@ -40,12 +40,11 @@ class VasController < ApplicationController
 
   # Đăng ký tài khoản
   # Args:
-  # - id: mã thuê bao
   # - sub_id: số điện thoại
   # Return:
   # - password: mật khẩu (nếu đăng ký thành công)
   soap_action 'register',
-    args: { id: :integer, sub_id: :string},
+    args: { sub_id: :string},
     return: { error: :integer, message: :string, password: :string }
 
   def buy_vip_package
@@ -64,11 +63,46 @@ class VasController < ApplicationController
   end
 
   def register
-    # TODO
-    render soap: { error: 0, message: 'dang ky tai khoan thanh cong', password: 'password'}
+    if params[:sub_id].present?
+      sub_id = params[:sub_id]
+      if User.exists?(phone: sub_id)
+        render soap: { error: 1, message: "So dien thoai #{sub_id} da duoc dang ky", password: ''}
+      else
+        activeCode = SecureRandom.hex(3).upcase
+        user = User.new
+        user.email        = "#{sub_id}@mobifone.com.vn"
+        user.password     = SecureRandom.hex(5)
+        user.active_code  = activeCode
+        user.username     = sub_id
+        user.phone        = sub_id
+        if user.valid?
+          user.name           = sub_id
+          user.birthday       = '2000-01-01'
+          user.user_level_id  = UserLevel.first().id
+          user.money          = 8
+          user.user_exp       = 0
+          user.actived        = 1
+          user.no_heart       = 0
+          if user.save
+            # TODO we need create MobiFoneUser also
+            create_mbf_user user
+            render soap: { error: 0, message: 'dang ky tai khoan thanh cong', password: user.password}
+          else
+            render soap: { error: 1, message: 'can\'t create user, contact technical supporter please', password: '' }
+          end
+        else
+          render json: { error: 2, message: 'invalid user payload', password: '' }
+        end
+      end
+    else
+      render soap: { error: 1, message: 'missing arguments', password: '' }
+    end
   end
 
   private
+    def create_mbf_user(user)
+      # TODO create mbf_user from User
+    end
     def dump_parameters
       Rails.logger.debug params.inspect
     end

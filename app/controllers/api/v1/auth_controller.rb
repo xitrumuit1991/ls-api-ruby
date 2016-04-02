@@ -10,6 +10,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     formats ['json']
   end
 
+  def mbf_login
+    if check_mbf_auth
+      render plain: @msisdn, status: 200 and return
+    end
+    return head 401
+  end
+
   def login
     @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
     if @user.present?
