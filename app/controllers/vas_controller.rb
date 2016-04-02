@@ -45,9 +45,27 @@ class VasController < ApplicationController
     args: { sub_id: :string},
     return: { error: :integer, message: :string, password: :string }
 
+  # Gia hajn gói VIP
+  # Args:
+  # - sub_id: số điện thoại
+  # - pkg_code: mã gói VIP muốn gia hạn, nếu để trống, tự động gia hạn gói đã active lần cuối cùng
+  # Return:
+  # - pkg_code: gói cước được gia hạn
+  # - actived_date: ngày kích hoạt
+  # - expry_date: ngày hết hạn
+  soap_action 'charge_vip_package',
+    args: { sub_id: :string, pkg_code: :string },
+    return: { error: :integer, message: :string, pkg_code: :string, actived_date: :datetime, expry_date: :datetime }
+
+
   def buy_vip_package
     # TODO
     render soap: { error: 0, message: 'giao dich thanh cong'}
+  end
+
+  def charge_vip_package
+    # TODO
+    render soap: { error: 0, message: 'gia han thanh cong', pkg_code: 'VIP', actived_date: '2016-04-02 20:44:00', expry_date: '2016-04-03 20:44:00' }
   end
 
   def add_money
