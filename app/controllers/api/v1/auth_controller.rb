@@ -3,7 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login]
 
   resource_description do
     short 'Authorization'

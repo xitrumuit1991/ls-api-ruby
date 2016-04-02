@@ -17,7 +17,6 @@ class VasController < ApplicationController
 
   # Cộng tiền cho thuê bao
   # Args:
-  # - id: mã thuê bao
   # - sub_id: số điện thoại
   # - money: số tiền cần cộng
   # - info: mô tã cho thao tác (nếu có)
@@ -25,17 +24,16 @@ class VasController < ApplicationController
   # - added_money: số tiền được cộng (nếu thao tác thành công)
   # - current_money: số tiền hiện tại sau khi cộnng (nếu thao tác thành công)
   soap_action 'add_money',
-    args: { id: :integer, sub_id: :string, money: :integer, info: :string },
+    args: { sub_id: :string, money: :integer, info: :string },
     return: { error: :integer, message: :string, added_money: :integer, current_money: :integer }
 
   # Thay đỗi mật khẩu / quên mật khẩu
   # Args:
-  # - id: mã thuê bao
   # - sub_id: số điện thoại
   # Return:
   # - new_password: mật khẩu mới (nếu thao tác thành công)
   soap_action 'reset_password',
-    args: { id: :integer, sub_id: :string },
+    args: { sub_id: :string },
     return: { error: :integer, message: :string, new_password: :string }
 
   # Đăng ký tài khoản
@@ -53,20 +51,48 @@ class VasController < ApplicationController
   end
 
   def add_money
-    # TODO
-    render soap: { error: 0, message: 'thao tac thanh cong', added_money: 0, current_money: 0}
+    if params[:sub_id].present? && params[:money].present?
+      sub_id = params[:sub_id]
+      money = params[:money]
+      user = User.find_by_phone(sub_id)
+      if user.present?
+        new_money = user.money + money;
+        if user.update(money: new_money)
+          # TODO create add money log here
+          render soap: { error: 0, message: 'Cong tien thanh cong', added_money: money, current_money: new_money } and return
+        else
+          render soap: { error: 3, message: 'can\'t add money, contact technical supporter please' } and return
+        end
+      else
+        render soap: { error: 2, message: "So dien thoai #{sub_id} khong ton tai" } and return
+      end
+    end
+    render soap: { error: 1, message: 'missing arguments' }
   end
 
   def reset_password
-    # TODO
-    render soap: { error: 0, message: 'mat khau da thay doi', new_password: 'newpassword' }
+    if params[:sub_id].present?
+      sub_id = params[:sub_id]
+      user = User.find_by_phone(sub_id)
+      if user.present?
+        user.password = SecureRandom.hex(5)
+        if user.save
+          render soap: { error: 0, message: 'Thay doi mat khau thanh cong', new_password: user.password} and return
+        else
+          render soap: { error: 3, message: 'can\'t reset password, contact technical supporter please', new_password: '' } and return
+        end
+      else
+        render soap: { error: 2, message: "So dien thoai #{sub_id} khong ton tai", new_password: ''} and return
+      end
+    end
+    render soap: { error: 1, message: 'missing arguments', new_password: '' }
   end
 
   def register
     if params[:sub_id].present?
       sub_id = params[:sub_id]
       if User.exists?(phone: sub_id)
-        render soap: { error: 1, message: "So dien thoai #{sub_id} da duoc dang ky", password: ''}
+        render soap: { error: 2, message: "So dien thoai #{sub_id} da duoc dang ky", password: ''}
       else
         activeCode = SecureRandom.hex(3).upcase
         user = User.new
@@ -88,10 +114,10 @@ class VasController < ApplicationController
             create_mbf_user user
             render soap: { error: 0, message: 'dang ky tai khoan thanh cong', password: user.password}
           else
-            render soap: { error: 1, message: 'can\'t create user, contact technical supporter please', password: '' }
+            render soap: { error: 3, message: 'can\'t create user, contact technical supporter please', password: '' }
           end
         else
-          render json: { error: 2, message: 'invalid user payload', password: '' }
+          render json: { error: 4, message: 'invalid user payload', password: '' }
         end
       end
     else

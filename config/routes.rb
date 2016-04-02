@@ -151,6 +151,7 @@ Rails.application.routes.draw do
 
       # auth
       scope '/auth' do
+        get '/mbf-login' => 'auth#mbf_login'
         get '/logout' => 'auth#logout'
         post '/login' => 'auth#login'
         post '/register' => 'auth#register'
