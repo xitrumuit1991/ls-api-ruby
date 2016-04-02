@@ -45,7 +45,8 @@ class VasController < ApplicationController
     args: { sub_id: :string},
     return: { error: :integer, message: :string, password: :string }
 
-  # Gia hajn gói VIP
+  # Gia hạn gói VIP
+  # - Nếu chưa đăng ký gói, thì đăng ký mới
   # Args:
   # - sub_id: số điện thoại
   # - pkg_code: mã gói VIP muốn gia hạn, nếu để trống, tự động gia hạn gói đã active lần cuối cùng
@@ -56,6 +57,25 @@ class VasController < ApplicationController
   soap_action 'charge_vip_package',
     args: { sub_id: :string, pkg_code: :string },
     return: { error: :integer, message: :string, pkg_code: :string, actived_date: :datetime, expry_date: :datetime }
+
+  # Cập nhật thông tin thuê bao
+  # - Nếu chưa có thì tạo mới (lưu ý phải tạo luôn ở table User của LS)
+  # - Nếu có rồi thì cập nhật
+  # Args: Tham khảo ở bảng mô tả
+  soap_action 'update_subscriber',
+    args: { id: :integer, sub_id: :string, pkg_code: :string, register_chanel: :string, pkg_actived: :datetime, pkg_expried: :datetime, status: :integer },
+    return: { error: :integer, message: :string}
+
+  # Cập nhật hàng loạt thuê bao
+  # - Nếu chưa có thì tạo mới (lưu ý phải tạo luôn ở table User của LS)
+  # - Nếu có rồi thì cập nhật
+  # Args: Tham khảo ở bảng mô tả
+  # Return:
+  # - successes: list các ID cập nhật hoặc thêm mới thành công
+  # - errors: list các ID bị lỗi khi cập nhật
+  soap_action 'update_subscribers',
+    args: [{ id: :integer, sub_id: :string, pkg_code: :string, register_chanel: :string, pkg_actived: :datetime, pkg_expried: :datetime, status: :integer }],
+    return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
 
 
   def buy_vip_package
@@ -143,10 +163,19 @@ class VasController < ApplicationController
     end
   end
 
+  def update_subscriber
+    # TODO
+  end
+
+  def update_subscribers
+    # TODO
+  end
+
   private
     def create_mbf_user(user)
       # TODO create mbf_user from User
     end
+
     def dump_parameters
       Rails.logger.debug params.inspect
     end
