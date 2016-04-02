@@ -1,3 +1,3 @@
 class MobifoneUser < ActiveRecord::Base
-	# TOFO reference to User
+  belongs_to :user
 end
