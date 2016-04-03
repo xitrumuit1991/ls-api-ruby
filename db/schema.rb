@@ -287,7 +287,7 @@ ActiveRecord::Schema.define(version: 20160403170134) do
     t.string   "pkg_code",         limit: 255
     t.string   "register_channel", limit: 255
     t.datetime "active_date"
-    t.datetime "exprity_date"
+    t.datetime "expiry_date"
     t.boolean  "status"
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
