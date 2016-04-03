@@ -1,21 +1,21 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  id: 
   user_id: 
   sub_id: MyString
   pkg_code: MyString
   register_channel: MyString
-  pkg_actived: 2016-04-03 00:45:35
-  pkg_charged: 2016-04-03 00:45:35
+  active_date: 2016-04-03 22:22:52
+  exprity_date: 2016-04-03 22:22:52
+  pkg_charged: 2016-04-03 22:22:52
   status: false
 
 two:
-  id: 
   user_id: 
   sub_id: MyString
   pkg_code: MyString
   register_channel: MyString
-  pkg_actived: 2016-04-03 00:45:35
-  pkg_charged: 2016-04-03 00:45:35
+  active_date: 2016-04-03 22:22:52
+  exprity_date: 2016-04-03 22:22:52
+  pkg_charged: 2016-04-03 22:22:52
   status: false
