@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160402183946) do
+ActiveRecord::Schema.define(version: 20160403152252) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -265,7 +265,8 @@ ActiveRecord::Schema.define(version: 20160402183946) do
     t.string   "sub_id",           limit: 255
     t.string   "pkg_code",         limit: 255
     t.string   "register_channel", limit: 255
-    t.datetime "pkg_actived"
+    t.datetime "active_date"
+    t.datetime "exprity_date"
     t.datetime "pkg_charged"
     t.boolean  "status"
     t.datetime "created_at",                   null: false
@@ -619,9 +620,9 @@ ActiveRecord::Schema.define(version: 20160402183946) do
     t.string   "forgot_code",     limit: 255
   end
 
-  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
+  add_index "users", ["phone"], name: "phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
-  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+  add_index "users", ["username"], name: "username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
