@@ -283,17 +283,17 @@ ActiveRecord::Schema.define(version: 20160403170134) do
 
   create_table "mobifone_users", force: :cascade do |t|
     t.integer  "user_id",          limit: 4
-    t.string   "sub_id",           limit: 255
+    t.string   "sub_id",           limit: 255, null: false
     t.string   "pkg_code",         limit: 255
     t.string   "register_channel", limit: 255
     t.datetime "active_date"
     t.datetime "exprity_date"
-    t.datetime "pkg_charged"
     t.boolean  "status"
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
   end
 
+  add_index "mobifone_users", ["sub_id"], name: "index_mobifone_users_on_sub_id", unique: true, using: :btree
   add_index "mobifone_users", ["user_id"], name: "index_mobifone_users_on_user_id", using: :btree
 
   create_table "monthly_top_bct_level_ups", force: :cascade do |t|
@@ -641,6 +641,7 @@ ActiveRecord::Schema.define(version: 20160403170134) do
     t.string   "forgot_code",     limit: 255
   end
 
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
   add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree

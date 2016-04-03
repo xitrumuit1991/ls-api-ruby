@@ -184,7 +184,7 @@ class VasController < ApplicationController
     def create_user phone, password
       if User.exists?(phone: phone)
         @user = User.find_by_phone(phone)
-        @user.create_mobifone_user(id: @user.id, sub_id: phone) if @user.mobifone_user.nil?
+        @user.create_mobifone_user(sub_id: phone) if @user.mobifone_user.nil?
         return true
       else
         activeCode = SecureRandom.hex(3).upcase
@@ -202,7 +202,7 @@ class VasController < ApplicationController
           @user.user_exp       = 0
           @user.actived        = 1
           @user.no_heart       = 0
-          return true if @user.save and @user.create_mobifone_user(id: @user.id, sub_id: phone)
+          return true if @user.save and @user.create_mobifone_user(sub_id: phone)
         end
         return false
       end
