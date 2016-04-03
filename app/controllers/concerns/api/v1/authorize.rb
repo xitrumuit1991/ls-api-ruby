@@ -22,9 +22,9 @@ module Api::V1::Authorize extend ActiveSupport::Concern
       ip = request.headers['HTTP_X_FORWARDED_FOR']
       if scan_ip ip
         @msisdn = request.headers['HTTP_MSISDN']
-        if MobifoneUser.where(SubID: @msisdn).exists?
-          # TODO return User if exist
-          @mbf_user = MobifoneUser.find_by_SubID(@msisdn)
+        if MobifoneUser.where(sub_id: @msisdn).exists?
+          @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+          @user = @mbf_user.user
         end
         return true
       end

@@ -1,5 +1,5 @@
 class VasController < ApplicationController
-  before_filter :dump_parameters
+  before_filter :filter_ip
 
   soap_service namespace: 'urn:livestar'
 
@@ -117,20 +117,20 @@ class VasController < ApplicationController
         if user.save
           render soap: { error: 0, message: 'Thay doi mat khau thanh cong', new_password: user.password} and return
         else
-          render soap: { error: 3, message: 'can\'t reset password, contact technical supporter please', new_password: '' } and return
+          render soap: { error: 3, message: 'can\'t reset password, contact technical supporter please' } and return
         end
       else
-        render soap: { error: 2, message: "So dien thoai #{sub_id} khong ton tai", new_password: ''} and return
+        render soap: { error: 2, message: "So dien thoai #{sub_id} khong ton tai" } and return
       end
     end
-    render soap: { error: 1, message: 'missing arguments', new_password: '' }
+    render soap: { error: 1, message: 'missing arguments' }
   end
 
   def register
     if params[:sub_id].present?
       sub_id = params[:sub_id]
       if User.exists?(phone: sub_id)
-        render soap: { error: 2, message: "So dien thoai #{sub_id} da duoc dang ky", password: ''}
+        render soap: { error: 2, message: "So dien thoai #{sub_id} da duoc dang ky" }
       else
         activeCode = SecureRandom.hex(3).upcase
         user = User.new
@@ -152,14 +152,14 @@ class VasController < ApplicationController
             create_mbf_user user
             render soap: { error: 0, message: 'dang ky tai khoan thanh cong', password: user.password}
           else
-            render soap: { error: 3, message: 'can\'t create user, contact technical supporter please', password: '' }
+            render soap: { error: 3, message: 'can\'t create user, contact technical supporter please' }
           end
         else
-          render json: { error: 4, message: 'invalid user payload', password: '' }
+          render json: { error: 4, message: 'invalid user payload' }
         end
       end
     else
-      render soap: { error: 1, message: 'missing arguments', password: '' }
+      render soap: { error: 1, message: 'missing arguments' }
     end
   end
 
@@ -172,11 +172,7 @@ class VasController < ApplicationController
   end
 
   private
-    def create_mbf_user(user)
-      # TODO create mbf_user from User
-    end
-
-    def dump_parameters
-      Rails.logger.debug params.inspect
+    def filter_ip
+      puts request.remote_ip
     end
 end
