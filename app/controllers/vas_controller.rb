@@ -39,8 +39,8 @@ class VasController < ApplicationController
 
   # Gia hạn gói VIP cho thuê bao
   soap_action 'charge',
-    args: { ub_id: :string },
-    return: { error: :integer, message: :string}
+    args: { sub_id: :string },
+    return: { error: :integer, message: :string, pkg_code: :string, active_date: :string, expiry_date: :string}
 
   # Gia hạn gói cước cho nhiều thuê bao
   # Return:
@@ -103,19 +103,16 @@ class VasController < ApplicationController
             user_vip_package = user_has_vip_package.take.vip_package
             if user_vip_package.vip.weight < vip_package.vip.weight
               subscribed = subscribe_vip @user, vip_package, time_now
-              # TODO: Ghi mobifone_user_charge_log ở đây
               render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date }
             elsif user_vip_package.vip.weight == vip_package.vip.weight
               active_date = user_has_vip_package.take.expiry_date + vip_package.no_day.to_i
               subscribed = subscribe_vip @user, vip_package, active_date
-              # TODO: Ghi mobifone_user_charge_log ở đây
               render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date }
             else
               render soap: { error: 3, message: "Tai khoan da dang ky goi VIP cao hon, vui long kiem tra lai" }
             end
           else
             subscribed = subscribe_vip @user, vip_package, time_now
-            # TODO: Ghi mobifone_user_charge_log ở đây
             render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date}
           end
         else
@@ -130,23 +127,56 @@ class VasController < ApplicationController
   end
 
   def charge
-    # TODO
+    if params[:sub_id].present?
+      sub_id = params[:sub_id]
+      mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+      if mbf_user.present?
+        pkg_code = mbf_user.pkg_code
+        vip_package = VipPackage.find_by_code(pkg_code)
+        subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+        render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
+      else
+        render soap: { error: 2, message: "Thue bao #{sub_id} khong ton tai tren he thong" }
+      end
+    else
+      render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+    end
   end
 
   def mcharge
-    # TODO
+    if params[:value].present?
+      successes = []
+      errors = []
+      params[:value].each do |sub_id|
+        mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+        if mbf_user.present?
+          pkg_code = mbf_user.pkg_code
+          vip_package = VipPackage.find_by_code(pkg_code)
+          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+          successes << sub_id
+        else
+          errors << sub_id
+        end
+      end
+      render soap: { error: 0, message: '', successes: successes, errors: errors }
+    else
+      render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+    end
   end
 
   private
     def subscribe_vip user, vip_package, actived_date
       expiry_date  = actived_date + vip_package.no_day.to_i.day
       user.user_has_vip_packages.update_all(actived: false)
+      user.mobifone_user.update(pkg_code: vip_package.code, pkg_actived: actived_date)
+      # TODO: Ghi mobifone_user_charge_log ở đây
       return user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
     end
 
     def create_user phone, password
       if User.exists?(phone: phone)
         @user = User.find_by_phone(phone)
+        @user.create_mobifone_user(id: @user.id, sub_id: phone) if @user.mobifone_user.nil?
         return true
       else
         activeCode = SecureRandom.hex(3).upcase
@@ -164,8 +194,7 @@ class VasController < ApplicationController
           @user.user_exp       = 0
           @user.actived        = 1
           @user.no_heart       = 0
-          # TODO Tạo mobifone_user ở đây
-          return true if @user.save
+          return true if @user.save and @user.create_mobifone_user(id: @user.id, sub_id: phone)
         end
         return false
       end
