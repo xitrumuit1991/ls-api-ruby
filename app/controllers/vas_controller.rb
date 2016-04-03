@@ -35,6 +35,7 @@ class VasController < ApplicationController
     render soap: { error: 1, message: 'missing arguments' }
   end
 
+
   # Thay đỗi mật khẩu / quên mật khẩu
   # Args:
   # - sub_id: số điện thoại
@@ -86,7 +87,7 @@ class VasController < ApplicationController
       if create_user sub_id, password
         vip_package = VipPackage.find_by_code(pkg_code)
         if vip_package.present?
-          user_has_vip_package = @user.user_has_vip_packages.where(:actived => true)
+          user_has_vip_package = @user.user_has_vip_packages.where(actived: true).where('? BETWEEN active_date AND expiry_date', Time.now)
           if user_has_vip_package.present?
             user_vip_package = user_has_vip_package.take.vip_package
             if user_vip_package.vip.weight < vip_package.vip.weight
