@@ -24,7 +24,6 @@ class VasController < ApplicationController
       if user.present?
         new_money = user.money + money;
         if user.update(money: new_money)
-          # TODO create add money log here
           MobifoneUserMoneyLog.create(mobifone_user_id: user.mobifone_user.id, money: money, info: info)
           render soap: { error: 0, message: 'Cong tien thanh cong', added_money: money, current_money: new_money } and return
         else
@@ -176,7 +175,6 @@ class VasController < ApplicationController
       user.user_has_vip_packages.update_all(actived: false)
       user.mobifone_user.update(pkg_code: vip_package.code, active_date: actived_date, expiry_date: expiry_date)
       user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
-      # TODO: Ghi mobifone_user_charge_log ở đây
       MobifoneUserVipLog.create(mobifone_user_id: user.mobifone_user.id, user_has_vip_package_id: user_has_vip_package.id, pkg_code: user.mobifone_user.pkg_code)
       return user_has_vip_package
     end
