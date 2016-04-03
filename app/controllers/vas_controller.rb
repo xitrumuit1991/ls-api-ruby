@@ -15,41 +15,6 @@ class VasController < ApplicationController
     args: { sub_id: :string, money: :integer, info: :string },
     return: { error: :integer, message: :string, added_money: :integer, current_money: :integer }
 
-  # Thay đỗi mật khẩu / quên mật khẩu
-  # Args:
-  # - sub_id: số điện thoại
-  # Return:
-  # - new_password: mật khẩu mới (nếu thao tác thành công)
-  soap_action 'reset_password',
-    args: { sub_id: :string },
-    return: { error: :integer, message: :string, new_password: :string }
-
-  # Đăng ký tài khoản và kích hoạt VIP
-  # - Nếu chưa có user trên LS thì tạo tài khoản và kích hoạt gói VIP
-  # - Nếu đã có tài khoản những chưa có (hoặc đã hết hạn) gói VIP thì kích hoạt gói VIP
-  # - Nếu đã có tài khoản đã có nói VIP thấp hơn thì nâng cấp gói VIP
-  # Args:
-  # - sub_id: số điện thoại
-  # Return:
-  # - active_date: ngày kích hoạt gói VIP
-  # - expiry_date: ngày hết hạn gói VIP
-  soap_action 'subscribe',
-    args: { sub_id: :string, pkg_code: :string, password: :string},
-    return: { error: :integer, message: :string, active_date: :string, expiry_date: :string }
-
-  # Gia hạn gói VIP cho thuê bao
-  soap_action 'charge',
-    args: { sub_id: :string },
-    return: { error: :integer, message: :string, pkg_code: :string, active_date: :string, expiry_date: :string}
-
-  # Gia hạn gói cước cho nhiều thuê bao
-  # Return:
-  # - successes: list các ID cập nhật hoặc thêm mới thành công
-  # - errors: list các ID bị lỗi khi cập nhật
-  soap_action 'mcharge',
-    args: [:string],
-    return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
-
   def add_money
     if params[:sub_id].present? && params[:money].present?
       sub_id = params[:sub_id]
@@ -70,6 +35,15 @@ class VasController < ApplicationController
     render soap: { error: 1, message: 'missing arguments' }
   end
 
+  # Thay đỗi mật khẩu / quên mật khẩu
+  # Args:
+  # - sub_id: số điện thoại
+  # Return:
+  # - new_password: mật khẩu mới (nếu thao tác thành công)
+  soap_action 'reset_password',
+    args: { sub_id: :string },
+    return: { error: :integer, message: :string, new_password: :string }
+
   def reset_password
     if params[:sub_id].present?
       sub_id = params[:sub_id]
@@ -87,6 +61,20 @@ class VasController < ApplicationController
     end
     render soap: { error: 1, message: 'missing arguments' }
   end
+
+
+  # Đăng ký tài khoản và kích hoạt VIP
+  # - Nếu chưa có user trên LS thì tạo tài khoản và kích hoạt gói VIP
+  # - Nếu đã có tài khoản những chưa có (hoặc đã hết hạn) gói VIP thì kích hoạt gói VIP
+  # - Nếu đã có tài khoản đã có nói VIP thấp hơn thì nâng cấp gói VIP
+  # Args:
+  # - sub_id: số điện thoại
+  # Return:
+  # - active_date: ngày kích hoạt gói VIP
+  # - expiry_date: ngày hết hạn gói VIP
+  soap_action 'subscribe',
+    args: { sub_id: :string, pkg_code: :string, password: :string},
+    return: { error: :integer, message: :string, active_date: :string, expiry_date: :string }
 
   def subscribe
     if params[:sub_id].present? && params[:password].present? && params[:pkg_code].present?
@@ -126,6 +114,12 @@ class VasController < ApplicationController
     end
   end
 
+
+  # Gia hạn gói VIP cho thuê bao
+  soap_action 'charge',
+    args: { sub_id: :string },
+    return: { error: :integer, message: :string, pkg_code: :string, active_date: :string, expiry_date: :string}
+
   def charge
     if params[:sub_id].present?
       sub_id = params[:sub_id]
@@ -142,6 +136,15 @@ class VasController < ApplicationController
       render soap: { error: 1, message: 'Vui long nhap day du tham so' }
     end
   end
+
+
+  # Gia hạn gói cước cho nhiều thuê bao
+  # Return:
+  # - successes: list các ID cập nhật hoặc thêm mới thành công
+  # - errors: list các ID bị lỗi khi cập nhật
+  soap_action 'mcharge',
+    args: [:string],
+    return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
 
   def mcharge
     if params[:value].present?
