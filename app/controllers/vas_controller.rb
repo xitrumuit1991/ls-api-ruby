@@ -19,11 +19,13 @@ class VasController < ApplicationController
     if params[:sub_id].present? && params[:money].present?
       sub_id = params[:sub_id]
       money = params[:money]
+      info = params[:info]
       user = User.find_by_phone(sub_id)
       if user.present?
         new_money = user.money + money;
         if user.update(money: new_money)
           # TODO create add money log here
+          MobifoneUserMoneyLog.create(mobifone_user_id: user.mobifone_user.id, money: money, info: info)
           render soap: { error: 0, message: 'Cong tien thanh cong', added_money: money, current_money: new_money } and return
         else
           render soap: { error: 3, message: 'can\'t add money, contact technical supporter please' } and return
@@ -173,8 +175,10 @@ class VasController < ApplicationController
       expiry_date  = actived_date + vip_package.no_day.to_i.day
       user.user_has_vip_packages.update_all(actived: false)
       user.mobifone_user.update(pkg_code: vip_package.code, pkg_actived: actived_date)
+      user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
       # TODO: Ghi mobifone_user_charge_log ở đây
-      return user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
+      MobifoneUserVipLog.create(mobifone_user_id: user.mobifone_user.id, user_has_vip_package_id: user_has_vip_package.id, pkg_code: user.mobifone_user.pkg_code)
+      return user_has_vip_package
     end
 
     def create_user phone, password

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160403152252) do
+ActiveRecord::Schema.define(version: 20160403170134) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -259,6 +259,27 @@ ActiveRecord::Schema.define(version: 20160403152252) do
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
+
+  create_table "mobifone_user_money_logs", force: :cascade do |t|
+    t.integer  "mobifone_user_id", limit: 4
+    t.string   "money",            limit: 255
+    t.string   "info",             limit: 255
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "mobifone_user_money_logs", ["mobifone_user_id"], name: "index_mobifone_user_money_logs_on_mobifone_user_id", using: :btree
+
+  create_table "mobifone_user_vip_logs", force: :cascade do |t|
+    t.integer  "mobifone_user_id",        limit: 4
+    t.integer  "user_has_vip_package_id", limit: 4
+    t.string   "pkg_code",                limit: 255
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "mobifone_user_vip_logs", ["mobifone_user_id"], name: "index_mobifone_user_vip_logs_on_mobifone_user_id", using: :btree
+  add_index "mobifone_user_vip_logs", ["user_has_vip_package_id"], name: "index_mobifone_user_vip_logs_on_user_has_vip_package_id", using: :btree
 
   create_table "mobifone_users", force: :cascade do |t|
     t.integer  "user_id",          limit: 4
@@ -620,9 +641,9 @@ ActiveRecord::Schema.define(version: 20160403152252) do
     t.string   "forgot_code",     limit: 255
   end
 
-  add_index "users", ["phone"], name: "phone", unique: true, using: :btree
+  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
-  add_index "users", ["username"], name: "username", unique: true, using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
@@ -731,6 +752,9 @@ ActiveRecord::Schema.define(version: 20160403152252) do
   add_foreign_key "megabank_logs", "banks"
   add_foreign_key "megabank_logs", "megabanks"
   add_foreign_key "megabank_logs", "users"
+  add_foreign_key "mobifone_user_money_logs", "mobifone_users"
+  add_foreign_key "mobifone_user_vip_logs", "mobifone_users"
+  add_foreign_key "mobifone_user_vip_logs", "user_has_vip_packages"
   add_foreign_key "mobifone_users", "users"
   add_foreign_key "monthly_top_bct_level_ups", "broadcasters"
   add_foreign_key "monthly_top_bct_received_gifts", "broadcasters"
