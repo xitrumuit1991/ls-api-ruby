@@ -1,6 +1,6 @@
 class Api::V1::VipController < Api::V1::ApplicationController
   include Api::V1::Authorize
-  before_action :authenticate, except: [:listVip, :testSoap]
+  before_action :authenticate, except: [:listVip]
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
