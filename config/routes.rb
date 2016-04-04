@@ -247,6 +247,7 @@ Rails.application.routes.draw do
         post '/thumb' => 'room#uploadThumb' #
         post '/thumb-crop' => 'room#thumbCrop'
         post '/background' => 'room#uploadBackground' #
+        post  '/schedule'	=> 'room#updateSchedule'
         put '/background' => 'room#changeBackground'
         put '/background-default' => 'room#changeBackgroundDefault'
         put '/' => 'room#updateSettings' #
