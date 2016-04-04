@@ -30,9 +30,4 @@ class Api::V1::VipController < Api::V1::ApplicationController
       render json: {error: "Bạn không có đủ tiền"}, status: 403
     end
   end
-
-  def listVip
-    @vips = Vip::all
-    @day = params[:day].to_i
-  end
 end
