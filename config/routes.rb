@@ -243,16 +243,16 @@ Rails.application.routes.draw do
         get '/lounges' => 'room#getLounges' #
         get '/:id/thumb' => 'room#getThumb'
         get '/:id/thumb_mb' => 'room#getThumbMb'
-        put '/' => 'room#updateSettings' #
-        put '/thumb' => 'room#uploadThumb' #
+        get '/:id' => 'room#detail' #
         post '/thumb' => 'room#uploadThumb' #
         post '/thumb-crop' => 'room#thumbCrop'
+        post '/background' => 'room#uploadBackground' #
         put '/background' => 'room#changeBackground'
         put '/background-default' => 'room#changeBackgroundDefault'
-        post '/background' => 'room#uploadBackground' #
-        post '/schedule' => 'room#updateSchedule' #
-        get '/:id' => 'room#detail' #
+        put '/' => 'room#updateSettings' #
+        put '/thumb' => 'room#uploadThumb' #
         delete '/background' => 'room#deleteBackground'
+        delete '/schedule' => 'room#deleteSchedule'
       end
 
       # Live functions
