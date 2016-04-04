@@ -275,7 +275,6 @@ Rails.application.routes.draw do
       scope 'vip' do
         get '/:day/list-vip' => 'vip#listVip'
         post '/buy-vip' => 'vip#buyVip'
-        post '/test-soap' => 'vip#testSoap'
       end
 
       # Posters functions

@@ -35,12 +35,4 @@ class Api::V1::VipController < Api::V1::ApplicationController
     @vips = Vip::all
     @day = params[:day].to_i
   end
-
-  def testSoap
-    data          = Hash.new
-    data["input"] = "dulieu"
-    soapClient    = Savon.client(wsdl: "http://api.dev.livestar.vn/vas/wsdl")
-    result          = soapClient.call(:buy_vip_package,  message: data )
-    render json: result, status: 200
-  end
 end
