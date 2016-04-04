@@ -1,51 +1,21 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  SubID: MyString
-  SenderName: MyString
-  RegisterTime: 2016-04-01 18:15:50
-  PartnerID: MyString
-  LastRegTime: 2016-04-01 18:15:50
-  RegisterChannel: MyString
-  PkgCode: MyString
-  LastCharged: 2016-04-01 18:15:50
-  LastSuccessCharged: 2016-04-01 18:15:50
-  RemainChargeVolume: 1
-  NextChargeVolume: 1
-  NextCharging: 2016-04-01 18:15:50
-  FailedRetryCount: 1
-  LastCancel: 2016-04-01 18:15:50
-  OldStatus: false
-  Status: false
-  PaidType: false
-  MBF_Status: false
-  IsCharging: false
-  Point: 1.5
-  DayFlag: 1
-  BirdDate: 2016-04-01 18:15:50
-  Password: MyString
+  user_id: 
+  sub_id: MyString
+  pkg_code: MyString
+  register_channel: MyString
+  active_date: 2016-04-03 22:22:52
+  exprity_date: 2016-04-03 22:22:52
+  pkg_charged: 2016-04-03 22:22:52
+  status: false
 
 two:
-  SubID: MyString
-  SenderName: MyString
-  RegisterTime: 2016-04-01 18:15:50
-  PartnerID: MyString
-  LastRegTime: 2016-04-01 18:15:50
-  RegisterChannel: MyString
-  PkgCode: MyString
-  LastCharged: 2016-04-01 18:15:50
-  LastSuccessCharged: 2016-04-01 18:15:50
-  RemainChargeVolume: 1
-  NextChargeVolume: 1
-  NextCharging: 2016-04-01 18:15:50
-  FailedRetryCount: 1
-  LastCancel: 2016-04-01 18:15:50
-  OldStatus: false
-  Status: false
-  PaidType: false
-  MBF_Status: false
-  IsCharging: false
-  Point: 1.5
-  DayFlag: 1
-  BirdDate: 2016-04-01 18:15:50
-  Password: MyString
+  user_id: 
+  sub_id: MyString
+  pkg_code: MyString
+  register_channel: MyString
+  active_date: 2016-04-03 22:22:52
+  exprity_date: 2016-04-03 22:22:52
+  pkg_charged: 2016-04-03 22:22:52
+  status: false

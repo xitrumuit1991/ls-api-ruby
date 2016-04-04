@@ -17,8 +17,8 @@ magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
 partnerid: '10184'
 partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
 # BaseURL
-base_url: 'http://api.dev.livestar.vn/'
-#base_url: 'http://localhost:3000/'
+#base_url: 'http://api.dev.livestar.vn/'
+base_url: 'http://localhost:3000/'
 #captcha
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live

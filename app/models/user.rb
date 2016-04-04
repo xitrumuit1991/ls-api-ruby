@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
 	belongs_to :user_level
 	has_one :broadcaster
+	has_one :mobifone_user
 	has_many :statuses
 	has_many :user_follow_bcts
 	has_many :broadcasters, through: :user_follow_bcts

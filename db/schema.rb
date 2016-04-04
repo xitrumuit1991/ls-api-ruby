@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160401111550) do
+ActiveRecord::Schema.define(version: 20160403173352) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -260,33 +260,41 @@ ActiveRecord::Schema.define(version: 20160401111550) do
     t.datetime "updated_at",           null: false
   end
 
-  create_table "mobifone_users", force: :cascade do |t|
-    t.string   "SubID",              limit: 255
-    t.string   "SenderName",         limit: 255
-    t.datetime "RegisterTime"
-    t.string   "PartnerID",          limit: 255
-    t.datetime "LastRegTime"
-    t.string   "RegisterChannel",    limit: 255
-    t.string   "PkgCode",            limit: 255
-    t.datetime "LastCharged"
-    t.datetime "LastSuccessCharged"
-    t.integer  "RemainChargeVolume", limit: 4
-    t.integer  "NextChargeVolume",   limit: 4
-    t.datetime "NextCharging"
-    t.integer  "FailedRetryCount",   limit: 4
-    t.datetime "LastCancel"
-    t.boolean  "OldStatus"
-    t.boolean  "Status"
-    t.boolean  "PaidType"
-    t.boolean  "MBF_Status"
-    t.boolean  "IsCharging"
-    t.float    "Point",              limit: 24
-    t.integer  "DayFlag",            limit: 4
-    t.datetime "BirdDate"
-    t.string   "Password",           limit: 255
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+  create_table "mobifone_user_money_logs", force: :cascade do |t|
+    t.integer  "mobifone_user_id", limit: 4
+    t.string   "money",            limit: 255
+    t.string   "info",             limit: 255
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
   end
+
+  add_index "mobifone_user_money_logs", ["mobifone_user_id"], name: "index_mobifone_user_money_logs_on_mobifone_user_id", using: :btree
+
+  create_table "mobifone_user_vip_logs", force: :cascade do |t|
+    t.integer  "mobifone_user_id",        limit: 4
+    t.integer  "user_has_vip_package_id", limit: 4
+    t.string   "pkg_code",                limit: 255
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+
+  add_index "mobifone_user_vip_logs", ["mobifone_user_id"], name: "index_mobifone_user_vip_logs_on_mobifone_user_id", using: :btree
+  add_index "mobifone_user_vip_logs", ["user_has_vip_package_id"], name: "index_mobifone_user_vip_logs_on_user_has_vip_package_id", using: :btree
+
+  create_table "mobifone_users", force: :cascade do |t|
+    t.integer  "user_id",          limit: 4
+    t.string   "sub_id",           limit: 255, null: false
+    t.string   "pkg_code",         limit: 255
+    t.string   "register_channel", limit: 255
+    t.datetime "active_date"
+    t.datetime "expiry_date"
+    t.boolean  "status"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "mobifone_users", ["sub_id"], name: "index_mobifone_users_on_sub_id", unique: true, using: :btree
+  add_index "mobifone_users", ["user_id"], name: "index_mobifone_users_on_user_id", using: :btree
 
   create_table "monthly_top_bct_level_ups", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
@@ -633,7 +641,10 @@ ActiveRecord::Schema.define(version: 20160401111550) do
     t.string   "forgot_code",     limit: 255
   end
 
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
@@ -742,6 +753,10 @@ ActiveRecord::Schema.define(version: 20160401111550) do
   add_foreign_key "megabank_logs", "banks"
   add_foreign_key "megabank_logs", "megabanks"
   add_foreign_key "megabank_logs", "users"
+  add_foreign_key "mobifone_user_money_logs", "mobifone_users"
+  add_foreign_key "mobifone_user_vip_logs", "mobifone_users"
+  add_foreign_key "mobifone_user_vip_logs", "user_has_vip_packages"
+  add_foreign_key "mobifone_users", "users"
   add_foreign_key "monthly_top_bct_level_ups", "broadcasters"
   add_foreign_key "monthly_top_bct_received_gifts", "broadcasters"
   add_foreign_key "monthly_top_bct_received_hearts", "broadcasters"
