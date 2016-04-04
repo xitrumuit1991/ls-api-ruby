@@ -26,6 +26,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
+  json.id schedule.id
 	json.start_date	schedule.start.strftime('%d/%m/%Y')
 	json.end_date	schedule.end.strftime('%d/%m/%Y')
 	json.start	schedule.start.strftime('%H:%M')
