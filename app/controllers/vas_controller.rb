@@ -91,25 +91,21 @@ class VasController < ApplicationController
           user_has_vip_package = @user.user_has_vip_packages.where(actived: true).where('? BETWEEN active_date AND expiry_date', Time.now)
           if user_has_vip_package.present?
             user_vip_package = user_has_vip_package.take.vip_package
-            if user_vip_package.vip.weight < vip_package.vip.weight
-              subscribed = subscribe_vip @user, vip_package, time_now
-              render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date }
-            elsif user_vip_package.vip.weight == vip_package.vip.weight
-              active_date = user_has_vip_package.take.expiry_date + vip_package.no_day.to_i
-              subscribed = subscribe_vip @user, vip_package, active_date
+            if user_vip_package.vip.weight <= vip_package.vip.weight
+              subscribed = subscribe_vip @user, vip_package, time_now, time_now + 1.day
               render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date }
             else
-              render soap: { error: 3, message: "Tai khoan da dang ky goi VIP cao hon, vui long kiem tra lai" }
+              render soap: { error: 4, message: "Tai khoan da dang ky goi VIP cao hon, vui long kiem tra lai" }
             end
           else
-            subscribed = subscribe_vip @user, vip_package, time_now
+            subscribed = subscribe_vip @user, vip_package, time_now, time_now + 1.day
             render soap: { error: 0, message: "Da dang ky thanh cong", active_date:  subscribed.active_date, expiry_date: subscribed.expiry_date}
           end
         else
-          render soap: { error: 2, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
+          render soap: { error: 3, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
         end
       else
-        render soap: { error: 1, message: 'Khong the tao tai khoan, vui long lien he ho tro ky thuat livestar' }
+        render soap: { error: 2, message: 'Khong the tao tai khoan, vui long lien he ho tro ky thuat livestar' }
       end
     else
       render soap: { error: 1, message: 'Vui long nhap day du tham so' }
@@ -170,8 +166,8 @@ class VasController < ApplicationController
   end
 
   private
-    def subscribe_vip user, vip_package, actived_date
-      expiry_date  = actived_date + vip_package.no_day.to_i.day
+    def subscribe_vip user, vip_package, actived_date, expiry = false
+      expiry_date  = expiry ? expiry : actived_date + vip_package.no_day.to_i.day
       user.user_has_vip_packages.update_all(actived: false)
       user.mobifone_user.update(pkg_code: vip_package.code, active_date: actived_date, expiry_date: expiry_date)
       user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
