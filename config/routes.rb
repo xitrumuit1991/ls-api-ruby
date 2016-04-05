@@ -176,6 +176,7 @@ Rails.application.routes.draw do
         get '/' => 'user#profile' #
         get '/expense-records' => 'user#expenseRecords' #
         get '/get-providers' => 'user#getProviders'
+        get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
         get '/get-megabanks' => 'user#getMegabanks'
         get '/check-captcha' => 'user#checkRecaptcha' #
