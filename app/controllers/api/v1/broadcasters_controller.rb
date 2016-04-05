@@ -3,8 +3,8 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include YoutubeHelper
 
-  before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
-  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured]
+  before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile, :search]
+  before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured, :search]
 
   def myProfile
   end
@@ -178,11 +178,23 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def search
     return head 400 if params[:q].nil?
+    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+    @totalUser = []
     @user = check_authenticate
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
-    getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
-    @max_page = (Float(getAllRecord)/9).ceil
-    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(6).offset(offset)
+    # offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    # getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
+    # @max_page = (Float(getAllRecord)/9).ceil
+    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'")
+    @bcts.each do |bct|
+      if bct.public_room.present?
+        @totalUser[bct.public_room.id] = redis.hgetall(bct.public_room.id).length
+      end
+      puts "+++++++++++++++++++++++++++++++++++++++++=="
+      puts bct.pretty_inspect
+      puts "+++++++++++++++++++++++++++++++++++++++++=="
+      # @totalUser[bct.room.id] = redis.hgetall(bct.room.id).length
+    end
+    # @room = Room.where("title LIKE '%#{params[:q]}%'")
   end
 
   private

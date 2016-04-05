@@ -1,4 +1,4 @@
-json.totalPage @max_page
+# json.totalPage @max_page
 json.broadcasters @bcts do |bct|
 	json.id			bct.id
 	json.name		bct.user.name
@@ -17,7 +17,9 @@ json.broadcasters @bcts do |bct|
 	if bct.public_room.present?
 		json.room do
 			json.id				bct.public_room.id
+      json.totalUser		@totalUser[bct.public_room.id]
 			json.title		bct.public_room.title
+			json.slug		bct.public_room.slug
 			json.on_air		bct.public_room.on_air
 			json.thumb		bct.public_room.thumb_path
 			json.thumb_mb	bct.public_room.thumb_path(true)
