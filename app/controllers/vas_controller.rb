@@ -115,18 +115,22 @@ class VasController < ApplicationController
 
   # Gia hạn gói VIP cho thuê bao
   soap_action 'charge',
-    args: { sub_id: :string },
+    args: { sub_id: :string, pkg_code: :string },
     return: { error: :integer, message: :string, pkg_code: :string, active_date: :string, expiry_date: :string}
 
   def charge
-    if params[:sub_id].present?
+    if params[:sub_id].present? && params[:pkg_code].present?
       sub_id = params[:sub_id]
       mbf_user = MobifoneUser.find_by_sub_id(sub_id)
       if mbf_user.present?
-        pkg_code = mbf_user.pkg_code
+        pkg_code = params[:pkg_code]
         vip_package = VipPackage.find_by_code(pkg_code)
-        subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
-        render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
+        if vip_package.present?
+          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+          render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
+        else
+          render soap: { error: 2, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
+        end
       else
         render soap: { error: 2, message: "Thue bao #{sub_id} khong ton tai tren he thong" }
       end
@@ -141,20 +145,25 @@ class VasController < ApplicationController
   # - successes: list các ID cập nhật hoặc thêm mới thành công
   # - errors: list các ID bị lỗi khi cập nhật
   soap_action 'mcharge',
-    args: [:string],
+    args: [{ sub_id: :string, pkg_code: :string }],
     return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
 
   def mcharge
     if params[:value].present?
       successes = []
       errors = []
-      params[:value].each do |sub_id|
-        mbf_user = MobifoneUser.find_by_sub_id(sub_id)
-        if mbf_user.present?
-          pkg_code = mbf_user.pkg_code
-          vip_package = VipPackage.find_by_code(pkg_code)
-          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
-          successes << sub_id
+      params[:value].each do |object|
+        if object[:sub_id].present? && object[:pkg_code].present?
+          sub_id = object[:sub_id]
+          pkg_code = object[:pkg_code]
+          mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+          if mbf_user.present?
+            vip_package = VipPackage.find_by_code(pkg_code)
+            subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+            successes << sub_id
+          else
+            errors << sub_id
+          end
         else
           errors << sub_id
         end
