@@ -1,4 +1,4 @@
-# json.totalPage @max_page
+json.totalPage @max_page
 json.broadcasters @bcts do |bct|
 	json.id			bct.id
 	json.name		bct.user.name
