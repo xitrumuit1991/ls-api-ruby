@@ -3,7 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify]
 
   resource_description do
     short 'Authorization'
@@ -17,8 +17,152 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     return head 401
   end
 
+  def mbf_detection
+    if check_mbf_auth
+      render json: { phone: @msisdn }, status: 200 and return
+    end
+    render json: { error: "Request not from Mobifone 3G !" }, status: 403
+  end
+
+  def mbf_register
+    if check_mbf_auth
+      if !defined? @mbf_user
+        user = User.find_by_phone(@msisdn)
+        if user.present?
+          if user.otps.find_by_service('mbf').present?
+            user.otps.find_by_service('mbf').update(code: '222')
+            render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
+          else
+            render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200 and return
+          end
+        else
+          activeCode = SecureRandom.hex(3).upcase
+          password   = SecureRandom.hex(5)
+          user = User.new
+          user.phone        = @msisdn
+          user.email        = "#{@msisdn}@email.com"
+          user.password     = password
+          user.active_code  = activeCode
+          if user.valid?
+            user.name           = @msisdn
+            user.username       = @msisdn
+            user.birthday       = '2000-01-01'
+            user.user_level_id  = UserLevel.first().id
+            user.money          = 8
+            user.user_exp       = 0
+            user.actived        = 0
+            user.no_heart       = 0
+            if user.save
+              user.otps.create(code: '111', service: 'mbf')
+              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
+            else
+              render json: { error: "System error !" }, status: 500 and return
+            end
+          else
+            render json: { error: user.errors.full_messages }, status: 400 and return
+          end
+        end
+      else
+        render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400 and return
+      end
+    end
+    render json: { error: "Request not from Mobifone 3G !" }, status: 403
+  end
+
+  def mbf_verify
+    if check_mbf_auth
+      if !defined? @mbf_user
+        user = User.find_by_phone(@msisdn)
+        if user.present?
+          if user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).present?
+            # call api register of VAS
+            soapClient = Savon.client(wsdl: Settings.vas_url)
+            result = soapClient.call(:Register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
+            puts '================'
+            puts result
+            puts '================'
+
+            # update otp was used
+            user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).update(used: 1)
+            # create token
+            token = createToken(user)
+            # update token
+            user.update(actived: true, active_date: Time.now, last_login: Time.now, token: token)
+            # create mobifone user
+            user.create_mobifone_user(sub_id: @msisdn, active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+            # get vip1
+            vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+            if vip1.present?
+              # subscribe vip1
+              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create trade logs
+              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+              # return token
+              render json: { token: token }, status: 200 and return
+            else
+              render json: { error: "Sytem error !" }, status: 400 and return    
+            end
+          else
+            render json: { error: "Mã OTP không đúng, vui lòng kiểm tra lại !" }, status: 400 and return  
+          end
+        else
+          render json: { error: "Xác nhận OTP không thành công do tài khoản này không tồn tại trong hệ thống !" }, status: 400 and return
+        end
+      else
+        render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400 and return
+      end
+    end
+    render json: { error: "Request not from Mobifone 3G !" }, status: 403
+  end
+
+  def mbf_sync
+    if check_mbf_auth
+      if !defined? @mbf_user
+        user = User.find_by(phone: @msisdn).try(:authenticate, params[:password])
+        if user.present?
+          # call api register of VAS
+          soapClient = Savon.client(wsdl: Settings.vas_url)
+          result = soapClient.call(:Register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
+
+          # create token
+          token = createToken(user)
+          # update token
+          user.update(last_login: Time.now, token: token)
+          # create mobifone user
+          user.create_mobifone_user(sub_id: @msisdn, active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)          
+          # check user has vip packages
+          if !user.user_has_vip_packages.find_by_actived(1).present?
+            # get vip1
+            vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+            if vip1.present?
+              # subscribe vip1
+              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create trade logs
+              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+            else
+              render json: { error: "Sytem error !" }, status: 400 and return    
+            end
+          end
+          # return token
+          render json: { token: token }, status: 200 and return
+        else
+          render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401 and return
+        end
+      else
+        render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400 and return
+      end
+    end
+    render json: { error: "Request not from Mobifone 3G !" }, status: 403
+  end
+
   def login
-    @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+    if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+      @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+    else
+      phone = "84#{params[:email][1..-1]}"
+      @user = User.find_by(phone: phone).try(:authenticate, params[:password])
+    end
+
     if @user.present?
       if (Time.now.to_i - @user.last_login.to_i) <= 86400
         @user.increaseExp(20)
@@ -36,7 +180,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
       end
     else
-      render json: { error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }, status: 401
+      render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
     end
   end
 
