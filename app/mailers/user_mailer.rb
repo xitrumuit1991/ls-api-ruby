@@ -10,7 +10,7 @@ class UserMailer < ApplicationMailer
   def send_activeCode(user, activeCode)
     @user = user
     @activeCode = activeCode
-    mail(to: @user.email, subject: 'Active your account to complete registration')
+    mail(to: @user.email, subject: 'Kích hoạt tài khoản của bạn để hoàn thành kích hoạt')
   end
 
   def confirm_forgot_password(user,forgot_code)
