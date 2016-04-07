@@ -82,7 +82,7 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseExp(exp)
-		exp_bonus = self.checkVip ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus : 1
+		exp_bonus = self.checkVip == 1 ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus : 1
 		old_value = self.user_exp
 		new_value = old_value + exp*exp_bonus
 		self.user_exp = new_value
