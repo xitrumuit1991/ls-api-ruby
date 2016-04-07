@@ -61,12 +61,12 @@ class User < ActiveRecord::Base
   #check vip de su dung ham o authorize 
   def checkVip
   	if self.user_has_vip_packages.count == 0
-    	return false
+  		return 0
     elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
       self.user_has_vip_packages.find_by_actived(true).update(actived: false)
-    	return false
+    	return 0
     else
-    	return true
+    	return 1
     end
   end
 
