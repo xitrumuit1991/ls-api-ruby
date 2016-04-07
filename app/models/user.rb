@@ -58,12 +58,14 @@ class User < ActiveRecord::Base
     }
     arr[self.birthday.zodiac_sign]
   end
-  #check vip su dung ham o authorize
+  #check vip de su dung ham o authorize 
   def checkVip
   	if self.user_has_vip_packages.find_by_actived(true).present? and !self.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
       self.user_has_vip_packages.find_by_actived(true).update(actived: false)
+    	return false
+    else
+    	return true
     end
-    return true
   end
 
 	def decreaseMoney(money)
@@ -78,8 +80,10 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseExp(exp)
+		exp_bonus = self.checkVip ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus : 1
+		Rails.logger.info "AngCo Test ExpBonus #{exp_bonus}"
 		old_value = self.user_exp
-		new_value = old_value + exp
+		new_value = old_value + exp*exp_bonus
 		self.user_exp = new_value
 		next_level = UserLevel.where("min_exp <= ?", new_value).last
 		#next_level = self.user_level.next
