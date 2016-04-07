@@ -7,6 +7,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms]
 
   def profile
+    Rails.logger.info "AngCo ++++++++++++++ #{@user.user_has_vip_packages.find_by_actived(true).present?}"
     @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
 
