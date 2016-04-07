@@ -181,10 +181,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
       redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
       @totalUser = []
       @user = check_authenticate
-      offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+      offset = params[:page].nil? ? 0 : params[:page].to_i * 10
       getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
-      @max_page = (Float(getAllRecord)/9).ceil
-      @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(9).offset(offset)
+      @max_page = (Float(getAllRecord)/10).ceil
+      @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(10).offset(offset)
 
       @bcts.each do |bct|
         if bct.public_room.present?
