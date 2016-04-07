@@ -25,6 +25,7 @@ json.max_heart		@user.user_level.heart_per_day
 json.active_code	@user.active_code
 if !@vipInfo.nil?
   json.vip do
+    json.vip 			@vipInfo.weight
     json.no_char 	    @vipInfo.no_char
     json.screen_time 	@vipInfo.screen_text_time
   end
