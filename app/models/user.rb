@@ -60,7 +60,9 @@ class User < ActiveRecord::Base
   end
   #check vip de su dung ham o authorize 
   def checkVip
-  	if self.user_has_vip_packages.find_by_actived(true).present? and !self.user_has_vip_packages.where('active_date < ? AND expiry_date > ?', Time.now, Time.now).present?
+  	if self.user_has_vip_packages.count == 0
+    	return false
+    elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
       self.user_has_vip_packages.find_by_actived(true).update(actived: false)
     	return false
     else
@@ -81,7 +83,6 @@ class User < ActiveRecord::Base
 
 	def increaseExp(exp)
 		exp_bonus = self.checkVip ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus : 1
-		Rails.logger.info "AngCo Test ExpBonus #{exp_bonus}"
 		old_value = self.user_exp
 		new_value = old_value + exp*exp_bonus
 		self.user_exp = new_value
