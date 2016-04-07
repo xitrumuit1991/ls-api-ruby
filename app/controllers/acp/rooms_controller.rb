@@ -20,6 +20,8 @@ class Acp::RoomsController < Acp::ApplicationController
 	def create
 		@data = @model.new(parameters)
 		@data.is_privated = false
+		@data.thumb_crop = parameters[:thumb]
+
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Room was successfully created.')
 		else
@@ -29,6 +31,8 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def update
     prev_path = Rails.application.routes.recognize_path(request.referrer)
+		@data.thumb_crop = parameters[:thumb]
+
 		if @data.update(parameters)
 			if prev_path[:controller] == 'acp/rooms'
         redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
