@@ -186,7 +186,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if room.present?
         room.schedules.destroy_all
 
-        if @user.broadcaster.rooms.find_by_is_privated(false).schedules.create(JSON.parse(params[:schedule].to_json))
+        if room.schedules.create(JSON.parse(params[:schedule].to_json))
           return head 201
         else
           render json: {error: t('error_system')}, status: 400
@@ -196,6 +196,25 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       end
     else
       render json: {error: 'Vui lòng nhập lịch diễn cho phòng'}, status: 400
+    end
+  end
+
+  def deleteSchedule
+    if params[:schedule_id].present?
+      room = @user.broadcaster.rooms.find_by_is_privated(false)
+
+      if room.present?
+        begin
+          room.schedules.find(params[:schedule_id].to_i).destroy
+          return head 201
+        rescue ActiveRecord::RecordNotFound => e
+          render json: {error: 'Lịch diễn không tồn tại!, vui lòng thử lại nhé'}, status: 400
+        end
+      else
+        render json: {error: t('error_room_not_found')}, status: 404
+      end
+    else
+      render json: {error: 'Vui lòng chọn lịch diễn trước khi xóa nhé!'}, status: 400
     end
   end
 

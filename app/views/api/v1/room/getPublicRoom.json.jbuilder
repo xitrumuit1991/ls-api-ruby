@@ -5,23 +5,8 @@ json.slug				@room.slug
 json.thumb 	 			@room.thumb_path
 json.thumb_mb			@room.thumb_path(true)
 json.is_privated		@room.is_privated
-if !@room.broadcaster_background_id.nil?
-	if !@room.broadcaster_background_id.nil?
-		json.background 	@room.broadcaster_background.image.url
-    json.background_id @room.broadcaster_background.id
-	else
-		json.background 	false
-    json.background_id false
-	end
-else
-	if !@room.room_background_id.nil? 
-		json.background 	@room.room_background.image.url
-    json.background_id @room.room_background.id
-	else
-		json.background 	false
-    json.background_id false
-	end
-end
+json.bct_background_id @room.broadcaster_background_id
+json.room_background_id @room.room_background_id
 
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
@@ -41,6 +26,7 @@ json.broadcaster do
 end
 
 json.schedules @room.schedules do |schedule|
+  json.id schedule.id
 	json.start_date	schedule.start.strftime('%d/%m/%Y')
 	json.end_date	schedule.end.strftime('%d/%m/%Y')
 	json.start	schedule.start.strftime('%H:%M')

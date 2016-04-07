@@ -33,6 +33,6 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def listVip
     @vips = Vip::all
-    @day = params[:day].to_i
+    @day = params[:day]
   end
 end

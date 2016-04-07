@@ -179,6 +179,7 @@ Rails.application.routes.draw do
         get '/' => 'user#profile' #
         get '/expense-records' => 'user#expenseRecords' #
         get '/get-providers' => 'user#getProviders'
+        get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
         get '/get-megabanks' => 'user#getMegabanks'
         get '/check-captcha' => 'user#checkRecaptcha' #
@@ -246,16 +247,17 @@ Rails.application.routes.draw do
         get '/lounges' => 'room#getLounges' #
         get '/:id/thumb' => 'room#getThumb'
         get '/:id/thumb_mb' => 'room#getThumbMb'
-        put '/' => 'room#updateSettings' #
-        put '/thumb' => 'room#uploadThumb' #
+        get '/:id' => 'room#detail' #
         post '/thumb' => 'room#uploadThumb' #
         post '/thumb-crop' => 'room#thumbCrop'
+        post '/background' => 'room#uploadBackground' #
+        post  '/schedule'	=> 'room#updateSchedule'
         put '/background' => 'room#changeBackground'
         put '/background-default' => 'room#changeBackgroundDefault'
-        post '/background' => 'room#uploadBackground' #
-        post '/schedule' => 'room#updateSchedule' #
-        get '/:id' => 'room#detail' #
+        put '/' => 'room#updateSettings' #
+        put '/thumb' => 'room#uploadThumb' #
         delete '/background' => 'room#deleteBackground'
+        delete '/schedule' => 'room#deleteSchedule'
       end
 
       # Live functions

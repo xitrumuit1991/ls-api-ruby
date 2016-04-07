@@ -177,12 +177,23 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def search
-    return head 400 if params[:q].nil?
-    @user = check_authenticate
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
-    getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
-    @max_page = (Float(getAllRecord)/9).ceil
-    @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(6).offset(offset)
+    if params[:q].present?
+      redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
+      @totalUser = []
+      @user = check_authenticate
+      offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+      getAllRecord = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").length
+      @max_page = (Float(getAllRecord)/9).ceil
+      @bcts = Broadcaster.joins(:rooms, :user).select("broadcasters.*").where("username LIKE '%#{params[:q]}%' OR name LIKE '%#{params[:q]}%' OR fullname LIKE '%#{params[:q]}%' OR title LIKE '%#{params[:q]}%'").limit(9).offset(offset)
+
+      @bcts.each do |bct|
+        if bct.public_room.present?
+          @totalUser[bct.public_room.id] = redis.hgetall(bct.public_room.id).length
+        end
+      end
+    else
+      render json: {error: 'Vui lòng nhập từ khóa để tìm kiếm nhé!'}, status: 400
+    end
   end
 
   private

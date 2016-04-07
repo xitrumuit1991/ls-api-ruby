@@ -356,8 +356,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         new_password = SecureRandom.hex(4)
         if user.update(password: new_password, token: '')
           if UserMailer.reset_password(user, new_password).deliver_now
-            user.update(forgot_code: SecureRandom.hex(4))
-            return head 200
+            if !user.actived
+              user.actived = 1
+            end
+            user.forgot_code = SecureRandom.hex(4)
+            if user.save
+              return head 200
+            else
+              render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
+            end
           end
         else
           render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
