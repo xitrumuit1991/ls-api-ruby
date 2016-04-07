@@ -77,7 +77,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           if user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).present?
             # call api register of VAS
             soapClient = Savon.client(wsdl: Settings.vas_url)
-            result = soapClient.call(:Register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
+            result = soapClient.call(:register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
             puts '================'
             puts result
             puts '================'
