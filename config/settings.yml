@@ -22,3 +22,5 @@ base_url: 'http://localhost:3000/'
 #captcha
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
+# VAS
+vas_url: http://124.158.4.211:9395/VAS/VasApp.svc?wsdl
