@@ -6,8 +6,10 @@ json.array! @vips do |vip|
 	if vip.priceVip(@day)
 		json.money			vip.priceVip(@day).price
 		json.package_id	vip.priceVip(@day).id
+		json.day	@day
 	else
 		json.package_id	"Cập nhật"
 		json.money			"Cập nhật"
+		json.day	@day
 	end
 end
