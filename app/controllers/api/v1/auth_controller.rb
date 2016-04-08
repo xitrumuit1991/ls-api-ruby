@@ -167,7 +167,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       if (Time.now.to_i - @user.last_login.to_i) <= 86400
         @user.increaseExp(20)
       end
-      @user.checkVip
       if @user.actived
         # create token
         token = createToken(@user)
