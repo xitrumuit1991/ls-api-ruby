@@ -23,4 +23,5 @@ base_url: 'http://api.dev.livestar.vn/'
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
 # VAS
-vas_url: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
+vas_proxy: http://124.158.4.211:9387
+vas_wsdl: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
