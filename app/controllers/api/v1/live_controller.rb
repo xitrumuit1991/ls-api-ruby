@@ -26,7 +26,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.update(:no_heart => @user.no_heart.to_i + 1)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("add hearts", {hearts: hearts, sender: user})
+          emitter.of("/room").in(@room.id).emit("add hearts", {hearts: @user.no_heart, sender: user})
           return head 201
         rescue => e
           render json: {error: e.message}, status: 400
@@ -258,7 +258,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         if @user.save then
           if @room.broadcaster.save then
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            emitter.of("/room").in(@room.id).emit("hearts recived", {hearts: hearts, sender: user})
+            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user})
 
             # insert log
             @user.heart_logs.create(room_id: @room.id, quantity: hearts)
