@@ -112,6 +112,25 @@ class VasController < ApplicationController
     end
   end
 
+  # Huy toan bo goi VIP (neu co)
+  soap_action 'unsubscribe',
+    args: { sub_id: :string },
+    return: { error: :integer, message: :string }
+  def unsubscribe
+    if params[:sub_id].present?
+      sub_id = params[:sub_id]
+      mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+      if mbf_user.present?
+        mbf_user.user.user_has_vip_packages.update_all(actived: false)
+        render soap: { error: 0, message: "Huy dich vu thanh cong" }
+      else
+        render soap: { error: 2, message: "Thue bao #{sub_id} khong ton tai tren he thong" }
+      end
+    else
+      render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+    end
+  end
+
 
   # Gia hạn gói VIP cho thuê bao
   soap_action 'charge',
