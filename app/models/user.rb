@@ -62,12 +62,16 @@ class User < ActiveRecord::Base
   def checkVip
   	if self.user_has_vip_packages.count == 0
   		return 0
-    elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
-      self.user_has_vip_packages.find_by_actived(true).update(actived: false)
-    	return 0
-    else
-    	return 1
-    end
+  	else
+  		if self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now).present?
+  			return 1
+  		elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
+  			self.user_has_vip_packages.find_by_actived(true).update(actived: false)
+    		return 0
+  		else
+  			return 0
+  		end
+  	end
   end
 
 	def decreaseMoney(money)
