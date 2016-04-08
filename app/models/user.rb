@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
 	has_many :user_has_vip_packages
 	has_many :vip_packages, through: :user_has_vip_packages
 	has_many :otps
+	has_many :trade_logs
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :username, presence: true, uniqueness: true, on: :update

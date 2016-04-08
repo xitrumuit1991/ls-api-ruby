@@ -27,40 +27,91 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def mbf_register
     if check_mbf_auth
       if !defined? @mbf_user
-        user = User.find_by_phone(@msisdn)
-        if user.present?
-          if user.otps.find_by_service('mbf').present?
-            user.otps.find_by_service('mbf').update(code: '222')
-            render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
-          else
-            render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200 and return
+        begin
+          otp = SecureRandom.hex(4)
+          # call api register of VAS
+          soapClient = Savon.client do |variable|
+            variable.proxy Settings.vas_proxy
+            variable.wsdl Settings.vas_wsdl
+            variable.pretty_print_xml true
           end
-        else
-          activeCode = SecureRandom.hex(3).upcase
-          password   = SecureRandom.hex(5)
-          user = User.new
-          user.phone        = @msisdn
-          user.email        = "#{@msisdn}@email.com"
-          user.password     = password
-          user.active_code  = activeCode
-          if user.valid?
-            user.name           = @msisdn
-            user.username       = @msisdn
-            user.birthday       = '2000-01-01'
-            user.user_level_id  = UserLevel.first().id
-            user.money          = 8
-            user.user_exp       = 0
-            user.actived        = 0
-            user.no_heart       = 0
-            if user.save
-              user.otps.create(code: '111', service: 'mbf')
-              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
+
+          data                = Hash.new
+          data["sender"]      = "9387"
+          data["receiver"]    = "841283807429"
+          data["sms_content"] = "Test pito khung"
+          data["pkg_id"]      = 0
+          data["channel"]     = "APP"
+
+          message = {
+            "sender"      => {"string" => "9387"},
+            "receiver"    => {"string" => "841283807429"},
+            "sms_content" => {"string" => "Test pito khung"},
+            "pkg_id"      => {"int" => 0},
+            "channel"     => {"string" => "APP"}
+          }
+
+          message1 = {
+            "sender"      => "9387",
+            "receiver"    => "841283807429",
+            "sms_content" => "Test pito khung",
+            "pkg_id"      => 0,
+            "channel"     => "APP"
+          }
+
+          puts '+++++++++++++'
+          puts data
+          puts '+++++++++++++'
+          puts message1
+          puts '+++++++++++++'
+
+          send_sms_response = soapClient.call(:send_sms,  message: message1)
+          send_sms_result = send_sms_response.body[:send_sms_response][:send_sms_result]
+          puts '=============+'
+          puts send_sms_result
+          puts '============='
+          if !send_sms_result[:is_error]
+            user = User.find_by_phone(@msisdn)
+            if user.present?
+              if user.otps.find_by_service('mbf').present?
+                # check them truong hop otp was used = true or false
+                user.otps.find_by_service('mbf').update(code: otp)
+                render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
+              else
+                render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200 and return
+              end
             else
-              render json: { error: "System error !" }, status: 500 and return
+              activeCode = SecureRandom.hex(3).upcase
+              password   = SecureRandom.hex(5)
+              user = User.new
+              user.phone        = @msisdn
+              user.email        = "#{@msisdn}@email.com"
+              user.password     = password
+              user.active_code  = activeCode
+              if user.valid?
+                user.name           = @msisdn
+                user.username       = @msisdn
+                user.birthday       = '2000-01-01'
+                user.user_level_id  = UserLevel.first().id
+                user.money          = 8
+                user.user_exp       = 0
+                user.actived        = 0
+                user.no_heart       = 0
+                if user.save
+                  user.otps.create(code: otp, service: 'mbf')
+                  render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201 and return
+                else
+                  render json: { error: "System error !" }, status: 500 and return
+                end
+              else
+                render json: { error: user.errors.full_messages }, status: 400 and return
+              end
             end
           else
-            render json: { error: user.errors.full_messages }, status: 400 and return
+            render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400 and return  
           end
+        rescue Savon::SOAPFault => e
+          render json: {error: e}, status: 400
         end
       else
         render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400 and return
@@ -76,11 +127,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         if user.present?
           if user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).present?
             # call api register of VAS
-            soapClient = Savon.client(wsdl: Settings.vas_url)
-            result = soapClient.call(:register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
+            soapClient = Savon.client do |variable|
+              variable.proxy Settings.vas_proxy
+              variable.wsdl Settings.vas_wsdl
+            end
+
             puts '================'
-            puts result
+            puts soapClient.operations
             puts '================'
+            register_response = soapClient.call(:register,  message: { phone_number: @msisdn, password: params[:password].to_s, pkg_code: 'VIP', channel: 'APP', username: @msisdn, partner_id: 'DEFAULT' })
+            register_result = register_response.body[:register_response][:register_result]
+            puts '================'
+            puts register_result
+            puts '================'
+
+            return head 200
 
             # update otp was used
             user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).update(used: 1)
