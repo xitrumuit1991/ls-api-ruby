@@ -2,6 +2,7 @@ require 'jwt'
 
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  include Api::V1::Vas
 
   before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync]
@@ -16,71 +17,51 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def mbf_register
     if !@mbf_user.present?
-      begin
-        # generate otp
-        otp = SecureRandom.hex(4)
-        # call VAS webservice
-        soapClient = Savon.client do |variable|
-          variable.proxy Settings.vas_proxy
-          variable.wsdl Settings.vas_wsdl
-        end
-        # params request
-        message = {
-          "tns:sender"      => "9387",
-          "tns:receiver"    => @msisdn.to_s,
-          "tns:sms_content" => "Sử dụng mã OTP sao để kích hoạt tài khoản của bạn #{otp}",
-          "tns:pkg_id"      => 0,
-          "tns:channel"     => "APP"
-        }
-        # call api send sms
-        send_sms_response = soapClient.call(:send_sms,  message: message)
-        # get response
-        send_sms_result = send_sms_response.body[:send_sms_response][:send_sms_result]
-        # check result
-        if !send_sms_result[:is_error]
-          user = User.find_by_phone(@msisdn)
-          if user.present?
-            if user.otps.find_by_service('mbf').present?
-              # check them truong hop otp was used = true or false
-              user.otps.find_by_service('mbf').update(code: otp)
-              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
-            else
-              render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
-            end
+      # generate otp
+      otp = SecureRandom.hex(4)
+      sms_content = "Sử dụng mã OTP sao để kích hoạt tài khoản của bạn #{otp}";
+      send_sms_result = vas_sms @msisdn, sms_content
+      if !send_sms_result[:is_error]
+        user = User.find_by_phone(@msisdn)
+        if user.present?
+          if user.otps.find_by_service('mbf').present?
+            # check them truong hop otp was used = true or false
+            user.otps.find_by_service('mbf').update(code: otp)
+            render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
           else
-            activeCode = SecureRandom.hex(3).upcase
-            user = User.new
-            user.phone        = @msisdn
-            user.email        = "#{@msisdn}@email.com"
-            user.password     = @msisdn
-            user.active_code  = activeCode
-            if user.valid?
-              user.name           = @msisdn
-              user.username       = @msisdn
-              user.birthday       = '2000-01-01'
-              user.user_level_id  = UserLevel.first().id
-              user.money          = 8
-              user.user_exp       = 0
-              user.actived        = 0
-              user.no_heart       = 0
-              if user.save
-                user.otps.create(code: otp, service: 'mbf')
-                render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
-              else
-                render json: { error: "System error !" }, status: 400
-              end
-            else
-              render json: { error: user.errors.full_messages }, status: 400
-            end
+            render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
           end
         else
-          render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400
+          activeCode = SecureRandom.hex(3).upcase
+          user = User.new
+          user.phone        = @msisdn
+          user.email        = "#{@msisdn}@email.com"
+          user.password     = @msisdn
+          user.active_code  = activeCode
+          if user.valid?
+            user.name           = @msisdn
+            user.username       = @msisdn
+            user.birthday       = '2000-01-01'
+            user.user_level_id  = UserLevel.first().id
+            user.money          = 8
+            user.user_exp       = 0
+            user.actived        = 0
+            user.no_heart       = 0
+            if user.save
+              user.otps.create(code: otp, service: 'mbf')
+              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
+            else
+              render json: { error: "System error !" }, status: 400
+            end
+          else
+            render json: { error: user.errors.full_messages }, status: 400
+          end
         end
-      rescue Savon::SOAPFault => e
-        render json: { error: "System error !" }, status: 500
+      else
+        render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400
       end
     else
-      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400
+      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
     end
   end
 
@@ -89,22 +70,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       user = User.find_by_phone(@msisdn)
       if user.present?
         if user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).present?
-          # call VAS webservice
-          soapClient = Savon.client do |variable|
-            variable.proxy Settings.vas_proxy
-            variable.wsdl Settings.vas_wsdl
-          end
-          # params request
-          message = {
-            "tns:phone_number"  => @msisdn.to_s,
-            "tns:password"      => @msisdn.to_s,
-            "tns:pkg_code"      => "VIP",
-            "tns:channel"       => "APP",
-            "tns:username"      => @msisdn.to_s,
-            "tns:partner_id"    => "DEFAULT"
-          }
-          register_response = soapClient.call(:register,  message: message)
-          register_result = register_response.body[:register_response][:register_result]
+          register_result = vas_register @msisdn
           # check reuslt
           if !register_result[:is_error]
             # update otp was used
@@ -114,30 +80,31 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             # update token
             user.update(actived: true, active_date: Time.now, last_login: Time.now, token: token)
             # create mobifone user
-            user.create_mobifone_user(sub_id: @msisdn, pkg_code: "0", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+            user.create_mobifone_user(sub_id: @msisdn, pkg_code: "VIP", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
             # get vip1
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             if vip1.present?
               # subscribe vip1
               user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
               # create trade logs
+              # TODO: chổ này ghi mobifone_user_vip_log chứ không phải trade log
               user.trade_logs.create(vip_package_id: vip1.id, status: 1)
               # return token
               render json: { token: token }, status: 200
             else
-              render json: { error: "Sytem error !" }, status: 400    
+              render json: { error: "Sytem error !" }, status: 400
             end
           else
             render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400
           end
         else
-          render json: { error: "Mã OTP không đúng, vui lòng kiểm tra lại !" }, status: 400  
+          render json: { error: "Mã OTP không đúng, vui lòng kiểm tra lại !" }, status: 401
         end
       else
-        render json: { error: "Xác nhận OTP không thành công do tài khoản này không tồn tại trong hệ thống !" }, status: 400
+        render json: { error: "Xác nhận OTP không thành công do tài khoản này không tồn tại trong hệ thống !" }, status: 403
       end
     else
-      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400
+      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
     end
   end
 
@@ -145,22 +112,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     if !@mbf_user.present?
       user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
       if user.present?
-        # call VAS webservice
-        soapClient = Savon.client do |variable|
-          variable.proxy Settings.vas_proxy
-          variable.wsdl Settings.vas_wsdl
-        end
-        # params request
-        message = {
-          "tns:phone_number"  => @msisdn.to_s,
-          "tns:password"      => params[:password],
-          "tns:pkg_code"      => "VIP",
-          "tns:channel"       => "APP",
-          "tns:username"      => user.username,
-          "tns:partner_id"    => "DEFAULT"
-        }
-        register_response = soapClient.call(:register,  message: message)
-        register_result = register_response.body[:register_response][:register_result]
+        register_result = vas_register @msisdn, user.username, params[:password]
         # check result
         if !register_result[:is_error]
           # create token
@@ -172,8 +124,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             user.update(actived: true, active_date: Time.now, last_login: Time.now, token: token)
           end
           # create mobifone user
-          user.create_mobifone_user(sub_id: @msisdn, pkg_code: "0", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)          
+          user.create_mobifone_user(sub_id: @msisdn, pkg_code: "VIP", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
           # check user has vip packages
+          # TODO: Trong trường hợp user đã có gói VIP trước đó thì xử lý thế nào?
+          # vì nếu không báo gì cho VAS thì họ gia hạn gói hằng ngày như thế nào, biết charge tiền ra sao?
           if !user.user_has_vip_packages.find_by_actived(1).present?
             # get vip1
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
@@ -349,7 +303,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       else
         return head 400
       end
-    rescue RestClient::Exception => e
+    rescue RestClient::Exception
       return head 401
     end
   end
