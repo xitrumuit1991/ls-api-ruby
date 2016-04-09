@@ -105,10 +105,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             if vip1.present?
               # subscribe vip1
-              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-              # create trade logs
-              # TODO: chổ này ghi mobifone_user_vip_log chứ không phải trade log
-              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+              user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create mobifone user vip logs
+              user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
               # return token
               render json: { token: token }, status: 200
             else
@@ -163,9 +162,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             if vip1.present?
               # subscribe vip1
-              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-              # create trade logs
-              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+              user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create mobifone user vip logs
+              user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
             else
               render json: { error: "Sytem error !" }, status: 400    
             end
