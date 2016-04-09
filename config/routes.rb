@@ -161,8 +161,9 @@ Rails.application.routes.draw do
         post '/update-forgot-code' => 'auth#updateForgotCode'
         post '/reset-password' => 'auth#setNewPassword'
         # For mobifone only
-        get '/mobifone' => 'auth#mbf_detection'
-        post '/mobifone' => 'auth#mbf_register'
+        get   '/mobifone' => 'auth#mbf_detection'
+        post  '/mobifone' => 'auth#mbf_register'
+        put   '/mobifone' => 'auth#mbf_sync'
         patch '/mobifone' => 'auth#mbf_verify'
       end
 
