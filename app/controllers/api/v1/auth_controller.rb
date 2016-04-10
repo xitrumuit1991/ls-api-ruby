@@ -150,6 +150,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           register_result = vas_register @msisdn, user.username, params[:password]
           # check result
           if !register_result[:is_error]
+            # update otp was used
+            user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).update(used: 1)
             # create token
             token = createToken(user)
             # update token
