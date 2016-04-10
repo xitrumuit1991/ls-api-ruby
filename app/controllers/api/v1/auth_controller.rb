@@ -35,10 +35,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user = User.find_by_phone(@msisdn)
         if user.present?
           if user.otps.find_by_service('mbf').present?
-            # check them truong hop otp was used = true or false
-            user.otps.find_by_service('mbf').update(code: otp)
-            render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
+            if user.actived
+              user.otps.find_by_service('mbf').update(code: otp)
+              render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
+            else
+              user.otps.find_by_service('mbf').update(code: otp)
+              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
+            end
           else
+            user.otps.create(code: otp, service: 'mbf')
             render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
           end
         else
@@ -139,46 +144,52 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     if !@mbf_user.present?
-      user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+      user = User.find_by(phone: @msisdn).try(:authenticate, params[:password])
       if user.present?
-        register_result = vas_register @msisdn, user.username, params[:password]
-        # check result
-        if !register_result[:is_error]
-          # create token
-          token = createToken(user)
-          # update token
-          if user.actived
-            user.update(last_login: Time.now, token: token)
-          else
-            user.update(actived: true, active_date: Time.now, last_login: Time.now, token: token)
-          end
-          # create mobifone user
-          user.create_mobifone_user(sub_id: @msisdn, pkg_code: "VIP", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
-          # check user has vip packages
-          # TODO: Trong trường hợp user đã có gói VIP trước đó thì xử lý thế nào?
-          # vì nếu không báo gì cho VAS thì họ gia hạn gói hằng ngày như thế nào, biết charge tiền ra sao?
-          if !user.user_has_vip_packages.find_by_actived(1).present?
-            # get vip1
-            vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
-            if vip1.present?
-              # subscribe vip1
-              user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-              # create mobifone user vip logs
-              user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
+        if user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).present?
+          register_result = vas_register @msisdn, user.username, params[:password]
+          # check result
+          if !register_result[:is_error]
+            # update otp was used
+            user.otps.find_by(code: params[:otp], service: 'mbf', used: 0).update(used: 1)
+            # create token
+            token = createToken(user)
+            # update token
+            if user.actived
+              user.update(last_login: Time.now, token: token)
             else
-              render json: { error: "Sytem error !" }, status: 400    
+              user.update(actived: true, active_date: Time.now, last_login: Time.now, token: token)
             end
+            # create mobifone user
+            user.create_mobifone_user(sub_id: @msisdn, pkg_code: "VIP", register_channel: "APP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+            # check user has vip packages
+            # TODO: Trong trường hợp user đã có gói VIP trước đó thì xử lý thế nào?
+            # vì nếu không báo gì cho VAS thì họ gia hạn gói hằng ngày như thế nào, biết charge tiền ra sao?
+            if !user.user_has_vip_packages.find_by_actived(1).present?
+              # get vip1
+              vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+              if vip1.present?
+                # subscribe vip1
+                user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+                # create mobifone user vip logs
+                user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
+              else
+                render json: { error: "Sytem error !" }, status: 400    
+              end
+            end
+            # return token
+            render json: { token: token }, status: 200
+          else
+            render json: { error: "Có lổi xảy ra, bạn hãy thử đăng nhập lại !" }, status: 400
           end
-          # return token
-          render json: { token: token }, status: 200
         else
-          render json: { error: "Có lổi xảy ra, bạn hãy thử đăng nhập lại !" }, status: 400
+          render json: { error: "Mã OTP không đúng, vui lòng kiểm tra lại !" }, status: 401
         end
       else
-        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+        render json: { error: "Mật khẩu không đúng xin hãy thử lại !" }, status: 401
       end
     else
-      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 400
+      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
     end
   end
 
