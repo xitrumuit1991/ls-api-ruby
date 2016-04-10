@@ -139,7 +139,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     if !@mbf_user.present?
-      user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+      user = User.find_by(phone: @msisdn).try(:authenticate, params[:password])
       if user.present?
         register_result = vas_register @msisdn, user.username, params[:password]
         # check result
