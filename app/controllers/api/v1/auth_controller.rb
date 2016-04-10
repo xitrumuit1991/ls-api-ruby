@@ -4,8 +4,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync]
-  before_action :mbf_auth, only: [:mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other]
+  before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
     render plain: @msisdn, status: 200 and return
@@ -16,6 +16,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_register
+    # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
+    if params[:phone].present?
+      @msisdn = params[:phone]
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+      end
+    else
+      mbf_auth
+    end
+
     if !@mbf_user.present?
       # generate otp
       otp = SecureRandom.hex(4)
@@ -66,6 +76,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_verify
+    # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
+    if params[:phone].present?
+      @msisdn = params[:phone]
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+      end
+    else
+      mbf_auth
+    end
+
     if !@mbf_user.present?
       user = User.find_by_phone(@msisdn)
       if user.present?
@@ -85,10 +105,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             if vip1.present?
               # subscribe vip1
-              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-              # create trade logs
-              # TODO: chổ này ghi mobifone_user_vip_log chứ không phải trade log
-              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+              user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create mobifone user vip logs
+              user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
               # return token
               render json: { token: token }, status: 200
             else
@@ -109,6 +128,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_sync
+    # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
+    if params[:phone].present?
+      @msisdn = params[:phone]
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+      end
+    else
+      mbf_auth
+    end
+
     if !@mbf_user.present?
       user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
       if user.present?
@@ -133,9 +162,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             if vip1.present?
               # subscribe vip1
-              user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-              # create trade logs
-              user.trade_logs.create(vip_package_id: vip1.id, status: 1)
+              user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+              # create mobifone user vip logs
+              user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
             else
               render json: { error: "Sytem error !" }, status: 400    
             end
