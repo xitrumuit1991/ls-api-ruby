@@ -32,7 +32,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
   end
 
   def listVip
-    @vips =  Vip.where('code != ? and code != ? and code != ? and code != ? and code != ? and code != ?', "VIP1", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4")
+    @vips =  Vip.all
     @day = params[:day]
   end
 end
