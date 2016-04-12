@@ -65,7 +65,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
+          vip = @vip != 0 ? {vip: @vip.weight} : 0
+          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip});
 
           return head 201
         else
@@ -181,8 +182,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @room.broadcaster.increaseExp(expBct)
 
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          vip = @vip != 0 ? {vip: @vip.weight} : 0
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: dbGift.image.square}, quantity:quantity, total: total, sender: user})
+          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{request.base_url}#{dbGift.image.square}"}, quantity:quantity, total: total, sender: user, vip: vip})
 
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
@@ -223,9 +225,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
             @user.increaseExp(expUser)
             @room.broadcaster.increaseExp(expBct)
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            vip = @vip != 0 ? {vip: @vip.weight} : 0
             redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
             emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
+            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip });
 
             # insert log
             @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
@@ -258,7 +261,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         if @user.save then
           if @room.broadcaster.save then
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user})
+            vip = @vip != 0 ? {vip: @vip.weight} : 0
+            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
             # insert log
             @user.heart_logs.create(room_id: @room.id, quantity: hearts)
