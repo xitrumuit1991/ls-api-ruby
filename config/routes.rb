@@ -211,6 +211,10 @@ Rails.application.routes.draw do
         post '/status' => 'broadcasters#status' # #Liem - Không thấy dùng bên web
         post '/pictures' => 'broadcasters#pictures' #
         post '/videos' => 'broadcasters#videos' #
+        post '/select-gift' => 'broadcasters#selectGift' #
+        post '/select-action' => 'broadcasters#selectAction' #
+        post '/select-all-gift' => 'broadcasters#selectAllGift' #
+        post '/select-all-action' => 'broadcasters#selectAllAction' #
         put '/' => 'broadcasters#update' # Liem khong thay function nay trong broadcasters_controller
         put '/avatar' => 'broadcasters#uploadAvatar' # api is not using
         put '/cover' => 'broadcasters#uploadCover' # api is not using

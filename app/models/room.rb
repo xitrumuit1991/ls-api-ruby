@@ -9,6 +9,8 @@ class Room < ActiveRecord::Base
 	has_many :gift_logs
 	has_many :lounge_logs
 	has_many :screen_text_logs
+	has_many	:bct_gifts
+	has_many 	:bct_actions
 
 	validates :title, presence: true
 	validates :slug, presence: true, uniqueness: true

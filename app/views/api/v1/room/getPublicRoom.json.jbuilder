@@ -42,3 +42,22 @@ json.bct_backgrounds @bct_backgrounds do |bct_background|
 	json.id		bct_background.id
 	json.thumb	"#{request.base_url}#{bct_background.image.square}"
 end
+
+#Load gift
+json.gifts @gifts do |gift|
+  json.id			gift.id
+  json.name		gift.name
+  json.image		"#{request.base_url}/#{gift.image.square}?timestamp=#{gift.updated_at.to_i}"
+  json.price		gift.price
+end
+
+#Load action
+json.actions @actions do |action|
+  json.id			action.id
+  json.name		action.name
+  json.image		"#{request.base_url}/#{action.image.square}?timestamp=#{action.updated_at.to_i}"
+  json.price		action.price
+end
+
+json.gifts_selected @arrGiftSelected
+json.action_selected @arrActionSelected

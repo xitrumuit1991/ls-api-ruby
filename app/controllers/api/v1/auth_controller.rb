@@ -248,7 +248,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         render json: { error: "System error !" }, status: 500
       end
     else
-      render json: { error: user.errors.messages }, status: 400
+      render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
     end
   end
 

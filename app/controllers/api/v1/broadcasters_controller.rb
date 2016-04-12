@@ -196,6 +196,102 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
+  def selectGift
+    if params[:gift_id].present?
+      gift_id = params[:gift_id].to_i
+      type    = params[:type].to_s
+      begin
+        Gift::find(gift_id)
+        if type == 'delete'
+          if @user.broadcaster.public_room.bct_gifts.find_by(gift_id: gift_id).destroy
+            return head 200
+          else
+            render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+          end
+        elsif type == 'select'
+          if @user.broadcaster.public_room.bct_gifts.create(gift_id: gift_id)
+            return head 200
+          else
+            render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+          end
+        else
+          render json: {error: "Vui lòng chọn quà tặng nhé!"}, status: 400
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: {error: "Quà tặng không tồn tại, Vui lòng xem lại quà tặng!"}, status: 404
+      end
+    else
+      render json: {error: "Vui lòng chọn quà tặng nhé!"}, status: 400
+    end
+  end
+
+  def selectAllGift
+    if params[:type].to_s == 'delete'
+     if @user.broadcaster.public_room.bct_gifts.destroy_all
+      return head 200
+     else
+       render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+     end
+    elsif params[:type].to_s == 'select'
+      @user.broadcaster.public_room.bct_gifts.destroy_all
+      allGift = Gift.where(status: 1)
+      allGift.each do |gift|
+        @user.broadcaster.public_room.bct_gifts.create(gift_id: gift.id)
+      end
+      return head 200
+    else
+      render json: {error: t('error')}, status: 400
+    end
+  end
+
+  def selectAction
+    if params[:action_id].present?
+      action_id = params[:action_id].to_i
+      type = params[:type].to_s
+      begin
+        RoomAction::find(action_id)
+        if type == 'delete'
+          if @user.broadcaster.public_room.bct_actions.find_by(room_action_id: action_id).destroy
+            return head 200
+          else
+            render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+          end
+        elsif type == 'select'
+          if @user.broadcaster.public_room.bct_actions.create(room_action_id: action_id)
+            return head 200
+          else
+            render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+          end
+        else
+          render json: {error: "Vui lòng chọn hành động nhé!"}, status: 400
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: {error: "Hành động không tồn tại, Vui lòng xem lại hành động!"}, status: 404
+      end
+    else
+      render json: {error: "Vui lòng chọn hành động nhé!"}, status: 400
+    end
+  end
+
+  def selectAllAction
+    if params[:type].to_s == 'delete'
+      if @user.broadcaster.public_room.bct_actions.destroy_all
+        return head 200
+      else
+        render json: {error: t('error'), bugs: @user.errors.full_messages}, status: 400
+      end
+    elsif params[:type].to_s == 'select'
+      @user.broadcaster.public_room.bct_actions.destroy_all
+      allAction = RoomAction.where(status: 1)
+      allAction.each do |action|
+        @user.broadcaster.public_room.bct_actions.create(room_action_id: action.id)
+      end
+      return head 200
+    else
+      render json: {error: t('error')}, status: 400
+    end
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
