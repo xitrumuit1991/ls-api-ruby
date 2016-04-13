@@ -31,6 +31,10 @@ class Api::V1::VipController < Api::V1::ApplicationController
     end
   end
 
+  def confirmVip
+    @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
+  end
+
   def listVip
     @vips =  Vip.all
     @day = params[:day]
