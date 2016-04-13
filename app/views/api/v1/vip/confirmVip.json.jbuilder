@@ -1,0 +1,1 @@
+json.vip 	@vip != 0 ? @vip.weight : 0

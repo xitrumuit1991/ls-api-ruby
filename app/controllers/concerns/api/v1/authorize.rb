@@ -38,7 +38,7 @@ module Api::V1::Authorize extend ActiveSupport::Concern
         begin
           decoded_token = JWT.decode token, Settings.hmac_secret, true
           @user = User.find_by(token: token)
-          @user.checkVip
+          @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
         rescue => ex # or rescue Exception
           return head 401
         end
