@@ -180,7 +180,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(expUser)
           @room.broadcaster.increaseExp(expBct)
-
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip = @vip != 0 ? {vip: @vip.weight} : 0
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
