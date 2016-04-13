@@ -47,7 +47,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
-  def vas_charge phone_number, register_channel, money, pkg_id, charge_cmd, request_channel, info
+  def vas_charge phone_number, money, pkg_id, charge_cmd, request_channel, info
     begin
       # call VAS webservice
       soapClient = Savon.client do |variable|
@@ -57,11 +57,10 @@ module Api::V1::Vas extend ActiveSupport::Concern
       # params request
       message = {
         "tns:phone_number"      => phone_number,
-        "tns:register_channel"  => register_channel,
         "tns:money"             => money,
         "tns:pkg_id"            => pkg_id,
-        "tns:charge_cmd"        => charge_cmd,
-        "tns:request_channel"   => request_channel,
+        "tns:charge_cmd"        => charge_cmd, # DANG_KY = 0, GIA_HAN = 1, MUA_XU=3, TANG_XU=4
+        "tns:request_channel"   => request_channel, # WEB/APP/WAP
         "tns:info"              => info
       }
       charge_response = soapClient.call(:charge, message: message)
