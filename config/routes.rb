@@ -276,10 +276,10 @@ Rails.application.routes.draw do
         post '/end-room' => 'live#endRoom'
         post '/kick-user' => 'live#kickUser'
       end
-
       # Vip
       scope 'vips' do
-        get 	'/:day/list-vip' => 'vip#listVip'
+        get     '/:day/list-vip' => 'vip#listVip'
+        get 	'/confirm-vip' => 'vip#confirmVip'
         post 	'/buy-vip' => 'vip#buyVip'
         # For Mobifone
         get 	'/mobifone' => 'vip#mbf_get_vip_packages'

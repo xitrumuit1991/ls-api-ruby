@@ -39,13 +39,12 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:20%">Người dùng</th>
-            <th style="width:10%">Nhà mạng</th>
-            <th style="width:15%">Mã thẻ</th>
-            <th style="width:15%">Số serial</th>
-            <th style="width:10%">Mệnh giá</th>
-            <th style="width:10%">Xu đã nạp</th>
-            <th style="width:10%">Trạng Thái</th>
+            <th style="width:10%">Ngân hàng</th>
+            <th style="width:20%">Số tiền</th>
+            <th style="width:15%">Số Xu</th>
+            <th style="width:20%">Thành viên</th>
+            <th style="width:17%">Mô tả</th>
+            <th style="width:8%">Trạng thái</th>
             <th style="width:7%">Hành động</th>
           </tr>
           </thead>
@@ -58,30 +57,27 @@
                     <label for="checkbox-<%= item.id %>"></label>
                   </div>
                 </td>
+                <td class="v-align-middle">
+                  <p><%= item.bank.name %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.megabank.price %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.megabank.coin %></p>
+                </td>
                 <td class="v-align-middle ">
                   <%= link_to(acp_user_path(item.user.id)) do %><p><%= item.user.username %></p><% end %>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.provider.name %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.pin %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.serial %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.price %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.coin %></p>
+                  <p><%= item.descriptionvn %></p>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.status %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">
-                    <%= link_to(acp_cart_log_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
+                    <%= link_to(acp_megabank_log_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
                   </div>
                 </td>
               </tr>
