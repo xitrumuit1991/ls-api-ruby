@@ -48,23 +48,21 @@ class Api::V1::VipController < Api::V1::ApplicationController
     if @user.mobifone_user.present?
       vipPackage = VipPackage.find_by(code: params[:pkg_code])
       if vipPackage.present?
-        if @user.user_has_vip_packages.find_by(actived: true).present?
-          user_vip = @user.user_has_vip_packages.find_by(actived: true).vip_package
-          if user_vip.vip.weight < vipPackage.vip.weight
-            expiry_date = Time.now + vipPackage.no_day.to_i.day
-            create_vip_package vipPackage, expiry_date
-            return head 200
-          elsif user_vip.vip.weight == vipPackage.vip.weight
-            expiry_date = user_vip.expiry_date + vipPackage.no_day.to_i.day
-            create_vip_package vipPackage, expiry_date
-            return head 200
+        expiry_date = Time.now + vipPackage.no_day.to_i.day
+        user_has_vip_package = @user.user_has_vip_packages.find_by(actived: true)
+        if user_has_vip_package.present?
+          vip = user_has_vip_package.vip_package.vip
+          if vip.weight <= vipPackage.vip.weight
+            expiry_date = user_has_vip_package.expiry_date + vipPackage.no_day.to_i.day if vip.weight == vipPackage.vip.weight
           else
-            render json: {error: "Vui lòng mua VIP cao hơn hoặc bằng với VIP hiện tại!"}, status: 403
+            render json: {error: "Vui lòng mua VIP cao hơn hoặc bằng với VIP hiện tại!"}, status: 403 and return
           end
+        end
+
+        if create_vip_package vipPackage, expiry_date
+          render json: { error: "Có lổi xảy ra, bạn hãy thử lại !" }, status: 400
         else
-          expiry_date = Time.now + vipPackage.no_day.to_i.day
-          create_vip_package vipPackage, expiry_date
-          return head 200
+          return head 201
         end
       else
         render json: {error: "Gói VIP này không tồn tại !"}, status: 400
@@ -81,7 +79,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   private
     def create_vip_package vipPackage, expiry_date
-      charge_result = vas_charge @user.phone, "APP", vipPackage.price, vipPackage.id, "Test", "APP", "BUY_VIP"
+      charge_result = vas_charge @user.phone, vipPackage.price, vipPackage.id, 1, "APP", "GIA_HAN"
       if !charge_result[:is_error]
         # set actived false if user has vip package
         @user.user_has_vip_packages.find_by(actived: true).update(actived: false) if @user.user_has_vip_packages.find_by(actived: true).present?
@@ -89,8 +87,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
         user_has_vip_package = @user.user_has_vip_packages.create(vip_package_id: vipPackage.id, actived: true, active_date: Time.now, expiry_date: expiry_date)
         # create mobifone user vip logs
         @user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: vipPackage.code)
-      else
-        render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400 and return
       end
+      return charge_result[:is_error]
     end
 end
