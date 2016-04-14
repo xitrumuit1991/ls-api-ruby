@@ -15,6 +15,8 @@ class User < ActiveRecord::Base
 	has_many :vip_packages, through: :user_has_vip_packages
 	has_many :otps
 	has_many :trade_logs
+	has_many :ban_users
+	has_many :banned_rooms, through: :ban_users, class_name: 'Room', foreign_key: 'room_id', source: :room
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :username, presence: true, uniqueness: true, on: :update
@@ -29,6 +31,20 @@ class User < ActiveRecord::Base
 	mount_base64_uploader :avatar_crop, AvatarCropUploader
 	mount_base64_uploader :cover_crop, CoverCropUploader
 	mount_uploader :cover,  CoverUploader
+
+	def ban room_id, days = 1, note = ''
+		self.ban_users.create(room_id: room_id, days: days, note: note)
+	end
+
+	def is_banned room_id
+		banned = self.ban_users.find_by_room_id(room_id)
+		if banned.present?
+			expiry_date = banned.created_at + banned.days.days
+			return Time.now < expiry_date
+		else
+			return false
+		end
+	end
 
 	def public_room
 		self.broadcaster.public_room
