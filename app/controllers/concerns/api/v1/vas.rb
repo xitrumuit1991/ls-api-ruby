@@ -24,7 +24,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
-  def vas_register phone, username = nil, password = nil
+  def vas_register phone, pkg_code = "VIP", username = nil, password = nil
     begin
       # call VAS webservice
       soapClient = Savon.client do |variable|
@@ -34,10 +34,10 @@ module Api::V1::Vas extend ActiveSupport::Concern
       # params request
       message = {
         "tns:phone_number"  => phone.to_s,
+        "tns:pkg_code"      => pkg_code,
         "tns:password"      => password.nil? ? password.to_s : phone.to_s,
-        "tns:pkg_code"      => "VIP",
-        "tns:channel"       => "APP",
         "tns:username"      => username.nil? ? username.to_s : phone.to_s,
+        "tns:channel"       => "APP",
         "tns:partner_id"    => "DEFAULT"
       }
       register_response = soapClient.call(:register, message: message)
@@ -57,7 +57,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
       # params request
       message = {
         "tns:phone_number"      => phone_number,
-        "tns:money"             => money,
+        "tns:money"             => money, # 2000, 5000, 10000, 20000, 30000, 50000
         "tns:pkg_id"            => pkg_id,
         "tns:charge_cmd"        => charge_cmd, # DANG_KY = 0, GIA_HAN = 1, MUA_XU=3, TANG_XU=4
         "tns:request_channel"   => request_channel, # WEB/APP/WAP
