@@ -164,25 +164,23 @@ class VasController < ApplicationController
   # - successes: list các ID cập nhật hoặc thêm mới thành công
   # - errors: list các ID bị lỗi khi cập nhật
   soap_action 'mcharge',
-    args: [{ sub_id: :string, pkg_code: :string }],
+    args: { data: :string },
     return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
 
   def mcharge
-    if params[:value].present?
+    if params[:data].present?
       successes = []
       errors = []
-      params[:value].each do |object|
-        if object[:sub_id].present? && object[:pkg_code].present?
-          sub_id = object[:sub_id]
-          pkg_code = object[:pkg_code]
-          mbf_user = MobifoneUser.find_by_sub_id(sub_id)
-          if mbf_user.present?
-            vip_package = VipPackage.find_by_code(pkg_code)
-            subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
-            successes << sub_id
-          else
-            errors << sub_id
-          end
+      data = params[:data].split(",")
+      data.each do |item|
+        object    = item.split("_")
+        sub_id    = object[0]
+        pkg_code  = object[1]
+        mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+        if mbf_user.present?
+          vip_package = VipPackage.find_by_code(pkg_code)
+          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+          successes << sub_id
         else
           errors << sub_id
         end
