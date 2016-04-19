@@ -280,11 +280,14 @@ Rails.application.routes.draw do
         post '/end-room' => 'live#endRoom'
         post '/kick-user' => 'live#kickUser'
       end
-
-      # Live functions
-      scope 'vip' do
-        get '/:day/list-vip' => 'vip#listVip'
-        post '/buy-vip' => 'vip#buyVip'
+      # Vip
+      scope 'vips' do
+        get     '/:day/list-vip' => 'vip#listVip'
+        get 	'/confirm-vip' => 'vip#confirmVip'
+        post 	'/buy-vip' => 'vip#buyVip'
+        # For Mobifone
+        get 	'/mobifone' => 'vip#mbf_get_vip_packages'
+        post 	'/mobifone' => 'vip#mbf_subscribe_vip_package'
       end
 
       # Posters functions

@@ -50,7 +50,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           activeCode = SecureRandom.hex(3).upcase
           user = User.new
           user.phone        = @msisdn
-          user.email        = "#{@msisdn}@email.com"
+          user.email        = "#{@msisdn}@mobifone.com.vn"
           user.password     = @msisdn
           user.active_code  = activeCode
           if user.valid?

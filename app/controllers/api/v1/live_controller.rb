@@ -5,8 +5,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate, :checkSubscribed
-  before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList]
-  before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction]
+  before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
+  before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
   def getUserList
     render json: @userlist
@@ -65,7 +65,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user});
+          vip = @vip != 0 ? {vip: @vip.weight} : 0
+          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip});
 
           return head 201
         else
@@ -179,10 +180,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(expUser)
           @room.broadcaster.increaseExp(expBct)
-
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          vip = @vip != 0 ? {vip: @vip.weight} : 0
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{dbGift.image.square}?timestamp=#{dbGift.updated_at.to_i}"}, quantity:quantity, total: total, sender: user})
+          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{request.base_url}#{dbGift.image.square}?timestamp=#{dbGift.updated_at.to_i}"}, quantity:quantity, total: total, sender: user, vip: vip})
 
           # insert log
           @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
@@ -223,9 +224,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
             @user.increaseExp(expUser)
             @room.broadcaster.increaseExp(expBct)
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            vip = @vip != 0 ? {vip: @vip.weight} : 0
             redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
             emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost });
+            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip });
 
             # insert log
             @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
@@ -258,7 +260,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         if @user.save then
           if @room.broadcaster.save then
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user})
+            vip = @vip != 0 ? {vip: @vip.weight} : 0
+            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
             # insert log
             @user.heart_logs.create(room_id: @room.id, quantity: hearts)
@@ -309,6 +312,19 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def kickUser
+    if params[:user_id].present?
+      days = params[:days].present? ? params[:days].to_i : 1
+      note = params[:note].present? ? params[:note] : ''
+      @ban_user = User.find_by_id(params[:user_id])
+      if @ban_user.present?
+        @ban_user.ban @room.id, days, note
+        return head 200
+      else
+        return head 404
+      end
+    else
+      render json: {error: 'Không đủ tham số'}, status: 400 and return
+    end
   end
 
   private
@@ -339,9 +355,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if(params.has_key?(:room_id)) then
       @room = Room.find(params[:room_id])
       getUsers
-      if(!@userlist.has_key?(@user.email)) then
-        render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
-      end
+      render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return if(!@userlist.has_key?(@user.email))
+      render json: {error: "Bạn không được phép vào phòng này"}, status: 403 and return if @user.is_banned(@room.id)
     else
       render json: {error: "Thiếu tham số room_id "}, status: 404 and return
     end

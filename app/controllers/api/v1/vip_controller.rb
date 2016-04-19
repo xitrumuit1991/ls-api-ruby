@@ -1,6 +1,8 @@
 class Api::V1::VipController < Api::V1::ApplicationController
   include Api::V1::Authorize
-  before_action :authenticate, except: [:listVip]
+  include Api::V1::Vas
+
+  before_action :authenticate, except: [:listVip, :mbf_get_vip_packages]
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
@@ -30,9 +32,64 @@ class Api::V1::VipController < Api::V1::ApplicationController
       render json: {error: "Bạn không có đủ tiền"}, status: 403
     end
   end
+  
+  def confirmVip
+    @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
+  end
+
+  def mbf_get_vip_packages
+    @packages = VipPackage.where(code: ["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"])
+  end
+
+  def mbf_subscribe_vip_package
+    # render json: { error: "Request not from Mobifone 3G" }, status: 403 and return if !check_mbf_auth
+    render json: { error: "Gói VIP này không tồn tại !" }, status: 400 and return if !["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"].include? params[:pkg_code]
+
+    if @user.mobifone_user.present?
+      vipPackage = VipPackage.find_by(code: params[:pkg_code])
+      if vipPackage.present?
+        user_has_vip_package = @user.user_has_vip_packages.find_by(actived: true)
+        if user_has_vip_package.present?
+          if user_has_vip_package.vip_package.vip.weight = vipPackage.vip.weight
+            if user_has_vip_package.vip_package.no_day.to_i >= vipPackage.no_day.to_i
+              render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 403 and return
+            end
+          elsif user_has_vip_package.vip_package.vip.weight > vipPackage.vip.weight
+            render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 403 and return
+          end
+        end
+
+        if create_vip_package vipPackage
+          render json: { error: "Có lổi xảy ra, bạn hãy thử lại !" }, status: 400
+        else
+          return head 201
+        end
+      else
+        render json: {error: "Gói VIP này không tồn tại !"}, status: 400
+      end
+    else
+      render json: {error: "Bạn chưa có tài khoản Mobifone !"}, status: 401
+    end
+  end
 
   def listVip
     @vips =  Vip.all
     @day = params[:day]
   end
+
+  private
+    def create_vip_package vipPackage
+      charge_result = vas_register @user.phone, vipPackage.code
+      if !charge_result[:is_error]
+        # set actived false if user has vip package
+        @user.user_has_vip_packages.find_by(actived: true).update(actived: false) if @user.user_has_vip_packages.find_by(actived: true).present?
+        # update user mobifone actived
+        @user.mobifone_user.update(pkg_code: vipPackage.code, active_date: Time.now, expiry_date: Time.now + vipPackage.no_day.to_i.day)
+        # subscribe vip package
+        user_has_vip_package = @user.user_has_vip_packages.create(vip_package_id: vipPackage.id, actived: true, active_date: Time.now, expiry_date: Time.now + vipPackage.no_day.to_i.day)
+        # create mobifone user vip logs
+        @user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: vipPackage.code)
+      end
+      return charge_result[:is_error]
+    end
 end
