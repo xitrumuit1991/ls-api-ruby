@@ -5,8 +5,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
   before_action :authenticate, :checkSubscribed
-  before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList]
-  before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction]
+  before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
+  before_action :checkPermission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
   def getUserList
     render json: @userlist
@@ -312,6 +312,19 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def kickUser
+    if params[:user_id].present?
+      days = params[:days].present? ? params[:days].to_i : 1
+      note = params[:note].present? ? params[:note] : ''
+      @ban_user = User.find_by_id(params[:user_id])
+      if @ban_user.present?
+        @ban_user.ban @room.id, days, note
+        return head 200
+      else
+        return head 404
+      end
+    else
+      render json: {error: 'Không đủ tham số'}, status: 400 and return
+    end
   end
 
   private
@@ -342,9 +355,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if(params.has_key?(:room_id)) then
       @room = Room.find(params[:room_id])
       getUsers
-      if(!@userlist.has_key?(@user.email)) then
-        render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return
-      end
+      render json: {error: "Bạn không đăng kí phòng này"}, status: 403 and return if(!@userlist.has_key?(@user.email))
+      render json: {error: "Bạn không được phép vào phòng này"}, status: 403 and return if @user.is_banned(@room.id)
     else
       render json: {error: "Thiếu tham số room_id "}, status: 404 and return
     end

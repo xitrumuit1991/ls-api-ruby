@@ -9,6 +9,8 @@ class Room < ActiveRecord::Base
 	has_many :gift_logs
 	has_many :lounge_logs
 	has_many :screen_text_logs
+	has_many :ban_users
+	has_many :banned_users, through: :ban_users, class_name: 'User', foreign_key: 'user_id', source: :user
 
 	validates :title, presence: true
 	validates :slug, presence: true, uniqueness: true

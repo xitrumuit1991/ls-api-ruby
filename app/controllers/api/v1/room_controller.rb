@@ -64,10 +64,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detailBySlug
     if params[:slug].present?
       @user = check_authenticate
+      @room = Room.find_by_slug(params[:slug])
       if @user.nil?
         create_tmp_token
+      else
+        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
       end
-      @room = Room.find_by_slug(params[:slug])
       if !@room.present?
         render json: {error: t('error_room_not_found')}, status: 404
       end

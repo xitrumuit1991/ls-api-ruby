@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160406035906) do
+ActiveRecord::Schema.define(version: 20160414142829) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -43,6 +43,18 @@ ActiveRecord::Schema.define(version: 20160406035906) do
 
   add_index "admins", ["email"], name: "index_admins_on_email", unique: true, using: :btree
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
+
+  create_table "ban_users", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "room_id",    limit: 4
+    t.integer  "days",       limit: 4
+    t.string   "note",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "ban_users", ["room_id"], name: "index_ban_users_on_room_id", using: :btree
+  add_index "ban_users", ["user_id"], name: "index_ban_users_on_user_id", using: :btree
 
   create_table "banks", force: :cascade do |t|
     t.string   "bankID",     limit: 255
@@ -740,6 +752,8 @@ ActiveRecord::Schema.define(version: 20160406035906) do
   add_foreign_key "action_logs", "room_actions"
   add_foreign_key "action_logs", "rooms"
   add_foreign_key "action_logs", "users"
+  add_foreign_key "ban_users", "rooms"
+  add_foreign_key "ban_users", "users"
   add_foreign_key "bct_actions", "room_actions"
   add_foreign_key "bct_actions", "rooms"
   add_foreign_key "bct_gifts", "gifts"
