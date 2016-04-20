@@ -1684,6 +1684,53 @@
 ## Vip functions
 - Namespace URL: **/vip**
 
+### List Vip MBF
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Response:
+  + status: **200**, **401**
+  + body:
+  ```
+{
+  "name": 1,
+  "image": "http://localhost:3000/uploads/vip/image/1/vip-1-icon.png",
+  "no_char": 150,
+  "screen_text_time": 150,
+  "screen_text_effect": "Đỏ",
+  "kick_level": "Kick User phổ thông",
+  "clock_kick": 0,
+  "exp_bonus": 1.2,
+  "vip_packages": [
+    {
+      "id": 7,
+      "no_day": "30",
+      "price": 600,
+      "discount": 30
+    },
+    {
+      "id": 8,
+      "no_day": "90",
+      "price": 1620,
+      "discount": 0
+    },
+    {
+      "id": 9,
+      "no_day": "180",
+      "price": 3240,
+      "discount": 0
+    },
+    {
+      "id": 10,
+      "no_day": "365",
+      "price": 6480,
+      "discount": 0
+    }
+  ]
+}
+```
+
 ### Buy vip packages
 - URI: **/buy-vip**
 - Method: **POST**

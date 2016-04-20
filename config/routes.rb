@@ -279,6 +279,7 @@ Rails.application.routes.draw do
       # Vip
       scope 'vips' do
         get     '/:day/list-vip' => 'vip#listVip'
+        get     '/:vip/list-vip-mbf' => 'vip#listVipMBF'
         get 	'/confirm-vip' => 'vip#confirmVip'
         post 	'/buy-vip' => 'vip#buyVip'
         # For Mobifone
