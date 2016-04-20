@@ -1685,6 +1685,7 @@
 - Namespace URL: **/vip**
 
 ### List Vip MBF
+- URI: **/:vip/list-vip-mbf  **
 - Method: **GET**
 - Header:
   + Content-Type: application/json
