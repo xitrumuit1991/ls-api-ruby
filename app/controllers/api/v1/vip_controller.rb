@@ -2,7 +2,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
 
-  before_action :authenticate, except: [:listVip, :mbf_get_vip_packages]
+  before_action :authenticate, except: [:listVip, :mbf_get_vip_packages, :listVipMBF]
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
@@ -75,6 +75,10 @@ class Api::V1::VipController < Api::V1::ApplicationController
   def listVip
     @vips =  Vip.all
     @day = params[:day]
+  end
+
+  def listVipMBF
+    @vip = Vip.find_by_weight(params[:vip])
   end
 
   private
