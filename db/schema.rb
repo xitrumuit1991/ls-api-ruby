@@ -700,9 +700,9 @@ ActiveRecord::Schema.define(version: 20160421093146) do
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
+  add_index "users", ["phone"], name: "phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
-  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+  add_index "users", ["username"], name: "username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
