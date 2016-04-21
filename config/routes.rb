@@ -288,6 +288,12 @@ Rails.application.routes.draw do
         post 	'/mobifone' => 'vip#mbf_subscribe_vip_package'
       end
 
+      # IAP
+      scope 'iap' do
+        post 	'/android' 	=> 'iap#android'
+        get 	'/ios' 			=> 'iap#ios'
+      end
+
       # Posters functions
       scope 'posters' do
         get '/sliders' => 'posters#getSliders'
