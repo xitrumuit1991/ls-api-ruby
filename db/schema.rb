@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160414142829) do
+ActiveRecord::Schema.define(version: 20160421093146) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -43,6 +43,21 @@ ActiveRecord::Schema.define(version: 20160414142829) do
 
   add_index "admins", ["email"], name: "index_admins_on_email", unique: true, using: :btree
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
+
+  create_table "android_receipts", force: :cascade do |t|
+    t.integer  "user_id",       limit: 4
+    t.string   "orderId",       limit: 255
+    t.string   "packageName",   limit: 255
+    t.string   "productId",     limit: 255
+    t.date     "purchaseTime"
+    t.integer  "purchaseState", limit: 4
+    t.string   "purchaseToken", limit: 255
+    t.boolean  "status",                    default: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "android_receipts", ["user_id"], name: "index_android_receipts_on_user_id", using: :btree
 
   create_table "ban_users", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -165,6 +180,26 @@ ActiveRecord::Schema.define(version: 20160414142829) do
 
   add_index "cart_logs", ["provider_id"], name: "index_cart_logs_on_provider_id", using: :btree
   add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
+
+  create_table "coin_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "coin_id",    limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "coin_logs", ["coin_id"], name: "index_coin_logs_on_coin_id", using: :btree
+  add_index "coin_logs", ["user_id"], name: "index_coin_logs_on_user_id", using: :btree
+
+  create_table "coins", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "code",       limit: 255
+    t.integer  "price",      limit: 4
+    t.integer  "quantity",   limit: 4
+    t.string   "app",        limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0, null: false
@@ -752,6 +787,7 @@ ActiveRecord::Schema.define(version: 20160414142829) do
   add_foreign_key "action_logs", "room_actions"
   add_foreign_key "action_logs", "rooms"
   add_foreign_key "action_logs", "users"
+  add_foreign_key "android_receipts", "users"
   add_foreign_key "ban_users", "rooms"
   add_foreign_key "ban_users", "users"
   add_foreign_key "bct_actions", "room_actions"
@@ -766,6 +802,8 @@ ActiveRecord::Schema.define(version: 20160414142829) do
   add_foreign_key "broadcasters", "users"
   add_foreign_key "cart_logs", "providers"
   add_foreign_key "cart_logs", "users"
+  add_foreign_key "coin_logs", "coins"
+  add_foreign_key "coin_logs", "users"
   add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"
   add_foreign_key "gift_logs", "rooms"
