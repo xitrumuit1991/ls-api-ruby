@@ -82,7 +82,8 @@ class Api::V1::VipController < Api::V1::ApplicationController
   end
 
   def listVipAppMBF
-    @vip = Vip.find_by_weight(params[:vip])
+    @mode = params[:code].to_i
+    @vip = @mode == 0 ? Vip.all : VipPackage.where('name IS NULL')
   end
 
   def listVipWebMBF
