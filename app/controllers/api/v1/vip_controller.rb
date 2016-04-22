@@ -6,8 +6,12 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
-    if params[:code] != 0
-      create_vip_package vipPackage
+    if params[:code].to_i != 0
+      if create_vip_package vipPackage
+        render json: {error: "Bạn không có đủ tiền"}, status: 403
+      else
+        return head 200
+      end
     else
       if @user.money >= vipPackage.price - vipPackage.discount
         if @user.user_has_vip_packages.where(:actived => true).present?
@@ -83,11 +87,11 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def listVipAppMBF
     @mode = params[:code].to_i
-    @vip = @mode == 0 ? Vip.all : VipPackage.where('name IS NULL')
+    @vip = @mode == 0 ? Vip.all : VipPackage.where(code: ["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"])
   end
 
   def listVipWebMBF
-    @vip_packages = VipPackage.where('name IS NULL')
+    @vip_packages = VipPackage.where(code: ["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"])
   end
 
   private
