@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160421093146) do
+ActiveRecord::Schema.define(version: 20160422045730) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 20160421093146) do
     t.string   "orderId",       limit: 255
     t.string   "packageName",   limit: 255
     t.string   "productId",     limit: 255
-    t.date     "purchaseTime"
+    t.integer  "purchaseTime",  limit: 8
     t.integer  "purchaseState", limit: 4
     t.string   "purchaseToken", limit: 255
     t.boolean  "status",                    default: false
@@ -700,9 +700,9 @@ ActiveRecord::Schema.define(version: 20160421093146) do
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["phone"], name: "phone", unique: true, using: :btree
+  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
-  add_index "users", ["username"], name: "username", unique: true, using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
