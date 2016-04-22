@@ -26,9 +26,9 @@ class Api::V1::IapController < Api::V1::ApplicationController
       end
 
       # key = OpenSSL::PKey::RSA.new "#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret'
-      key = Google::APIClient::KeyUtils.load_from_pkcs12("#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret')
+      # key = Google::APIClient::KeyUtils.load_from_pkcs12("#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret')
       # key = Google::APIClient::KeyUtils.load_from_pkcs12(Rails.root.join('config','Livestar-e785257ee406.p12').to_s, 'notasecret')
-      # key = Google::APIClient::PKCS12.load_key("Livestar-e785257ee406.p12", 'notasecret')
+      key = Google::APIClient::PKCS12.load_key("Livestar-e785257ee406.p12", 'notasecret')
       client  = Google::APIClient.new
 
       client.authorization = Signet::OAuth2::Client.new(
