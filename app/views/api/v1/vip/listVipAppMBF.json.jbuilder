@@ -22,24 +22,29 @@ json.array! @vip do |vip|
 			json.discount		vip_pkg.discount
 		end
 	else
-		json.name 				vip.vip.name
-		json.code 				vip.code
-		json.image				"#{request.base_url}#{vip.vip.image}"
-		json.no_char			vip.vip.no_char
-		json.screen_text_time	vip.vip.screen_text_time
-		json.screen_text_effect	vip.vip.screen_text_effect
-		json.kick_level			vip.vip.kick_level = 0 ? 'Kick User phổ thông' : 'Kich Vip'+vip.vip.kick_level+' trở Xuống'
-		if vip.vip.clock_kick == 0
-			json.clock_kick 	0
-		elsif vip.vip.clock_kick == 1
-			json.clock_kick 	"Kick bởi room owner"
-		else
-			json.clock_kick 	"Không bị kick"
-		end
-		json.exp_bonus				vip.vip.exp_bonus
-		json.vip_id				vip.id
-		json.no_day			vip.no_day
+		json.id				vip.id
+		json.name			vip.name
+		json.code			vip.code
+		json.day			vip.no_day
 		json.price			vip.price
 		json.discount		vip.discount
+		json.details do
+			json.vip						vip.vip.name
+			json.image						"#{request.base_url}#{vip.vip.image.url}"
+			json.weight						vip.vip.weight
+			json.no_char					vip.vip.no_char
+			json.screen_text_time			vip.vip.screen_text_time
+			json.screen_text_effect			vip.vip.screen_text_effect
+			json.kick_level					vip.vip.kick_level
+			if vip.vip.clock_kick == 0
+				json.clock_kick 	0
+			elsif vip.vip.clock_kick == 1
+				json.clock_kick 	"Kick bởi room owner"
+			else
+				json.clock_kick 	"Không bị kick"
+			end
+			json.clock_ads					vip.vip.clock_ads
+			json.exp_bonus					vip.vip.exp_bonus
+		end
 	end
 end
