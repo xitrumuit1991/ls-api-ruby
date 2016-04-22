@@ -290,8 +290,9 @@ Rails.application.routes.draw do
 
       # IAP
       scope 'iap' do
+        get 	'/coins' 		=> 'iap#get_coins'
         post 	'/android' 	=> 'iap#android'
-        get 	'/ios' 			=> 'iap#ios'
+        post 	'/ios' 			=> 'iap#ios'
       end
 
       # Posters functions

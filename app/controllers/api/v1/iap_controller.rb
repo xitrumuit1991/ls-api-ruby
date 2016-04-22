@@ -3,7 +3,11 @@ require 'google/api_client'
 class Api::V1::IapController < Api::V1::ApplicationController
   include Api::V1::Authorize
 
-  before_action :authenticate, only: [:android]
+  before_action :authenticate, except: [:get_coins]
+
+  def get_coins
+    @coins = Coin.all
+  end
 
   def android
     if params[:packageName].present? && params[:productId].present? && params[:purchaseToken].present?
