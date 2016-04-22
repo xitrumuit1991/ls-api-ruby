@@ -48,6 +48,33 @@ class User < ActiveRecord::Base
 		end
 	end
 
+	def is_locking
+		if self.locked_at.present?
+			locked_time = Time.now - self.locked_at
+			return locked_time <= 10.minutes
+		else
+			return false
+		end
+	end
+
+	def login_fail
+		if self.failed_at.present?
+			failed_time = Time.now - self.failed_at
+			if failed_time <= 10.minutes
+				self.failed_attempts = self.failed_attempts + 1
+				if self.failed_attempts >= 4
+					self.locked_at = Time.now
+				end
+			else
+				self.failed_attempts = 1
+			end
+		else
+			self.failed_attempts = 1
+		end
+		self.failed_at = Time.now
+		self.save
+	end
+
 	def public_room
 		self.broadcaster.public_room
 	end
