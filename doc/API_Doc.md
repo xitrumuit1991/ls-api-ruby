@@ -1750,3 +1750,54 @@
   + errors: 
       + status 401: ```{error: "Bạn chưa đăng nhập!"}```
       + status 403: ```{error: "Thông báo lỗi"}```
+
+## In App Purchase
+- Namespace URL: **/iap**
+
+### List Coin Packages
+- URI: **/coins**
+- Method: **GET**
+- Header:
+  + Content-Type: application/json
+- Response:
+  + status: **200**
+  + body:
+```
+[
+    {
+        "id": 1,
+        "name": "Coin 1",
+        "code": "vn.livestar.coin.pgk11",
+        "price": 1000,
+        "quantity": 100
+    },
+    ...
+]
+```
+
+### Verify Receipt
+- URI: **/android**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+```
+{
+  "orderId": "GPA.1350-7174-0022-15697",
+  "packageName": "vn.LS.LiveStar",
+  "productId": "vn.livestar.coin.pgk1",
+  "purchaseTime": 1461170711847,
+  "purchaseState": 0,
+  "developerPayload": "116",
+  "purchaseToken": "kpdagdcejabhgdhgoiefaibn.AO-J1OxRxORkoLYpIAYiNY"
+}
+```
+- Response:
+  + status: **200**, **401**, **500**
+  + body:
+```
+{
+    "status_purchase": 1
+}
+```
