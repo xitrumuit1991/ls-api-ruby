@@ -88,37 +88,48 @@ class User < ActiveRecord::Base
 	end
 
 	def horoscope
-    arr = {
-      "Aries"       =>  "Bạch Dương",
-      "Taurus"      =>  "Kim Ngưu",
-      "Gemini"      =>  "Song Tử",
-      "Cancer"      =>  "Cự Giải",
-      "Leo"         =>  "Sư Tử",
-      "Virgo"       =>  "Thất Nữ",
-      "Libra"       =>  "Thiên Xứng",
-      "Scorpio"     =>  "Thiên Yết",
-      "Sagittarius" =>  "Nhân Mã",
-      "Capricornus" =>  "Ma Kết",
-      "Aquarius"    =>  "Bảo Bình",
-      "Pisces"      =>  "Song Ngư"
-    }
-    arr[self.birthday.zodiac_sign]
-  end
-  #check vip de su dung ham o authorize 
-  def checkVip
-  	if self.user_has_vip_packages.count == 0
-  		return 0
-  	else
-  		if self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now).present?
-  			return 1
-  		elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
-  			self.user_has_vip_packages.find_by_actived(true).update(actived: false)
-    		return 0
-  		else
-  			return 0
-  		end
-  	end
-  end
+		arr = {
+			"Aries"       =>  "Bạch Dương",
+			"Taurus"      =>  "Kim Ngưu",
+			"Gemini"      =>  "Song Tử",
+			"Cancer"      =>  "Cự Giải",
+			"Leo"         =>  "Sư Tử",
+			"Virgo"       =>  "Thất Nữ",
+			"Libra"       =>  "Thiên Xứng",
+			"Scorpio"     =>  "Thiên Yết",
+			"Sagittarius" =>  "Nhân Mã",
+			"Capricornus" =>  "Ma Kết",
+			"Aquarius"    =>  "Bảo Bình",
+			"Pisces"      =>  "Song Ngư"
+		}
+		arr[self.birthday.zodiac_sign]
+	end
+	#check vip de su dung ham o authorize 
+	def checkVip
+		if self.user_has_vip_packages.count == 0
+			return 0
+		else
+			if self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now).present?
+				return 1
+			elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
+				self.user_has_vip_packages.find_by_actived(true).update(actived: false)
+				return 0
+			else
+				return 0
+			end
+		end
+	end
+
+	def increaseMoney(money)
+		if money.to_i > 0
+			old = self.money
+			value = self.money + money
+			self.update(money: value)
+			NotificationChangeMoneyJob.perform_later(self.email, old, value)
+		else
+			raise "Số tiền không hợp lệ"
+		end
+	end
 
 	def decreaseMoney(money)
 		if self.money >= money then

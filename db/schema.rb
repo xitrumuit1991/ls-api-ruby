@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160422130239) do
+ActiveRecord::Schema.define(version: 20160424123026) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -489,6 +489,17 @@ ActiveRecord::Schema.define(version: 20160422130239) do
   add_index "screen_text_logs", ["room_id"], name: "index_screen_text_logs_on_room_id", using: :btree
   add_index "screen_text_logs", ["user_id"], name: "index_screen_text_logs_on_user_id", using: :btree
 
+  create_table "send_money_logs", force: :cascade do |t|
+    t.string   "from",       limit: 255
+    t.integer  "user_id",    limit: 4
+    t.integer  "money",      limit: 4
+    t.string   "note",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "send_money_logs", ["user_id"], name: "index_send_money_logs_on_user_id", using: :btree
+
   create_table "slides", force: :cascade do |t|
     t.string   "title",           limit: 255
     t.string   "description",     limit: 255
@@ -827,6 +838,7 @@ ActiveRecord::Schema.define(version: 20160422130239) do
   add_foreign_key "schedules", "rooms"
   add_foreign_key "screen_text_logs", "rooms"
   add_foreign_key "screen_text_logs", "users"
+  add_foreign_key "send_money_logs", "users"
   add_foreign_key "statuses", "users"
   add_foreign_key "top_bct_level_ups", "broadcasters"
   add_foreign_key "top_bct_received_gifts", "broadcasters"
