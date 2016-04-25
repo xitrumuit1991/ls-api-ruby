@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160424123026) do
+ActiveRecord::Schema.define(version: 20160425044750) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -151,8 +151,9 @@ ActiveRecord::Schema.define(version: 20160424123026) do
     t.text     "description",          limit: 65535
     t.integer  "broadcaster_exp",      limit: 4,     default: 0
     t.integer  "recived_heart",        limit: 4,     default: 0
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.boolean  "deleted",                            default: false
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
   end
 
   add_index "broadcasters", ["bct_type_id"], name: "index_broadcasters_on_bct_type_id", using: :btree
@@ -694,6 +695,7 @@ ActiveRecord::Schema.define(version: 20160424123026) do
     t.string   "token",           limit: 255
     t.datetime "last_login"
     t.integer  "user_level_id",   limit: 4
+    t.boolean  "deleted",                     default: false
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.string   "gender",          limit: 6
