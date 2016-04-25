@@ -11,27 +11,33 @@ Rails.application.routes.draw do
 
   # ACP
   namespace :acp do
-    get "/" => "index#index"
-
-    # Broadcasters
-    resources :broadcasters do
-      get '/basic/:id' => 'broadcasters#basic'
-      get '/room' => 'broadcasters#room'
-      get '/gifts' => 'broadcasters#gifts'
-      get '/images' => 'broadcasters#images'
-      get '/videos' => 'broadcasters#videos'
-      get '/transactions' => 'broadcasters#transactions'
-      post '/ajax_change_background' => 'broadcasters#ajax_change_background'
-    end
-
     authenticate do
       mount Sidekiq::Web => '/sidekiq'
     end
+
+    get "/" => "index#index"
 
     # Users
     resources :users
     get '/users/:id/transactions' => 'users#transactions'
     post '/users/:id/change_password' => 'users#change_password'
+
+    # Broadcasters
+    get '/broadcasters/recycle-bin' => 'broadcasters#recycle_bin'
+    post '/broadcasters/trash_m' 		=> 'broadcasters#trash_m'
+    post '/broadcasters/restore_m' 	=> 'broadcasters#restore_m'
+    post '/broadcasters/destroy_m' 	=> 'broadcasters#destroy_m'
+    resources :broadcasters do
+      get '/basic/:id' 		=> 'broadcasters#basic'
+      get '/room' 				=> 'broadcasters#room'
+      get '/gifts' 				=> 'broadcasters#gifts'
+      get '/images' 			=> 'broadcasters#images'
+      get '/videos' 			=> 'broadcasters#videos'
+      get '/transactions' => 'broadcasters#transactions'
+      post '/trash' 			=> 'broadcasters#trash'
+      post '/restore' 		=> 'broadcasters#restore'
+      post '/ajax_change_background' => 'broadcasters#ajax_change_background'
+    end
 
     # Rooms
     resources :rooms
