@@ -1,10 +1,14 @@
 class Acp::BroadcastersController < Acp::ApplicationController
 	before_filter :init
 	before_action :load_data, only: [:new, :create, :edit, :update]
-	before_action :set_data, only: [:show, :basic, :edit, :room, :gifts, :images, :videos, :transactions, :update, :destroy, :destroy_gift, :destroy_image, :destroy_video, :ajax_change_background]
+	before_action :set_data, only: [:show, :basic, :edit, :room, :gifts, :images, :videos, :transactions, :update, :trash, :restore, :destroy, :ajax_change_background]
 
 	def index
-		@data = @model.all.order('id desc')
+		@data = @model.all.where(deleted: 0).order('id desc')
+	end
+
+	def recycle_bin
+		@data = @model.all.where(deleted: 1).order('id desc')
 	end
 
 	def show
@@ -74,10 +78,35 @@ class Acp::BroadcastersController < Acp::ApplicationController
 		end
 	end
 
+	def trash
+		@data.update(deleted: 1)
+		redirect_to({ action: 'index' }, notice: 'Idol was successfully move to recycle bin.')
+	end
+
+	def restore
+		@data.update(deleted: 0)
+		redirect_to({ action: 'recycle_bin' }, notice: 'Idol was successfully restored.')
+	end
+
 	def destroy
 		@data.destroy
-		redirect_to({ action: 'index' }, notice: 'Idol was successfully destroyed.')
+		redirect_to({ action: 'recycle_bin' }, notice: 'Idol was successfully destroyed.')
 	end
+
+	def trash_m
+		@model.where(id: params[:item_id]).update_all(deleted: 1)
+    redirect_to({ action: 'index' }, notice: 'Idols were successfully move to recycle bin.')
+	end
+
+	def restore_m
+		@model.where(id: params[:item_id]).update_all(deleted: 0)
+    redirect_to({ action: 'recycle_bin' }, notice: 'Idols were successfully restored.')
+	end
+
+	def destroy_m
+    @model.destroy(params[:item_id])
+    redirect_to({ action: 'recycle_bin' }, notice: 'Idols were successfully destroyed.')
+  end
 
 	def ajax_change_background
 		data_update = (params[:type] == 'default') ? {broadcaster_background_id: nil, room_background_id: params[:bg_id]} : {broadcaster_background_id: params[:bg_id], room_background_id: nil}
