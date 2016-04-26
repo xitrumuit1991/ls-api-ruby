@@ -87,7 +87,8 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def listVipAppMBF
     @mode = params[:code].to_i
-    @vip = @mode == 0 ? Vip.all : VipPackage.where(code: ["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"])
+    # @vip = @mode == 0 ? Vip.all : VipPackage.where(code: ["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"])
+    @vip = Vip.all
   end
 
   def listVipWebMBF
