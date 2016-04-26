@@ -34,7 +34,7 @@ json.array! @vip do |vip|
 			json.screen_text_effect			vip.vip.screen_text_effect
 			json.kick_level					vip.vip.kick_level
 			if vip.vip.clock_kick == 0
-				json.clock_kick 	nill
+				json.clock_kick 	nil
 			elsif vip.vip.clock_kick == 1
 				json.clock_kick 	"Kick bởi room owner"
 			else
