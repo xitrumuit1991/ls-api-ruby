@@ -1741,7 +1741,6 @@
 - Request
 ```
 {
-  user_id: 123,
   vip_package_id: 321
 }
 ```
