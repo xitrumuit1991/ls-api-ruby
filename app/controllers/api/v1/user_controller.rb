@@ -511,12 +511,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     soapClient = Savon.client(wsdl: webservice)
     m_Target = @user.username
 
+    serial = params[:serial].to_s.delete('')
+    pin = params[:pin].to_s.delete('')
     cardCharging              = Paygate::CardCharging.new
     cardCharging.m_UserName   = m_UserName
     cardCharging.m_PartnerID  = m_PartnerID
     cardCharging.m_MPIN       = m_MPIN
     cardCharging.m_Target     = m_Target
-    cardCharging.m_Card_DATA  = params[:serial].to_s + ":".to_s + params[:pin].to_s + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
+    cardCharging.m_Card_DATA  = serial + ":".to_s + pin + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
     cardCharging.m_Pass       = m_Pass
     cardCharging.soapClient   = soapClient
     transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
@@ -526,7 +528,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     cardChargingResponse = cardCharging.cardCharging
     if cardChargingResponse.status == 200
       card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
-      info = { pin: params[:pin], provider: params[:provider], serial: params[:serial], coin: card.coin.to_s }
+      info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
       if card_logs(cardChargingResponse, info)
         if update_coin(info[:coin])
           render plain: "Nạp tiền thành công.", status: 200
