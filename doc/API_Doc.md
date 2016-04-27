@@ -1750,6 +1750,24 @@
       + status 401: ```{error: "Bạn chưa đăng nhập!"}```
       + status 403: ```{error: "Thông báo lỗi"}```
 
+### Buy vip packages for User Mobifone
+- URI: **/mobifone**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+```
+{
+  pkg_code: "VIP"
+}
+```
+- Response:
+  + status: **401**, **200**, **403**
+  + errors: 
+      + status 401: ```{error: "Bạn chưa đăng nhập!"}```
+      + status 403: ```{error: "Thông báo lỗi"}```
+
 ## In App Purchase
 - Namespace URL: **/iap**
 

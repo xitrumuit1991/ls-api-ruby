@@ -18,7 +18,6 @@ class User < ActiveRecord::Base
 	has_many :ban_users
 	has_many :banned_rooms, through: :ban_users, class_name: 'Room', foreign_key: 'room_id', source: :room
 	has_many :android_receipts
-	has_many :coin_logs
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :username, presence: true, uniqueness: true, on: :update

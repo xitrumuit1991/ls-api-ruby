@@ -50,7 +50,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
   end
 
   def mbf_subscribe_vip_package
-    # render json: { error: "Request not from Mobifone 3G" }, status: 403 and return if !check_mbf_auth
+    # render json: { error: "Request not from Mobifone 3G" }, status: 400 and return if !check_mbf_auth
     render json: { error: "Gói VIP này không tồn tại !" }, status: 400 and return if !["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"].include? params[:pkg_code]
 
     if @user.mobifone_user.present?
@@ -60,10 +60,10 @@ class Api::V1::VipController < Api::V1::ApplicationController
         if user_has_vip_package.present?
           if user_has_vip_package.vip_package.vip.weight = vipPackage.vip.weight
             if user_has_vip_package.vip_package.no_day.to_i >= vipPackage.no_day.to_i
-              render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 403 and return
+              render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 and return
             end
           elsif user_has_vip_package.vip_package.vip.weight > vipPackage.vip.weight
-            render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 403 and return
+            render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 and return
           end
         end
 
