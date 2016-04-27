@@ -40,6 +40,25 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       @room = @user.broadcaster.rooms.order("is_privated DESC").first
       @backgrounds = RoomBackground.all
       @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
+      # get All gift
+      @gifts = Gift.where(status: 1)
+
+      # get All action
+      @actions = RoomAction.where(status: 1)
+
+      # Load selected gift
+      gifts_selected = BctGift.where('room_id = ?', @room.id)
+      @arrGiftSelected = []
+      gifts_selected.each do |gift|
+        @arrGiftSelected << gift.gift_id
+      end
+
+      # Load selected action
+      @arrActionSelected = []
+      actions_selected = BctAction.where('room_id = ?', @room.id)
+      actions_selected.each do |action|
+        @arrActionSelected << action.room_action_id
+      end
     else
       render json: {error: 'Bạn không phải Idol, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
     end
@@ -228,11 +247,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       split = key.split(':')
       @status[split[2].to_i] = redis.get(key).to_i
     end
-    @actions = RoomAction.where(status: 1)
+    # @actions = RoomAction.where(status: 1)
+    @bct_actions = BctAction.where('room_id = ? ',  params[:room_id].to_i)
   end
 
   def getGifts
-    @gifts = Gift.where(status: 1)
+    # @gifts = Gift.where(status: 1)
+    @bct_gifts = BctGift.where('room_id = ?',  params[:room_id].to_i)
   end
 
   def getLounges

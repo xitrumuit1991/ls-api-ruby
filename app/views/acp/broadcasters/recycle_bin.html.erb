@@ -17,7 +17,12 @@
     <div class="panel-body">
       <div class="pull-left">
           <div class="col-xs-12">
-              <button class="btn multiple-action" data-action="trash_m"><i class="pg-trash"></i></button>
+              <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
+          </div>
+      </div>
+      <div class="pull-left">
+          <div class="col-xs-12">
+              <button class="btn multiple-action" data-action="restore_m"><i class="fa fa-rotate-left"></i></button>
           </div>
       </div>
       <div class="pull-left">
@@ -28,11 +33,11 @@
       <div class="pull-right">
         <div class="col-xs-12">
           <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-              <li class="active">
-                  <a href="#">All</a>
-              </li>
               <li class="">
-                  <%= link_to(acp_broadcasters_recycle_bin_path) do %>Recycle Bin<% end %>
+                  <%= link_to(acp_broadcasters_path) do %>All<% end %>
+              </li>
+              <li class="active">
+                  <a href="#">Recycle Bin</a>
               </li>
               <li class="">
                   <%= link_to(new_acp_broadcaster_path) do %>Add new<% end %>
@@ -108,8 +113,8 @@
                 </td>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">
-                    <%= link_to(edit_acp_broadcaster_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
-                    <%= link_to(acp_broadcaster_trash_path(item), {class: "btn btn-xs btn-success", method: 'post', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
+                    <%= link_to(acp_broadcaster_restore_path(item), {class: "btn btn-xs btn-success", method: 'post', data: { confirm: 'Are you sure ?'}}) do %><i class="fa fa-rotate-left"></i><% end %>
+                    <%= link_to(acp_broadcaster_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                   </div>
                 </td>
               </tr>

@@ -196,9 +196,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def login
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+      @user_attempt = User.find_by(email: params[:email])
     else
       phone = "84#{params[:email][1..-1]}"
       @user = User.find_by(phone: phone).try(:authenticate, params[:password])
+      @user_attempt = User.find_by(phone: phone)
+    end
+
+    if @user_attempt.present?
+        if @user_attempt.is_locking
+          render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
+        end
     end
 
     if @user.present?
@@ -210,14 +218,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         token = createToken(@user)
 
         # update token
-        @user.update(last_login: Time.now, token: token)
+        @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
 
         render json: { token: token }, status: 200
       else
         render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
       end
     else
-      render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+      if @user_attempt.present?
+        @user_attempt.login_fail
+        render json: { error: "Đăng nhập không thành công lần thứ #{@user_attempt.failed_attempts}/5 xin hãy thử lại !" }, status: 401
+      else
+        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+      end
     end
   end
 
@@ -248,7 +261,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         render json: { error: "System error !" }, status: 500
       end
     else
-      render json: { error: user.errors.messages }, status: 400
+      render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
     end
   end
 

@@ -112,3 +112,6 @@ gem 'sinatra', :require => nil
 
 # SOAP
 gem 'wash_out'
+
+# Google API Client
+gem 'google-api-client', '<0.9'

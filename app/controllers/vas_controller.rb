@@ -191,6 +191,56 @@ class VasController < ApplicationController
     end
   end
 
+  # Kiểm tra username tồn tại
+  # Args:
+  # - username: tên đăng nhập
+  # Retuen:
+  # - is_member: true / false
+  soap_action 'check_username',
+    args: { username: :string },
+    return: { error: :integer, message: :string, is_member: :boolean }
+  def check_username
+    if params[:username].present?
+      @user = User.find_by_username(params[:username])
+      render soap: { error: 0, message: '', is_member: @user.present? }
+    else
+      render soap: { error: 1, message: 'Vui long nhap day du tham so', is_member: false }
+    end
+  end
+
+  # Tặng tiền cho user
+  # Args:
+  # - from: số điện thoại người tặng
+  # - to: username của người nhận
+  # - money: Số tiền tặng
+  # - note (optional): ghi chú
+  soap_action 'send_money',
+    args: { from: :string, to: :string, money: :integer, note: :string },
+    return: { error: :integer, message: :string }
+  def send_money
+    if params[:from].present? and  params[:to].present? and params[:money].present?
+      money = params[:money].to_i
+      if money < 1
+        render soap: { error: 2, message: 'So tien khong hop le'} and return
+      end
+      @user = User.find_by_username(params[:to])
+      if @user.present?
+        begin
+          @user.increaseMoney(money)
+          note = params[:note].present? ? params[:note] : nil
+          SendMoneyLog.create(from: params[:from], user_id: @user.id, money: money, note: note)
+          render soap: { error: 0, message: 'Tang tien thanh cong' }
+        rescue Exception => e
+          render soap: { error: 4, message: "Khong the tang tien cho user, #{e.message}"}
+        end
+      else
+        render soap: { error: 3, message: "Tai khoan #{params[:to]} khong ton tai"}
+      end
+    else
+      render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+    end
+  end
+
   private
     def subscribe_vip user, vip_package, actived_date, expiry = false
       expiry_date  = expiry ? expiry : actived_date + vip_package.no_day.to_i.day

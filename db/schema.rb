@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160414142829) do
+ActiveRecord::Schema.define(version: 20160425044750) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -43,6 +43,21 @@ ActiveRecord::Schema.define(version: 20160414142829) do
 
   add_index "admins", ["email"], name: "index_admins_on_email", unique: true, using: :btree
   add_index "admins", ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true, using: :btree
+
+  create_table "android_receipts", force: :cascade do |t|
+    t.integer  "user_id",       limit: 4
+    t.string   "orderId",       limit: 255
+    t.string   "packageName",   limit: 255
+    t.string   "productId",     limit: 255
+    t.integer  "purchaseTime",  limit: 8
+    t.integer  "purchaseState", limit: 4
+    t.string   "purchaseToken", limit: 255
+    t.boolean  "status",                    default: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+  end
+
+  add_index "android_receipts", ["user_id"], name: "index_android_receipts_on_user_id", using: :btree
 
   create_table "ban_users", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -136,8 +151,9 @@ ActiveRecord::Schema.define(version: 20160414142829) do
     t.text     "description",          limit: 65535
     t.integer  "broadcaster_exp",      limit: 4,     default: 0
     t.integer  "recived_heart",        limit: 4,     default: 0
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.boolean  "deleted",                            default: false
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
   end
 
   add_index "broadcasters", ["bct_type_id"], name: "index_broadcasters_on_bct_type_id", using: :btree
@@ -165,6 +181,16 @@ ActiveRecord::Schema.define(version: 20160414142829) do
 
   add_index "cart_logs", ["provider_id"], name: "index_cart_logs_on_provider_id", using: :btree
   add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
+
+  create_table "coins", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "code",       limit: 255
+    t.integer  "price",      limit: 4
+    t.integer  "quantity",   limit: 4
+    t.string   "app",        limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0, null: false
@@ -464,6 +490,17 @@ ActiveRecord::Schema.define(version: 20160414142829) do
   add_index "screen_text_logs", ["room_id"], name: "index_screen_text_logs_on_room_id", using: :btree
   add_index "screen_text_logs", ["user_id"], name: "index_screen_text_logs_on_user_id", using: :btree
 
+  create_table "send_money_logs", force: :cascade do |t|
+    t.string   "from",       limit: 255
+    t.integer  "user_id",    limit: 4
+    t.integer  "money",      limit: 4
+    t.string   "note",       limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "send_money_logs", ["user_id"], name: "index_send_money_logs_on_user_id", using: :btree
+
   create_table "slides", force: :cascade do |t|
     t.string   "title",           limit: 255
     t.string   "description",     limit: 255
@@ -658,10 +695,14 @@ ActiveRecord::Schema.define(version: 20160414142829) do
     t.string   "token",           limit: 255
     t.datetime "last_login"
     t.integer  "user_level_id",   limit: 4
+    t.boolean  "deleted",                     default: false
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
     t.string   "gender",          limit: 6
     t.string   "forgot_code",     limit: 255
+    t.integer  "failed_attempts", limit: 4,   default: 0
+    t.datetime "failed_at"
+    t.datetime "locked_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
@@ -752,6 +793,7 @@ ActiveRecord::Schema.define(version: 20160414142829) do
   add_foreign_key "action_logs", "room_actions"
   add_foreign_key "action_logs", "rooms"
   add_foreign_key "action_logs", "users"
+  add_foreign_key "android_receipts", "users"
   add_foreign_key "ban_users", "rooms"
   add_foreign_key "ban_users", "users"
   add_foreign_key "bct_actions", "room_actions"
@@ -798,6 +840,7 @@ ActiveRecord::Schema.define(version: 20160414142829) do
   add_foreign_key "schedules", "rooms"
   add_foreign_key "screen_text_logs", "rooms"
   add_foreign_key "screen_text_logs", "users"
+  add_foreign_key "send_money_logs", "users"
   add_foreign_key "statuses", "users"
   add_foreign_key "top_bct_level_ups", "broadcasters"
   add_foreign_key "top_bct_received_gifts", "broadcasters"

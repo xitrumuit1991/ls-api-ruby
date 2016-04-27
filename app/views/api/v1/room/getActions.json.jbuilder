@@ -1,10 +1,10 @@
-json.array! @actions do |action|
-	json.id			action.id
-	json.name		action.name
-	json.image		"#{request.base_url}/#{action.image.square}?timestamp=#{action.updated_at.to_i}"
-	json.price		action.price
-	json.max_vote	action.max_vote
-	json.voted		@status[action.id].nil? ? 0 : @status[action.id]
-	json.percent	(@status[action.id].nil? ? 0 : @status[action.id]) * 100 / action.max_vote
-	json.discount	action.discount
+json.array! @bct_actions do |bct_action|
+	json.id			bct_action.room_action.id
+	json.name		bct_action.room_action.name
+	json.image		"#{request.base_url}/#{bct_action.room_action.image.square}?timestamp=#{bct_action.room_action.updated_at.to_i}"
+	json.price		bct_action.room_action.price
+	json.max_vote	bct_action.room_action.max_vote
+	json.voted		@status[bct_action.room_action.id].nil? ? 0 : @status[bct_action.room_action.id]
+	json.percent	(@status[bct_action.room_action.id].nil? ? 0 : @status[bct_action.room_action.id]) * 100 / bct_action.room_action.max_vote
+	json.discount	bct_action.room_action.discount
 end

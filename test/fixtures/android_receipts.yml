@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  orderId: MyString
+  packageName: MyString
+  productId: MyString
+  purchaseTime: 2016-04-21
+  purchaseState: 1
+  purchaseToken: MyString
+  status: false
+
+two:
+  user_id: 
+  orderId: MyString
+  packageName: MyString
+  productId: MyString
+  purchaseTime: 2016-04-21
+  purchaseState: 1
+  purchaseToken: MyString
+  status: false

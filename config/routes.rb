@@ -11,27 +11,33 @@ Rails.application.routes.draw do
 
   # ACP
   namespace :acp do
-    get "/" => "index#index"
-
-    # Broadcasters
-    resources :broadcasters do
-      get '/basic/:id' => 'broadcasters#basic'
-      get '/room' => 'broadcasters#room'
-      get '/gifts' => 'broadcasters#gifts'
-      get '/images' => 'broadcasters#images'
-      get '/videos' => 'broadcasters#videos'
-      get '/transactions' => 'broadcasters#transactions'
-      post '/ajax_change_background' => 'broadcasters#ajax_change_background'
-    end
-
     authenticate do
       mount Sidekiq::Web => '/sidekiq'
     end
+
+    get "/" => "index#index"
 
     # Users
     resources :users
     get '/users/:id/transactions' => 'users#transactions'
     post '/users/:id/change_password' => 'users#change_password'
+
+    # Broadcasters
+    get '/broadcasters/recycle-bin' => 'broadcasters#recycle_bin'
+    post '/broadcasters/trash_m' 		=> 'broadcasters#trash_m'
+    post '/broadcasters/restore_m' 	=> 'broadcasters#restore_m'
+    post '/broadcasters/destroy_m' 	=> 'broadcasters#destroy_m'
+    resources :broadcasters do
+      get '/basic/:id' 		=> 'broadcasters#basic'
+      get '/room' 				=> 'broadcasters#room'
+      get '/gifts' 				=> 'broadcasters#gifts'
+      get '/images' 			=> 'broadcasters#images'
+      get '/videos' 			=> 'broadcasters#videos'
+      get '/transactions' => 'broadcasters#transactions'
+      post '/trash' 			=> 'broadcasters#trash'
+      post '/restore' 		=> 'broadcasters#restore'
+      post '/ajax_change_background' => 'broadcasters#ajax_change_background'
+    end
 
     # Rooms
     resources :rooms
@@ -211,6 +217,10 @@ Rails.application.routes.draw do
         post '/status' => 'broadcasters#status' # #Liem - Không thấy dùng bên web
         post '/pictures' => 'broadcasters#pictures' #
         post '/videos' => 'broadcasters#videos' #
+        post '/select-gift' => 'broadcasters#selectGift' #
+        post '/select-action' => 'broadcasters#selectAction' #
+        post '/select-all-gift' => 'broadcasters#selectAllGift' #
+        post '/select-all-action' => 'broadcasters#selectAllAction' #
         put '/' => 'broadcasters#update' # Liem khong thay function nay trong broadcasters_controller
         put '/avatar' => 'broadcasters#uploadAvatar' # api is not using
         put '/cover' => 'broadcasters#uploadCover' # api is not using
@@ -286,6 +296,13 @@ Rails.application.routes.draw do
         get   '/list-vip-app-mbf'       => 'vip#listVipAppMBF'
         get 	'/mobifone' => 'vip#mbf_get_vip_packages'
         post 	'/mobifone' => 'vip#mbf_subscribe_vip_package'
+      end
+
+      # IAP
+      scope 'iap' do
+        get 	'/coins' 		=> 'iap#get_coins'
+        post 	'/android' 	=> 'iap#android'
+        post 	'/ios' 			=> 'iap#ios'
       end
 
       # Posters functions

@@ -17,11 +17,12 @@ class User < ActiveRecord::Base
 	has_many :trade_logs
 	has_many :ban_users
 	has_many :banned_rooms, through: :ban_users, class_name: 'Room', foreign_key: 'room_id', source: :room
+	has_many :android_receipts
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :username, presence: true, uniqueness: true, on: :update
 	validates :name, presence: true, length: {minimum: 6, maximum: 150}, on: :update
-	validates :password, presence: true, length: {minimum: 8, maximum: 50}
+	# validates :password, presence: true, length: {minimum: 8, maximum: 50}
 	validates :phone, uniqueness: true, :allow_nil => true
 	validates :active_code, uniqueness: true
 	with_options({on: :auth}) do |for_auth|
@@ -47,6 +48,33 @@ class User < ActiveRecord::Base
 		end
 	end
 
+	def is_locking
+		if self.locked_at.present?
+			locked_time = Time.now - self.locked_at
+			return locked_time <= 10.minutes
+		else
+			return false
+		end
+	end
+
+	def login_fail
+		if self.failed_at.present?
+			failed_time = Time.now - self.failed_at
+			if failed_time <= 10.minutes
+				self.failed_attempts = self.failed_attempts + 1
+				if self.failed_attempts >= 4
+					self.locked_at = Time.now
+				end
+			else
+				self.failed_attempts = 1
+			end
+		else
+			self.failed_attempts = 1
+		end
+		self.failed_at = Time.now
+		self.save
+	end
+
 	def public_room
 		self.broadcaster.public_room
 	end
@@ -60,37 +88,48 @@ class User < ActiveRecord::Base
 	end
 
 	def horoscope
-    arr = {
-      "Aries"       =>  "Bạch Dương",
-      "Taurus"      =>  "Kim Ngưu",
-      "Gemini"      =>  "Song Tử",
-      "Cancer"      =>  "Cự Giải",
-      "Leo"         =>  "Sư Tử",
-      "Virgo"       =>  "Thất Nữ",
-      "Libra"       =>  "Thiên Xứng",
-      "Scorpio"     =>  "Thiên Yết",
-      "Sagittarius" =>  "Nhân Mã",
-      "Capricornus" =>  "Ma Kết",
-      "Aquarius"    =>  "Bảo Bình",
-      "Pisces"      =>  "Song Ngư"
-    }
-    arr[self.birthday.zodiac_sign]
-  end
-  #check vip de su dung ham o authorize 
-  def checkVip
-  	if self.user_has_vip_packages.count == 0
-  		return 0
-  	else
-  		if self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now).present?
-  			return 1
-  		elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
-  			self.user_has_vip_packages.find_by_actived(true).update(actived: false)
-    		return 0
-  		else
-  			return 0
-  		end
-  	end
-  end
+		arr = {
+			"Aries"       =>  "Bạch Dương",
+			"Taurus"      =>  "Kim Ngưu",
+			"Gemini"      =>  "Song Tử",
+			"Cancer"      =>  "Cự Giải",
+			"Leo"         =>  "Sư Tử",
+			"Virgo"       =>  "Thất Nữ",
+			"Libra"       =>  "Thiên Xứng",
+			"Scorpio"     =>  "Thiên Yết",
+			"Sagittarius" =>  "Nhân Mã",
+			"Capricornus" =>  "Ma Kết",
+			"Aquarius"    =>  "Bảo Bình",
+			"Pisces"      =>  "Song Ngư"
+		}
+		arr[self.birthday.zodiac_sign]
+	end
+	#check vip de su dung ham o authorize 
+	def checkVip
+		if self.user_has_vip_packages.count == 0
+			return 0
+		else
+			if self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now).present?
+				return 1
+			elsif self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now).present?
+				self.user_has_vip_packages.find_by_actived(true).update(actived: false)
+				return 0
+			else
+				return 0
+			end
+		end
+	end
+
+	def increaseMoney(money)
+		if money.to_i > 0
+			old = self.money
+			value = self.money + money
+			self.update(money: value)
+			NotificationChangeMoneyJob.perform_later(self.email, old, value)
+		else
+			raise "Số tiền không hợp lệ"
+		end
+	end
 
 	def decreaseMoney(money)
 		if self.money >= money then
