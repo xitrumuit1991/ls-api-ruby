@@ -19,6 +19,7 @@ json.array! @vip do |vip|
 		end
 		json.vip_packages vip.vip_packages.where('code = "VIP" OR code = "VIP7" OR code = "VIP30" OR code = "VIP2" OR code = "VIP3" OR code = "VIP4"') do |vip_pkg|
 			json.id				vip_pkg.id
+			json.image			"#{request.base_url}#{vip_pkg.vip.image}"
 			json.code 			vip_pkg.code
 			json.no_day			vip_pkg.no_day
 			json.price			vip_pkg.price
@@ -44,6 +45,7 @@ json.array! @vip do |vip|
 		end
 		json.vip_packages vip.vip_packages.where('code != "VIP" AND code != "VIP7" AND code != "VIP30" AND code != "VIP2" AND code != "VIP3" AND code != "VIP4"') do |vip_pkg|
 			json.id				vip_pkg.id
+			json.image			"#{request.base_url}#{vip_pkg.vip.image}"
 			json.code 			vip_pkg.code
 			json.no_day			vip_pkg.no_day
 			json.price			vip_pkg.price
