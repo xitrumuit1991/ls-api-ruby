@@ -1682,7 +1682,7 @@
 ### Get curent rank
 
 ## Vip functions
-- Namespace URL: **/vip**
+- Namespace URL: **/vips**
 
 ### List Vip MBF
 - URI: **/:vip/list-vip-mbf  **

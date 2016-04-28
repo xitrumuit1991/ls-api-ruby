@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160425044750) do
+ActiveRecord::Schema.define(version: 20160428042800) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -185,7 +185,7 @@ ActiveRecord::Schema.define(version: 20160425044750) do
   create_table "coins", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.string   "code",       limit: 255
-    t.integer  "price",      limit: 4
+    t.float    "price",      limit: 24
     t.integer  "quantity",   limit: 4
     t.string   "app",        limit: 255
     t.datetime "created_at",             null: false
