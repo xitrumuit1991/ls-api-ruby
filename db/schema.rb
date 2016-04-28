@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428042800) do
+ActiveRecord::Schema.define(version: 20160428102245) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -183,13 +183,16 @@ ActiveRecord::Schema.define(version: 20160428042800) do
   add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
 
   create_table "coins", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.string   "code",       limit: 255
-    t.float    "price",      limit: 24
-    t.integer  "quantity",   limit: 4
-    t.string   "app",        limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "name",          limit: 255
+    t.string   "code",          limit: 255
+    t.float    "price",         limit: 24,  default: 0.0
+    t.float    "price_usd",     limit: 24,  default: 0.0
+    t.integer  "quantity",      limit: 4,   default: 0
+    t.integer  "bonus_coins",   limit: 4,   default: 0
+    t.float    "bonus_percent", limit: 24,  default: 0.0
+    t.string   "app",           limit: 255
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
