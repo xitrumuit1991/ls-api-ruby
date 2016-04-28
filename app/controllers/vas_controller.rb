@@ -51,7 +51,7 @@ class VasController < ApplicationController
       sub_id = params[:sub_id]
       user = User.find_by_phone(sub_id)
       if user.present?
-        user.password = SecureRandom.hex(5)
+        user.password = SecureRandom.hex(4)
         if user.save
           render soap: { error: 0, message: 'Thay doi mat khau thanh cong', new_password: user.password} and return
         else
