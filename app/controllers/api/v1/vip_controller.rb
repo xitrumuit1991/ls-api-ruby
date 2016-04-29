@@ -59,8 +59,9 @@ class Api::V1::VipController < Api::V1::ApplicationController
           end
         end
 
-        if create_vip_package vipPackage
-          render json: { error: "Có lổi xảy ra, bạn hãy thử lại !" }, status: 400
+        result = create_vip_package vipPackage
+        if result[:is_error]
+          render json: { error: "#{handle_vas_error result[:message]}" }, status: 400
         else
           return head 201
         end
@@ -89,7 +90,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   private
     def create_vip_package vipPackage
-      charge_result = vas_register @user.phone, vipPackage.code 
+      charge_result = vas_register @user.phone, vipPackage.code
       if !charge_result[:is_error]
         # set actived false if user has vip package
         @user.user_has_vip_packages.find_by(actived: true).update(actived: false) if @user.user_has_vip_packages.find_by(actived: true).present?
@@ -100,6 +101,19 @@ class Api::V1::VipController < Api::V1::ApplicationController
         # create mobifone user vip logs
         @user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: vipPackage.code)
       end
-      return charge_result[:is_error]
+      return charge_result
+    end
+
+    def handle_vas_error error
+      result = case error
+        when "NOT_ENOUGH_MONEY_REG" then "Đăng ký lần đầu Không đủ tiền"
+        when "REGISTER_BACK_FAIL" then "Đăng ký lại, không đủ tiền"
+        when "ALREADY_REGISTERED" then "Đã đăng ký"
+        when "IS_IN_CHARGING" then "Hệ thống đang thực hiện quá trình trừ cước với thuê bao này"
+        when "NUMBER_IS_IN_BLACKLIST" then "Không được phép dùng dịch vụ do nằm trong blacklist của hệ thống"
+        when "INVALID_NUMBER_FORMAT" then "Sai định dạng số điện thoại Mobi"
+        when "REGISTER_ERROR" then "Không tìm thấy dữ liệu"
+        else error
+      end
     end
 end

@@ -34,11 +34,11 @@ module Api::V1::Vas extend ActiveSupport::Concern
       # params request
       message = {
         "tns:phone_number"  => phone.to_s,
+        "tns:password"      => password.present? ? password.to_s : phone.to_s,
         "tns:pkg_code"      => pkg_code,
-        "tns:password"      => password.nil? ? password.to_s : phone.to_s,
-        "tns:username"      => username.nil? ? username.to_s : phone.to_s,
         "tns:channel"       => "APP",
-        "tns:partner_id"    => "DEFAULT"
+        "tns:username"      => username.present? ? username.to_s : phone.to_s,
+        "tns:partner_id"    => "DEFAULT",
       }
       register_response = soapClient.call(:register, message: message)
       register_response.body[:register_response][:register_result]
