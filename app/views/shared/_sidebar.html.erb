@@ -401,6 +401,21 @@
         </ul>
       </li>
       <!--END Epay-->
+      <!--BEGIN Report-->
+      <li class="<% if controller_name == 'featureds' %>active<% end %>">
+        <a href="#">
+          <span class="title">Report</span>
+          <span class=" arrow<% if controller_name == 'reports' %> open<% end %>"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'reports' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_reports_path) do %><span class="title">Idol</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+        </ul>
+      </li>
+      <!--END Feature-->
 
     </ul>
     <div class="clearfix"></div>
