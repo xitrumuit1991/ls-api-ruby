@@ -146,6 +146,9 @@ Rails.application.routes.draw do
     resources :trade_logs
     post '/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
+    # Reports
+    resources :reports
+
   end
 
   # API
