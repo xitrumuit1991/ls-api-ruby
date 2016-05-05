@@ -115,3 +115,9 @@ gem 'wash_out'
 
 # Google API Client
 gem 'google-api-client', '<0.9'
+
+# Venice
+gem 'venice'
+
+# Kaminari
+gem 'kaminari'

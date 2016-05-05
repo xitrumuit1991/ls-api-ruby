@@ -1,4 +1,5 @@
 require 'google/api_client'
+require 'venice'
 
 class Api::V1::IapController < Api::V1::ApplicationController
   include Api::V1::Authorize
@@ -65,7 +66,12 @@ class Api::V1::IapController < Api::V1::ApplicationController
   end
 
   def ios
-    
+    if receipt = Venice::Receipt.verify(params[:receipt])
+      puts '==============='
+      p receipt.to_h
+      puts '==============='
+    end
+    return head 200
   end
 
 end

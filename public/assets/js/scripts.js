@@ -5,7 +5,7 @@ $(document).ready(function () {
     $('#datepicker-range, #datepicker-component, #datepicker-component2').datepicker();
 
     //start date & end date
-    /*$('#start_date').datetimepicker();
+    $('#start_date').datetimepicker();
     $('#end_date').datetimepicker({
         useCurrent: false //Important! See issue #1075
     });
@@ -14,7 +14,7 @@ $(document).ready(function () {
     });
     $("#end_date").on("dp.change", function (e) {
         $('#start_date').data("DateTimePicker").maxDate(e.date);
-    });*/
+    });
 
     // check modal show
     var modal = window.location.hash
@@ -45,14 +45,14 @@ $(document).ready(function () {
     // check all for table
     $('#check-all').on('click', function () {
         if ($(this).is(':checked')) {
-            $('table.data-table .check-all').prop('checked', true);
+            $('#data-table table .check-all').prop('checked', true);
         } else {
-            $('table.data-table .check-all').prop('checked', false);
+            $('#data-table table .check-all').prop('checked', false);
         }
     });
     
     // update status
-    $('table.data-table').on('change', '.handle-checkbox', function(){
+    $('#data-table table').on('change', '.handle-checkbox', function(){
         var result = $(this).attr('id').split('-');
         var field  = $(this).data('field');
         var value  = $(this).is(':checked') ? 1 : 0;

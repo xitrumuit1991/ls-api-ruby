@@ -15,27 +15,32 @@
   <!-- START PANEL -->
   <div class="panel panel-transparent">
     <div class="panel-heading">
-      <div class="pull-left">
-        <div class="col-xs-12">
-          <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
-        </div>
-      </div>
-      <div class="pull-left">
-        <div class="col-xs-12">
-          <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
-        </div>
-      </div>
-      <div class="pull-right">
-        <div class="col-xs-12">
-          <%= link_to(new_acp_bank_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
-        </div>
+      <div class="row">
+        <form action="">
+          <div class="col-md-2">
+            <input type="text" id="search-table" class="form-control pull-right" placeholder="Input at least 3 characters ...">
+          </div>
+          <div class="col-md-3">
+            <div class="input-daterange input-group">
+              <input type="text" class="form-control" name="start_date" value="" id="start_date" aria-invalid="false">
+              <span class="input-group-addon">to</span>
+              <input type="text" class="form-control" name="end_date" value="" id="end_date" aria-invalid="false">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-info" name="save">Search</button>
+          </div>
+          <div class="col-md-6">
+            <button class="btn btn-complete pull-right"><span><i class="fa fa-cloud-download"></i></span></button>
+          </div>
+        </form>
       </div>
       <div class="clearfix"></div>
     </div>
     <div class="panel-body">
-      <form action="" method="post" id="data-table">
+      <form action="" method="post">
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-        <table class="table table-hover demo-table-search data-table">
+        <table class="table table-hover no-more-tables">
           <thead>
           <tr>
             <th style="width:3%">
@@ -51,31 +56,13 @@
           </tr>
           </thead>
           <tbody>
-          <% @data.each do |item| %>
-              <tr id="row_page_<%= item.id %>">
-                <td class="v-align-middle">
-                  <div class="checkbox ">
-                    <input type="checkbox" name="item_id[]" value="<%= item.id %>" class="check-all" id="checkbox-<%= item.id %>">
-                    <label for="checkbox-<%= item.id %>"></label>
-                  </div>
-                </td>
-                <td class="v-align-middle ">
-                  <p><%= item.bankID %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.name %></p>
-                </td>
-                <td class="v-align-middle">
-                  <p><%= item.status %></p>
-                </td>
-                <td class="v-align-middle">
-                  <div class="text-center text-nowrap">
-                    <%= link_to(edit_acp_bank_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
-                    <%= link_to(acp_bank_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
-                  </div>
-                </td>
-              </tr>
-          <% end %>
+            <tr>
+              <td>a</td>
+              <td>a</td>
+              <td>a</td>
+              <td>a</td>
+              <td>a</td>
+            </tr>
           </tbody>
         </table>
       </form>
