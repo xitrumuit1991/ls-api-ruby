@@ -7,4 +7,5 @@ json.array! @coins do |coin|
 	json.quantity				coin.quantity
 	json.bonus_coins		coin.bonus_coins
 	json.bonus_percent	coin.bonus_percent
+	json.image					"#{request.base_url}#{coin.image}"
 end
