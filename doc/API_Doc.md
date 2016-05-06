@@ -1622,7 +1622,7 @@
       + status 404: ```{error: "Invalid lounge index "}```
       + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
 
-### Send heart
+### Add heart in room
 - URI: **/add-heart **
 - Method: **POST**
 - Header:
