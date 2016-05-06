@@ -51,7 +51,7 @@ class VasController < ApplicationController
       sub_id = params[:sub_id]
       user = User.find_by_phone(sub_id)
       if user.present?
-        user.password = SecureRandom.hex(4)
+        user.password = SecureRandom.hex(3)
         if user.save
           render soap: { error: 0, message: 'Thay doi mat khau thanh cong', new_password: user.password} and return
         else
@@ -259,13 +259,13 @@ class VasController < ApplicationController
       else
         activeCode = SecureRandom.hex(3).upcase
         @user = User.new
-        @user.email        = "#{phone}@mobifone.com.vn"
+        @user.email        = "#{phone}@livestar.vn"
         @user.password     = password
         @user.active_code  = activeCode
         @user.username     = phone
         @user.phone        = phone
         if @user.valid?
-          @user.name           = phone
+          @user.name           = phone.to_s[0,a.to_s.length-3]+"xxx"
           @user.birthday       = '2000-01-01'
           @user.user_level_id  = UserLevel.first().id
           @user.money          = 8
