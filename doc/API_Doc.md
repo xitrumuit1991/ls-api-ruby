@@ -1623,6 +1623,26 @@
       + status 400: ```{error: "Bad request or maybe you miss subscribe room or room not started or dont have enough money"}```
 
 ### Send heart
+- URI: **/add-heart **
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        hearts:1,
+        room_id:49
+    }
+    ```
+- Response:
+  + status: **201**, **400**, **204**, **401**,
+  + errors: 
+      + status 400: ```{error: "Bad request "}```
+      + status 204: ```{error: "Max tim hoặc chưa đủ thời gian tăng tim. "}```
+      + status 401: ```{error: "Unauthorized "}```
+
+### Send heart
 - URI: **/send-hearts **
 - Method: **POST**
 - Header:
