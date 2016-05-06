@@ -4,7 +4,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -190,6 +190,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       end
     else
       render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
+    end
+  end
+
+  def check_user_mbf
+    user =  User.find_by(phone: params[:phone])
+    if user.present?
+      if user.mobifone_user.present?
+        return head 200
+      else
+        render json: { error: "Xin lỗi, số điện thoại này chưa đăng ký tài khoản Mobifone, bạn vui lòng kiểm tra lại !" }, status: 404
+      end
+    else
+      render json: { error: "Số điện thoại này không tồn tại trong hệ thống Livestar !" }, status: 404
     end
   end
 

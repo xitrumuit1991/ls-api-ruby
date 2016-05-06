@@ -121,3 +121,6 @@ gem 'venice'
 
 # Kaminari
 gem 'kaminari'
+
+# Axlsx-Rails
+gem 'axlsx_rails'
