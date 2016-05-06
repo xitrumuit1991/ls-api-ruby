@@ -546,7 +546,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def getTradeHistory
-
+    @trade = @user.user_has_vip_packages.order(created_at: :desc).limit(10)
   end
 
   private
