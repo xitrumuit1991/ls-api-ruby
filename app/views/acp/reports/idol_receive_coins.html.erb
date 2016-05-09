@@ -36,7 +36,7 @@
             <button class="btn btn-info" type="submit">Search</button>
           </div>
           <div class="col-md-4">
-            <button class="btn btn-complete pull-right"><span><i class="fa fa-cloud-download"></i></span></button>
+            <%= link_to(acp_reports_idol_receive_coins_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
           </div>
         </form>
       </div>
