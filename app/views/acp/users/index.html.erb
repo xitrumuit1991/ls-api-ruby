@@ -21,9 +21,14 @@
         </div>
       </div>
       <div class="pull-left">
-        <div class="col-xs-12">
-          <input type="text" id="search-table" class="form-control pull-right" placeholder="Search">
-        </div>
+        <form action="" method="get">
+          <div class="col-xs-6">
+            <input type="text" id="search-table" class="form-control pull-right" placeholder="Search ..." name="q" required="required">
+          </div>
+          <div class="col-xs-1">
+            <button class="btn btn-info" type="submit">Search</button>
+          </div>
+        </form>
       </div>
       <div class="pull-right">
         <div class="col-xs-12">
@@ -35,7 +40,7 @@
     <div class="panel-body">
       <form action="" method="post" id="data-table">
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-        <table class="table table-hover demo-table-search data-table">
+        <table class="table table-hover demo-table-search">
           <thead>
           <tr>
             <th style="width:3%">
@@ -92,6 +97,13 @@
           <% end %>
           </tbody>
         </table>
+        <div class="row">
+          <div class="pull-right">
+            <div class="col-xs-12">
+              <%= paginate @data %>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   </div>

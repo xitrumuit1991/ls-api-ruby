@@ -4,7 +4,8 @@ class Acp::UsersController < Acp::ApplicationController
   before_action :set_data, only: [:show, :edit, :update, :transactions, :change_password, :destroy]
 
   def index
-    @data = @model.all.order('id desc')
+    conditions = params[:q].present? ? "username LIKE '%#{params[:q]}%' AND deleted=0" : "deleted=0"
+    @data = @model.all.where(conditions).order('id desc').page params[:page]
   end
 
   def show
