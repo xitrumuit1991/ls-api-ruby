@@ -63,7 +63,7 @@ class Acp::ReportsController < Acp::ApplicationController
   	end
 
   	@idols = Broadcaster.where(deleted: 0)
-		@rooms = params[:format].present? && params[:format] == 'xlxs' ? Room.joins(:user_logs).where(where) : Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id).page(params[:page])
+		@rooms = params[:format].present? ? Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id) : Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx
