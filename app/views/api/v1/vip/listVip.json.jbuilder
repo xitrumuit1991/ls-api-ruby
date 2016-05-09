@@ -4,7 +4,7 @@ json.array! @vips do |vip|
 	json.code					vip.code
 	json.image					"#{request.base_url}#{vip.image}"
 	if vip.priceVip(@day)
-		json.money		vip.priceVip(@day).price
+		json.money		number_with_delimiter(vip.priceVip(@day).price, delimiter: ".")
 		json.package_id	vip.priceVip(@day).id
 		json.discount	vip.priceVip(@day).discount
 		json.day		@day
