@@ -147,6 +147,7 @@ Rails.application.routes.draw do
     post '/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
     # Reports
+    get '/reports/users' => 'reports#users'
     resources :reports
 
   end
@@ -169,6 +170,7 @@ Rails.application.routes.draw do
         post '/change' => 'auth#changePassword'
         post '/update-forgot-code' => 'auth#updateForgotCode'
         post '/reset-password' => 'auth#setNewPassword'
+        post '/check-user-mbf' => 'auth#check_user_mbf'
         # For mobifone only
         get   '/mobifone' => 'auth#mbf_detection'
         post  '/mobifone' => 'auth#mbf_register'
