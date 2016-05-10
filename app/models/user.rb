@@ -145,7 +145,7 @@ class User < ActiveRecord::Base
 	def increaseExp(exp)
 		exp_bonus = self.checkVip == 1 ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus : 1
 		old_value = self.user_exp
-		new_value = old_value + exp*exp_bonus
+		new_value = (old_value + exp*exp_bonus) > 2147483647 ? old_value : old_value + exp*exp_bonus
 		self.user_exp = new_value
 		next_level = UserLevel.where("min_exp <= ?", new_value).last
 		#next_level = self.user_level.next
