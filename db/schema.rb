@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160504042053) do
+ActiveRecord::Schema.define(version: 20160510124208) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -264,6 +264,25 @@ ActiveRecord::Schema.define(version: 20160504042053) do
   end
 
   add_index "home_featureds", ["broadcaster_id"], name: "index_home_featureds_on_broadcaster_id", using: :btree
+
+  create_table "ios_receipts", force: :cascade do |t|
+    t.integer  "user_id",                    limit: 4
+    t.integer  "quantity",                   limit: 4
+    t.string   "product_id",                 limit: 255
+    t.string   "transaction_id",             limit: 255
+    t.string   "original_transaction_id",    limit: 255
+    t.string   "purchase_date",              limit: 255
+    t.string   "purchase_date_ms",           limit: 255
+    t.string   "purchase_date_pst",          limit: 255
+    t.string   "original_purchase_date",     limit: 255
+    t.string   "original_purchase_date_ms",  limit: 255
+    t.string   "original_purchase_date_pst", limit: 255
+    t.string   "is_trial_period",            limit: 255
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  add_index "ios_receipts", ["user_id"], name: "index_ios_receipts_on_user_id", using: :btree
 
   create_table "lounge_logs", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -819,6 +838,7 @@ ActiveRecord::Schema.define(version: 20160504042053) do
   add_foreign_key "heart_logs", "rooms"
   add_foreign_key "heart_logs", "users"
   add_foreign_key "home_featureds", "broadcasters"
+  add_foreign_key "ios_receipts", "users"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
   add_foreign_key "megabank_logs", "banks"

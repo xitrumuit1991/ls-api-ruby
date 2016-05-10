@@ -100,6 +100,9 @@ class Api::V1::VipController < Api::V1::ApplicationController
         user_has_vip_package = @user.user_has_vip_packages.create(vip_package_id: vipPackage.id, actived: true, active_date: Time.now, expiry_date: Time.now + vipPackage.no_day.to_i.day)
         # create mobifone user vip logs
         @user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: vipPackage.code)
+        # add bonus coins for user
+        money = @user.money + vipPackage.discount
+        @user.update(money: money)
       end
       return charge_result
     end

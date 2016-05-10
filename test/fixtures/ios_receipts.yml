@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  quantity: 1
+  product_id: MyString
+  transaction_id: MyString
+  original_transaction_id: MyString
+  purchase_date: MyString
+  purchase_date_ms: MyString
+  purchase_date_pst: MyString
+  original_purchase_date: MyString
+  original_purchase_date_ms: MyString
+  original_purchase_date_pst: MyString
+  is_trial_period: MyString
+
+two:
+  user_id: 
+  quantity: 1
+  product_id: MyString
+  transaction_id: MyString
+  original_transaction_id: MyString
+  purchase_date: MyString
+  purchase_date_ms: MyString
+  purchase_date_pst: MyString
+  original_purchase_date: MyString
+  original_purchase_date_ms: MyString
+  original_purchase_date_pst: MyString
+  is_trial_period: MyString
