@@ -20,7 +20,7 @@ class Broadcaster < ActiveRecord::Base
 
 	def increaseExp(exp)
 		old_value = self.broadcaster_exp
-		new_value = old_value + exp
+		new_value = (old_value + exp) > 2147483647 ? old_value : old_value + exp
 		self.broadcaster_exp = new_value
 		# next_level = UserLevel.where("min_heart <= ?", new_value).last
 		next_level = self.broadcaster_level.next
