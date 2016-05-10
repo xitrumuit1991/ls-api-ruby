@@ -1,7 +1,7 @@
 class TopMonth
 	include Sidekiq::Worker
 	include Sidetiq::Schedulable
-	recurrence { monthly }
+	recurrence { weekly.day(:monday).hour_of_day(2).minute_of_hour(0) }
 	def perform()
 		MonthlyTopBctReceivedHeart.destroy_all
 		MonthlyTopBctReceivedHeart.connection.execute("ALTER TABLE monthly_top_bct_received_hearts AUTO_INCREMENT = 1")
