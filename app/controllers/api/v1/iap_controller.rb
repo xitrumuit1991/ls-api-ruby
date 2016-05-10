@@ -1,6 +1,5 @@
 require 'google/api_client'
 require 'venice'
-require 'itunes/receipt'
 
 class Api::V1::IapController < Api::V1::ApplicationController
   include Api::V1::Authorize

@@ -119,9 +119,6 @@ gem 'google-api-client', '<0.9'
 # Venice
 gem 'venice'
 
-# Itunes Receipt
-gem 'itunes-receipt'
-
 # Kaminari
 gem 'kaminari'
 
