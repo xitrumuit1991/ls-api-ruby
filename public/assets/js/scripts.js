@@ -5,8 +5,9 @@ $(document).ready(function () {
     $('#datepicker-range, #datepicker-component, #datepicker-component2').datepicker();
 
     //start date & end date
-    $('#start_date').datetimepicker();
+    $('#start_date').datetimepicker({format: 'DD/MM/YYYY LT'});
     $('#end_date').datetimepicker({
+        format: 'DD/MM/YYYY LT',
         useCurrent: false //Important! See issue #1075
     });
     $("#start_date").on("dp.change", function (e) {
@@ -33,7 +34,7 @@ $(document).ready(function () {
             "sLengthMenu": "_MENU_ ",
             "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
         },
-        "iDisplayLength": 10
+        "iDisplayLength": 25
     };
     table.dataTable(settings);
 

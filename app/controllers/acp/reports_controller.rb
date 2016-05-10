@@ -52,4 +52,22 @@ class Acp::ReportsController < Acp::ApplicationController
   	
   end
 
+  def idol_receive_coins
+  	where = Hash.new
+  	where['rooms.broadcaster_id'] = params[:broadcaster_id] if params[:broadcaster_id].present?
+
+  	if params[:start_date].present? && params[:end_date].present?
+  		where['user_logs.created_at'] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+  	elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+  		redirect_to({ action: 'idol_receive_coins' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+  	end
+
+  	@idols = Broadcaster.where(deleted: 0)
+		@rooms = params[:format].present? ? Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id) : Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id).page(params[:page])
+    respond_to do |format|
+      format.html
+      format.xlsx
+    end
+  end
+
 end
