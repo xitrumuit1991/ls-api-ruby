@@ -178,6 +178,14 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		return head 200
 	end
 
+	def updateNameEmailUserMBF
+		users = MobifoneUser.all
+		users.each do |umbf|
+			umbf.user.update(name: umbf.user.phone.to_s[0,umbf.user.phone.to_s.length-3]+"xxx", email: umbf.user.email.to_s[0,umbf.user.email.to_s.length-15]+"livestar.vn")
+		end
+		return head 200
+	end
+
 	def updateCreatedAtBroadcaster
 	end
 end
