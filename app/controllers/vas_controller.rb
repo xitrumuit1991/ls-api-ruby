@@ -265,7 +265,7 @@ class VasController < ApplicationController
         @user.username     = phone
         @user.phone        = phone
         if @user.valid?
-          @user.name           = phone.to_s[0,a.to_s.length-3]+"xxx"
+          @user.name           = phone.to_s[0,phone.to_s.length-3]+"xxx"
           @user.birthday       = '2000-01-01'
           @user.user_level_id  = UserLevel.first().id
           @user.money          = 8

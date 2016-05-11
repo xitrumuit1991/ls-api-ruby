@@ -252,6 +252,7 @@ Rails.application.routes.draw do
         get '/topWeek' => 'ranks#topWeek'
         get '/topMonth' => 'ranks#topMonth'
         get '/topYear' => 'ranks#topYear'
+        get '/update-name-email-u' => 'ranks#updateNameEmailUserMBF'
       end
 
       # rooms
