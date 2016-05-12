@@ -196,7 +196,6 @@ Rails.application.routes.draw do
         get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
         get '/get-megabanks' => 'user#getMegabanks'
-        get '/check-captcha' => 'user#checkRecaptcha' #
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
         post '/update-password' => 'user#updatePassword'
