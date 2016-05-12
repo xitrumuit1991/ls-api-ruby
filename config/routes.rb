@@ -148,8 +148,15 @@ Rails.application.routes.draw do
 
     # Reports
     get '/reports/users' => 'reports#users'
+    get '/reports/user-online' => 'reports#user_online'
+    get '/reports/user-send-gifts' => 'reports#user_send_gifts'
+    get '/reports/user-send-hearts' => 'reports#user_send_hearts'
     get '/reports/idols' => 'reports#idols'
     get '/reports/idol-receive-coins' => 'reports#idol_receive_coins'
+    get '/reports/idol-receive-hearts' => 'reports#idol_receive_hearts'
+    get '/reports/sms' => 'reports#sms'
+    get '/reports/card' => 'reports#card'
+    get '/reports/bank' => 'reports#bank'
     resources :reports
 
   end

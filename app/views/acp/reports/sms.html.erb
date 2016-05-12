@@ -4,7 +4,7 @@
       <!-- START BREADCRUMB -->
       <ul class="breadcrumb">
         <li><a href="/acp">Home</a></li>
-        <li><a href="#" class="active">User Report</a></li>
+        <li><a href="#" class="active">Sms Report</a></li>
       </ul>
       <!-- END BREADCRUMB -->
     </div>
@@ -17,11 +17,14 @@
     <div class="panel-heading">
       <div class="row">
         <div class="col-md-12">
-        <h4><%= number_to_currency(@total, precision: 0, unit: '') %> Users</h4>
+        <h4>Total: <span class="semi-bold"><%= number_to_currency(@total[:total], precision: 0, unit: '') %></span></h4>
         </div>
       </div>
       <div class="row">
         <form action="" method="get">
+          <div class="col-md-2">
+            <input type="text" class="form-control" name="phone" value="<%= params[:phone] %>" placeholder="Search...">
+          </div>
           <div class="col-md-3">
             <div class="input-daterange input-group">
               <input type="text" class="form-control" name="start_date" value="<%= params[:start_date] %>" id="start_date" aria-invalid="false">
@@ -32,8 +35,8 @@
           <div class="col-md-1">
             <button class="btn btn-info" type="submit">Search</button>
           </div>
-          <div class="col-md-8">
-            <%= link_to(acp_reports_users_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
+          <div class="col-md-6">
+            <%= link_to(acp_reports_sms_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
           </div>
         </form>
       </div>
@@ -44,36 +47,20 @@
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
         <table class="table table-hover no-more-tables">
           <thead>
-          <tr>
-            <th style="width:20%">Avatar</th>
-            <th style="width:20%">Bí danh</th>
-            <th style="width:20%">Email</th>
-            <th style="width:15%">Cấp độ</th>
-            <th style="width:15%">Kinh nghiệm</th>
-            <th style="width:10%">Ngày tạo</th>
-          </tr>
+            <tr>
+              <th style="width:20%">Phone</th>
+              <th style="width:20%">Amount</th>
+              <th style="width:20%">Date</th>
+            </tr>
           </thead>
           <tbody>
-          <% @users.each do |item| %>
-            <tr id="row_page_<%= item.id %>">
+          <% @data.each do |item| %>
+            <tr>
               <td class="v-align-middle">
-                <% if item.avatar? %>
-                  <img src="<%= item.avatar.minisquare.url %>" class="img-thumbnail">
-                <% else %>
-                  <p>No Image</p>
-                <% end %>
+                <p><%= item.phone %></p>
               </td>
               <td class="v-align-middle">
-                <%= link_to(edit_acp_user_path(item)) do %><p><%= item.username %></p><% end %>
-              </td>
-              <td class="v-align-middle">
-                <p><%= item.email %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= item.user_level.level %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= item.user_exp %></p>
+                <p><%= item.amount %></p>
               </td>
               <td class="v-align-middle">
                 <p><%= item.created_at.strftime('%d/%m/%Y') %></p>
@@ -85,7 +72,7 @@
       </form>
       <div class="row">
         <div class="col-md-12">
-          <%= paginate @users %>
+          <%= paginate @data %>
         </div>
       </div>
     </div>

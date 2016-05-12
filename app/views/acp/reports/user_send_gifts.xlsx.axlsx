@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "User send gifts") do |sheet|
+	sheet.add_row ["Name", "Email", "Gifts"]
+  @data.each do |item|
+    sheet.add_row [item.user.name, item.user.email, item.quantity]
+  end
+end

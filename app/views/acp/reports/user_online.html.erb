@@ -4,7 +4,7 @@
       <!-- START BREADCRUMB -->
       <ul class="breadcrumb">
         <li><a href="/acp">Home</a></li>
-        <li><a href="#" class="active">User Report</a></li>
+        <li><a href="#" class="active">User online</a></li>
       </ul>
       <!-- END BREADCRUMB -->
     </div>
@@ -15,11 +15,6 @@
   <!-- START PANEL -->
   <div class="panel panel-transparent">
     <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-12">
-        <h4><%= number_to_currency(@total, precision: 0, unit: '') %> Users</h4>
-        </div>
-      </div>
       <div class="row">
         <form action="" method="get">
           <div class="col-md-3">
@@ -33,7 +28,7 @@
             <button class="btn btn-info" type="submit">Search</button>
           </div>
           <div class="col-md-8">
-            <%= link_to(acp_reports_users_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
+            <%= link_to(acp_reports_user_online_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
           </div>
         </form>
       </div>
@@ -50,7 +45,7 @@
             <th style="width:20%">Email</th>
             <th style="width:15%">Cấp độ</th>
             <th style="width:15%">Kinh nghiệm</th>
-            <th style="width:10%">Ngày tạo</th>
+            <th style="width:10%">Ngày đăng nhập</th>
           </tr>
           </thead>
           <tbody>
@@ -76,7 +71,7 @@
                 <p><%= item.user_exp %></p>
               </td>
               <td class="v-align-middle">
-                <p><%= item.created_at.strftime('%d/%m/%Y') %></p>
+                <p><%= item.last_login.strftime('%d/%m/%Y') %></p>
               </td>
             </tr>
           <% end %>
