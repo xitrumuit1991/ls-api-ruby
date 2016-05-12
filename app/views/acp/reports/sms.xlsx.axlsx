@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Sms") do |sheet|
+	sheet.add_row ["Phone", "Amount", "Date"]
+  @data.each do |item|
+    sheet.add_row [item.phone, item.amount, item.created_at.strftime('%d/%m/%Y')]
+  end
+end

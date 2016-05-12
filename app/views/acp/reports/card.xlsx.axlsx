@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Card") do |sheet|
+	sheet.add_row ["Name", "Email", "Provider", "Serial", "Price", "Date"]
+  @data.each do |item|
+    sheet.add_row [item.user.name, item.user.email, item.provider.name, item.serial, item.price, item.created_at.strftime('%d/%m/%Y')]
+  end
+end
