@@ -3,6 +3,7 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
+  include CaptchaHelper
 
   before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
@@ -255,7 +256,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def register
     activeCode = SecureRandom.hex(3).upcase
     if params[:key_register].present?
-      checkCaptcha = eval(checkRecaptcha(params[:key_register]))
+      checkCaptcha = eval(checkCaptcha(params[:key_register]))
       if checkCaptcha[:success] == true
         user = User.new
         user.email        = params[:email]
@@ -286,12 +287,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     else
       render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
     end
-  end
-
-  def checkRecaptcha(key)
-    uri = URI('https://www.google.com/recaptcha/api/siteverify?secret=' + Settings.secret_key_captcha + '&response=' + key)
-    res = Net::HTTP.get(uri)
-    return res
   end
 
   def fbRegister

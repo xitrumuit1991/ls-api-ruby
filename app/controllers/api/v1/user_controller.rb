@@ -264,29 +264,38 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def internetBank
     # epay cung cap
-    webservice    = Settings.magebankWS
-    bank          = Bank.find_by_bankID(params[:bank_id])
-    megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
-    respUrl       = params[:respUrl] + "/" + megabanklog.id.to_s
-    merchantid    = Settings.magebankMerchantid
-    issuerID      = Settings.magebankIssuerID
-    send_key      = Settings.magebankSend_key
-    received_key  = Settings.magebankReceived_key
-    soapClient    = Savon.client(wsdl: webservice)
-    paramDeposit  = Megabanks::Service.new
-    megabank      = Megabank.find(params[:megabank_id])
-    paramDeposit.respUrl          = respUrl
-    paramDeposit.merchantid       = merchantid
-    paramDeposit.issuerID         = issuerID
-    paramDeposit.send_key         = send_key
-    paramDeposit.received_key     = received_key
-    paramDeposit.soapClient       = soapClient
-    paramDeposit.txnAmount        = megabank.price.to_s
-    paramDeposit.fee              = "0"
-    paramDeposit.userName         = @user.username
-    paramDeposit.bankID           = params[:bank_id].to_s
+    if params[:key_megabank].present?
+      checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
+      if checkCaptcha[:success] == true
+        webservice    = Settings.magebankWS
+        bank          = Bank.find_by_bankID(params[:bank_id])
+        megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
+        respUrl       = params[:respUrl] + "/" + megabanklog.id.to_s
+        merchantid    = Settings.magebankMerchantid
+        issuerID      = Settings.magebankIssuerID
+        send_key      = Settings.magebankSend_key
+        received_key  = Settings.magebankReceived_key
+        soapClient    = Savon.client(wsdl: webservice)
+        paramDeposit  = Megabanks::Service.new
+        megabank      = Megabank.find(params[:megabank_id])
+        paramDeposit.respUrl          = respUrl
+        paramDeposit.merchantid       = merchantid
+        paramDeposit.issuerID         = issuerID
+        paramDeposit.send_key         = send_key
+        paramDeposit.received_key     = received_key
+        paramDeposit.soapClient       = soapClient
+        paramDeposit.txnAmount        = megabank.price.to_s
+        paramDeposit.fee              = "0"
+        paramDeposit.userName         = @user.username
+        paramDeposit.bankID           = params[:bank_id].to_s
 
-    @result = paramDeposit._deposit
+        @result = paramDeposit._deposit
+      else
+        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+      end
+    else
+      render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+    end
   end
 
   def confirmEbay
@@ -468,12 +477,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def checkRecaptcha
-    uri = URI('https://www.google.com/recaptcha/api/siteverify?secret=' + Settings.secret_key_captcha + '&response=' + params[:key])
-    res = Net::HTTP.get(uri)
-    render json: res, status: 200
-  end
-
   def _checkuser(active_code)
     return !User::find_by_active_code(active_code).nil?
   end
@@ -499,49 +502,58 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def payments
-    # nha mang cung cap 
-    m_UserName    = Settings.chargingUsername
-    m_Pass        = Settings.chargingPassword
-    m_PartnerCode = Settings.chargingPartnerCode
-    m_PartnerID   = Settings.chargingPartnerId
-    m_MPIN        = Settings.chargingMpin
+    if params[:key_payment].present?
+      checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+      if checkCaptcha[:success] == true
+        # nha mang cung cap
+        m_UserName    = Settings.chargingUsername
+        m_Pass        = Settings.chargingPassword
+        m_PartnerCode = Settings.chargingPartnerCode
+        m_PartnerID   = Settings.chargingPartnerId
+        m_MPIN        = Settings.chargingMpin
 
-    webservice   = Settings.chargingWebservice
+        webservice   = Settings.chargingWebservice
 
-    soapClient = Savon.client(wsdl: webservice)
-    m_Target = @user.username
+        soapClient = Savon.client(wsdl: webservice)
+        m_Target = @user.username
 
-    serial = params[:serial].to_s.delete('')
-    pin = params[:pin].to_s.delete('')
-    cardCharging              = Paygate::CardCharging.new
-    cardCharging.m_UserName   = m_UserName
-    cardCharging.m_PartnerID  = m_PartnerID
-    cardCharging.m_MPIN       = m_MPIN
-    cardCharging.m_Target     = m_Target
-    cardCharging.m_Card_DATA  = serial + ":".to_s + pin + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
-    cardCharging.m_Pass       = m_Pass
-    cardCharging.soapClient   = soapClient
-    transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
-    cardCharging.m_TransID    = transid
+        serial = params[:serial].to_s.delete('')
+        pin = params[:pin].to_s.delete('')
+        cardCharging              = Paygate::CardCharging.new
+        cardCharging.m_UserName   = m_UserName
+        cardCharging.m_PartnerID  = m_PartnerID
+        cardCharging.m_MPIN       = m_MPIN
+        cardCharging.m_Target     = m_Target
+        cardCharging.m_Card_DATA  = serial + ":".to_s + pin + ":".to_s + "0".to_s + ":".to_s + params[:provider].to_s
+        cardCharging.m_Pass       = m_Pass
+        cardCharging.soapClient   = soapClient
+        transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
+        cardCharging.m_TransID    = transid
 
-    cardChargingResponse = Paygate::CardChargingResponse.new
-    cardChargingResponse = cardCharging.cardCharging
-    if cardChargingResponse.status == 200
-      card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
-      info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
-      if card_logs(cardChargingResponse, info)
-        if update_coin(info[:coin])
-          render plain: "Nạp tiền thành công.", status: 200
+        cardChargingResponse = Paygate::CardChargingResponse.new
+        cardChargingResponse = cardCharging.cardCharging
+        if cardChargingResponse.status == 200
+          card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
+          info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
+          if card_logs(cardChargingResponse, info)
+            if update_coin(info[:coin])
+              render plain: "Nạp tiền thành công.", status: 200
+            else
+              render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+            end
+          else
+            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+          end
+        elsif cardChargingResponse.status == 400
+          render plain: cardChargingResponse.message, status: 400
         else
-          render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+          render plain: cardChargingResponse.message, status: 500
         end
       else
-        render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
       end
-    elsif cardChargingResponse.status == 400
-      render plain: cardChargingResponse.message, status: 400
     else
-      render plain: cardChargingResponse.message, status: 500
+      render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
     end
   end
 
