@@ -6,14 +6,13 @@ json.rooms @room_schedules do |room|
   json.thumb		room.thumb_path
   json.thumb_mb	room.thumb_path(true)
 
-  if room.schedules.count > 0 && room.schedules.last.start > Time.now
-    json.date		room.schedules.last.start.strftime('%d/%m')
-    json.start	room.schedules.last.start.strftime('%H:%M')
-  else
+  if room.start == nil
     json.date ''
     json.start ''
+  else
+    json.date		room.start.strftime('%d/%m')
+    json.start	room.start.strftime('%H:%M')
   end
-
   json.broadcaster do
     json.id		room.broadcaster.user.id
     json.bct_id		room.broadcaster.id
