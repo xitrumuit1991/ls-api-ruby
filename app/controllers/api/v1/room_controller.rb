@@ -23,10 +23,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
 
     if params[:category_id].nil?
-      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").count
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").length
       @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").order("schedules.start desc").limit(9).offset(offset)
     else
-      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").count
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").length
       @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").order("schedules.start desc").limit(3).offset(offset)
     end
 
