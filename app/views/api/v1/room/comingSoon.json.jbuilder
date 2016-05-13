@@ -1,22 +1,29 @@
 json.totalPage @totalPage
-json.rooms @schedules do |schedule|
-	json.id			schedule.room.id
-	json.title		schedule.room.title
-	json.slug		schedule.room.slug
-	json.thumb		schedule.room.thumb_path
-	json.thumb_mb	schedule.room.thumb_path(true)
-	json.date		schedule.start.strftime('%d/%m')
-	json.start		schedule.start.strftime('%H:%M')
+json.rooms @room_schedules do |room|
+	json.id			room.id
+	json.title		room.title
+	json.slug		room.slug
+	json.thumb		room.thumb_path
+	json.thumb_mb	room.thumb_path(true)
+
+  if room.schedules.count > 0
+    json.date		room.schedules.last.start.strftime('%d/%m')
+    json.start	room.schedules.last.start.strftime('%H:%M')
+  else
+    json.date ''
+    json.start ''
+  end
+
 	json.broadcaster do
-		json.id		schedule.room.broadcaster.user.id
-		json.bct_id		schedule.room.broadcaster.id
-		json.name	schedule.room.broadcaster.user.name
-		json.avatar	schedule.room.broadcaster.user.avatar_path
-		json.heart	schedule.room.broadcaster.recived_heart
-		json.exp	schedule.room.broadcaster.broadcaster_exp
-		json.level	schedule.room.broadcaster.broadcaster_level.level
+		json.id		room.broadcaster.user.id
+		json.bct_id		room.broadcaster.id
+		json.name	room.broadcaster.user.name
+		json.avatar	room.broadcaster.user.avatar_path
+		json.heart	room.broadcaster.recived_heart
+		json.exp	room.broadcaster.broadcaster_exp
+		json.level	room.broadcaster.broadcaster_level.level
     if @user != nil
-      json.isFollow		!@user.broadcasters.where(id: schedule.room.broadcaster.id).empty?
+      json.isFollow		!@user.broadcasters.where(id: room.broadcaster.id).empty?
     else
       json.isFollow		false
     end
