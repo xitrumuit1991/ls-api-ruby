@@ -23,11 +23,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
 
     if params[:category_id].nil?
-      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).count
-      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).order("schedules.start desc").limit(9).offset(offset)
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").count
+      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").order("schedules.start desc").limit(9).offset(offset)
     else
-      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).count
-      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).order("schedules.start desc").limit(9).offset(offset)
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").count
+      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").order("schedules.start desc").limit(3).offset(offset)
     end
 
     @totalPage =  (Float(total_record)/9).ceil
@@ -310,19 +310,19 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   private
-    def checkIsBroadcaster
-      unless @user.is_broadcaster
-        render json: {error: t('error_not_bct')}, status: 400
-      end
+  def checkIsBroadcaster
+    unless @user.is_broadcaster
+      render json: {error: t('error_not_bct')}, status: 400
     end
+  end
 
-    def create_tmp_token
-      name = Faker::Name.name
-      email = Faker::Internet.email(name)
-      @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
-      @tmp_token = JWT.encode @tmp_user, Settings.hmac_secret, 'HS256'
-      @tmp_user.token = @tmp_token
-      @tmp_user.save
-    end
+  def create_tmp_token
+    name = Faker::Name.name
+    email = Faker::Internet.email(name)
+    @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
+    @tmp_token = JWT.encode @tmp_user, Settings.hmac_secret, 'HS256'
+    @tmp_user.token = @tmp_token
+    @tmp_user.save
+  end
 
 end
