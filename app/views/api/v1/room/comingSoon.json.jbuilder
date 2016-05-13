@@ -6,7 +6,7 @@ json.rooms @room_schedules do |room|
   json.thumb		room.thumb_path
   json.thumb_mb	room.thumb_path(true)
 
-  if room.start == nil || room.start < Time.now
+  if room.start == nil
     json.date ''
     json.start ''
   else
