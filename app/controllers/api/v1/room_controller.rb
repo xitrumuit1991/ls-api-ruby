@@ -24,7 +24,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
     if params[:category_id].nil?
       total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).count
-      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).order("schedules.start desc")
+      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).order("schedules.start desc").limit(9).offset(offset)
     else
       total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).count
       @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).order("schedules.start desc").limit(9).offset(offset)
