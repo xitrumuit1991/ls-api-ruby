@@ -21,14 +21,16 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def comingSoon
     @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
+
     if params[:category_id].nil?
-      getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND start > ?', DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).count
+      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).order("schedules.start desc")
     else
-      getAllRecord = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).length
-      @schedules = Schedule.joins(:room).where('rooms.on_air = false AND rooms.room_type_id = ? AND start > ?', params[:category_id], DateTime.now).order(start: :asc, end: :asc).group(:room_id).limit(9).offset(offset)
+      total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).count
+      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).order("schedules.start desc").limit(9).offset(offset)
     end
-    @totalPage =  (Float(getAllRecord)/9).ceil
+
+    @totalPage =  (Float(total_record)/9).ceil
   end
 
   def roomType
