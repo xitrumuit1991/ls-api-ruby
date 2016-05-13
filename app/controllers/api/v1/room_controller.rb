@@ -24,10 +24,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
     if params[:category_id].nil?
       total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").length
-      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").order("schedules.start desc").limit(9).offset(offset)
+      @room_schedules = Room.select("*").joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false).group("rooms.id").order("schedules.start desc").limit(9).offset(offset)
     else
       total_record = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").length
-      @room_schedules = Room.joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").order("schedules.start desc").limit(3).offset(offset)
+      @room_schedules = Room.select("*").joins("LEFT JOIN schedules ON rooms.id = schedules.room_id").where(:is_privated => false, :room_type_id => params[:category_id]).group("rooms.id").order("schedules.start desc").limit(3).offset(offset)
     end
 
     @totalPage =  (Float(total_record)/9).ceil
