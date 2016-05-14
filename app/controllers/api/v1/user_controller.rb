@@ -503,8 +503,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def payments
     if params[:key_payment].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_payment]))
-      if checkCaptcha[:success] == true
+      # checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+      if true
         # nha mang cung cap
         m_UserName    = Settings.chargingUsername
         m_Pass        = Settings.chargingPassword
