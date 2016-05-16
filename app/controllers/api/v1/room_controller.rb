@@ -23,14 +23,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
 
     if params[:category_id].nil?
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false ORDER BY schedules.start DESC) as schedule GROUP BY room_id ORDER BY start DESC limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false ORDER BY schedules.start DESC) as schedule GROUP BY id ORDER BY start DESC limit 9 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
-      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false ORDER BY schedules.start DESC) as schedule GROUP BY room_id ORDER BY start DESC"
-      total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
+      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false ORDER BY schedules.start DESC) as schedule GROUP BY id ORDER BY start DESC"
+      total_record = ActiveRecord::Base.connection.exec_query(sql_total).count
     else
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false AND rooms. room_type_id = #{params[:category_id]} ORDER BY schedules.start DESC) as schedule GROUP BY room_id ORDER BY start DESC limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false AND rooms. room_type_id = #{params[:category_id]} ORDER BY schedules.start DESC) as schedule GROUP BY id ORDER BY start DESC limit 9 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
-      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false AND rooms. room_type_id = #{params[:category_id]} ORDER BY schedules.start DESC) as schedule GROUP BY room_id ORDER BY start DESC"
+      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id WHERE rooms.is_privated = false AND rooms. room_type_id = #{params[:category_id]} ORDER BY schedules.start DESC) as schedule GROUP BY id ORDER BY start DESC"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     end
 
