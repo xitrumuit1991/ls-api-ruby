@@ -1,19 +1,19 @@
 json.totalPage @totalPage
 json.rooms @room_schedules do |room|
+
+  if room["start"] == nil || room["start"] < Time.now
+    json.date ''
+    json.start ''
+  else
+    json.date		room["start"].strftime('%d/%m')
+    json.start	room["start"].strftime('%H:%M')
+  end
+  room = Room.find(room["id"])
   json.id			room.id
   json.title		room.title
   json.slug		room.slug
   json.thumb		room.thumb_path
   json.thumb_mb	room.thumb_path(true)
-
-  if room.schedules.count > 0 && room.schedules.last.start > Time.now
-    json.date		room.schedules.last.start.strftime('%d/%m')
-    json.start	room.schedules.last.start.strftime('%H:%M')
-  else
-    json.date ''
-    json.start ''
-  end
-
   json.broadcaster do
     json.id		room.broadcaster.user.id
     json.bct_id		room.broadcaster.id
