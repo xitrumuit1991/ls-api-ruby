@@ -248,6 +248,9 @@ class VasController < ApplicationController
       user.mobifone_user.update(pkg_code: vip_package.code, active_date: actived_date, expiry_date: expiry_date)
       user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
       MobifoneUserVipLog.create(mobifone_user_id: user.mobifone_user.id, user_has_vip_package_id: user_has_vip_package.id, pkg_code: user.mobifone_user.pkg_code)
+      # add bonus coins for user
+      money = user.money + vip_package.discount
+      user.update(money: money)
       return user_has_vip_package
     end
 
