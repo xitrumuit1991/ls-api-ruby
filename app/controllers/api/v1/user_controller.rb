@@ -265,8 +265,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def internetBank
     # epay cung cap
     if params[:key_megabank].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
-      if checkCaptcha[:success] == true
+      # checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
+      if true
         webservice    = Settings.magebankWS
         bank          = Bank.find_by_bankID(params[:bank_id])
         megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
