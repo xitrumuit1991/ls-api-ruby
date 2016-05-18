@@ -270,7 +270,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         webservice    = Settings.magebankWS
         bank          = Bank.find_by_bankID(params[:bank_id])
         megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
-        respUrl       = params[:respUrl] + "?id=" + megabanklog.id.to_s
+        respUrl       = params[:respUrl] + "/" + megabanklog.id.to_s
         merchantid    = Settings.magebankMerchantid
         issuerID      = Settings.magebankIssuerID
         send_key      = Settings.magebankSend_key
