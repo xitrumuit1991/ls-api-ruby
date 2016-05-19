@@ -2,6 +2,7 @@ require "redis"
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include YoutubeHelper
+  include KrakenHelper
 
   before_action :authenticate, except: [:getFeatured, :getHomeFeatured, :search , :getRoomFeatured , :profile]
   before_action :checkIsBroadcaster, except: [:onair, :profile, :follow, :followed, :search, :getFeatured, :getHomeFeatured, :getRoomFeatured]
@@ -67,6 +68,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     if params[:pictures].present?
       @pictures = []
       params[:pictures].each do |picture|
+        picture = optimizeKraken(picture)
         @pictures << @user.broadcaster.images.create({image: picture})
       end
     else
@@ -94,6 +96,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     if params[:videos].present?
       @videos = []
       params[:videos].each do |key, video|
+        video['image'] = optimizeKraken(video['image'])
         id = youtubeID video[:link]
         link = 'https://www.youtube.com/embed/'+id
         @videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))

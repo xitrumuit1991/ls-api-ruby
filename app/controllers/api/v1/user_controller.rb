@@ -3,6 +3,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/epaysms"
   require "./lib/payments/magebanks"
   include Api::V1::Authorize
+  include KrakenHelper
   helper YoutubeHelper
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms]
 
@@ -176,6 +177,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def avatarCrop
     if params[:avatar_crop].present?
+      params[:avatar_crop] = optimizeKrakenWeb(params[:avatar_crop])
       if @user.update(avatar_crop: params[:avatar_crop])
         render json: @user.avatar_crop, status: 200
       else
@@ -200,6 +202,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def coverCrop
     if params[:cover_crop].present?
+      params[:cover_crop] = optimizeKrakenWeb(params[:cover_crop])
       if @user.update(cover_crop: params[:cover_crop])
         render json: @user.cover_crop, status: 200
       else
