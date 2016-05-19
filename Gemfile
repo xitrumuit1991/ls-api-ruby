@@ -127,3 +127,6 @@ gem 'axlsx_rails'
 
 # kraken IO
 gem 'kraken-io'
+
+# CanCanCan
+gem 'cancancan', '~> 1.10'

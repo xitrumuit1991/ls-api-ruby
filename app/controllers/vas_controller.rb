@@ -165,7 +165,7 @@ class VasController < ApplicationController
   # - errors: list các ID bị lỗi khi cập nhật
   soap_action 'mcharge',
     args: { data: :string },
-    return: { error: :integer, message: :string, errors: [:integer], successes: [:integer]}
+    return: { error: :integer, message: :string, errors: [:string], successes: [:string]}
 
   def mcharge
     if params[:data].present?
