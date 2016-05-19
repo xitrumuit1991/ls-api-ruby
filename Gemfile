@@ -124,3 +124,6 @@ gem 'kaminari'
 
 # Axlsx-Rails
 gem 'axlsx_rails'
+
+# CanCanCan
+gem 'cancancan', '~> 1.10'
