@@ -4,11 +4,17 @@
       <!-- START BREADCRUMB -->
       <ul class="breadcrumb">
         <li><a href="/acp">Home</a></li>
+        <li><a href="/acp/<%= controller_name %>">Quà tặng</a></li>
+        <li><a href="#" class="active">Cập nhật</a></li>
       </ul>
       <!-- END BREADCRUMB -->
     </div>
   </div>
 </div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
-  <%= render 'shared/alert' %>
+  <!-- START PANEL -->
+  <%= render 'form' %>
+  <!-- END PANEL -->
 </div>

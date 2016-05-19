@@ -146,6 +146,9 @@ Rails.application.routes.draw do
     resources :trade_logs
     post '/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
+    # Roles
+    resources :roles
+
     # Reports
     get '/reports/users' => 'reports#users'
     get '/reports/user-online' => 'reports#user_online'
@@ -181,10 +184,11 @@ Rails.application.routes.draw do
         post '/reset-password' => 'auth#setNewPassword'
         post '/check-user-mbf' => 'auth#check_user_mbf'
         # For mobifone only
-        get   '/mobifone' => 'auth#mbf_detection'
-        post  '/mobifone' => 'auth#mbf_register'
-        put   '/mobifone' => 'auth#mbf_sync'
-        patch '/mobifone' => 'auth#mbf_verify'
+        get   '/mobifone' 			=> 'auth#mbf_detection'
+        post  '/mobifone/login' => 'auth#mbf_login'
+        post  '/mobifone' 			=> 'auth#mbf_register'
+        put   '/mobifone' 			=> 'auth#mbf_sync'
+        patch '/mobifone' 			=> 'auth#mbf_verify'
       end
 
       # users

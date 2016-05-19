@@ -9,7 +9,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
-    render plain: @msisdn, status: 200 and return
+    token = createToken(@user)
+    render json: { token: token }, status: 200
   end
 
   def mbf_detection
