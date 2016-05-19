@@ -13,6 +13,34 @@ class Acp::RolesController < Acp::ApplicationController
 
   def new
     @data = @model.new
+
+
+
+    # Acp::RolesController.action_methods.each do |action|
+    #   puts '==================='
+    #   puts action
+    # end
+
+    # controller = "Acp::UsersController".classify.constantize
+    # controller.action_methods.each do |action|
+    #   puts '===================123456'
+    #   puts action
+    # end
+
+    
+    controllers = Dir.new("#{Rails.root}/app/controllers/acp").entries
+    controllers.each do |controller|
+      if controller =~ /_controller/
+        foo_bar = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
+        foo_bar.action_methods.each do |action|
+          puts '==================='
+          puts action
+        end
+      end
+    end
+    puts '==================='
+
+
   end
 
   def edit
