@@ -157,6 +157,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadBackground
     if params[:background].present?
+      params[:background] = optimizeKraken(params[:background])
       background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
       render json: {id: background.id, image: "#{request.base_url}#{background.image.square}?timestamp=#{background.updated_at.to_i}"}, status: 201
     else
