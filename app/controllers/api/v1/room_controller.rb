@@ -1,6 +1,7 @@
 require "redis"
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  include KrakenHelper
 
   before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
   before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
@@ -139,7 +140,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def thumbCrop
     if params[:thumb_crop].present?
       room = @user.broadcaster.rooms.find_by_is_privated(false)
-
+      params[:thumb_crop] = optimizeKrakenWeb(params[:thumb_crop])
       if room.present?
         if room.update(thumb_crop: params[:thumb_crop])
           render json: {thumb_crop: "#{request.base_url}#{room.thumb_crop}?timestamp=#{room.updated_at.to_i}"}, status: 200
