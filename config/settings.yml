@@ -1,5 +1,5 @@
 hmac_secret: 'fQ+KY11&l624Bu5'
-timeAddHeart: 30
+timeAddHeart: 60
 # Charging
 chargingUsername: 'Livestar'
 chargingPassword: 'bgrkhsngw'
@@ -25,3 +25,6 @@ secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
 # VAS
 vas_proxy: http://124.158.4.211:9387
 vas_wsdl: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
+# kraken
+kraken_key: '840f16f7b7b5519258f89b39b733c205'
+kraken_secret: '9cc25aabaf1aa0a90aa55ffce38d793204026f5c'

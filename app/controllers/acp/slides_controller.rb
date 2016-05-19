@@ -1,4 +1,5 @@
 class Acp::SlidesController < Acp::ApplicationController
+  include KrakenHelper
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -18,6 +19,7 @@ class Acp::SlidesController < Acp::ApplicationController
   end
 
   def create
+    parameters[:banner] = optimizeKraken(parameters[:banner])
     @data = @model.new(parameters)
     if @data.save
       redirect_to({ action: 'index' }, notice: 'Slide was successfully created.')
@@ -27,6 +29,7 @@ class Acp::SlidesController < Acp::ApplicationController
   end
 
   def update
+    parameters[:banner] = optimizeKraken(parameters[:banner])
     if @data.update(parameters)
       redirect_to({ action: 'index' }, notice: 'Slide was successfully updated.')
     else

@@ -1,4 +1,5 @@
 class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
+	include KrakenHelper
 	before_filter :init
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -18,6 +19,7 @@ class Acp::BroadcasterBackgroundsController < Acp::ApplicationController
 
 	def create
 		prev_path = Rails.application.routes.recognize_path(request.referrer)
+		parameters[:image] = optimizeKraken(parameters[:image])
 		@data = @model.new(parameters)
 		if @data.save
 	    if prev_path[:controller] == 'acp/rooms'

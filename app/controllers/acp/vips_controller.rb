@@ -1,4 +1,5 @@
 class Acp::VipsController < Acp::ApplicationController
+	include KrakenHelper
 	before_filter :init
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -17,6 +18,7 @@ class Acp::VipsController < Acp::ApplicationController
 	end
 
 	def create
+		parameters[:image] = optimizeKraken(parameters[:image])
 		@data = @model.new(parameters)
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Vip was successfully created.')
@@ -26,6 +28,7 @@ class Acp::VipsController < Acp::ApplicationController
 	end
 
 	def update
+		parameters[:image] = optimizeKraken(parameters[:image])
 		if @data.update(parameters)
 			redirect_to({ action: 'index' }, notice: 'Vip was successfully updated.')
 		else
