@@ -124,3 +124,6 @@ gem 'kaminari'
 
 # Axlsx-Rails
 gem 'axlsx_rails'
+
+# kraken IO
+gem 'kraken-io'
