@@ -130,3 +130,6 @@ gem 'kraken-io'
 
 # CanCanCan
 gem 'cancancan', '~> 1.10'
+
+# rmagick
+gem 'rmagick', '~> 2.15', '>= 2.15.4'
