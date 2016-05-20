@@ -2,6 +2,7 @@ class Acp::RolesController < Acp::ApplicationController
   load_and_authorize_resource
   
   before_filter :init
+  before_action :load_data, only: [:new, :create, :edit, :update]
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -43,7 +44,7 @@ class Acp::RolesController < Acp::ApplicationController
       if controller =~ /_controller/
         foo_bar = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
         puts '==================='
-        puts foo_bar.controller_name.classify
+        puts foo_bar.controller_name
         # foo_bar.action_methods.each do |action|
         #   puts '==================='
         #   puts action
@@ -68,7 +69,11 @@ class Acp::RolesController < Acp::ApplicationController
   end
 
   def update
+    puts '=============='
+    puts params
+    puts '=============='
     if @data.update(parameters)
+      @data.acls.create(resource_id: [1,2])
       redirect_to({ action: 'index' }, notice: 'Role was successfully updated.')
     else
       render :edit
@@ -83,6 +88,10 @@ class Acp::RolesController < Acp::ApplicationController
   private
     def init
       @model = controller_name.classify.constantize
+    end
+
+    def load_data
+      @resources = Resource.all
     end
 
     def set_data

@@ -41,6 +41,19 @@
               </div>
             </div>
             <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label>Resources</label>
+                  <% @resources.each do |resource| %>
+                  <div class="checkbox check-danger">
+                    <input id="checkbox-<%= resource.id %>" name="resources[]" type="checkbox" value="1">
+                    <label for="checkbox-<%= resource.id %>"><%= resource.name %></label>
+                  </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="row">
               <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
                 <span>Lưu</span>
               </button>

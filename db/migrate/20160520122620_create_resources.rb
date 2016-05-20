@@ -3,7 +3,7 @@ class CreateResources < ActiveRecord::Migration
     create_table :resources do |t|
       t.string :name
       t.text :description
-      t.string :class
+      t.string :controller
       t.string :action
       t.string :can
 

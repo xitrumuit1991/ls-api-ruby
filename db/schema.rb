@@ -11,7 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160520104447) do
+ActiveRecord::Schema.define(version: 20160520130614) do
+
+  create_table "acls", force: :cascade do |t|
+    t.integer  "role_id",     limit: 4
+    t.integer  "resource_id", limit: 4
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
+  end
+
+  add_index "acls", ["resource_id"], name: "index_acls_on_resource_id", using: :btree
+  add_index "acls", ["role_id"], name: "index_acls_on_role_id", using: :btree
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -440,7 +450,7 @@ ActiveRecord::Schema.define(version: 20160520104447) do
   create_table "resources", force: :cascade do |t|
     t.string   "name",        limit: 255
     t.text     "description", limit: 65535
-    t.string   "class",       limit: 255
+    t.string   "controller",  limit: 255
     t.string   "action",      limit: 255
     t.string   "can",         limit: 255
     t.datetime "created_at",                null: false
@@ -832,6 +842,8 @@ ActiveRecord::Schema.define(version: 20160520104447) do
   add_index "weekly_top_user_send_gifts", ["room_id"], name: "index_weekly_top_user_send_gifts_on_room_id", using: :btree
   add_index "weekly_top_user_send_gifts", ["user_id"], name: "index_weekly_top_user_send_gifts_on_user_id", using: :btree
 
+  add_foreign_key "acls", "resources"
+  add_foreign_key "acls", "roles"
   add_foreign_key "action_logs", "room_actions"
   add_foreign_key "action_logs", "rooms"
   add_foreign_key "action_logs", "users"

@@ -3,19 +3,17 @@ class Ability
 
   def initialize(user)
     # Define abilities for the passed in user here. For example:
-    #
-    puts '++++++++++++=adeasd'
     user ||= Admin.new # guest user (not logged in)
-    if user.id == 3
-      # can :manage, :all
-      can :read, Role
-      can :test, Role
-      can :create, Role
-      # can :update, Room
-      # can :create, Gift
-    else
-      can :read, :all
-    end
+    # if user.id == 3
+    #   can :manage, :all
+    #   can :read, Role
+    #   can :test, Role
+    #   can :create, Role
+    #   # can :update, Room
+    #   # can :create, Gift
+    # else
+    #   can :read, :all
+    # end
     #
     # The first argument to `can` is the action you are giving the user
     # permission to do.
@@ -39,7 +37,13 @@ class Ability
     #   user.permissions.find_all_by_action(aliases_for_action(action)).any? do |permission|
     #     permission.subject_class == subject_class.to_s && (subject.nil? || permission.subject_id.nil? || permission.subject_id == subject.id)
     #   end
-    # end    
+    # end
+
+    resources = Resource.all
+    resources.each do |resource|
+      can resource.action.to_sym, resource.controller.classify.constantize
+    end
+
 
   end
 
