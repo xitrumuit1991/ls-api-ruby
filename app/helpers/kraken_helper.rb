@@ -26,6 +26,7 @@ module KrakenHelper
     thumb = kraken.url(url, 'lossy' => true)
     Rails.logger.info "ANGCO DEBUG Kraken: #{thumb}"
     if thumb.success
+      Rails.logger.info "ANGCO DEBUG Kraken: #{thumb.kraked_url}"
       file = File.new("/tmp/avatar.png", 'wb')
       File.write(file, open(thumb.kraked_url).read, { :mode => 'wb' })
       return file
