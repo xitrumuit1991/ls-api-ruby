@@ -192,7 +192,6 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 			if user.id == 197
 				if user.avatar != '' || user.avatar != nil
 					avatarUrl 		= user.avatar_path
-					Rails.logger.info "ANGCO DEBUG file: #{file.path}"
 					linkFile = uploadDowload(avatarUrl)
 					user.remote_avatar_url = linkFile
 					check = user.save
