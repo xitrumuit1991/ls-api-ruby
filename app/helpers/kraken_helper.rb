@@ -24,13 +24,13 @@ module KrakenHelper
       :api_secret => Settings.kraken_secret
     )
     thumb = kraken.url(url, 'lossy' => true)
-    Rails.logger.info "ANGCO DEBUG Kraken: #{thumb}"
+    # Rails.logger.info "ANGCO DEBUG Kraken: #{thumb}"
     if thumb.success
       Rails.logger.info "ANGCO DEBUG Kraken: #{thumb.kraked_url}"
-      file = File.new("/tmp/avatar.png", 'wb')
-      Rails.logger.info "ANGCO DEBUG file: #{file.path}"
-      File.write("/tmp/avatar.png", open(thumb.kraked_url).read, { :mode => 'wb' })
-      return file
+      # file = File.new("/tmp/avatar.png", 'wb')
+      # Rails.logger.info "ANGCO DEBUG file: #{file.path}"
+      # File.write("/tmp/avatar.png", open(thumb.kraked_url).read, { :mode => 'wb' })
+      return thumb.kraked_url
     else
       Rails.logger.info "ANGCO DEBUG Kraken: #{thumb.message}"
       return false
