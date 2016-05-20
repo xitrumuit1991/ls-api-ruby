@@ -193,7 +193,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 				if user.avatar != '' || user.avatar != nil
 					avatarUrl 		= user.avatar_path
 					file = uploadDowload(avatarUrl)
-					user.update(avatar: file)
+					check = user.update(avatar: file)
+					Rails.logger.info "ANGCO ---------------------------------------------------------------------- Check: #{check}"
 				end
 				# if user.avatar_crop != '' || user.avatar_crop != nil
 				# 	avatarCropUrl 	= 'uploads/user/avatar_crop/'+ user.id.to_s + user.avatar_crop.to_s
