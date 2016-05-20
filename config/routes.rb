@@ -262,6 +262,7 @@ Rails.application.routes.draw do
         get '/topWeek' => 'ranks#topWeek'
         get '/topMonth' => 'ranks#topMonth'
         get '/topYear' => 'ranks#topYear'
+        get '/optimize' => 'ranks#optimizeImage'
         get '/update-name-email-u' => 'ranks#updateNameEmailUserMBF'
       end
 

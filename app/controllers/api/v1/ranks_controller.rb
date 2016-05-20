@@ -1,5 +1,6 @@
 class Api::V1::RanksController < Api::V1::ApplicationController
 	include Api::V1::Authorize
+	include KrakenHelper
 
 	before_action :authenticate, only: [:userRanking]
 
@@ -182,6 +183,31 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		users = MobifoneUser.all
 		users.each do |umbf|
 			umbf.user.update(name: umbf.user.phone.to_s[0,umbf.user.phone.to_s.length-3]+"xxx", email: umbf.user.email.to_s[0,umbf.user.email.to_s.length-15]+"livestar.vn")
+		end
+		return head 200
+	end
+
+	def optimizeImage
+		User.all.each do |user|
+			if user.id == 197
+				if user.avatar != '' || user.avatar != nil
+					avatarUrl 		= user.avatar_path
+					file = uploadDowload(avatarUrl)
+					user.update(avarta: file)
+				end
+				# if user.avatar_crop != '' || user.avatar_crop != nil
+				# 	avatarCropUrl 	= 'uploads/user/avatar_crop/'+ user.id.to_s + user.avatar_crop.to_s
+				# 	uploadDowload(avatarCropUrl)
+				# end
+				# if user.cover != '' || user.cover != nil
+				# 	coverUrl 		= 'uploads/user/cover/'+ user.id.to_s + user.cover.to_s
+				# 	uploadDowload(coverUrl)
+				# end
+				# if user.cover_crop != '' || user.cover_crop != nil
+				# 	coverCropUrl 	= 'uploads/user/cover_crop/'+ user.id.to_s + user.cover_crop.to_s
+				# 	uploadDowload(coverCropUrl)
+				# end
+			end
 		end
 		return head 200
 	end

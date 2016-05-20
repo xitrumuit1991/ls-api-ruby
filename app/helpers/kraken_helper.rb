@@ -17,6 +17,23 @@ module KrakenHelper
       return false
     end
   end
+
+  def uploadDowload(url)
+    kraken = Kraken::API.new(
+      :api_key => Settings.kraken_key,
+      :api_secret => Settings.kraken_secret
+    )
+    thumb = kraken.url(url, 'lossy' => true)
+    Rails.logger.info "ANGCO DEBUG Kraken: #{thumb}"
+    if thumb.success
+      file = File.new("/tmp/avatar.png", 'wb')
+      File.write(file, open(thumb.kraked_url).read, { :mode => 'wb' })
+      return file
+    else
+      Rails.logger.info "ANGCO DEBUG Kraken: #{thumb.message}"
+      return false
+    end
+  end
   # Image base 64
   def optimizeKrakenWeb(fileParams)
     file = File.new("/tmp/optimizeKraken.png", 'wb')
