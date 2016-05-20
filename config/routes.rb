@@ -147,7 +147,11 @@ Rails.application.routes.draw do
     post '/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
     # Roles
+    get '/roles/test' => 'roles#test'
     resources :roles
+
+    # Resources
+    resources :resources
 
     # Reports
     get '/reports/users' => 'reports#users'

@@ -11,6 +11,16 @@ class Acp::RolesController < Acp::ApplicationController
   def show
   end
 
+  def test
+    @data = @model.all.order('weight asc')
+    puts '==============='
+    puts controller_name
+    puts controller_name.classify.constantize
+    puts "roles".classify.constantize
+    puts '==============='
+    # authorize! :test, Role
+  end
+
   def new
     @data = @model.new
 
@@ -32,10 +42,12 @@ class Acp::RolesController < Acp::ApplicationController
     controllers.each do |controller|
       if controller =~ /_controller/
         foo_bar = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
-        foo_bar.action_methods.each do |action|
-          puts '==================='
-          puts action
-        end
+        puts '==================='
+        puts foo_bar.controller_name.classify
+        # foo_bar.action_methods.each do |action|
+        #   puts '==================='
+        #   puts action
+        # end
       end
     end
     puts '==================='

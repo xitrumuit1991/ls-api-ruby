@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160519110537) do
+ActiveRecord::Schema.define(version: 20160520104447) do
 
   create_table "action_logs", force: :cascade do |t|
     t.integer  "user_id",        limit: 4
@@ -181,16 +181,6 @@ ActiveRecord::Schema.define(version: 20160519110537) do
 
   add_index "cart_logs", ["provider_id"], name: "index_cart_logs_on_provider_id", using: :btree
   add_index "cart_logs", ["user_id"], name: "index_cart_logs_on_user_id", using: :btree
-
-  create_table "coin_logs", force: :cascade do |t|
-    t.integer  "user_id",    limit: 4
-    t.integer  "coin_id",    limit: 4
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-  end
-
-  add_index "coin_logs", ["coin_id"], name: "index_coin_logs_on_coin_id", using: :btree
-  add_index "coin_logs", ["user_id"], name: "index_coin_logs_on_user_id", using: :btree
 
   create_table "coins", force: :cascade do |t|
     t.string   "name",          limit: 255
@@ -443,6 +433,16 @@ ActiveRecord::Schema.define(version: 20160519110537) do
     t.string   "name",        limit: 255
     t.string   "slug",        limit: 255
     t.text     "description", limit: 65535
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  create_table "resources", force: :cascade do |t|
+    t.string   "name",        limit: 255
+    t.text     "description", limit: 65535
+    t.string   "class",       limit: 255
+    t.string   "action",      limit: 255
+    t.string   "can",         limit: 255
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
   end
@@ -748,9 +748,9 @@ ActiveRecord::Schema.define(version: 20160519110537) do
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["phone"], name: "phone", unique: true, using: :btree
+  add_index "users", ["phone"], name: "index_users_on_phone", unique: true, using: :btree
   add_index "users", ["user_level_id"], name: "index_users_on_user_level_id", using: :btree
-  add_index "users", ["username"], name: "username", unique: true, using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
   create_table "vip_packages", force: :cascade do |t|
     t.integer  "vip_id",     limit: 4
@@ -850,8 +850,6 @@ ActiveRecord::Schema.define(version: 20160519110537) do
   add_foreign_key "broadcasters", "users"
   add_foreign_key "cart_logs", "providers"
   add_foreign_key "cart_logs", "users"
-  add_foreign_key "coin_logs", "coins"
-  add_foreign_key "coin_logs", "users"
   add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"
   add_foreign_key "gift_logs", "rooms"

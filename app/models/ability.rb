@@ -7,8 +7,10 @@ class Ability
     puts '++++++++++++=adeasd'
     user ||= Admin.new # guest user (not logged in)
     if user.id == 3
-      can :manage, :all
-      # can :read, :all
+      # can :manage, :all
+      can :read, Role
+      can :test, Role
+      can :create, Role
       # can :update, Room
       # can :create, Gift
     else
