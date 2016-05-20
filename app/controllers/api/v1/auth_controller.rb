@@ -257,8 +257,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def register
     activeCode = SecureRandom.hex(3).upcase
     if params[:key_register].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_register]))
-      if checkCaptcha[:success] == true
+      # checkCaptcha = eval(checkCaptcha(params[:key_register]))
+      if true
         user = User.new
         user.email        = params[:email]
         user.password     = params[:password].to_s
