@@ -17,6 +17,9 @@ Rails.application.routes.draw do
 
     get "/" => "index#index"
 
+    # Admin
+    resources :admins
+
     # Users
     resources :users
     get '/users/:id/transactions' => 'users#transactions'
@@ -151,6 +154,7 @@ Rails.application.routes.draw do
     resources :roles
 
     # Resources
+    get '/resources/sync' => 'resources#sync'
     resources :resources
 
     # Reports

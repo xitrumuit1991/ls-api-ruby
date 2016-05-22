@@ -43,16 +43,28 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
-                  <label>Resources</label>
-                  <% @resources.each do |resource| %>
-                  <div class="checkbox check-danger">
-                    <input id="checkbox-<%= resource.id %>" name="resources[]" type="checkbox" value="1">
-                    <label for="checkbox-<%= resource.id %>"><%= resource.name %></label>
-                  </div>
-                  <% end %>
+                  <label>Permissions</label>
                 </div>
               </div>
             </div>
+            <% @permissions.each do |key, permission| %>
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label><%= key %></label>
+                </div>
+              </div>
+              <% permission.each do |resource| %>
+                <% checked = 'checked' if @data.acls.find_by(resource_id: resource.id).present?%>
+              <div class="col-sm-3">
+                <div class="checkbox check-danger">
+                  <input id="checkbox-<%= resource.id %>" name="resources[]" type="checkbox" value="<%= resource.id %>" <%= checked %>>
+                  <label for="checkbox-<%= resource.id %>"><%= resource.name %></label>
+                </div>
+              </div>
+              <% end %>
+            </div>
+            <% end %>
             <div class="row">
               <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
                 <span>Lưu</span>

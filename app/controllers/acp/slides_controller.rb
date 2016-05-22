@@ -1,5 +1,6 @@
 class Acp::SlidesController < Acp::ApplicationController
   include KrakenHelper
+  load_and_authorize_resource
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 

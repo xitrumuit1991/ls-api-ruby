@@ -1,4 +1,5 @@
 class Acp::RoomFeaturedsController < Acp::ApplicationController
+  load_and_authorize_resource
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
   before_action :data_broadcasters, only: [:edit, :create, :new, :update]
