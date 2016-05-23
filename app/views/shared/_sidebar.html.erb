@@ -13,7 +13,7 @@
   <div class="sidebar-menu">
     <ul class="menu-items">
       <!--BEGIN USERS-->
-      <% if can? :show, User %>
+      <% if can? :read, User %>
       <li class="<% if controller_name == 'users' %>active<% end %>  m-t-30">
         <a href="#">
           <span class="title">Users</span>
@@ -35,7 +35,7 @@
       <!--END USERS-->
 
       <!--BEGIN IDOLS-->
-      <% if can? :show, Broadcaster %>
+      <% if can? :read, Broadcaster %>
       <li class="<% if controller_name == 'broadcasters' %>active<% end %>">
         <a href="#">
           <span class="title">Idols</span>
@@ -57,7 +57,7 @@
       <!--END IDOLS-->
 
       <!--BEGIN ROOMS-->
-      <% if can? :show, Room %>
+      <% if can? :read, Room %>
       <li class="<% if controller_name == 'rooms' || controller_name == 'room_types' %>active<% end %>">
         <a href="#">
           <span class="title">Room</span>
@@ -74,7 +74,7 @@
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
 
-          <% if can? :show, RoomType %>
+          <% if can? :read, RoomType %>
           <li class="<% if controller_name == 'room_types' %>open<% end %>">
             <a href="#">
               <span class="title">Types</span>
@@ -99,7 +99,7 @@
       <!--END ROOMS-->
 
       <!--BEGIN GIFTS-->
-      <% if can? :show, Gift %>
+      <% if can? :read, Gift %>
       <li class="<% if controller_name == 'gifts' %>active<% end %>">
         <a href="#">
           <span class="title">Gifts</span>
@@ -121,7 +121,7 @@
       <!--END GIFTS-->
 
       <!--BEGIN Room Action-->
-      <% if can? :show, RoomAction %>
+      <% if can? :read, RoomAction %>
       <li class="<% if controller_name == 'room_actions' %>active<% end %>">
         <a href="#">
           <span class="title">Actions</span>
@@ -143,7 +143,7 @@
       <!--END Room Action-->
 
       <!--BEGIN Broadcaster Level-->
-      <% if can? :show, BroadcasterLevel %>
+      <% if can? :read, BroadcasterLevel %>
       <li class="<% if controller_name == 'broadcaster_levels' %>active<% end %>">
         <a href="#">
           <span class="title">Broadcaster Level</span>
@@ -165,7 +165,7 @@
       <!--END Broadcaster Level-->
 
       <!--BEGIN User Level-->
-      <% if can? :show, UserLevel %>
+      <% if can? :read, UserLevel %>
       <li class="<% if controller_name == 'user_levels' %>active<% end %>">
         <a href="#">
           <span class="title">User Level</span>
@@ -187,7 +187,7 @@
       <!--END User Level-->
 
       <!--BEGIN Featured-->
-      <% if can? :show, Featured %>
+      <% if can? :read, Featured %>
       <li class="<% if controller_name == 'featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Featured</span>
@@ -209,7 +209,7 @@
       <!--END Feature-->
 
       <!--BEGIN Home Featured-->
-      <% if can? :show, HomeFeatured %>
+      <% if can? :read, HomeFeatured %>
       <li class="<% if controller_name == 'home_featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Home Featured</span>
@@ -231,7 +231,7 @@
       <!--END Home Feature-->
 
       <!--BEGIN Room Featured-->
-      <% if can? :show, RoomFeatured %>
+      <% if can? :read, RoomFeatured %>
       <li class="<% if controller_name == 'room_featureds' %>active<% end %>">
         <a href="#">
           <span class="title">Room Featured</span>
@@ -253,7 +253,7 @@
       <!--END Room Feature-->
 
       <!--BEGIN Poster-->
-      <% if can? :show, Poster %>
+      <% if can? :read, Poster %>
       <li class="<% if controller_name == 'posters' %>active<% end %>">
         <a href="#">
           <span class="title">Poster</span>
@@ -275,7 +275,7 @@
       <!--END Poster-->
 
       <!--BEGIN Room Background-->
-      <% if can? :show, RoomBackground %>
+      <% if can? :read, RoomBackground %>
       <li class="<% if controller_name == 'room_backgrounds' %>active<% end %>">
         <a href="#">
           <span class="title">Room backgrounds</span>
@@ -297,7 +297,7 @@
       <!--END Room Background-->
 
       <!--BEGIN Slides-->
-      <% if can? :show, Slide %>
+      <% if can? :read, Slide %>
       <li class="<% if controller_name == 'slides' %>active<% end %>">
         <a href="#">
           <span class="title">Slides</span>
@@ -319,7 +319,7 @@
       <!--END Slides-->
 
       <!--BEGIN Vips-->
-      <% if can? :show, Vip %>
+      <% if can? :read, Vip %>
       <li class="<% if controller_name == 'vips' %>active<% end %>">
         <a href="#">
           <span class="title">Vips</span>
@@ -341,7 +341,7 @@
       <!--END Vips-->
 
       <!--BEGIN Vip Packages-->
-      <% if can? :show, VipPackage %>
+      <% if can? :read, VipPackage %>
       <li class="<% if controller_name == 'vip_packages' %>active<% end %>">
         <a href="#">
           <span class="title">Vip Packages</span>
@@ -363,7 +363,7 @@
       <!--END Vip Packages-->
 
       <!--BEGIN Trade Logs-->
-      <% if can? :show, TradeLog %>
+      <% if can? :read, TradeLog %>
       <li class="<% if controller_name == 'trade_logs' %>active<% end %>">
         <a href="#">
           <span class="title">Trade Logs</span>
@@ -381,13 +381,16 @@
       <!--END Trade Logs-->
 
       <!--BEGIN Epay-->
-      <li class="<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'banks' || controller_name == 'megabank_logs' || controller_name == 'megabanks' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %>active<% end %>">
+      <% epay = ['sms_mobiles', 'cards', 'banks', 'megabank_logs' ,'megabanks' ,'cart_logs', 'sms_logs'] %>
+      <% if can? :show, SmsMobile %>
+      <li class="<% if epay.include?(controller_name) %>active<% end %>">
         <a href="#">
           <span class="title">Epay</span>
-          <span class=" arrow<% if controller_name == 'sms_mobiles' ||  controller_name == 'cards' || controller_name == 'banks' || controller_name == 'megabank_logs' || controller_name == 'megabanks' || controller_name == 'cart_logs' || controller_name == 'sms_logs' %> open<% end %> "></span>
+          <span class=" arrow<% if epay.include?(controller_name) %> open<% end %> "></span>
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
+          <% if can? :read, SmsMobile %>
           <li class="<% if controller_name == 'sms_mobiles' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_sms_mobiles_path) do %><span class="title">List SMS</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
@@ -396,10 +399,16 @@
             <%= link_to(new_acp_sms_mobile_path) do %><span class="title">New SMS</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, SmsLog %>
           <li class="<% if controller_name == 'sms_logs' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_sms_logs_path) do %><span class="title">List Sms_Logs</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, Card %>
           <li class="<% if controller_name == 'cards' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_cards_path) do %><span class="title">List Card</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
@@ -408,10 +417,16 @@
             <%= link_to(new_acp_card_path) do %><span class="title">New Card</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, CartLog %>
           <li class="<% if controller_name == 'cart_logs' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_cart_logs_path) do %><span class="title">List Card_Logs</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, Bank %>
           <li class="<% if controller_name == 'banks' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_banks_path) do %><span class="title">List Banks</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
@@ -420,6 +435,9 @@
             <%= link_to(new_acp_bank_path) do %><span class="title">New Banks</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, Megabank %>
           <li class="<% if controller_name == 'megabanks' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_megabanks_path) do %><span class="title">List Megabanks</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
@@ -428,16 +446,21 @@
             <%= link_to(new_acp_megabank_path) do %><span class="title">New Megabanks</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :read, MegabankLog %>
           <li class="<% if controller_name == 'megabank_logs' && action_name == 'index' %>active<% end %>">
             <%= link_to(acp_megabank_logs_path) do %><span class="title">List Megabank_Logs</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
         </ul>
       </li>
+      <% end %>
       <!--END Epay-->
 
       <!--BEGIN Admins-->
-      <% if can? :show, Admin %>
+      <% if can? :read, Admin %>
       <li class="<% if controller_name == 'admins' %>active<% end %>">
         <a href="#">
           <span class="title">Admins</span>
@@ -459,7 +482,7 @@
       <!--END Admins-->
 
       <!--BEGIN Roles-->
-      <% if can? :show, Role %>
+      <% if can? :read, Role %>
       <li class="<% if controller_name == 'roles' %>active<% end %>">
         <a href="#">
           <span class="title">Roles</span>
@@ -481,7 +504,7 @@
       <!--END Roles-->
 
       <!--BEGIN Resources-->
-      <% if can? :show, Resource %>
+      <% if can? :read, Resource %>
       <li class="<% if controller_name == 'resources' %>active<% end %>">
         <a href="#">
           <span class="title">Resources</span>
@@ -503,6 +526,7 @@
       <!--END Resources-->
 
       <!--BEGIN Reports-->
+      <% if can?(:users, :report) or can?(:user_online, :report) or can?(:user_send_gifts, :report) or can?(:user_send_hearts, :report) or can?(:idol_receive_coins, :report) or can?(:idol_receive_hearts, :report) or can?(:sms, :report) or can?(:card, :report) or can?(:bank, :report) %>
       <li class="<% if controller_name == 'reports' %>active<% end %>">
         <a href="#">
           <span class="title">Report</span>
@@ -510,48 +534,71 @@
         </a>
         <span class="icon-thumbnail"><i class="pg-grid"></i></span>
         <ul class="sub-menu">
+          <% if can? :users, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'users' %>active<% end %>">
             <%= link_to(acp_reports_users_path) do %><span class="title">Users</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :user_online, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'user_online' %>active<% end %>">
             <%= link_to(acp_reports_user_online_path) do %><span class="title">User Online</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :user_send_gifts, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'user_send_gifts' %>active<% end %>">
             <%= link_to(acp_reports_user_send_gifts_path) do %><span class="title">User Send Gifts</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :user_send_hearts, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'user_send_hearts' %>active<% end %>">
             <%= link_to(acp_reports_user_send_hearts_path) do %><span class="title">User Send Hearts</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
-          <li class="<% if controller_name == 'reports' && action_name == 'index' %>active<% end %>">
-            <%= link_to(acp_reports_path) do %><span class="title">Idols</span><% end %>
-            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
-          </li>
+          <% end %>
+
+          <% if can? :idol_receive_coins, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'idol_receive_coins' %>active<% end %>">
             <%= link_to(acp_reports_idol_receive_coins_path) do %><span class="title">Idol receive coins</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :idol_receive_hearts, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'idol_receive_hearts' %>active<% end %>">
             <%= link_to(acp_reports_idol_receive_hearts_path) do %><span class="title">Idol receive hearts</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :sms, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'sms' %>active<% end %>">
             <%= link_to(acp_reports_sms_path) do %><span class="title">Sms</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :card, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'card' %>active<% end %>">
             <%= link_to(acp_reports_card_path) do %><span class="title">Card</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
+
+          <% if can? :bank, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'bank' %>active<% end %>">
             <%= link_to(acp_reports_bank_path) do %><span class="title">Bank</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
+          <% end %>
         </ul>
       </li>
+      <% end %>
       <!--END Reports-->
 
     </ul>
