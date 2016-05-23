@@ -14,7 +14,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_detection
-    render json: { phone: @msisdn }, status: 200
+    token = createToken(@user)
+    render json: { token: token }, status: 200
   end
 
   def mbf_register
