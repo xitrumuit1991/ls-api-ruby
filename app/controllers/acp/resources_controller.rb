@@ -1,5 +1,5 @@
 class Acp::ResourcesController < Acp::ApplicationController
-  load_and_authorize_resource
+  # load_and_authorize_resource
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -45,14 +45,15 @@ class Acp::ResourcesController < Acp::ApplicationController
     controllers = Dir.new("#{Rails.root}/app/controllers/acp").entries
     controllers.each do |controller|
       if controller =~ /_controller/
-        class_name = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
-        class_name.action_methods.each do |action|
+        clazz = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
+        next if clazz.controller_name == 'application'
+        clazz.action_methods.each do |action|
           name = action
           description = action
-          controller_name = class_name.controller_name
+          class_name = clazz.controller_name.classify
           action_name = action
           can = eval_cancan_action(action)
-          write_resource(name, description, controller_name, action_name, can)
+          write_resource(name, description, class_name, action_name, can)
         end
       end
     end
@@ -87,14 +88,14 @@ class Acp::ResourcesController < Acp::ApplicationController
       end
     end
 
-    def write_resource(name, description, controller, action, can)
-      resource  = Resource.find_by(controller: controller, action: action)
+    def write_resource(name, description, class_name, action_name, can)
+      resource  = Resource.find_by(class_name: class_name, action_name: action_name)
       if not resource
         resource = Resource.new
         resource.name = name
         resource.description =  description
-        resource.controller = controller
-        resource.action = action
+        resource.class_name = class_name
+        resource.action_name = action_name
         resource.can = can
         resource.save
       end
