@@ -10,11 +10,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def mbf_login
     token = createToken(@user)
+    @user.update(last_login: Time.now, token: token)
     render json: { token: token }, status: 200
   end
 
   def mbf_detection
     token = createToken(@user)
+    @user.update(last_login: Time.now, token: token)
     render json: { token: token }, status: 200
   end
 
