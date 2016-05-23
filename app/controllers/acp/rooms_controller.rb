@@ -3,7 +3,7 @@ require 'kraken-io'
 require 'open-uri'
 class Acp::RoomsController < Acp::ApplicationController
 	include KrakenHelper
-
+	load_and_authorize_resource
 	before_filter :init
   before_action :load_data, only: [:new, :create, :edit, :update]
 	before_action :set_data, only: [:show, :edit, :update, :destroy]

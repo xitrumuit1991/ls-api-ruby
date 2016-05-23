@@ -1,5 +1,5 @@
 class Acp::ReportsController < Acp::ApplicationController
-
+  authorize_resource :class => false
   def index
   end
 

@@ -1,0 +1,56 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true } do |f| %>
+            <% if @data.errors.any? %>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu quà tặng này: </p>
+                  <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                </div>
+            <% end %>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Email</label>
+                  <input type="text" class="form-control" name="data[email]" value="<%= @data.email %>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Roles</label>
+                  <select class="form-control" name="data[role_id]">
+                    <% @roles.each do |role| %>
+                      <option value="<%= role.id %>" <%= 'selected' if @data.role_id == role.id%>><%= role.name %></option>
+                    <% end %>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Password</label>
+                  <input type="password" class="form-control" name="data[password]" value="<%= @data.password %>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Password Confirmation</label>
+                  <input type="password" class="form-control" name="data[password_confirmation]" value="<%= @data.password_confirmation %>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+                <span>Lưu</span>
+              </button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

@@ -1,7 +1,7 @@
 class Acp::RolesController < Acp::ApplicationController
   load_and_authorize_resource
-  
   before_filter :init
+  before_action :load_data, only: [:new, :create, :edit, :update]
   before_action :set_data, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -13,34 +13,6 @@ class Acp::RolesController < Acp::ApplicationController
 
   def new
     @data = @model.new
-
-
-
-    # Acp::RolesController.action_methods.each do |action|
-    #   puts '==================='
-    #   puts action
-    # end
-
-    # controller = "Acp::UsersController".classify.constantize
-    # controller.action_methods.each do |action|
-    #   puts '===================123456'
-    #   puts action
-    # end
-
-    
-    controllers = Dir.new("#{Rails.root}/app/controllers/acp").entries
-    controllers.each do |controller|
-      if controller =~ /_controller/
-        foo_bar = "Acp::#{controller.camelize.gsub(".rb","")}".classify.constantize
-        foo_bar.action_methods.each do |action|
-          puts '==================='
-          puts action
-        end
-      end
-    end
-    puts '==================='
-
-
   end
 
   def edit
@@ -49,6 +21,7 @@ class Acp::RolesController < Acp::ApplicationController
   def create
     @data = @model.new(parameters)
     if @data.save
+      add_resources
       redirect_to({ action: 'index' }, notice: 'Role was successfully created.')
     else
       render :new
@@ -57,6 +30,7 @@ class Acp::RolesController < Acp::ApplicationController
 
   def update
     if @data.update(parameters)
+      add_resources
       redirect_to({ action: 'index' }, notice: 'Role was successfully updated.')
     else
       render :edit
@@ -73,11 +47,30 @@ class Acp::RolesController < Acp::ApplicationController
       @model = controller_name.classify.constantize
     end
 
+    def load_data
+      resources = Resource.all
+      @permissions = Hash.new { |hash, key| hash[key] = [] }
+      resources.each do |resource|
+        if @permissions[resource.controller.to_sym]
+          @permissions[resource.controller.to_sym].push resource
+        else
+          @permissions[resource.controller.to_sym] = resource
+        end
+      end
+    end
+
     def set_data
       @data = @model.find(params[:id])
     end
 
     def parameters
       params.require(:data).permit(:name, :code, :description, :weight)
+    end
+
+    def add_resources
+      @data.acls.destroy_all
+      params[:resources].each do |id|
+        @data.acls.create(resource_id: id)
+      end
     end
 end

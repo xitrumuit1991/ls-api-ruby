@@ -17,6 +17,9 @@ Rails.application.routes.draw do
 
     get "/" => "index#index"
 
+    # Admin
+    resources :admins
+
     # Users
     resources :users
     get '/users/:id/transactions' => 'users#transactions'
@@ -147,7 +150,12 @@ Rails.application.routes.draw do
     post '/trade_logs/destroy_m' => 'trade_logs#destroy_m'
 
     # Roles
+    get '/roles/test' => 'roles#test'
     resources :roles
+
+    # Resources
+    get '/resources/sync' => 'resources#sync'
+    resources :resources
 
     # Reports
     get '/reports/users' => 'reports#users'
