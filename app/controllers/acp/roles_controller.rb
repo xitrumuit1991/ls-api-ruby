@@ -51,10 +51,10 @@ class Acp::RolesController < Acp::ApplicationController
       resources = Resource.all
       @permissions = Hash.new { |hash, key| hash[key] = [] }
       resources.each do |resource|
-        if @permissions[resource.controller.to_sym]
-          @permissions[resource.controller.to_sym].push resource
+        if @permissions[resource.class_name.to_sym]
+          @permissions[resource.class_name.to_sym].push resource
         else
-          @permissions[resource.controller.to_sym] = resource
+          @permissions[resource.class_name.to_sym] = resource
         end
       end
     end
