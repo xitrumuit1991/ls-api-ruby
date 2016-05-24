@@ -26,6 +26,16 @@ class SlideUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [166, 115]
   end
 
+  version :web do
+    process :rails_admin_crop
+    process resize_to_fill: [1200, 480]
+  end
+
+  version :web_retina do
+    process :rails_admin_crop
+    process resize_to_fill: [1200, 480]
+  end
+
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:

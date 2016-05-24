@@ -20,7 +20,7 @@ class Acp::SlidesController < Acp::ApplicationController
   end
 
   def create
-    parameters[:banner] = optimizeKraken(parameters[:banner])
+    parameters[:banner] = parameters[:banner].nil? ? parameters[:banner] : optimizeKraken(parameters[:banner])
     @data = @model.new(parameters)
     if @data.save
       redirect_to({ action: 'index' }, notice: 'Slide was successfully created.')
@@ -30,7 +30,7 @@ class Acp::SlidesController < Acp::ApplicationController
   end
 
   def update
-    parameters[:banner] = optimizeKraken(parameters[:banner])
+    parameters[:banner] = parameters[:banner].nil? ? parameters[:banner] : optimizeKraken(parameters[:banner])
     if @data.update(parameters)
       redirect_to({ action: 'index' }, notice: 'Slide was successfully updated.')
     else

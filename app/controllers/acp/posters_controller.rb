@@ -20,7 +20,7 @@ class Acp::PostersController < Acp::ApplicationController
   end
 
   def create
-    parameters[:thumb] = optimizeKraken(parameters[:thumb])
+    parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
     @data = @model.new(parameters)
     if @data.save
       redirect_to({ action: 'index' }, notice: 'Poster was successfully created.')
@@ -30,7 +30,7 @@ class Acp::PostersController < Acp::ApplicationController
   end
 
   def update
-    parameters[:thumb] = optimizeKraken(parameters[:thumb])
+    parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
     if @data.update(parameters)
       redirect_to({ action: 'index' }, notice: 'Poster was successfully updated.')
     else

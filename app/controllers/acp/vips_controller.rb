@@ -19,7 +19,7 @@ class Acp::VipsController < Acp::ApplicationController
 	end
 
 	def create
-		parameters[:image] = optimizeKraken(parameters[:image])
+		parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
 		@data = @model.new(parameters)
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Vip was successfully created.')
@@ -29,7 +29,7 @@ class Acp::VipsController < Acp::ApplicationController
 	end
 
 	def update
-		parameters[:image] = optimizeKraken(parameters[:image])
+		parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
 		if @data.update(parameters)
 			redirect_to({ action: 'index' }, notice: 'Vip was successfully updated.')
 		else
