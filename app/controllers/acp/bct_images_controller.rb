@@ -20,7 +20,7 @@ class Acp::BctImagesController < Acp::ApplicationController
   end
 
   def create
-    parameters[:image] = optimizeKraken(parameters[:image])
+    parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     @data = @model.new(parameters)
     if @data.save
       redirect_to({ controller: 'broadcasters', action: 'images', broadcaster_id: @data.broadcaster.id }, notice: 'Image was successfully created.')
@@ -30,7 +30,7 @@ class Acp::BctImagesController < Acp::ApplicationController
   end
 
   def update
-    parameters[:image] = optimizeKraken(parameters[:image])
+    parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     if @data.update(parameters)
       redirect_to({ action: 'index' }, notice: 'Image was successfully updated.')
     else
