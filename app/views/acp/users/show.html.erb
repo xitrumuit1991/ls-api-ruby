@@ -17,22 +17,7 @@
     <%= render 'shared/alert' %>
     <!-- START PANEL -->
     <div class="panel panel-transparent">
-        <div class="panel-heading text-complete">
-            <span class="bold text-uppercase">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="active">
-                        <a href="#">Thông tin cá nhân</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/users/<%= @data.id %>/transactions">Giao dịch</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+        <%= render 'nav_tabs' %>
         <div class="panel-body">
           <form class="form-horizontal">
             <div class="form-group">
