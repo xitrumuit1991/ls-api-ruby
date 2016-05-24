@@ -15,25 +15,32 @@
   <!-- START PANEL -->
   <div class="panel panel-transparent">
     <div class="panel-heading">
-      <div class="pull-left">
-        <div class="col-xs-12">
-          <button class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
-        </div>
-      </div>
-      <div class="pull-left">
+      <div class="row">
         <form action="" method="get">
-          <div class="col-xs-6">
-            <input type="text" id="search-table" class="form-control pull-right" placeholder="Search ..." name="q" required="required">
+          <div class="col-md-1">
+            <button type="button" class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
           </div>
-          <div class="col-xs-1">
+          <div class="col-md-1">
+            <select class="cs-select cs-skin-slide" data-init-plugin="cs-select" name="field">
+              <option value="username" <%= 'selected' if params[:field] == 'username' %>>Username</option>
+              <option value="email" <%= 'selected' if params[:field] == 'email' %>>Email</option>
+              <option value="name" <%= 'selected' if params[:field] == 'name' %>>Full Name</option>
+              <option value="phone" <%= 'selected' if params[:field] == 'phone' %>>Phone</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <input type="text" id="search-table" class="form-control pull-right" name="q" value="<%= params[:q] %>" placeholder="Search ..." >
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control datepicker" name="date" value="<%= params[:date] %>">
+          </div>
+          <div class="col-md-1">
             <button class="btn btn-info" type="submit">Search</button>
           </div>
+          <!-- <div class="col-md-2">
+            <%= link_to(new_acp_user_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
+          </div> -->
         </form>
-      </div>
-      <div class="pull-right">
-        <div class="col-xs-12">
-          <%= link_to(new_acp_user_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
-        </div>
       </div>
       <div class="clearfix"></div>
     </div>
@@ -49,11 +56,14 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:15%">Avatar</th>
-            <th style="width:15%">Bí danh</th>
+            <th style="width:10%">Avatar</th>
+            <th style="width:15%">Username</th>
             <th style="width:15%">Email</th>
-            <th style="width:15%">Cấp độ</th>
-            <th style="width:15%">Kinh nghiệm</th>
+            <th style="width:15%">Full Name</th>
+            <th style="width:10%">Phone</th>
+            <th style="width:5%">Level</th>
+            <th style="width:10%">Kinh nghiệm</th>
+            <th style="width:10%">Ngày tạo</th>
             <th style="width:7%">Action</th>
           </tr>
           </thead>
@@ -70,14 +80,20 @@
                   <% if item.avatar? %>
                     <img src="<%= item.avatar.minisquare.url %>" class="img-thumbnail">
                   <% else %>
-                    <p>No Image</p>
+                    <img src="/assets/img/no_image.jpg" class="img-thumbnail">
                   <% end %>
                 </td>
                 <td class="v-align-middle">
-                  <%= link_to(edit_acp_user_path(item)) do %><p><%= item.username %></p><% end %>
+                  <%= link_to(acp_user_path(item)) do %><p><%= item.username %></p><% end %>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.email %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.name %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.phone %></p>
                 </td>
                 <td class="v-align-middle">
                   <% if item.user_level.present?%>
@@ -86,6 +102,9 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.user_exp %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.created_at.strftime('%d/%m/%Y') %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">

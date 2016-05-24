@@ -1,0 +1,22 @@
+<div class="panel-heading text-complete">
+    <span class="bold text-uppercase">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
+</div>
+<div class="panel-body">
+    <div class="pull-left">
+        <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
+            <li class="<%= 'active' if action_name == 'show'%>">
+                <a href="/acp/users/<%= @data.id %>">Thông tin cá nhân</a>
+            </li>
+            <li class="<%= 'active' if action_name == 'history_vips'%>">
+                <a href="/acp/users/<%= @data.id %>/history-vips">Lịch sử mua VIP</a>
+            </li>
+            <li class="<%= 'active' if action_name == 'history_buy_coins'%>">
+                <a href="/acp/users/<%= @data.id %>/history-buy-coins?tab=tab1">Lịch sử nạp xu</a>
+            </li>
+            <li class="<%= 'active' if action_name == 'history_use_coins'%>">
+                <a href="/acp/users/<%= @data.id %>/history-use-coins?tab=tab1">Lịch sử tiêu xu</a>
+            </li>
+        </ul>
+    </div>
+    <div class="clearfix"></div>
+</div>

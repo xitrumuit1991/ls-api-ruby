@@ -1,0 +1,79 @@
+<div class="jumbotron" data-pages="parallax">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
+        <div class="inner">
+            <!-- START BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="/acp">Home</a></li>
+                <li><a href="/acp/<%= controller_name %>">Users</a></li>
+                <li><a href="#" class="active">Detail</a></li>
+            </ul>
+            <!-- END BREADCRUMB -->
+        </div>
+    </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <%= render 'nav_tabs' %>
+        <div class="panel-heading">
+          <div class="row">
+            <form action="" method="get">
+              <div class="col-md-2">
+                <input type="text" class="form-control datepicker" name="date" value="<%= params[:date] %>">
+              </div>
+              <div class="col-md-1">
+                <button class="btn btn-info" type="submit">Search</button>
+              </div>
+            </form>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <form action="" method="post" id="data-table">
+              <table class="table table-hover demo-table-search">
+                <thead>
+                  <tr>
+                      <th style="width:20%">Vip</th>
+                      <th style="width:20%">Giá</th>
+                      <th style="width:20%">Ngày sử dụng</th>
+                      <th style="width:20%">Ngày kích hoạt</th>
+                      <th style="width:20%">Ngày hết hạn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @logs.each do |item| %>
+                    <tr id="row_page_<%= item.id %>">
+                      <td class="v-align-middle ">
+                        <p><%= item.vip_package.vip.name %></p>
+                      </td>
+                      <td class="v-align-middle">
+                        <p><%= item.vip_package.price %></p>
+                      </td>
+                      <td class="v-align-middle">
+                        <p><%= item.vip_package.no_day %></p>
+                      </td>
+                      <td class="v-align-middle">
+                        <p><%= item.active_date.strftime('%d-%m-%Y %I:%M%p') %></p>
+                      </td>
+                      <td class="v-align-middle">
+                        <p><%= item.expiry_date.strftime('%d-%m-%Y %I:%M%p') %></p>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+              <div class="row">
+                <div class="pull-right">
+                  <div class="col-xs-12">
+                    <%= paginate @logs %>
+                  </div>
+                </div>
+              </div>
+            </form>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>

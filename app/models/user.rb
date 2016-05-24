@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
 	has_many :trade_logs
 	has_many :ban_users
 	has_many :banned_rooms, through: :ban_users, class_name: 'Room', foreign_key: 'room_id', source: :room
+	has_many :cart_logs
+	has_many :megabank_logs
 	has_many :android_receipts
 	has_many :ios_receipts
 
