@@ -1,8 +1,8 @@
 $(document).ready(function () {
     $("#form-work").validate();
     $('.select2').select2();
-    //$('.datetimepicker').datetimepicker();
-    $('#datepicker-range, #datepicker-component, #datepicker-component2').datepicker();
+    $('.datetimepicker').datetimepicker({format: 'DD/MM/YYYY LT'});
+    $('.datepicker').datepicker({format: 'dd/mm/yyyy'});
 
     //start date & end date
     $('#start_date').datetimepicker({format: 'DD/MM/YYYY LT'});
