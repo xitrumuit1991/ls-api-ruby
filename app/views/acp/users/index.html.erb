@@ -34,7 +34,9 @@
             <input type="text" id="search-table" class="form-control pull-right" name="q" value="<%= params[:q] %>" placeholder="Search ..." >
           </div>
           <div class="col-md-2">
-            <input type="text" class="form-control datepicker" name="date" value="<%= params[:date] %>">
+            <div class="input-daterange input-group">
+              <input type="text" class="form-control datepicker" name="date" value="<%= params[:date] %>">
+            </div>
           </div>
           <div class="col-md-1">
             <button class="btn btn-info" type="submit">Search</button>
@@ -84,7 +86,7 @@
                   <% if item.avatar? %>
                     <img src="<%= item.avatar.minisquare.url %>" class="img-thumbnail">
                   <% else %>
-                    <img src="/assets/img/no_image.jpg" class="img-thumbnail">
+                    <img src="/assets/img/no_image.jpg" class="img-thumbnail" width="100" height="100">
                   <% end %>
                 </td>
                 <td class="v-align-middle">
