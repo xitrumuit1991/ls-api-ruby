@@ -17,9 +17,11 @@
     <div class="panel-heading">
       <div class="row">
         <form action="" method="get">
+          <% if can?(:destroy_m, User) or can?(:delete, User) %>
           <div class="col-md-1">
             <button type="button" class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
           </div>
+          <% end %>
           <div class="col-md-2">
             <select class="select2" name="field" style="width:100%">
               <option value="username" <%= 'selected' if params[:field] == 'username' %>>Username</option>
