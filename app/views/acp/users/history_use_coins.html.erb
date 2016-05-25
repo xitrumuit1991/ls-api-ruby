@@ -1,0 +1,179 @@
+<div class="jumbotron" data-pages="parallax">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
+        <div class="inner">
+            <!-- START BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="/acp">Home</a></li>
+                <li><a href="/acp/<%= controller_name %>">Users</a></li>
+                <li><a href="#" class="active">Detail</a></li>
+            </ul>
+            <!-- END BREADCRUMB -->
+        </div>
+    </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <%= render 'nav_tabs' %>
+        <div class="panel-body">
+            <ul class="nav nav-tabs nav-tabs-simple nav-tabs-left bg-white">
+              <li class="<%= 'active' if params[:tab] == 'tab1' %>">
+                <a data-toggle="tab" href="#tab1">Quà tặng</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab2' %>">
+                <a data-toggle="tab" href="#tab2">Hành động</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab3' %>">
+                <a data-toggle="tab" href="#tab3">Gửi nội dung</a>
+              </li>
+            </ul>
+            <div class="tab-content bg-white">
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab1' %>" id="tab1">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_gift" value="<%= params[:date_gift] %>">
+                      <input type="hidden" name="tab" value="tab1">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:50%">Quà</th>
+                      <th style="width:20%">Số lượng</th>
+                      <th style="width:20%">Số xu</th>
+                      <th style="width:10%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @gifts.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.gift.name %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.quantity %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.cost %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @gifts %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab2' %>" id="tab2">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_action" value="<%= params[:date_action] %>">
+                      <input type="hidden" name="tab" value="tab2">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:40%">Hành động</th>
+                      <th style="width:30%">Số xu</th>
+                      <th style="width:30%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @actions.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.room_action.name %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.cost %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @actions %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab3' %>" id="tab3">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_message" value="<%= params[:date_message] %>">
+                      <input type="hidden" name="tab" value="tab3">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:60%">Nội dung</th>
+                      <th style="width:40%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @messages.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.content %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @messages %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>

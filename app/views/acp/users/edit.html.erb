@@ -5,7 +5,7 @@
             <ul class="breadcrumb">
                 <li><a href="/acp">Home</a></li>
                 <li><a href="/acp/<%= controller_name %>">Users</a></li>
-                <li><a href="#" class="active">User Detail</a></li>
+                <li><a href="#" class="active">Edit</a></li>
             </ul>
             <!-- END BREADCRUMB -->
         </div>
@@ -19,19 +19,6 @@
     <div class="panel panel-transparent">
         <div class="panel-heading text-complete">
             <span class="bold text-uppercase">User: <%= @data.name %></span> | (tài khoản: <%= @data.username %>)
-        </div>
-        <div class="panel-body">
-            <div class="pull-left">
-                <ul class="nav nav-tabs nav-tabs-simple" role="tablist">
-                    <li class="active">
-                        <a href="#">Thông tin nâng cao</a>
-                    </li>
-                    <li class="">
-                        <a href="/acp/users/<%= @data.id %>/transactions">Giao dịch</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="clearfix"></div>
         </div>
         <div class="panel-body">
             <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>

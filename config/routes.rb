@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     # Users
     resources :users
     get '/users/:id/transactions' => 'users#transactions'
+    get '/users/:id/history-vips' => 'users#history_vips'
+    get '/users/:id/history-buy-coins' => 'users#history_buy_coins'
+    get '/users/:id/history-use-coins' => 'users#history_use_coins'
     post '/users/:id/change_password' => 'users#change_password'
 
     # Broadcasters

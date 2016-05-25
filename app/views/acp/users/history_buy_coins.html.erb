@@ -1,0 +1,307 @@
+<div class="jumbotron" data-pages="parallax">
+    <div class="container-fluid sm-p-l-20 sm-p-r-20">
+        <div class="inner">
+            <!-- START BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="/acp">Home</a></li>
+                <li><a href="/acp/<%= controller_name %>">Users</a></li>
+                <li><a href="#" class="active">Detail</a></li>
+            </ul>
+            <!-- END BREADCRUMB -->
+        </div>
+    </div>
+</div>
+<!-- END JUMBOTRON -->
+<!-- START CONTAINER FLUID -->
+<div class="container-fluid bg-white">
+    <%= render 'shared/alert' %>
+    <!-- START PANEL -->
+    <div class="panel panel-transparent">
+        <%= render 'nav_tabs' %>
+        <div class="panel-body">
+            <ul class="nav nav-tabs nav-tabs-simple nav-tabs-left bg-white">
+              <li class="<%= 'active' if params[:tab] == 'tab1' %>">
+                <a data-toggle="tab" href="#tab1">Sms</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab2' %>">
+                <a data-toggle="tab" href="#tab2">Card</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab3' %>">
+                <a data-toggle="tab" href="#tab3">Bank</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab4' %>">
+                <a data-toggle="tab" href="#tab4">IOS</a>
+              </li>
+              <li class="<%= 'active' if params[:tab] == 'tab5' %>">
+                <a data-toggle="tab" href="#tab5">Android</a>
+              </li>
+            </ul>
+            <div class="tab-content bg-white">
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab1' %>" id="tab1">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_sms" value="<%= params[:date_sms] %>">
+                      <input type="hidden" name="tab" value="tab1">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:50%">Phone</th>
+                      <th style="width:30%">Số tiền</th>
+                      <th style="width:20%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @sms.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.phone %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.amount %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @sms %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab2' %>" id="tab2">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_card" value="<%= params[:date_card] %>">
+                      <input type="hidden" name="tab" value="tab2">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:40%">Card</th>
+                      <th style="width:20%">Mệnh giá</th>
+                      <th style="width:20%">Xu</th>
+                      <th style="width:20%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @cards.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.provider.name %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.price %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.coin %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @cards %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab3' %>" id="tab3">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_bank" value="<%= params[:date_bank] %>">
+                      <input type="hidden" name="tab" value="tab3">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:20%">Ngân hàng</th>
+                      <th style="width:20%">Mệnh giá</th>
+                      <th style="width:20%">Xu</th>
+                      <th style="width:20%">Mô tả</th>
+                      <th style="width:20%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @banks.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.bank.name %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.megabank.price %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.megabank.coin %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.descriptionvn %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @banks %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab4' %>" id="tab4">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_ios" value="<%= params[:date_ios] %>">
+                      <input type="hidden" name="tab" value="tab4">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:20%">Gói</th>
+                      <th style="width:20%">Giá VND</th>
+                      <th style="width:20%">Giá USD</th>
+                      <th style="width:20%">Xu</th>
+                      <th style="width:20%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @ios.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.name %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.price %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.price_usd %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.quantity %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @ios %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane <%= 'active' if params[:tab] == 'tab5' %>" id="tab5">
+                <form action="" method="get">
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <input type="text" class="form-control datepicker" name="date_android" value="<%= params[:date_android] %>">
+                      <input type="hidden" name="tab" value="tab5">
+                    </div>
+                  </div>
+                  <div class="pull-left">
+                    <div class="col-xs-12">
+                      <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+                <table class="table table-hover demo-table-search">
+                  <thead>
+                    <tr>
+                      <th style="width:20%">Gói</th>
+                      <th style="width:20%">Giá VND</th>
+                      <th style="width:20%">Giá USD</th>
+                      <th style="width:20%">Xu</th>
+                      <th style="width:20%">Ngày</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @android.each do |item| %>
+                      <tr id="row_page_<%= item.id %>">
+                        <td class="v-align-middle ">
+                          <p><%= item.name %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.price %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.price_usd %></p>
+                        </td>
+                        <td class="v-align-middle ">
+                          <p><%= item.quantity %></p>
+                        </td>
+                        <td class="v-align-middle">
+                          <p><%= item.created_at.strftime('%d-%m-%Y') %></p>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="pull-right">
+                    <div class="col-xs-12">
+                      <%= paginate @android %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <!-- END PANEL -->
+</div>
