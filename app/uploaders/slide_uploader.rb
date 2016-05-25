@@ -26,13 +26,7 @@ class SlideUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [166, 115]
   end
 
-  version :web do
-    process :rails_admin_crop
-    process resize_to_fill: [1200, 480]
-  end
-
-  version :web_retina do
-    process :rails_admin_crop
+  version :w1200h480 do
     process resize_to_fill: [1200, 480]
   end
 
