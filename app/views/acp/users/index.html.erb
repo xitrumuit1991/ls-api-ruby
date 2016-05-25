@@ -17,11 +17,13 @@
     <div class="panel-heading">
       <div class="row">
         <form action="" method="get">
+          <% if can?(:destroy_m, User) or can?(:delete, User) %>
           <div class="col-md-1">
             <button type="button" class="btn multiple-action" data-action="destroy_m"><i class="pg-trash"></i></button>
           </div>
-          <div class="col-md-1">
-            <select class="cs-select cs-skin-slide" data-init-plugin="cs-select" name="field">
+          <% end %>
+          <div class="col-md-2">
+            <select class="select2" name="field" style="width:100%">
               <option value="username" <%= 'selected' if params[:field] == 'username' %>>Username</option>
               <option value="email" <%= 'selected' if params[:field] == 'email' %>>Email</option>
               <option value="name" <%= 'selected' if params[:field] == 'name' %>>Full Name</option>
@@ -64,7 +66,9 @@
             <th style="width:5%">Level</th>
             <th style="width:10%">Kinh nghiệm</th>
             <th style="width:10%">Ngày tạo</th>
+            <% if can?(:update, User) or can?(:delete, User) %>
             <th style="width:7%">Action</th>
+            <% end %>
           </tr>
           </thead>
           <tbody>
@@ -106,12 +110,14 @@
                 <td class="v-align-middle">
                   <p><%= item.created_at.strftime('%d/%m/%Y') %></p>
                 </td>
+                <% if can?(:update, User) or can?(:delete, User) %>
                 <td class="v-align-middle">
                   <div class="text-nowrap text-center">
                     <%= link_to(edit_acp_user_path(item), {class: "btn btn-xs btn-success"}) do %><i class="fa fa-pencil"></i><% end %>
                     <%= link_to(acp_user_path(item), {class: "btn btn-xs btn-success", method: 'delete', data: { confirm: 'Are you sure ?'}}) do%><i class="fa fa-trash-o"></i><% end %>
                   </div>
                 </td>
+                <% end %>
               </tr>
           <% end %>
           </tbody>
