@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     end
 
     get "/" => "index#index"
+    get "/import" => "index#import"
 
     # Admin
     resources :admins
