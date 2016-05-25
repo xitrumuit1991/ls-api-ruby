@@ -26,6 +26,51 @@ class RoomThumbUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [1080, 607]
   end
 
+  version :web_240x135 do
+    process :rails_admin_crop
+    process resize_to_fill: [240, 135]
+  end
+
+  version :web_retina_320x180 do
+    process :rails_admin_crop
+    process resize_to_fill: [320, 180]
+  end
+
+  version :app_a_1x_320x180 do
+    process :rails_admin_crop
+    process resize_to_fill: [320, 180]
+  end
+
+  version :app_a_15x_320x180 do
+    process :rails_admin_crop
+    process resize_to_fill: [320, 180]
+  end
+
+  version :app_a_2x_720x405 do
+    process :rails_admin_crop
+    process resize_to_fill: [720, 405]
+  end
+
+  version :app_a_3x_960x540 do
+    process :rails_admin_crop
+    process resize_to_fill: [960, 540]
+  end
+
+  version :app_a_4x_960x540 do
+    process :rails_admin_crop
+    process resize_to_fill: [960, 540]
+  end
+
+  version :app_ios_2x_720x405 do
+    process :rails_admin_crop
+    process resize_to_fill: [720, 405]
+  end
+
+  version :app_ios_3x_960x540 do
+    process :rails_admin_crop
+    process resize_to_fill: [960, 540]
+  end
+
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:
