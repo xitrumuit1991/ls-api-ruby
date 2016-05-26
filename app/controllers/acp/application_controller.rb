@@ -6,6 +6,12 @@ class Acp::ApplicationController < ActionController::Base
 
 	before_action :authenticate_admin!
 
+	before_filter do
+	  resource = controller_name.singularize.to_sym
+	  method = "parameters"
+	  params[resource] &&= send(method) if respond_to?(method, true)
+	end
+
 	rescue_from CanCan::AccessDenied do |exception|
     redirect_to "#{root_url}acp", :alert => exception.message
   end
