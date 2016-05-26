@@ -191,14 +191,15 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		user = User.find(197)
 		link = "#{request.base_url}#{user.avatar_crop}"
 		linkUptimize = uploadDowload(link)
+		Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{linkUptimize}"
 		File.write(Rails.root.join('public'+user.avatar_crop.to_s), open(linkUptimize).read, { :mode => 'wb' })
+		Rails.logger.info "ANGCO ------------------------------------ local: #{Rails.root.join('public'+user.avatar_crop.to_s)}"
 		# user.remote_avatar_crop_url = linkUptimize.to_s
 		# user.remote_avatar_crop_url = File.open(File.join(Rails.root, 'public'+user.avatar_crop.to_s)).path
 		user.avatar_crop = Rails.root.join('public'+user.avatar_crop.to_s).open
 		check = user.save
 		Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
 		Rails.logger.info "ANGCO ------------------------------------ link: #{link}"
-		Rails.logger.info "ANGCO ------------------------------------ link: #{File.join(Rails.root, 'public'+user.avatar_crop.to_s)}"
 		# User.all.each do |user|
 		# 	if user.id == 197
 		# 		if user.avatar_crop != nil
