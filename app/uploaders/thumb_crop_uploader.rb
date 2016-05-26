@@ -16,6 +16,30 @@ class ThumbCropUploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
+  version :w160h190 do
+    process resize_to_fill: [160, 190]
+  end
+
+  version :w240h135 do
+    process resize_to_fill: [240, 135]
+  end
+
+  version :w320h180 do
+    process resize_to_fill: [320, 180]
+  end
+
+  version :w720h405 do
+    process resize_to_fill: [720, 405]
+  end
+
+  version :w768h432 do
+    process resize_to_fill: [768, 432]
+  end
+
+  version :w960h540 do
+    process resize_to_fill: [960, 540]
+  end
+
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:

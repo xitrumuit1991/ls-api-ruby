@@ -133,3 +133,9 @@ gem 'cancancan', '~> 1.10'
 
 # rmagick
 gem 'rmagick', '~> 2.15', '>= 2.15.4'
+
+# zip-zip
+gem 'zip-zip', '~> 0.3'
+
+# Roo
+gem 'roo', '~> 2.4.0'

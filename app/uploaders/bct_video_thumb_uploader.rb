@@ -21,6 +21,18 @@ class BctVideoThumbUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [215, 115]
   end
 
+  version :w190h108 do
+    process resize_to_fill: [190, 108]
+  end
+
+  version :w380h216 do
+    process resize_to_fill: [380, 216]
+  end
+
+  version :w760h432 do
+    process resize_to_fill: [760, 432]
+  end
+
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:
