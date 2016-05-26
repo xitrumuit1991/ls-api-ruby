@@ -188,29 +188,35 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	end
 
 	def optimizeImage
-		User.all.each do |user|
-			if user.id == 197
-				if user.avatar != '' || user.avatar != nil
-					avatarUrl 		= user.avatar_path
-					linkFile = uploadDowload(avatarUrl)
-					user.remote_avatar_url = linkFile
-					check = user.save
-					Rails.logger.info "ANGCO ---------------------------------------------------------------------- Check: #{check}"
-				end
-				# if user.avatar_crop != '' || user.avatar_crop != nil
-				# 	avatarCropUrl 	= 'uploads/user/avatar_crop/'+ user.id.to_s + user.avatar_crop.to_s
-				# 	uploadDowload(avatarCropUrl)
-				# end
-				# if user.cover != '' || user.cover != nil
-				# 	coverUrl 		= 'uploads/user/cover/'+ user.id.to_s + user.cover.to_s
-				# 	uploadDowload(coverUrl)
-				# end
-				# if user.cover_crop != '' || user.cover_crop != nil
-				# 	coverCropUrl 	= 'uploads/user/cover_crop/'+ user.id.to_s + user.cover_crop.to_s
-				# 	uploadDowload(coverCropUrl)
-				# end
-			end
-		end
+		user = User.find(197)
+		link = "#{request.base_url}#{user.avatar_crop}"
+		user.remote_avatar_crop_url = link
+		check = user.save
+		Rails.logger.info "ANGCO ------------------------------------ Check: #{check}"
+		Rails.logger.info "ANGCO ------------------------------------ Check: #{link}"
+		# User.all.each do |user|
+		# 	if user.id == 197
+		# 		if user.avatar_crop != nil
+		# 			link = "#{request.base_url}#{user.avatar_crop}"
+		# 			user.remote_avatar_crop_url = "http://api.livestar.vn/uploads/slide/banner/13/banner_13123410_10204733271251169_4215455288544963004_o.jpg"
+		# 			check = user.save
+		# 			Rails.logger.info "ANGCO ------------------------------------ Check: #{check}"
+		# 			Rails.logger.info "ANGCO ------------------------------------ Check: #{link}"
+		# 		end
+		# 		# if user.avatar_crop != '' || user.avatar_crop != nil
+		# 		# 	avatarCropUrl 	= 'uploads/user/avatar_crop/'+ user.id.to_s + user.avatar_crop.to_s
+		# 		# 	uploadDowload(avatarCropUrl)
+		# 		# end
+		# 		# if user.cover != '' || user.cover != nil
+		# 		# 	coverUrl 		= 'uploads/user/cover/'+ user.id.to_s + user.cover.to_s
+		# 		# 	uploadDowload(coverUrl)
+		# 		# end
+		# 		# if user.cover_crop != '' || user.cover_crop != nil
+		# 		# 	coverCropUrl 	= 'uploads/user/cover_crop/'+ user.id.to_s + user.cover_crop.to_s
+		# 		# 	uploadDowload(coverCropUrl)
+		# 		# end
+		# 	end
+		# end
 		return head 200
 	end
 
