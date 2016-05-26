@@ -218,7 +218,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		# 		# end
 		# 	end
 		# end
-		return head 200
+		render json: {error: check}, status: 200
 	end
 
 	def updateCreatedAtBroadcaster
