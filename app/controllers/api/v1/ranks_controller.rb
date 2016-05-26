@@ -190,10 +190,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	def optimizeImage
 		user = User.find(197)
 		link = "#{request.base_url}#{user.avatar_crop}"
-		user.remote_avatar_crop_url = link
+		linkUptimize = uploadDowload(link)
+		user.remote_avatar_crop_url = linkUptimize
 		check = user.save
 		Rails.logger.info "ANGCO ------------------------------------ Check: #{check}"
-		Rails.logger.info "ANGCO ------------------------------------ Check: #{link}"
+		Rails.logger.info "ANGCO ------------------------------------ Check: #{linkUptimize}"
 		# User.all.each do |user|
 		# 	if user.id == 197
 		# 		if user.avatar_crop != nil
