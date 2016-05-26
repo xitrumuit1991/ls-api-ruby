@@ -191,7 +191,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		user = User.find(197)
 		link = "#{request.base_url}#{user.avatar_crop}"
 		linkUptimize = uploadDowload(link)
-		user.remote_avatar_crop_url = linkUptimize
+		user.remote_avatar_crop_url = linkUptimize.to_s
 		check = user.save
 		Rails.logger.info "ANGCO ------------------------------------ Check: #{check}"
 		Rails.logger.info "ANGCO ------------------------------------ Check: #{linkUptimize}"
