@@ -26,13 +26,11 @@ class PosterUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [100, 100]
   end
 
-  version :web do
-    process :rails_admin_crop
+  version :w180h480 do
     process resize_to_fill: [180, 480]
   end
 
-  version :web_retina do
-    process :rails_admin_crop
+  version :w360h960 do
     process resize_to_fill: [360, 960]
   end
 
