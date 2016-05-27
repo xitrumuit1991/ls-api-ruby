@@ -284,6 +284,7 @@ Rails.application.routes.draw do
         get '/optimize-room-action' => 'ranks#optimizeImageRoomAction'
         get '/optimize-room-background' => 'ranks#optimizeRoomBackground'
         get '/optimize-slide' => 'ranks#optimizeImageSlide'
+        get '/optimize-vip' => 'ranks#optimizeImageVip'
         get '/update-name-email-u' => 'ranks#updateNameEmailUserMBF'
       end
 
