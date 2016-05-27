@@ -187,45 +187,223 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		return head 200
 	end
 
-	def optimizeImage
-		user = User.find(197)
-		link = "#{request.base_url}#{user.avatar_crop}"
-		linkUptimize = uploadDowload(link)
-		Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{linkUptimize}"
-		File.write(Rails.root.join('public'+user.avatar_crop.to_s), open(linkUptimize).read, { :mode => 'wb' })
-		Rails.logger.info "ANGCO ------------------------------------ local: #{Rails.root.join('public'+user.avatar_crop.to_s)}"
-		# user.remote_avatar_crop_url = linkUptimize.to_s
-		# user.remote_avatar_crop_url = File.open(File.join(Rails.root, 'public'+user.avatar_crop.to_s)).path
-		user.avatar_crop = Rails.root.join('public'+user.avatar_crop.to_s).open
-		check = user.save
-		Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-		Rails.logger.info "ANGCO ------------------------------------ link: #{link}"
-		# User.all.each do |user|
-		# 	if user.id == 197
-		# 		if user.avatar_crop != nil
-		# 			link = "#{request.base_url}#{user.avatar_crop}"
-		# 			user.remote_avatar_crop_url = "http://api.livestar.vn/uploads/slide/banner/13/banner_13123410_10204733271251169_4215455288544963004_o.jpg"
-		# 			check = user.save
-		# 			Rails.logger.info "ANGCO ------------------------------------ Check: #{check}"
-		# 			Rails.logger.info "ANGCO ------------------------------------ Check: #{link}"
-		# 		end
-		# 		# if user.avatar_crop != '' || user.avatar_crop != nil
-		# 		# 	avatarCropUrl 	= 'uploads/user/avatar_crop/'+ user.id.to_s + user.avatar_crop.to_s
-		# 		# 	uploadDowload(avatarCropUrl)
-		# 		# end
-		# 		# if user.cover != '' || user.cover != nil
-		# 		# 	coverUrl 		= 'uploads/user/cover/'+ user.id.to_s + user.cover.to_s
-		# 		# 	uploadDowload(coverUrl)
-		# 		# end
-		# 		# if user.cover_crop != '' || user.cover_crop != nil
-		# 		# 	coverCropUrl 	= 'uploads/user/cover_crop/'+ user.id.to_s + user.cover_crop.to_s
-		# 		# 	uploadDowload(coverCropUrl)
-		# 		# end
-		# 	end
-		# end
-		render json: {error: check}, status: 200
+	def optimizeImageUsers
+		array = []
+		User.all.each do |user|
+			if user.avatar_crop != nil
+				link = uploadDowload("#{request.base_url}#{user.avatar_crop}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					user.remote_avatar_crop_url = link
+					check = user.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{user.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{user.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
 	end
 
-	def updateCreatedAtBroadcaster
+	def optimizeImageRooms
+		array = []
+		Room.all.each do |room|
+			if room.thumb_crop != nil
+				link = uploadDowload("#{request.base_url}#{room.thumb_crop}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					room.remote_thumb_crop_url = link
+					check = room.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{room.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageBctImage
+		array = []
+		BctImage.all.each do |bct_image|
+			if bct_image.image != nil
+				link = uploadDowload("#{request.base_url}#{bct_image.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					bct_image.remote_image_url = link
+					check = bct_image.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{bct_image.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_image.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageBctVideo
+		array = []
+		BctVideo.all.each do |bct_video|
+			if bct_video.thumb != nil
+				link = uploadDowload("#{request.base_url}#{bct_video.thumb}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					bct_video.remote_thumb_url = link
+					check = bct_video.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{bct_video.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_video.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageBctBackground
+		array = []
+		BroadcasterBackground.all.each do |bct_bg|
+			if bct_bg.image != nil
+				link = uploadDowload("#{request.base_url}#{bct_bg.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					bct_bg.remote_image_url = link
+					check = bct_bg.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{bct_bg.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_bg.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeGift
+		array = []
+		Gift.all.each do |gift|
+			if gift.image != nil
+				link = uploadDowload("#{request.base_url}#{gift.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					gift.remote_image_url = link
+					check = gift.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{gift.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{gift.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizePoster
+		array = []
+		Poster.all.each do |poster|
+			if poster.thumb != nil
+				link = uploadDowload("#{request.base_url}#{poster.thumb}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					poster.remote_thumb_url = link
+					check = poster.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{poster.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{poster.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageRoomAction
+		array = []
+		RoomAction.all.each do |room_action|
+			if room_action.image != nil
+				link = uploadDowload("#{request.base_url}#{room_action.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					room_action.remote_image_url = link
+					check = room_action.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{room_action.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room_action.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeRoomBackground
+		array = []
+		RoomBackground.all.each do |room_background|
+			if room_background.image != nil
+				link = uploadDowload("#{request.base_url}#{room_background.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					room_background.remote_image_url = link
+					check = room_background.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{room_background.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room_background.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageSlide
+		array = []
+		Slide.all.each do |slide|
+			if slide.banner != nil
+				link = uploadDowload("#{request.base_url}#{slide.banner}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					slide.remote_banner_url = link
+					check = slide.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{slide.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{slide.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
+	end
+
+	def optimizeImageVip
+		array = []
+		Vip.all.each do |vip|
+			if vip.image != nil
+				link = uploadDowload("#{request.base_url}#{vip.image}")
+				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
+				if link != false
+					vip.remote_image_url = link
+					check = vip.save
+					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
+					if check == false
+						array.push("#{vip.id}")
+						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{vip.id}"
+					end
+				end
+			end
+		end
+		render json: array, status: 200
 	end
 end
