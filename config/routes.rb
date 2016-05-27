@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
     get "/" => "index#index"
     get "/import" => "index#import"
+    get "/script" => "index#script"
 
     # Admin
     resources :admins
@@ -35,7 +36,7 @@ Rails.application.routes.draw do
     post '/broadcasters/restore_m' 	=> 'broadcasters#restore_m'
     post '/broadcasters/destroy_m' 	=> 'broadcasters#destroy_m'
     resources :broadcasters do
-      get '/basic/:id' 		=> 'broadcasters#basic'
+      get '/basic' 		=> 'broadcasters#basic'
       get '/room' 				=> 'broadcasters#room'
       get '/gifts' 				=> 'broadcasters#gifts'
       get '/images' 			=> 'broadcasters#images'

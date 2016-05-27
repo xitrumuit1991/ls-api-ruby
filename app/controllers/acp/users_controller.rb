@@ -52,13 +52,13 @@ class Acp::UsersController < Acp::ApplicationController
       if prev_path[:controller] == 'acp/users'
         redirect_to({ action: 'index' }, notice: "Thông tin tài khoản '#{@data.username}' được cập nhật thành công.")
       else
-        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin cơ bản được cập nhật thành công.')
+        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id }, notice: 'Thông tin cơ bản được cập nhật thành công.')
       end
     else
       if prev_path[:controller] == 'acp/users'
         render :edit
       else
-        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
+        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id }, alert: @data.errors.full_messages)
       end
     end
   end
@@ -152,6 +152,6 @@ class Acp::UsersController < Acp::ApplicationController
     end
 
     def parameters
-      params.require(:user).permit(:username, :name, :email, :user_level_id, :user_exp)
+      params.require(controller_name.classify.downcase.to_sym).permit(:username, :name, :email, :user_level_id, :user_exp)
     end
 end
