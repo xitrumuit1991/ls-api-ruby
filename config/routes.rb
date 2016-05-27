@@ -275,7 +275,16 @@ Rails.application.routes.draw do
         get '/topWeek' => 'ranks#topWeek'
         get '/topMonth' => 'ranks#topMonth'
         get '/topYear' => 'ranks#topYear'
-        get '/optimize' => 'ranks#optimizeImage'
+        get '/optimize-users' => 'ranks#optimizeImageUsers'
+        get '/optimize-rooms' => 'ranks#optimizeImagerooms'
+        get '/optimize-bct-image' => 'ranks#optimizeImageBctImage'
+        get '/optimize-bct-video' => 'ranks#optimizeImageBctVideo'
+        get '/optimize-bct-background' => 'ranks#optimizeImageBctBackground'
+        get '/optimize-gift' => 'ranks#optimizeGift'
+        get '/optimize-poster' => 'ranks#optimizePoster'
+        get '/optimize-room-action' => 'ranks#optimizeImageRoomAction'
+        get '/optimize-room-background' => 'ranks#optimizeRoomBackground'
+        get '/optimize-slide' => 'ranks#optimizeImageSlide'
         get '/update-name-email-u' => 'ranks#updateNameEmailUserMBF'
       end
 

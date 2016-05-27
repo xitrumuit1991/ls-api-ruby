@@ -26,7 +26,8 @@ class Acp::RoomsController < Acp::ApplicationController
 		parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
 		@data = @model.new(parameters)
 		@data.is_privated = false
-		@data.thumb_crop = optimizeKraken(parameters[:thumb])
+		@data.thumb_crop = parameters[:thumb]
+		@data.thumb = parameters[:thumb]
 		if @data.save
 			redirect_to({ action: 'index' }, notice: 'Room was successfully created.')
 		else

@@ -16,6 +16,34 @@ class VipImageUploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
+  version :w60h60 do
+    process resize_to_fill: [60, 60]
+  end
+
+  version :w100h100 do
+    process resize_to_fill: [100, 100]
+  end
+
+  version :w120h120 do
+    process resize_to_fill: [120, 120]
+  end
+
+  version :w200h200 do
+    process resize_to_fill: [200, 200]
+  end
+
+  version :w240h240 do
+    process resize_to_fill: [240, 240]
+  end
+
+  version :w300h300 do
+    process resize_to_fill: [300, 300]
+  end
+
+  version :w400h400 do
+    process resize_to_fill: [400, 400]
+  end
+
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:
@@ -44,8 +72,8 @@ class VipImageUploader < CarrierWave::Uploader::Base
 
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
-  # def filename
-  #   "Vip_#{@model.id}.#{file.extension}" if original_filename
-  # end
+  def filename
+    "Vip_#{@model.id}.#{file.extension}" if original_filename
+  end
 
 end
