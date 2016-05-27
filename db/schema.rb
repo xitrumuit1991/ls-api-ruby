@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160523034001) do
+ActiveRecord::Schema.define(version: 20160527050125) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -743,9 +743,9 @@ ActiveRecord::Schema.define(version: 20160523034001) do
     t.string   "active_code",     limit: 10
     t.boolean  "actived",                     default: false
     t.datetime "active_date"
-    t.boolean  "is_broadcaster"
+    t.boolean  "is_broadcaster",              default: false
     t.integer  "no_heart",        limit: 4,   default: 0
-    t.boolean  "is_banned"
+    t.boolean  "is_banned",                   default: false
     t.string   "token",           limit: 255
     t.datetime "last_login"
     t.integer  "user_level_id",   limit: 4

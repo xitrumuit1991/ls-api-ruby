@@ -5,27 +5,32 @@ class Acp::IndexController < Acp::ApplicationController
 	end
 
 	def import
-		file = Roo::Excelx.new("#{Rails.root}/public/default/Danh sach account CSKH DV GTGT tong hop 0304 2015.xlsx")
+		# file = Roo::Excelx.new("#{Rails.root}/public/default/Danh sach account CSKH DV GTGT tong hop 0304 2015.xlsx")
 
-		(1..file.last_row).each do |i|
-  		row = file.row(i)
-  		admin = Admin.new
-			admin.role_id = 2
-	    admin.email 	= "#{row[0]}@mobifone.com.vn"
-	    admin.password 							= row[1]
-	    admin.password_confirmation = row[1]
-  		admin.save
-		end
+		# (1..file.last_row).each do |i|
+  # 		row = file.row(i)
+  # 		admin = Admin.new
+		# 	admin.role_id = 2
+	 #    admin.email 	= "#{row[0]}@mobifone.com.vn"
+	 #    admin.password 							= row[1]
+	 #    admin.password_confirmation = row[1]
+  # 		admin.save
+		# end
 
-		(1..file.sheet(1).last_row).each do |i|
-  		row = file.row(i)
-  		admin = Admin.new
-			admin.role_id = 2
-	    admin.email 	= "#{row[0]}@mobifone.com.vn"
-	    admin.password 							= row[1]
-	    admin.password_confirmation = row[1]
-  		admin.save
-		end
+		# (1..file.sheet(1).last_row).each do |i|
+  # 		row = file.row(i)
+  # 		admin = Admin.new
+		# 	admin.role_id = 2
+	 #    admin.email 	= "#{row[0]}@mobifone.com.vn"
+	 #    admin.password 							= row[1]
+	 #    admin.password_confirmation = row[1]
+  # 		admin.save
+		# end
+		redirect_to "/acp"
+	end
+
+	def script
+		User.where("is_banned IS NULL").update_all(is_banned: 0)
 		redirect_to "/acp"
 	end
 
