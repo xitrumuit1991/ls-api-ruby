@@ -292,6 +292,7 @@ Rails.application.routes.draw do
       # rooms
       scope 'rooms' do
         get '/on-air' => 'room#onair' #
+        get '/my-idol' => 'room#myIdol' #
         get '/coming-soon' => 'room#comingSoon' #
         get '/room-type' => 'room#roomType'
         get '/slug/:slug' => 'room#detailBySlug'

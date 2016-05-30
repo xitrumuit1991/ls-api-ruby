@@ -4,7 +4,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   include KrakenHelper
 
   before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
-  before_action :checkIsBroadcaster, except: [:roomType, :onair, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :checkIsBroadcaster, except: [:roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
     @user = check_authenticate
@@ -36,6 +36,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
 
     @totalPage =  (Float(total_record)/9).ceil
+  end
+
+  def myIdol
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 9
+    total_record = @user.user_follow_bcts.length
+    @user_follow = @user.user_follow_bcts.limit(9).offset(offset)
+    @totalPage = (Float(total_record)/9).ceil
   end
 
   def roomType
