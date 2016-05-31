@@ -188,222 +188,101 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 	end
 
 	def optimizeImageUsers
-		array = []
 		User.all.each do |user|
 			if user.avatar_crop != nil
-				link = uploadDowload("#{request.base_url}#{user.avatar_crop}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					user.remote_avatar_crop_url = link
-					check = user.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{user.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{user.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(user, 'users', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageRooms
-		array = []
 		Room.all.each do |room|
 			if room.thumb_crop != nil
-				link = uploadDowload("#{request.base_url}#{room.thumb_crop}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					room.remote_thumb_crop_url = link
-					check = room.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{room.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(room, 'rooms', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageBctImage
-		array = []
 		BctImage.all.each do |bct_image|
 			if bct_image.image != nil
-				link = uploadDowload("#{request.base_url}#{bct_image.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					bct_image.remote_image_url = link
-					check = bct_image.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{bct_image.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_image.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(bct_image, 'bct-image', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageBctVideo
-		array = []
 		BctVideo.all.each do |bct_video|
 			if bct_video.thumb != nil
-				link = uploadDowload("#{request.base_url}#{bct_video.thumb}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					bct_video.remote_thumb_url = link
-					check = bct_video.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{bct_video.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_video.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(bct_video, 'bct-video', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageBctBackground
-		array = []
 		BroadcasterBackground.all.each do |bct_bg|
 			if bct_bg.image != nil
-				link = uploadDowload("#{request.base_url}#{bct_bg.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					bct_bg.remote_image_url = link
-					check = bct_bg.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{bct_bg.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{bct_bg.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(bct_bg, 'bct-bg', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeGift
-		array = []
 		Gift.all.each do |gift|
 			if gift.image != nil
-				link = uploadDowload("#{request.base_url}#{gift.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					gift.remote_image_url = link
-					check = gift.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{gift.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{gift.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(gift, 'gift', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizePoster
-		array = []
 		Poster.all.each do |poster|
 			if poster.thumb != nil
-				link = uploadDowload("#{request.base_url}#{poster.thumb}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					poster.remote_thumb_url = link
-					check = poster.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{poster.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{poster.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(poster, 'poster', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageRoomAction
-		array = []
 		RoomAction.all.each do |room_action|
 			if room_action.image != nil
-				link = uploadDowload("#{request.base_url}#{room_action.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					room_action.remote_image_url = link
-					check = room_action.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{room_action.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room_action.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(room_action, 'room-action', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeRoomBackground
-		array = []
 		RoomBackground.all.each do |room_background|
 			if room_background.image != nil
-				link = uploadDowload("#{request.base_url}#{room_background.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					room_background.remote_image_url = link
-					check = room_background.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{room_background.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{room_background.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(room_background, 'room-bg', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageSlide
-		array = []
 		Slide.all.each do |slide|
 			if slide.banner != nil
-				link = uploadDowload("#{request.base_url}#{slide.banner}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					slide.remote_banner_url = link
-					check = slide.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{slide.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{slide.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(slide, 'slide', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 
 	def optimizeImageVip
-		array = []
 		Vip.all.each do |vip|
 			if vip.image != nil
-				link = uploadDowload("#{request.base_url}#{vip.image}")
-				Rails.logger.info "ANGCO ------------------------------------ linkUptimize: #{link}"
-				if link != false
-					vip.remote_image_url = link
-					check = vip.save
-					Rails.logger.info "ANGCO ------------------------------------ check: #{check}"
-					if check == false
-						array.push("#{vip.id}")
-						Rails.logger.info "ANGCO ------------------------------------ User_id Error: #{vip.id}"
-					end
-				end
+				OptimizeImageJob.perform_later(vip, 'vip', request.base_url)
 			end
 		end
-		render json: array, status: 200
+		return head 200
 	end
 end
