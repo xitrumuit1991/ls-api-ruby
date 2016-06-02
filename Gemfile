@@ -138,7 +138,7 @@ gem 'roo', '~> 2.4.0'
 gem 'rubyzip', '~> 1.1'
 
 # axlsx
-gem '', '2.1.0.pre'
+gem 'axlsx', '2.1.0.pre'
 
 # Axlsx-Rails
 gem 'axlsx_rails'
