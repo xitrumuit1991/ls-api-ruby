@@ -122,9 +122,6 @@ gem 'venice'
 # Kaminari
 gem 'kaminari'
 
-# Axlsx-Rails
-gem 'axlsx_rails'
-
 # kraken IO
 gem 'kraken-io'
 
@@ -134,8 +131,14 @@ gem 'cancancan', '~> 1.10'
 # rmagick
 gem 'rmagick', '~> 2.15', '>= 2.15.4'
 
-# zip-zip
-gem 'zip-zip', '~> 0.3'
-
 # Roo
 gem 'roo', '~> 2.4.0'
+
+# rubyzip
+gem 'rubyzip', '~> 1.1'
+
+# axlsx
+gem '', '2.1.0.pre'
+
+# Axlsx-Rails
+gem 'axlsx_rails'
