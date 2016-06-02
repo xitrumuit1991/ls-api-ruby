@@ -83,11 +83,49 @@ class User < ActiveRecord::Base
 	end
 
 	def avatar_path
-		"#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
+		avatar = {}
+		if !self.avatar_crop.url.nil?
+			avatar = {
+					avatar: 		"#{Settings.base_url}#{self.avatar_crop.url}", 
+					avatar_w60h60: 	"#{Settings.base_url}#{self.avatar_crop.w60h60.url}",
+					avatar_w100h100:"#{Settings.base_url}#{self.avatar_crop.w100h100.url}",
+					avatar_w120h120:"#{Settings.base_url}#{self.avatar_crop.w120h120.url}",
+					avatar_w200h200:"#{Settings.base_url}#{self.avatar_crop.w200h200.url}",
+					avatar_w240h240:"#{Settings.base_url}#{self.avatar_crop.w240h240.url}",
+					avatar_w300h300:"#{Settings.base_url}#{self.avatar_crop.w300h300.url}",
+					avatar_w400h400:"#{Settings.base_url}#{self.avatar_crop.w400h400.url}"
+				}
+		else
+			avatar = {
+					avatar: 			"#{Settings.base_url}default/no-avatar.png",
+					avatar_w60h60: 		"#{Settings.base_url}default/w60h60_no-avatar.png",
+					avatar_w100h100: 	"#{Settings.base_url}default/w100h100_no-avatar.png",
+					avatar_w120h120: 	"#{Settings.base_url}default/w120h120_no-avatar.png",
+					avatar_w200h200: 	"#{Settings.base_url}default/w200h200_no-avatar.png",
+					avatar_w240h240: 	"#{Settings.base_url}default/w240h240_no-avatar.png",
+					avatar_w300h300: 	"#{Settings.base_url}default/w300h300_no-avatar.png",
+					avatar_w400h400: 	"#{Settings.base_url}default/w400h400_no-avatar.png"
+				}
+		end
+		return avatar
+		# "#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
 	end
 
 	def cover_path
-		"#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
+		cover = {}
+		if !self.cover_crop.url.nil?
+			cover = {
+				cover: 			"#{Settings.base_url}#{self.cover_crop.url}",
+				cover_w940h200: "#{Settings.base_url}#{self.cover_crop.w940h200.url}"
+			}
+		else
+			cover = {
+				cover: 			"#{Settings.base_url}default/no-cover.jpg",
+				cover_w940h200: "#{Settings.base_url}default/w940h200_no-cover.jpg"
+			}
+		end
+		return cover
+		# "#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
 	end
 
 	def horoscope

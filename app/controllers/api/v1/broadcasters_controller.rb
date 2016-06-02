@@ -30,19 +30,51 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
       giftLogs = @user.broadcaster.rooms.find_by_is_privated(false).gift_logs
       @records = Array.new
       giftLogs.each do |giftLog|
-        aryLog = OpenStruct.new({:id => giftLog.id, :name => giftLog.gift.name, :thumb => "#{request.base_url}#{giftLog.gift.image.square}", :quantity => giftLog.quantity, :cost => giftLog.cost.round(0), :total_cost => (giftLog.cost*giftLog.quantity).round(0), :created_at => giftLog.created_at})
+        aryLog = OpenStruct.new({
+            :id => giftLog.id, 
+            :name => giftLog.gift.name, 
+            :thumb => "#{request.base_url}#{giftLog.gift.image_path[:image]}", 
+            :thumb_w50h50 => "#{request.base_url}#{giftLog.gift.image_path[:image_w50h50]}", 
+            :thumb_w100h100 => "#{request.base_url}#{giftLog.gift.image_path[:image_w100h100]}", 
+            :thumb_w200h200 => "#{request.base_url}#{giftLog.gift.image_path[:image_w200h200]}", 
+            :quantity => giftLog.quantity, 
+            :cost => giftLog.cost.round(0), 
+            :total_cost => (giftLog.cost*giftLog.quantity).round(0), 
+            :created_at => giftLog.created_at
+          })
         @records = @records.push(aryLog)
       end
 
       heartLogs = @user.broadcaster.rooms.find_by_is_privated(false).heart_logs
       heartLogs.each do |heartLog|
-        aryLog = OpenStruct.new({:id => heartLog.id, :name => "Tim", :thumb => "#{request.base_url}/assets/images/icon/car-icon.png", :quantity => heartLog.quantity, :cost => 0, :total_cost => 0, :created_at => heartLog.created_at})
+        aryLog = OpenStruct.new({
+            :id => heartLog.id, 
+            :name => "Tim", 
+            :thumb => nil, 
+            :thumb_w50h50 => nil, 
+            :thumb_w100h100 => nil, 
+            :thumb_w200h200 => nil, 
+            :quantity => heartLog.quantity, 
+            :cost => 0, 
+            :total_cost => 0, 
+            :created_at => heartLog.created_at
+          })
         @records = @records.push(aryLog)
       end
 
       actionLogs = @user.broadcaster.rooms.find_by_is_privated(false).action_logs
       actionLogs.each do |actionLog|
-        aryLog = OpenStruct.new({:id => actionLog.id, :name => actionLog.room_action.name, :thumb => "#{request.base_url}#{actionLog.room_action.image.square}", :quantity => 1, :cost => actionLog.cost.round(0), :total_cost => actionLog.cost.round(0), :created_at => actionLog.created_at})
+        aryLog = OpenStruct.new({
+            :id => actionLog.id, 
+            :name => actionLog.room_action.name,
+            :thumb => "#{request.base_url}#{actionLog.room_action.image_path[:image]}", 
+            :thumb_w50h50 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w50h50]}", 
+            :thumb_w100h100 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w100h100]}", 
+            :thumb_w200h200 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w200h200]}",
+            :quantity => 1, :cost => actionLog.cost.round(0), 
+            :total_cost => actionLog.cost.round(0), 
+            :created_at => actionLog.created_at
+          })
         @records = @records.push(aryLog)
       end
 
