@@ -1,5 +1,5 @@
 class Acp::SchedulesController < Acp::ApplicationController
-	load_and_authorize_resource
+	# load_and_authorize_resource
 	before_filter :init
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
@@ -60,7 +60,7 @@ class Acp::SchedulesController < Acp::ApplicationController
 			@data = @model.find(params[:id])
 		end
 
-		def parameters
-			params.require(:schedule).permit(:start, :end)
-		end
+		# def parameters
+		# 	params.require(:schedule).permit(:start, :end)
+		# end
 end

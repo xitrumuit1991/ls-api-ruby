@@ -295,6 +295,20 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     end
   end
 
+  def reportTopHearter
+    where = Hash.new
+    where[:created_at] = params[:date].present? ? Time.parse(params[:date]).beginning_of_month..Time.parse(params[:date]).end_of_month : Time.zone.now.beginning_of_month..Time.zone.now.end_of_month
+    @total = @user.broadcaster.public_room.heart_logs.select('sum(quantity) as quantity').where(where).take.quantity.to_i
+    @data = @user.broadcaster.public_room.heart_logs.select('user_id, sum(quantity) as quantity').where(where).group(:user_id).order('quantity DESC').limit(10)
+  end
+
+  def reportTopSpender
+    where = Hash.new
+    where[:created_at] = params[:date].present? ? Time.parse(params[:date]).beginning_of_month..Time.parse(params[:date]).end_of_month : Time.zone.now.beginning_of_month..Time.zone.now.end_of_month
+    @total = @user.broadcaster.public_room.user_logs.select('sum(money) as total').where(where).take.total.to_i
+    @data = @user.broadcaster.public_room.user_logs.select('user_id, sum(money) as total').where(where).group(:user_id).order('total DESC').limit(10)
+  end
+
   private
     def checkIsBroadcaster
       unless @user.is_broadcaster
