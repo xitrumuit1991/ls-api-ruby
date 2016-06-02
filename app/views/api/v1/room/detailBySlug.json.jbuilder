@@ -35,7 +35,7 @@ json.broadcaster do
 	json.avatar			@room.broadcaster.user.avatar_path
 	json.cover			@room.broadcaster.user.cover_path
 	json.name			@room.broadcaster.user.name
-	json.description	@room.broadcaster.description
+	json.description	@room.broadcaster.description.gsub(/(\r\n|\n|\r|'|")/, '')
 	json.username		@room.broadcaster.user.username
 	json.heart			@room.broadcaster.recived_heart
 	json.exp			@room.broadcaster.broadcaster_exp

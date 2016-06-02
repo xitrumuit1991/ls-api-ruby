@@ -243,6 +243,8 @@ Rails.application.routes.draw do
         get '/revcived-items' => 'broadcasters#broadcasterRevcivedItems' #
         get '/default-background' => 'broadcasters#defaultBackground' # api is not using
         get '/broadcaster-background' => 'broadcasters#broadcasterBackground' # api is not using
+        get '/top-hearter' => 'broadcasters#reportTopHearter' #
+        get '/top-spender' => 'broadcasters#reportTopSpender' #
         get '/:id' => 'broadcasters#profile' #
         post '/status' => 'broadcasters#status' # #Liem - Không thấy dùng bên web
         post '/pictures' => 'broadcasters#pictures' #
@@ -292,6 +294,7 @@ Rails.application.routes.draw do
       # rooms
       scope 'rooms' do
         get '/on-air' => 'room#onair' #
+        get '/my-idol' => 'room#myIdol' #
         get '/coming-soon' => 'room#comingSoon' #
         get '/room-type' => 'room#roomType'
         get '/slug/:slug' => 'room#detailBySlug'

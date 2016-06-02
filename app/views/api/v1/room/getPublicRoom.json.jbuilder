@@ -22,7 +22,7 @@ json.broadcaster do
 	json.instagram		@room.broadcaster.user.instagram_link
 	json.status			@room.broadcaster.user.statuses.blank? ? nil : @room.broadcaster.user.statuses[0].content
 	json.isFollow		!@user.broadcasters.where(id: @room.broadcaster.id).empty?
-  json.bct_desc					@room.broadcaster.description
+  json.description					@room.broadcaster.description
 end
 
 json.schedules @room.schedules do |schedule|
