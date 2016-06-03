@@ -21,7 +21,9 @@
         </div>
       </div>
       <div class="row">
-        <form action="" method="get">
+        <form action="" method="get" id="form-search">
+          <input type="hidden" name="sort" value="<%= params[:sort] %>" id="sort">
+          <input type="hidden" name="field" value="<%= params[:field] %>" id="field">
           <div class="col-md-3">
             <div class="input-daterange input-group">
               <input type="text" class="form-control" name="start_date" value="<%= params[:start_date] %>" id="start_date" aria-invalid="false">
@@ -42,16 +44,16 @@
     <div class="panel-body">
       <form action="" method="post">
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-        <table class="table table-hover no-more-tables">
+        <table class="table table-hover no-more-tables dataTable">
           <thead>
-          <tr>
-            <th style="width:20%">Avatar</th>
-            <th style="width:20%">Bí danh</th>
-            <th style="width:20%">Email</th>
-            <th style="width:15%">Cấp độ</th>
-            <th style="width:15%">Kinh nghiệm</th>
-            <th style="width:10%">Ngày tạo</th>
-          </tr>
+            <tr>
+              <th style="width:20%">Avatar</th>
+              <th style="width:20%" class="<%= params[:field] == 'username' ? "sorting_#{params[:sort]}":"sorting" %>" data-field="username">Bí danh</th>
+              <th style="width:20%" class="<%= params[:field] == 'email' ? "sorting_#{params[:sort]}":"sorting" %>" data-field="email">Email</th>
+              <th style="width:15%">Cấp độ</th>
+              <th style="width:15%">Kinh nghiệm</th>
+              <th style="width:10%">Ngày tạo</th>
+            </tr>
           </thead>
           <tbody>
           <% @users.each do |item| %>
@@ -83,7 +85,7 @@
           </tbody>
         </table>
       </form>
-      <div class="row">
+      <div class="row pull-right">
         <div class="col-md-12">
           <%= paginate @users %>
         </div>
