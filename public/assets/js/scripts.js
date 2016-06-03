@@ -7,14 +7,14 @@ $(document).ready(function () {
     //start date & end date
     $('#start_date').datetimepicker({format: 'DD/MM/YYYY LT'});
     $('#end_date').datetimepicker({
-        format: 'DD/MM/YYYY LT',
-        useCurrent: false //Important! See issue #1075
+      format: 'DD/MM/YYYY LT',
+      useCurrent: false //Important! See issue #1075
     });
     $("#start_date").on("dp.change", function (e) {
-        $('#end_date').data("DateTimePicker").minDate(e.date);
+      $('#end_date').data("DateTimePicker").minDate(e.date);
     });
     $("#end_date").on("dp.change", function (e) {
-        $('#start_date').data("DateTimePicker").maxDate(e.date);
+      $('#start_date').data("DateTimePicker").maxDate(e.date);
     });
 
     // check modal show
@@ -45,11 +45,25 @@ $(document).ready(function () {
 
     // check all for table
     $('#check-all').on('click', function () {
-        if ($(this).is(':checked')) {
-            $('#data-table table .check-all').prop('checked', true);
-        } else {
-            $('#data-table table .check-all').prop('checked', false);
-        }
+      if ($(this).is(':checked')) {
+          $('#data-table table .check-all').prop('checked', true);
+      } else {
+          $('#data-table table .check-all').prop('checked', false);
+      }
+    });
+    
+    // table sort
+    $('table.dataTable').on('click', 'thead th', function(){
+      if($(this).hasClass('sorting'))
+        $(this).removeClass('sorting').addClass('sorting_asc');
+      else
+        $(this).toggleClass("sorting_asc sorting_desc");
+
+      var sort = $(this).attr('class').split("_")[1];
+      var field = $(this).data('field');
+      $('#sort').val(sort);
+      $('#field').val(field);
+      $('#form-search').submit();
     });
     
     // update status
@@ -124,3 +138,10 @@ $(document).ready(function () {
         });
 
 });
+
+function getQueryString( field, url ) {
+    var href = url ? url : window.location.href;
+    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+    var string = reg.exec(href);
+    return string ? string[1] : null;
+}
