@@ -1,8 +1,14 @@
 json.id					@room.id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb				@room.thumb_path
-json.thumb_mb			@room.thumb_path(true)
+json.thumb             	@room.thumb_path[:thumb]
+json.thumb_mb          	@room.thumb_path[:thumb_w960h540]
+json.thumb_w160h190    	@room.thumb_path[:thumb_w160h190]
+json.thumb_w240h135    	@room.thumb_path[:thumb_w240h135]
+json.thumb_w320h180    	@room.thumb_path[:thumb_w320h180]
+json.thumb_w720h405    	@room.thumb_path[:thumb_w720h405]
+json.thumb_w768h432    	@room.thumb_path[:thumb_w768h432]
+json.thumb_w960h540    	@room.thumb_path[:thumb_w960h540]
 json.is_privated		@room.is_privated
 json.on_air				@room.on_air
 json.link_stream		"http://stream.livestar.vn:80/livestar-open/#{@room.id}/playlist.m3u8"
@@ -33,7 +39,7 @@ json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
 	json.avatar			@room.broadcaster.user.avatar_path
-	json.cover			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/cover"
+	json.cover			@room.broadcaster.user.cover_path
 	json.name			@room.broadcaster.user.name
 	json.description	@room.broadcaster.description.gsub(/(\r\n|\n|\r|'|")/, '')
 	json.username		@room.broadcaster.user.username

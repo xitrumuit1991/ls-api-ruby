@@ -2,8 +2,14 @@ json.id					@room.id
 json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
-json.thumb 	 			@room.thumb_path
-json.thumb_mb			@room.thumb_path(true)
+json.thumb             @room.thumb_path[:thumb]
+json.thumb_mb          @room.thumb_path[:thumb_w960h540]
+json.thumb_w160h190    @room.thumb_path[:thumb_w160h190]
+json.thumb_w240h135    @room.thumb_path[:thumb_w240h135]
+json.thumb_w320h180    @room.thumb_path[:thumb_w320h180]
+json.thumb_w720h405    @room.thumb_path[:thumb_w720h405]
+json.thumb_w768h432    @room.thumb_path[:thumb_w768h432]
+json.thumb_w960h540    @room.thumb_path[:thumb_w960h540]
 json.is_privated		@room.is_privated
 json.bct_background_id @room.broadcaster_background_id
 json.room_background_id @room.room_background_id
@@ -45,18 +51,24 @@ end
 
 #Load gift
 json.gifts @gifts do |gift|
-  json.id			gift.id
-  json.name		gift.name
-  json.image		"#{request.base_url}/#{gift.image.square}?timestamp=#{gift.updated_at.to_i}"
-  json.price		gift.price
+  json.id							gift.id
+  json.name						gift.name
+  json.image					gift.image_path[:image]
+	json.image_w50h50		gift.image_path[:image_w50h50]
+	json.image_w100h100	gift.image_path[:image_w100h100]
+	json.image_w200h200	gift.image_path[:image_w200h200]
+  json.price					gift.price
 end
 
 #Load action
 json.actions @actions do |action|
-  json.id			action.id
-  json.name		action.name
-  json.image		"#{request.base_url}/#{action.image.square}?timestamp=#{action.updated_at.to_i}"
-  json.price		action.price
+  json.id							action.id
+  json.name						action.name
+  json.image					action.image_path[:image]
+	json.image_w50h50		action.image_path[:image_w50h50]
+	json.image_w100h100	action.image_path[:image_w100h100]
+	json.image_w200h200	action.image_path[:image_w200h200]
+  json.price					action.price
 end
 
 json.gifts_selected @arrGiftSelected
