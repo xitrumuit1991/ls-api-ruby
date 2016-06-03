@@ -67,11 +67,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topUserSendGift
 		if params[:range] == nil or params[:range] == "week"
-			@top_gift_users = WeeklyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(created_at: DateTime.now.prev_week.all_week).group(:broadcaster_id).order('total_money desc').limit(5)
+			@top_gift_users = WeeklyTopUserSendGift.order('money desc').limit(5)
 		elsif params[:range] == "all"
-			@top_gift_users = TopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').group(:broadcaster_id).order('total_money desc').limit(5)
+			@top_gift_users = TopUserSendGift.order('money desc').limit(5)
 		elsif params[:range] == "month"
-			@top_gift_users = MonthlyTopUserSendGift.select('*,sum(quantity) as quantity, sum(money) as total_money').where(created_at: DateTime.now.prev_month.all_month).group(:broadcaster_id).order('total_money desc').limit(5)
+			@top_gift_users = MonthlyTopUserSendGift.order('money desc').limit(5)
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
@@ -79,11 +79,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topBroadcasterLevelGrow
 		if params[:range] == nil or params[:range] == "week"
-			@top_broadcaster_level = WeeklyTopBctLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_week.all_week).group(:broadcaster_id).order('times desc').limit(5)
+			@top_broadcaster_level = WeeklyTopBctLevelUp.order('times desc').limit(5)
 		elsif params[:range] == "all"
-			@top_broadcaster_level = TopBctLevelUp.select('*,sum(times) as level').group(:broadcaster_id).order('times desc').limit(5)
+			@top_broadcaster_level = TopBctLevelUp.order('times desc').limit(5)
 		elsif params[:range] == "month"
-			@top_broadcaster_level = MonthlyTopBctLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.all_month).group(:broadcaster_id).order('times desc').limit(5)
+			@top_broadcaster_level = MonthlyTopBctLevelUp.order('times desc').limit(5)
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
@@ -91,11 +91,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topUserLevelGrow
 		if params[:range] == nil or params[:range] == "week"
-			@top_user_level = WeeklyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_week.all_week).group(:user_id).order('times desc').limit(5)
+			@top_user_level = WeeklyTopUserLevelUp.order('times desc').limit(5)
 		elsif params[:range] == "all"
-			@top_user_level = TopUserLevelUp.select('*,sum(times) as level').group(:user_id).order('times desc').limit(5)
+			@top_user_level = TopUserLevelUp.order('times desc').limit(5)
 		elsif params[:range] == "month"
-			@top_user_level = MonthlyTopUserLevelUp.select('*,sum(times) as level').where(created_at: DateTime.now.prev_month.beginning_of_month..DateTime.now.prev_month.end_of_month).group(:user_id).order('times desc').limit(5)
+			@top_user_level = MonthlyTopUserLevelUp.order('times desc').limit(5)
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
