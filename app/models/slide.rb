@@ -3,6 +3,24 @@ class Slide < ActiveRecord::Base
 
 	mount_uploader :banner, SlideUploader
 
+	def banner_path
+  	banner = {}
+		if !self.banner.url.nil?
+			banner = {
+				banner: 						"#{Settings.base_url}#{self.banner.url}", 
+				banner_w1200h480: 	"#{Settings.base_url}#{self.banner.w1200h480.url}",
+				banner_w170h120: 		"#{Settings.base_url}#{self.banner.w170h120.url}",
+				}
+		else
+			banner = {
+				banner: 						nil,
+				banner_w1200h480: 	nil,
+				banner_w170h120: 		nil,
+				}
+		end
+		return banner
+  end
+
 	rails_admin do
 		configure :banner, :jcrop
 		list do

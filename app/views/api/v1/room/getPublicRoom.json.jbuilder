@@ -45,18 +45,24 @@ end
 
 #Load gift
 json.gifts @gifts do |gift|
-  json.id			gift.id
-  json.name		gift.name
-  json.image		"#{request.base_url}/#{gift.image.square}?timestamp=#{gift.updated_at.to_i}"
-  json.price		gift.price
+  json.id							gift.id
+  json.name						gift.name
+  json.image					gift.image_path[:image]
+	json.image_w50h50		gift.image_path[:image_w50h50]
+	json.image_w100h100	gift.image_path[:image_w100h100]
+	json.image_w200h200	gift.image_path[:image_w200h200]
+  json.price					gift.price
 end
 
 #Load action
 json.actions @actions do |action|
-  json.id			action.id
-  json.name		action.name
-  json.image		"#{request.base_url}/#{action.image.square}?timestamp=#{action.updated_at.to_i}"
-  json.price		action.price
+  json.id							action.id
+  json.name						action.name
+  json.image					action.image_path[:image]
+	json.image_w50h50		action.image_path[:image_w50h50]
+	json.image_w100h100	action.image_path[:image_w100h100]
+	json.image_w200h200	action.image_path[:image_w200h200]
+  json.price					action.price
 end
 
 json.gifts_selected @arrGiftSelected

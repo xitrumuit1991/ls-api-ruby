@@ -33,7 +33,7 @@ json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
 	json.avatar			@room.broadcaster.user.avatar_path
-	json.cover			"#{request.base_url}/api/v1/users/#{@room.broadcaster.user.id}/cover"
+	json.cover			@room.broadcaster.user.cover_path
 	json.name			@room.broadcaster.user.name
 	json.description	@room.broadcaster.description.gsub(/(\r\n|\n|\r|'|")/, '')
 	json.username		@room.broadcaster.user.username

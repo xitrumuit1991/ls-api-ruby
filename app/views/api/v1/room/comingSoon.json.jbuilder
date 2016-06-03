@@ -12,8 +12,14 @@ json.rooms @room_schedules do |room|
   json.id			room.id
   json.title		room.title
   json.slug		room.slug
-  json.thumb		room.thumb_path
-  json.thumb_mb	room.thumb_path(true)
+  json.thumb             room.thumb_path[:thumb]
+  json.thumb_mb          room.thumb_path[:thumb_w960h540]
+  json.thumb_w160h190    room.thumb_path[:thumb_w160h190]
+  json.thumb_w240h135    room.thumb_path[:thumb_w240h135]
+  json.thumb_w320h180    room.thumb_path[:thumb_w320h180]
+  json.thumb_w720h405    room.thumb_path[:thumb_w720h405]
+  json.thumb_w768h432    room.thumb_path[:thumb_w768h432]
+  json.thumb_w960h540    room.thumb_path[:thumb_w960h540]
   json.broadcaster do
     json.id		room.broadcaster.user.id
     json.bct_id		room.broadcaster.id
