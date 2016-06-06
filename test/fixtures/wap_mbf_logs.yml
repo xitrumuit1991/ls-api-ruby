@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  msisdn: MyString
+  sp_id: 1
+  trans_id: MyString
+  pkg: MyString
+  price: 1
+  information: MyText
+  status: false
+
+two:
+  msisdn: MyString
+  sp_id: 1
+  trans_id: MyString
+  pkg: MyString
+  price: 1
+  information: MyText
+  status: false

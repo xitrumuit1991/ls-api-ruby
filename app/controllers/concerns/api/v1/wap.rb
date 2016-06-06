@@ -6,15 +6,16 @@ module Api::V1::Wap extend ActiveSupport::Concern
     data += padding.chr * padding
     cipher  = OpenSSL::Cipher::Cipher.new("aes-128-ecb")
     cipher.encrypt
-    cipher.key = "SincRqw0FvjUzsMT"
+    cipher.key = Settings.wap_mbf_key
     cipher.iv = iv
-    encrypted = cipher.update(data)
+    encrypted = Base64.encode64(cipher.update(data))
   end
 
   def decrypt data, iv = ""
+    data = Base64.decode64(data)
     cipher = OpenSSL::Cipher::Cipher.new("aes-128-ecb")
     cipher.decrypt
-    cipher.key = "SincRqw0FvjUzsMT"
+    cipher.key = Settings.wap_mbf_key
     decrypted = cipher.update(data) + cipher.final
   end
 
