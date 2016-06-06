@@ -202,6 +202,8 @@ Rails.application.routes.draw do
         post  '/mobifone' 			=> 'auth#mbf_register'
         put   '/mobifone' 			=> 'auth#mbf_sync'
         patch '/mobifone' 			=> 'auth#mbf_verify'
+        # Wap
+        post 	'wap-mbf-register' => 'auth#wap_mbf_register'
       end
 
       # users
