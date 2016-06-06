@@ -3,9 +3,10 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
+  include Api::V1::Wap
   include CaptchaHelper
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -209,6 +210,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     else
       render json: { error: "Số điện thoại này không tồn tại trong hệ thống Livestar !" }, status: 404
     end
+  end
+
+  def wap_mbf_register
+    a = encrypt "Vivi"
+    b = Base64.encode64(a)
+    puts '======================'
+    puts a
+    puts b
+    puts decrypt Base64.decode64(b)
+    puts decrypt(Base64.decode64(b)).length
+    puts '======================'
+    return head 200
   end
 
   def login
