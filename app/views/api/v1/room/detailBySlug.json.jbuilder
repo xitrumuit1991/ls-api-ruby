@@ -38,8 +38,16 @@ end
 json.broadcaster do
 	json.broadcaster_id	@room.broadcaster.id
 	json.user_id		@room.broadcaster.user.id
-	json.avatar			@room.broadcaster.user.avatar_path
-	json.cover			@room.broadcaster.user.cover_path
+	json.avatar     	@room.broadcaster.user.avatar_path[:avatar]
+	json.avatar_w60h60      @room.broadcaster.user.avatar_path[:avatar_w60h60]
+	json.avatar_w100h100    @room.broadcaster.user.avatar_path[:avatar_w100h100]
+	json.avatar_w120h120    @room.broadcaster.user.avatar_path[:avatar_w120h120]
+	json.avatar_w200h200    @room.broadcaster.user.avatar_path[:avatar_w200h200]
+	json.avatar_w240h240    @room.broadcaster.user.avatar_path[:avatar_w240h240]
+	json.avatar_w300h300    @room.broadcaster.user.avatar_path[:avatar_w300h300]
+	json.avatar_w400h400    @room.broadcaster.user.avatar_path[:avatar_w400h400]
+	json.cover              @room.broadcaster.user.cover_path[:cover]
+	json.cover_w940h200		@room.broadcaster.user.cover_path[:cover_w940h200]
 	json.name			@room.broadcaster.user.name
 	json.description	@room.broadcaster.description.gsub(/(\r\n|\n|\r|'|")/, '')
 	json.username		@room.broadcaster.user.username
