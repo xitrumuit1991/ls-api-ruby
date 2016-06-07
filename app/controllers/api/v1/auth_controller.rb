@@ -227,7 +227,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     trans_id    = SecureRandom.hex(8)
     pkg         = "VIP7"
     price       = 0
-    back_url    = "http://dev.livestar.vn"
+    back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
     information = "String 1||String 2"
 
     # insert wap mbf logs
@@ -242,13 +242,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # decypt data
     data = decrypt params[:data]
     data = data.split("&")
-    # find log
-    wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
-    # update log
-    wap_mbf_log.update(msisdn: data[1], status: data[2])
     # check status
     if data[2] == 1
       msisdn = data[1]
+      # call api vas register
       charge_result = vas_register msisdn
       if !charge_result[:is_error]
         # create user
@@ -269,6 +266,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.actived        = true
           user.active_date    = Time.now
           if user.save
+            # find log
+            wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
+            # update log
+            wap_mbf_log.update(msisdn: data[1], status: data[2])
             # get vip1
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             # subscribe vip1
@@ -278,13 +279,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             # add bonus coins for user
             money = user.money + vip1.discount
             user.update(money: money)
+            render json: { status: data[2] }, status: 200
           else
             render json: { error: "System error !" }, status: 400
           end
         else
           render json: { error: user.errors.full_messages }, status: 400
         end
+      else
+        render json: { error: "Vas error !" }, status: 400
       end
+    else
+      # find log
+      wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
+      # update log
+      wap_mbf_log.update(msisdn: data[1], status: data[2])
       render json: { status: data[2] }, status: 200
     end
   end
