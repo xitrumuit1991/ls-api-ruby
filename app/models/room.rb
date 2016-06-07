@@ -21,14 +21,6 @@ class Room < ActiveRecord::Base
 	mount_uploader :thumb, RoomThumbUploader
 	mount_base64_uploader :thumb_crop, ThumbCropUploader
 
-	def thumb_path(mobile = false)
-		if mobile
-			"#{Settings.base_url}/api/v1/rooms/#{self.id}/thumb_mb?timestamp=#{self.updated_at.to_i}"
-		else
-			"#{Settings.base_url}/api/v1/rooms/#{self.id}/thumb?timestamp=#{self.updated_at.to_i}"
-		end
-	end
-
 	def thumb_path
 		thumb = {}
 		if !self.thumb_crop.url.nil?
