@@ -3,7 +3,7 @@ json.room_type_id		@room.room_type_id
 json.title				@room.title
 json.slug				@room.slug
 json.thumb             @room.thumb_path[:thumb]
-json.thumb_mb          @room.thumb_path[:thumb_w960h540]
+json.thumb_mb          @room.thumb_path[:thumb_w720h405]
 json.thumb_w160h190    @room.thumb_path[:thumb_w160h190]
 json.thumb_w240h135    @room.thumb_path[:thumb_w240h135]
 json.thumb_w320h180    @room.thumb_path[:thumb_w320h180]

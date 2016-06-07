@@ -29,7 +29,7 @@ json.broadcasters @bcts do |bct|
 			json.slug		bct.public_room.slug
 			json.on_air		bct.public_room.on_air
 			json.thumb             bct.public_room.thumb_path[:thumb]
-			json.thumb_mb          bct.public_room.thumb_path[:thumb_w960h540]
+			json.thumb_mb          bct.public_room.thumb_path[:thumb_w720h405]
 			json.thumb_w160h190    bct.public_room.thumb_path[:thumb_w160h190]
 			json.thumb_w240h135    bct.public_room.thumb_path[:thumb_w240h135]
 			json.thumb_w320h180    bct.public_room.thumb_path[:thumb_w320h180]
