@@ -1,3 +1,5 @@
-redis_host: "203.162.53.68"
+ # Cấu hình dành cho Production
+ # Không được tự ý thay đổi thông số này
+redis_host: "100.75.154.46"
 redis_port: 6379
-livestar_path: "http://dev.livestar.vn"
+livestar_path: "http://livestar.vn"

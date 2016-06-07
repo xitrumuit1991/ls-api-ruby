@@ -3,9 +3,10 @@ require 'jwt'
 class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::Vas
+  include Api::V1::Wap
   include CaptchaHelper
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -15,9 +16,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_detection
-    token = createToken(@user)
-    @user.update(last_login: Time.now, token: token)
-    render json: { token: token }, status: 200
+    if @user.present?
+      token = createToken(@user)
+      @user.update(last_login: Time.now, token: token)
+      render json: { token: token }, status: 200
+    else
+      render json: { token: nil }, status: 200
+    end
   end
 
   def mbf_register
@@ -211,6 +216,79 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  def wap_mbf_register_request
+    # a = encrypt "Vivi"
+    # b = decrypt a
+    # puts '======================'
+    # puts a
+    # puts b
+    # puts '======================'
+    sp_id       = 140
+    trans_id    = SecureRandom.hex(8)
+    pkg         = "VIP7"
+    price       = 0
+    back_url    = "http://dev.livestar.vn"
+    information = "String 1||String 2"
+
+    # insert wap mbf logs
+    WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
+    # encrypt data
+    data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    link = encrypt data
+    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
+  end
+
+  def wap_mbf_register_response
+    # decypt data
+    data = decrypt params[:data]
+    data = data.split("&")
+    # find log
+    wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
+    # update log
+    wap_mbf_log.update(msisdn: data[1], status: data[2])
+    # check status
+    if data[2] == 1
+      msisdn = data[1]
+      charge_result = vas_register msisdn
+      if !charge_result[:is_error]
+        # create user
+        activeCode = SecureRandom.hex(3).upcase
+        user = User.new
+        user.phone        = msisdn
+        user.email        = "#{msisdn}@mobifone.com.vn"
+        user.password     = msisdn
+        user.active_code  = activeCode
+        if user.valid?
+          user.name           = msisdn
+          user.username       = msisdn
+          user.birthday       = '2000-01-01'
+          user.user_level_id  = UserLevel.first().id
+          user.money          = 8
+          user.user_exp       = 0
+          user.no_heart       = 0
+          user.actived        = true
+          user.active_date    = Time.now
+          if user.save
+            # get vip1
+            vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+            # subscribe vip1
+            user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+            # create mobifone user vip logs
+            user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
+            # add bonus coins for user
+            money = user.money + vip1.discount
+            user.update(money: money)
+          else
+            render json: { error: "System error !" }, status: 400
+          end
+        else
+          render json: { error: user.errors.full_messages }, status: 400
+        end
+      end
+      render json: { status: data[2] }, status: 200
+    end
+  end
+
   def login
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
@@ -259,7 +337,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def register
     activeCode = SecureRandom.hex(3).upcase
-    if params[:key_register].present?
+    if params[:email].present? &&  params[:password].present?
       # checkCaptcha = eval(checkCaptcha(params[:key_register]))
       if true
         user = User.new
