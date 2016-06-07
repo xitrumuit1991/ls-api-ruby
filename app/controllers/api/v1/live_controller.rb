@@ -223,7 +223,20 @@ class Api::V1::LiveController < Api::V1::ApplicationController
             @user.decreaseMoney(cost)
             @user.increaseExp(expUser)
             @room.broadcaster.increaseExp(expBct)
-            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            user = {
+                id: @user.id, 
+                email: @user.email, 
+                name: @user.name, 
+                username: @user.username, 
+                avatar: @user.avatar_path[:avatar],
+                avatar_w60h60: @user.avatar_path[:avatar_w60h60],
+                avatar_w100h100: @user.avatar_path[:avatar_w100h100],
+                avatar_w120h120: @user.avatar_path[:avatar_w120h120],
+                avatar_w200h200: @user.avatar_path[:avatar_w200h200],
+                avatar_w240h240: @user.avatar_path[:avatar_w240h240],
+                avatar_w300h300: @user.avatar_path[:avatar_w300h300],
+                avatar_w400h400: @user.avatar_path[:avatar_w400h400],
+              }
             vip = @vip != 0 ? {vip: @vip.weight} : 0
             redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
             emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
