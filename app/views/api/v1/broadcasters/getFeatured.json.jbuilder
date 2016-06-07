@@ -27,7 +27,7 @@ json.broadcasters @featured do |val|
     json.slug		val.broadcaster.public_room.slug
     json.on_air		val.broadcaster.public_room.on_air
     json.thumb             val.broadcaster.public_room.thumb_path[:thumb]
-	json.thumb_mb          val.broadcaster.public_room.thumb_path[:thumb_w960h540]
+	json.thumb_mb          val.broadcaster.public_room.thumb_path[:thumb_w720h405]
 	json.thumb_w160h190    val.broadcaster.public_room.thumb_path[:thumb_w160h190]
 	json.thumb_w240h135    val.broadcaster.public_room.thumb_path[:thumb_w240h135]
 	json.thumb_w320h180    val.broadcaster.public_room.thumb_path[:thumb_w320h180]
