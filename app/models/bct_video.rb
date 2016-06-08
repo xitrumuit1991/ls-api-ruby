@@ -15,7 +15,7 @@ class BctVideo < ActiveRecord::Base
 				thum_w760h432: 	"#{Settings.base_url}#{self.thumb.w760h432.url}"
 			}
 		else
-			video_id = youtubeID(video.video)
+			video_id = youtubeID(self.video)
 			thumb = {
 				thum: 					"http://img.youtube.com/vi/#{video_id}/hqdefault.jpg",
 				thum_w190h108: 	"http://img.youtube.com/vi/#{video_id}/default.jpg",
