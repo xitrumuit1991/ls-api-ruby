@@ -233,9 +233,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # insert wap mbf logs
     WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
     # encrypt data
-    data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    # data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    data = "a5d9f566656ea88e&VIP7&0&http://m.livestar.local:5002/user-mbf-result&String 1||String 2"
     link = encrypt data
-    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
+    # render json: { link: link, data: data, url: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=BgxOFm7Iz9Z+spkDTIp1n9cWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" }, status: 200
+    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=BgxOFm7Iz9Z+spkDTIp1n9cWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
+    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
   end
 
   def wap_mbf_register_response
