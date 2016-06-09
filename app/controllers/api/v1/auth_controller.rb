@@ -227,28 +227,28 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     trans_id    = SecureRandom.hex(8)
     pkg         = "VIP7"
     price       = 0
-    back_url    = "http://dev.livestar.vn"
+    back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
     information = "String 1||String 2"
 
     # insert wap mbf logs
     WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
     # encrypt data
-    data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    # data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    data = "a5d9f566656ea88e&VIP7&0&http://m.livestar.local:5002/user-mbf-result&String 1||String 2"
     link = encrypt data
-    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
+    # render json: { link: link, data: data, url: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=BgxOFm7Iz9Z+spkDTIp1n9cWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" }, status: 200
+    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=BgxOFm7Iz9Z+spkDTIp1n9cWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
+    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
   end
 
   def wap_mbf_register_response
     # decypt data
     data = decrypt params[:data]
     data = data.split("&")
-    # find log
-    wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
-    # update log
-    wap_mbf_log.update(msisdn: data[1], status: data[2])
     # check status
     if data[2] == 1
       msisdn = data[1]
+      # call api vas register
       charge_result = vas_register msisdn
       if !charge_result[:is_error]
         # create user
@@ -269,6 +269,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user.actived        = true
           user.active_date    = Time.now
           if user.save
+            # find log
+            wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
+            # update log
+            wap_mbf_log.update(msisdn: data[1], status: data[2])
             # get vip1
             vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
             # subscribe vip1
@@ -278,13 +282,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             # add bonus coins for user
             money = user.money + vip1.discount
             user.update(money: money)
+            render json: { status: data[2] }, status: 200
           else
             render json: { error: "System error !" }, status: 400
           end
         else
           render json: { error: user.errors.full_messages }, status: 400
         end
+      else
+        render json: { error: "Vas error !" }, status: 400
       end
+    else
+      # find log
+      wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
+      # update log
+      wap_mbf_log.update(msisdn: data[1], status: data[2])
       render json: { status: data[2] }, status: 200
     end
   end
