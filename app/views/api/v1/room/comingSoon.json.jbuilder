@@ -1,14 +1,13 @@
 json.totalPage @totalPage
 json.rooms @room_schedules do |room|
-
+  room = Room.find(room["id"])
   if room["start"] == nil || room["start"] < Time.now
     json.date ''
     json.start ''
   else
-    json.date		room["start"].strftime('%d/%m')
-    json.start	room["start"].strftime('%H:%M')
+    json.date   room["start"].strftime('%d/%m')
+    json.start  room["start"].strftime('%H:%M')
   end
-  room = Room.find(room["id"])
   json.id			room.id
   json.title		room.title
   json.slug		room.slug
