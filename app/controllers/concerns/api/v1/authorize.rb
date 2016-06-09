@@ -18,18 +18,18 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   end
 
   def check_mbf_auth
-    # if request.headers['HTTP_MSISDN'].present? and request.headers['HTTP_X_FORWARDED_FOR'].present?
-    #   ip = request.headers['HTTP_X_FORWARDED_FOR']
-    #   if scan_ip ip
+    if request.headers['HTTP_MSISDN'].present? and request.headers['HTTP_X_FORWARDED_FOR'].present?
+      ip = request.headers['HTTP_X_FORWARDED_FOR']
+      if scan_ip ip
         @msisdn = '841283807429'
         if MobifoneUser.where(sub_id: @msisdn).exists?
           @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
           @user = @mbf_user.user
         end
         return true
-    #   end
-    # end
-    # return false
+      end
+    end
+    return false
   end
 
   private
