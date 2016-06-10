@@ -6,7 +6,7 @@ class BctImage < ActiveRecord::Base
 	validates :image, presence: true
 
 	def image_path
-  	image = {}
+  		image = {}
 		if !self.image.url.nil?
 			image = {
 					image: 		"#{Settings.base_url}#{self.image.url}", 
@@ -23,5 +23,5 @@ class BctImage < ActiveRecord::Base
 				}
 		end
 		return image
-  end
+  	end
 end
