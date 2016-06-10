@@ -260,20 +260,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def getAvatar
     begin
       @u = User.find(params[:id])
-      if @u
-        file_url = "public#{@u.avatar_crop}"
-        if FileTest.file?(file_url)
-          send_file file_url, type: 'image/png', disposition: 'inline'
-        elsif FileTest.file?("public#{@u.avatar.square}")
-          send_file "public#{@u.avatar.square}", type: 'image/png', disposition: 'inline'
-        else
-          send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
-        end
-      else
-        send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
-      end
+      send_file "#{@u.avatar_path[:avatar_w60h60]}", type: 'image/png', disposition: 'inline'
     rescue
-      send_file 'public/default/no-avatar.png', type: 'image/png', disposition: 'inline'
+      send_file 'public/default/w60h60_no-avatar.png', type: 'image/png', disposition: 'inline'
     end
   end
 
