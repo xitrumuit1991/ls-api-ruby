@@ -128,7 +128,12 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     if params[:videos].present?
       @videos = []
       params[:videos].each do |key, video|
-        video['image'] = optimizeKraken(video['image'])
+        Rails.logger.info "angco --------------------------- #{video}"
+        if video['image'] != ''
+          video['image'] = optimizeKraken(video['image'])
+        else
+          video['image'] = nil
+        end
         id = youtubeID video[:link]
         link = 'https://www.youtube.com/embed/'+id
         @videos << @user.broadcaster.videos.create(({thumb: video['image'], video: link}))
