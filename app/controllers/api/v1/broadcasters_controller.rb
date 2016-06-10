@@ -128,7 +128,6 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     if params[:videos].present?
       @videos = []
       params[:videos].each do |key, video|
-        Rails.logger.info "angco --------------------------- #{video}"
         if video['image'] != ''
           video['image'] = optimizeKraken(video['image'])
         else
