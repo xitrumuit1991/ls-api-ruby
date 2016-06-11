@@ -52,6 +52,13 @@ $(document).ready(function () {
       }
     });
     
+    // handle sort
+    var field = Common.getQueryString('field');
+    var sort = Common.getQueryString('sort');
+    if(field !== '' && field !== null && sort !== '' && sort !== null){
+      $('table.dataTable').find('[data-field="'+ field +'"]').removeClass('sorting').addClass('sorting_' + sort);
+    }
+
     // table sort
     $('table.dataTable').on('click', 'thead th', function(){
       if($(this).hasClass('sorting'))
@@ -138,10 +145,3 @@ $(document).ready(function () {
         });
 
 });
-
-function getQueryString( field, url ) {
-    var href = url ? url : window.location.href;
-    var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
-    var string = reg.exec(href);
-    return string ? string[1] : null;
-}

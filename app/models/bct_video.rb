@@ -9,18 +9,18 @@ class BctVideo < ActiveRecord::Base
 		thumb = {}
 		if !self.thumb.url.nil?
 			thumb = {
-				thum: 					"#{Settings.base_url}#{self.thumb.url}",
-				thum_w190h108: 	"#{Settings.base_url}#{self.thumb.w190h108.url}",
-				thum_w380h216: 	"#{Settings.base_url}#{self.thumb.w380h216.url}",
-				thum_w760h432: 	"#{Settings.base_url}#{self.thumb.w760h432.url}"
+				thumb: 			"#{Settings.base_url}#{self.thumb.url}",
+				thumb_w190h108: 	"#{Settings.base_url}#{self.thumb.w190h108.url}",
+				thumb_w380h216: 	"#{Settings.base_url}#{self.thumb.w380h216.url}",
+				thumb_w760h432: 	"#{Settings.base_url}#{self.thumb.w760h432.url}"
 			}
 		else
 			video_id = youtubeID(self.video)
 			thumb = {
-				thum: 					"http://img.youtube.com/vi/#{video_id}/hqdefault.jpg",
-				thum_w190h108: 	"http://img.youtube.com/vi/#{video_id}/default.jpg",
-				thum_w380h216: 	"http://img.youtube.com/vi/#{video_id}/mqdefault.jpg",
-				thum_w760h432: 	"http://img.youtube.com/vi/#{video_id}/sddefault.jpg"
+				thumb: 			"http://img.youtube.com/vi/#{video_id}/hqdefault.jpg",
+				thumb_w190h108: 	"http://img.youtube.com/vi/#{video_id}/default.jpg",
+				thumb_w380h216: 	"http://img.youtube.com/vi/#{video_id}/mqdefault.jpg",
+				thumb_w760h432: 	"http://img.youtube.com/vi/#{video_id}/sddefault.jpg"
 			}
 		end
 	end

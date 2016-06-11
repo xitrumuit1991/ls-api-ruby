@@ -13,8 +13,10 @@ class Acp::ReportsController < Acp::ApplicationController
   		redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
+    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "id desc"
+
   	@total = User.where(where).count
-  	@users = params[:format].present? ? User.where(where).order('id desc') : User.where(where).order('id desc').page(params[:page])
+  	@users = params[:format].present? ? User.where(where).order(order) : User.where(where).order(order).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx
@@ -86,8 +88,10 @@ class Acp::ReportsController < Acp::ApplicationController
   		redirect_to({ action: 'idol_receive_coins' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
+    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "total desc"
+
   	@idols = Broadcaster.where(deleted: 0)
-		@rooms = params[:format].present? ? Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id) : Room.joins(:user_logs).select("rooms.broadcaster_id, sum(user_logs.money) as total").where(where).group(:broadcaster_id).page(params[:page])
+    @rooms = params[:format].present? ? Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id) : Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx
@@ -104,7 +108,9 @@ class Acp::ReportsController < Acp::ApplicationController
   		redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
-  	@data = params[:format].present? ? HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order('quantity DESC') : HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order('quantity DESC').page(params[:page])
+    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "quantity desc"
+
+  	@data = params[:format].present? ? HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order) : HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx
