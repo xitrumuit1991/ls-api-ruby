@@ -56,8 +56,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
     conditions = "user_follow_bcts.user_id = #{@user.id} AND rooms.is_privated = 0 AND (schedules.start > '#{Time.now}' OR schedules.start is null)"
 
-    @myIdols = UserFollowBct.joins(joins).select(fields).where(conditions).group("schedules.room_id").order("schedules.start ASC").limit(9).offset(offset)
-    @totalPage = (Float(@myIdols.length)/9).ceil
+    # @myIdols = UserFollowBct.joins(joins).select(fields).where(conditions).group("schedules.room_id").order("schedules.start ASC").limit(9).offset(offset)
+
+    joins = "INNER JOIN broadcasters ON broadcasters.id = user_follow_bcts.broadcaster_id " +
+            "INNER JOIN rooms ON rooms.broadcaster_id = broadcasters.id " +
+            "LEFT JOIN schedules ON schedules.room_id = rooms.id"
+    # @data = UserFollowBct.select("user_follow_bcts.broadcaster_id ,schedules.start").joins(joins).where(conditions).group("schedules.room_id").order("schedules.start ASC").limit(9).offset(offset)
+    @data = UserFollowBct.select("user_follow_bcts.broadcaster_id, schedules.start").joins(joins).where(conditions).limit(9).offset(offset)
+
+    # @totalPage = (Float(@myIdols.length)/9).ceil
   end
 
   def roomType
