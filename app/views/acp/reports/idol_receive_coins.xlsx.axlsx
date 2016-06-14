@@ -1,7 +1,7 @@
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "Idol receive coins") do |sheet|
 	sheet.add_row ["Name", "Email", "Coins"]
-  @rooms.each do |room|
-    sheet.add_row [room.broadcaster.fullname, room.broadcaster.user.email, room.total]
+  @rooms.each do |item|
+    sheet.add_row [item.name, item.email, item.total]
   end
 end

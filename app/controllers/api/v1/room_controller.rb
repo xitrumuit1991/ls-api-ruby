@@ -40,9 +40,24 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def myIdol
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
-    total_record = @user.user_follow_bcts.length
-    @user_follow = @user.user_follow_bcts.limit(9).offset(offset)
-    @totalPage = (Float(total_record)/9).ceil
+
+    joins = " INNER JOIN users ON users.id = user_follow_bcts.user_id "
+    joins += "INNER JOIN broadcasters ON broadcasters.id = user_follow_bcts.broadcaster_id "
+    joins += "INNER JOIN broadcaster_levels ON broadcaster_levels.id = broadcasters.broadcaster_level_id "
+    joins += "INNER JOIN rooms ON rooms.broadcaster_id = broadcasters.id "
+    joins += "LEFT JOIN schedules ON schedules.room_id = rooms.id"
+
+    fields = "user_follow_bcts.id, "
+    fields += "users.id as user_id, users.name as user_name,"
+    fields += "broadcasters.id AS bct_id, broadcasters.recived_heart, broadcasters.broadcaster_exp,"
+    fields += "broadcaster_levels.level,"
+    fields += "rooms.id AS room_id, rooms.title as room_title, rooms.slug as room_slug, rooms.on_air as room_on_air,"
+    fields += "schedules.start"
+
+    conditions = "user_follow_bcts.user_id = #{@user.id} AND rooms.is_privated = 0 AND (schedules.start > '#{Time.now}' OR schedules.start is null)"
+
+    @myIdols = UserFollowBct.joins(joins).select(fields).where(conditions).group("schedules.room_id").order("schedules.start ASC").limit(9).offset(offset)
+    @totalPage = (Float(@myIdols.length)/9).ceil
   end
 
   def roomType
