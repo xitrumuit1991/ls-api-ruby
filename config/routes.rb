@@ -225,6 +225,7 @@ Rails.application.routes.draw do
         get '/get-megabanks' => 'user#getMegabanks'
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
+        post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #
         post '/update-password' => 'user#updatePassword'
         post '/avatar' => 'user#uploadAvatar' #
         post '/cover' => 'user#uploadCover' #
