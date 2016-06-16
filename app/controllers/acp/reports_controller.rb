@@ -111,7 +111,6 @@ class Acp::ReportsController < Acp::ApplicationController
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "quantity desc"
     
     @rooms = params[:format].present? ? Room.joins(:heart_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(heart_logs.quantity) as quantity").where(where).order(order).group(:broadcaster_id) : Room.joins(:heart_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(heart_logs.quantity) as quantity").where(where).order(order).group(:broadcaster_id).page(params[:page])
-  	# @data = params[:format].present? ? HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order) : HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx
