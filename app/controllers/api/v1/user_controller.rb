@@ -607,7 +607,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         render plain: 'Vui lòng share lại để nhận xu!!!', status: 200
       end
     else
-      render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 200
+      render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
     end
   end
 
