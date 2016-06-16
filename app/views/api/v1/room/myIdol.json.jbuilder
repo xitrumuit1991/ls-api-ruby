@@ -1,4 +1,5 @@
-json.rooms @data do |item|
+json.totalPage @totalPage
+json.idols @data do |item|
   json.id			            item.broadcaster.id
   json.name	              item.broadcaster.user.name
   json.avatar             item.broadcaster.user.avatar_path[:avatar]
