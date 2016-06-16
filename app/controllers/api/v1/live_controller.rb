@@ -64,7 +64,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         if duration >= timeChat
           redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username, exp_bonus: 0}
           vip = @vip != 0 ? {vip: @vip.weight} : 0
           emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip});
 
@@ -88,7 +88,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         @user.decreaseMoney(cost)
         @user.increaseExp(10)
         @room.broadcaster.increaseExp(10)
-        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username, exp_bonus: 10 }
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
         emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 
@@ -121,7 +121,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(dbAction.price)
           @user.increaseExp(expUser)
           @room.broadcaster.increaseExp(expBct)
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username, exp_bonus: expUser}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           if dbAction.max_vote == new_value
             emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
@@ -180,7 +180,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @user.decreaseMoney(total)
           @user.increaseExp(expUser)
           @room.broadcaster.increaseExp(expBct)
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username, exp_bonus: expUser}
           vip = @vip != 0 ? {vip: @vip.weight} : 0
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{request.base_url}#{dbGift.image.square}?timestamp=#{dbGift.updated_at.to_i}"}, quantity:quantity, total: total, sender: user, vip: vip})
@@ -236,6 +236,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
                 avatar_w240h240: @user.avatar_path[:avatar_w240h240],
                 avatar_w300h300: @user.avatar_path[:avatar_w300h300],
                 avatar_w400h400: @user.avatar_path[:avatar_w400h400],
+                exp_bonus: expUser
               }
             vip = @vip != 0 ? {vip: @vip.weight} : 0
             redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
@@ -272,7 +273,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         @room.broadcaster.increaseExp(hearts)
         if @user.save then
           if @room.broadcaster.save then
-            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username, exp_bonus: 10}
             vip = @vip != 0 ? {vip: @vip.weight} : 0
             emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
@@ -342,9 +343,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   private
   def formulaExpForUser(price, quantity)
-    vip = UserHasVipPackage::find_by_user_id(@user.id)
-    if vip
-      exp = price * quantity * vip.vip_package.vip.exp_bonus
+    if @user.checkVip == 1
+      exp = price * quantity * @user.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus
       return exp
     else
       exp = price * quantity * 1
