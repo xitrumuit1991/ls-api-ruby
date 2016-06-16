@@ -210,6 +210,9 @@ class User < ActiveRecord::Base
 		end
 		self.save
 		NotificationChangeExpJob.perform_later(self.email, old_value, new_value, percent)
+		puts '=========model=========='
+		puts new_value
+		puts '=========model=========='
 	end
 
 	def percent

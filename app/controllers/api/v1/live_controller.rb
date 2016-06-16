@@ -115,8 +115,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         new_value = rAction + 1
         percent = new_value * 100 / dbAction.max_vote
         redis.set("actions:#{@room.id}:#{action_id}", new_value);
-        expUser = formulaExpForUser(dbAction.price, 1)
-        expBct = formulaExpForBct(dbAction.price, 1)
+        expUser = dbAction.price * 1
+        expBct = dbAction.price*10
         begin
           @user.decreaseMoney(dbAction.price)
           @user.increaseExp(expUser)
@@ -170,12 +170,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     dbGift = Gift.find(gift_id)
     if dbGift then
       if quantity >= 1 then
-        expUser = formulaExpForUser(dbGift.price, quantity)
+        expUser = dbGift.price*quantity
         if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
           expUser += 10
         end
         total = dbGift.price * quantity
-        expBct = formulaExpForBct(dbGift.price, quantity)
+        expBct = dbGift.price*quantity*10
         begin
           @user.decreaseMoney(total)
           @user.increaseExp(expUser)
@@ -215,11 +215,11 @@ class Api::V1::LiveController < Api::V1::ApplicationController
                 render json: {error: "Giá mua của bạn phải lớn hơn giá hiện tại"}, status: 400 and return
               end
             end
-            expUser = formulaExpForUser(cost, 1)
+            expUser = cost*1
             if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
               expUser += 10
             end
-            expBct = formulaExpForBct(cost, 1)
+            expBct = cost*10
             @user.decreaseMoney(cost)
             @user.increaseExp(expUser)
             @room.broadcaster.increaseExp(expBct)
@@ -342,19 +342,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
-  def formulaExpForUser(price, quantity)
-    if @user.checkVip == 1
-      exp = price * quantity * @user.user_has_vip_packages.find_by_actived(true).vip_package.vip.exp_bonus
-      return exp
-    else
-      exp = price * quantity * 1
-      return exp
-    end
-  end
-
-  def formulaExpForBct(price, quantity)
-    return price * quantity * 10
-  end
 
   def getUsers
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
