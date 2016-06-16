@@ -598,16 +598,22 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def shareFBReceivedCoin
-    if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
-      coin = 10
-      if update_coin(coin)
-        fb_logs(params[:post_id], coin)
-        render plain: 'Đã cộng tiền thành công!!!', status: 200
+    begin
+      graph = Koala::Facebook::API.new(params[:accessToken])
+      info = graph.get_object(params[:post_id])
+      if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
+        coin = 10
+        if update_coin(coin)
+          fb_logs(params[:post_id], coin)
+          render plain: 'Đã cộng tiền thành công!!!', status: 200
+        else
+          render plain: 'Vui lòng share lại để nhận xu!!!', status: 200
+        end
       else
-        render plain: 'Vui lòng share lại để nhận xu!!!', status: 200
+        render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
       end
-    else
-      render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
+    rescue Exception => e
+      render plain: 'Bạn chưa chia sẽ livestar.vn lên tường nhà!!!', status: 400
     end
   end
 
