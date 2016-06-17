@@ -572,11 +572,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
           card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
           info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
           if card_logs(cardChargingResponse, info)
-            if update_coin(info[:coin])
-              render plain: "Nạp tiền thành công.", status: 200
-            else
-              render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
-            end
+            @user.increaseMoney(info[:coin])
+            render plain: "Nạp tiền thành công.", status: 200
           else
             render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
           end
@@ -602,13 +599,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
       graph = Koala::Facebook::API.new(params[:accessToken])
       info = graph.get_object(params[:post_id])
       if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
-        coin = 10
-        if update_coin(coin)
-          fb_logs(params[:post_id], coin)
-          render plain: 'Đã cộng tiền thành công!!!', status: 200
-        else
-          render plain: 'Vui lòng share lại để nhận xu!!!', status: 200
-        end
+        @user.increaseMoney(10)
+        fb_logs(params[:post_id], 10)
+        render plain: 'Đã cộng tiền thành công!!!', status: 200
       else
         render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
       end
@@ -642,7 +635,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @user_sms = User::find_by_active_code(subkeyword)
     coin  = SmsMobile::find_by_price(amount.to_i)
     money = @user_sms.money + coin.coin
-    if @user_sms.update(money: money)
+
+    if @user_sms.present?
+      @user_sms.increaseMoney(money)
       if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
         return true
       else
@@ -655,12 +650,4 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def update_coin(coin)
-    money = @user.money + coin.to_i
-    if @user.update(money: money)
-      return true
-    else
-      return false
-    end
-  end
 end
