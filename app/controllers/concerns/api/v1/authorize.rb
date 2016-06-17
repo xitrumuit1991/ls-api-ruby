@@ -9,9 +9,9 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   def check_authenticate
     authenticate_with_http_token do |token, options|
       begin
-        decoded_token = JWT.decode token, Settings.hmac_secret, true
+        JWT.decode token, Settings.hmac_secret, true
         return User.find_by(token: token)
-      rescue => ex # or rescue Exception
+      rescue
         return nil
       end
     end
@@ -36,10 +36,9 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     def authenticate_token
       authenticate_with_http_token do |token, options|
         begin
-          decoded_token = JWT.decode token, Settings.hmac_secret, true
+          JWT.decode token, Settings.hmac_secret, true
           @user = User.find_by(token: token)
-          @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
-        rescue => ex # or rescue Exception
+        rescue
           return head 401
         end
       end

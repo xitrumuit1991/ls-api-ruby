@@ -40,9 +40,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def myIdol
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
-    total_record = @user.user_follow_bcts.length
-    @user_follow = @user.user_follow_bcts.limit(9).offset(offset)
-    @totalPage = (Float(total_record)/9).ceil
+    select = "user_follow_bcts.broadcaster_id ,schedules.start"
+    joins = "INNER JOIN broadcasters ON broadcasters.id = user_follow_bcts.broadcaster_id " +
+            "INNER JOIN rooms ON rooms.broadcaster_id = broadcasters.id " +
+            "LEFT JOIN schedules ON schedules.room_id = rooms.id"
+    where = "user_follow_bcts.user_id = #{@user.id} AND rooms.is_privated = 0"
+    @data = UserFollowBct.select(select).joins(joins).where(where).group("user_follow_bcts.broadcaster_id").order("rooms.on_air desc, -schedules.start desc").limit(9).offset(offset)
+    count = UserFollowBct.joins(joins).where(where).group("user_follow_bcts.broadcaster_id").count.length
+    @totalPage = (Float(count) / 9).ceil
   end
 
   def roomType

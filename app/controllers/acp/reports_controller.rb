@@ -13,7 +13,7 @@ class Acp::ReportsController < Acp::ApplicationController
   		redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
-    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "id desc"
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "id desc"
 
   	@total = User.where(where).count
   	@users = params[:format].present? ? User.where(where).order(order) : User.where(where).order(order).page(params[:page])
@@ -88,7 +88,7 @@ class Acp::ReportsController < Acp::ApplicationController
   		redirect_to({ action: 'idol_receive_coins' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
-    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "total desc"
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "total desc"
 
   	@idols = Broadcaster.where(deleted: 0)
     @rooms = params[:format].present? ? Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id) : Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id).page(params[:page])
@@ -100,17 +100,17 @@ class Acp::ReportsController < Acp::ApplicationController
 
   def idol_receive_hearts
   	where = Hash.new
-  	where['created_at'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day
+  	where['heart_logs.created_at'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day
 
   	if params[:start_date].present? && params[:end_date].present?
-  		where['created_at'] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+  		where['heart_logs.created_at'] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
   	elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
   		redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
-    order = params[:sort] ? "#{params[:field]} #{params[:sort]}" : "quantity desc"
-
-  	@data = params[:format].present? ? HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order) : HeartLog.select('room_id, sum(quantity) as quantity').where(where).group(:room_id).order(order).page(params[:page])
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "quantity desc"
+    
+    @rooms = params[:format].present? ? Room.joins(:heart_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(heart_logs.quantity) as quantity").where(where).order(order).group(:broadcaster_id) : Room.joins(:heart_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(heart_logs.quantity) as quantity").where(where).order(order).group(:broadcaster_id).page(params[:page])
     respond_to do |format|
       format.html
       format.xlsx

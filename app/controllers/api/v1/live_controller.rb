@@ -15,7 +15,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def addHeartInRoom
     maxHeart  = @user.user_level.heart_per_day
     userHeart = UserReceivedHeart.find_by_user_id(@user.id)
-    hearts    = params[:hearts].to_i
+    # hearts    = params[:hearts].to_i
     if !userHeart
       userHeart = UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
     end
@@ -43,35 +43,23 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     message = params[:message]
     room_id = params[:room_id]
+    no_char = 40
 
-    vipPackage = @user.user_has_vip_packages.find_by_actived(true)
-    no_char = vipPackage.present? ? vipPackage.vip_package.vip.no_char : 40
-    last_message = redis.get("last_message:#{room_id}:#{@user.id}")
-    timeLastMsg = !last_message.blank? ? last_message : 0
-    duration = params[:timestamp].to_i - timeLastMsg.to_i
-
-    if @user.is_broadcaster && @user.public_room.id == room_id.to_i
-      timeChat = 0
-    elsif vipPackage.present?
-      timeChat = vipPackage.vip_package.vip.screen_text_time
-    else
-      timeChat = 200
+    vip_package = @user.user_has_vip_packages.find_by_actived(true)
+    if vip_package.present?
+      vip = vip_package.vip_package.vip
+      no_char = vip.no_char
     end
-    timeChat = 0
-    @user.increaseExp(1)
+
     if message.length > 0
       if message.length <= no_char
-        if duration >= timeChat
-          redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          vip = @vip != 0 ? {vip: @vip.weight} : 0
-          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip});
+        redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
+        emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
+        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+        vip_data = vip != 0 ? {vip: vip.weight} : 0
+        emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip_data});
 
-          return head 201
-        else
-          render json:{message: "Vui lòng gửi tin nhắn sau #{timeChat - duration} s!"}, status: 200
-        end
+        return head 201
       else
         render json:{error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
       end
@@ -88,13 +76,13 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         @user.decreaseMoney(cost)
         @user.increaseExp(10)
         @room.broadcaster.increaseExp(10)
-        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username }
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
         emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 
         # insert log
         @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
-        @user.user_logs.create(room_id: @room.id, money: cost)
+        UserLogJob.perform_later(@user, @room.id, cost)
 
         return head 201
       rescue => e
@@ -114,13 +102,11 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if rAction < dbAction.max_vote
         new_value = rAction + 1
         percent = new_value * 100 / dbAction.max_vote
-        redis.set("actions:#{@room.id}:#{action_id}", new_value);
-        expUser = formulaExpForUser(dbAction.price, 1)
-        expBct = formulaExpForBct(dbAction.price, 1)
+        redis.set("actions:#{@room.id}:#{action_id}", new_value)
         begin
           @user.decreaseMoney(dbAction.price)
-          @user.increaseExp(expUser)
-          @room.broadcaster.increaseExp(expBct)
+          @user.increaseExp(dbAction.price)
+          @room.broadcaster.increaseExp(dbAction.price * 10)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           if dbAction.max_vote == new_value
@@ -130,8 +116,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           end
 
           # insert log
-          @user.action_logs.create(room_id: @room.id, room_action_id: action_id, cost: dbAction.price)
-          @user.user_logs.create(room_id: @room.id, money: dbAction.price)
+          ActionLogJob.perform_later(@user, @room.id, action_id, dbAction.price)
+          UserLogJob.perform_later(@user, @room.id, dbAction.price)
 
           return head 201
         rescue => e
@@ -170,24 +156,21 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     dbGift = Gift.find(gift_id)
     if dbGift then
       if quantity >= 1 then
-        expUser = formulaExpForUser(dbGift.price, quantity)
-        if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
-          expUser += 10
-        end
         total = dbGift.price * quantity
-        expBct = formulaExpForBct(dbGift.price, quantity)
+        expBct = dbGift.price * quantity * 10
         begin
           @user.decreaseMoney(total)
-          @user.increaseExp(expUser)
+          @user.increaseExp(total)
           @room.broadcaster.increaseExp(expBct)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          vip = @vip != 0 ? {vip: @vip.weight} : 0
+          vip_package = @user.user_has_vip_packages.find_by_actived(true)
+          vip = vip_package.present? ? {vip: vip_package.vip_package.vip.weight} : 0
           emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
           emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{request.base_url}#{dbGift.image.square}?timestamp=#{dbGift.updated_at.to_i}"}, quantity:quantity, total: total, sender: user, vip: vip})
 
           # insert log
-          @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
-          @user.user_logs.create(room_id: @room.id, money: total)
+          GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
+          UserLogJob.perform_later(@user, @room.id, total)
 
           return head 201
         rescue => e
@@ -215,19 +198,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
                 render json: {error: "Giá mua của bạn phải lớn hơn giá hiện tại"}, status: 400 and return
               end
             end
-            expUser = formulaExpForUser(cost, 1)
-            if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
-              expUser += 10
-            end
-            expBct = formulaExpForBct(cost, 1)
+
+            expBct = cost * 10
             @user.decreaseMoney(cost)
-            @user.increaseExp(expUser)
+            @user.increaseExp(cost)
             @room.broadcaster.increaseExp(expBct)
             user = {
-                id: @user.id, 
-                email: @user.email, 
-                name: @user.name, 
-                username: @user.username, 
+                id: @user.id,
+                email: @user.email,
+                name: @user.name,
+                username: @user.username,
                 avatar: @user.avatar_path[:avatar],
                 avatar_w60h60: @user.avatar_path[:avatar_w60h60],
                 avatar_w100h100: @user.avatar_path[:avatar_w100h100],
@@ -235,16 +215,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
                 avatar_w200h200: @user.avatar_path[:avatar_w200h200],
                 avatar_w240h240: @user.avatar_path[:avatar_w240h240],
                 avatar_w300h300: @user.avatar_path[:avatar_w300h300],
-                avatar_w400h400: @user.avatar_path[:avatar_w400h400],
+                avatar_w400h400: @user.avatar_path[:avatar_w400h400]
               }
-            vip = @vip != 0 ? {vip: @vip.weight} : 0
+            vip_package = @user.user_has_vip_packages.find_by_actived(true)
+            vip = vip_package.present? ? {vip: vip_package.vip_package.vip.weight} : 0
             redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
             emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
             emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip });
 
             # insert log
-            @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
-            @user.user_logs.create(room_id: @room.id, money: cost)
+            LoungeLogJob.perform_later(@user, lounge, cost)
+            UserLogJob.perform_later(@user, @room.id, cost)
 
             return head 201
           rescue => e
@@ -273,11 +254,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         if @user.save then
           if @room.broadcaster.save then
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            vip = @vip != 0 ? {vip: @vip.weight} : 0
+            vip_package = @user.user_has_vip_packages.find_by_actived(true)
+            vip = vip_package.present? ? {vip: vip_package.vip_package.vip.weight} : 0
             emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
             # insert log
-            @user.heart_logs.create(room_id: @room.id, quantity: hearts)
+            HeartLogJob.perform_later(@user, @room.id, hearts)
 
             return head 201
           else
@@ -306,16 +288,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def endRoom
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     @room.on_air = false
     if @room.save then
-      # Delete actions and lounges
-      rActions = redis.keys("actions:#{@room.id}:*")
-      # rLounges = redis.keys("lounges:#{@room.id}:*")
-      redis.del rActions if !rActions.empty?
-      # redis.del rLounges if !rLounges.empty?
-
-      # Broadcast to room
       emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
       emitter.of("/room").in(@room.id).emit("room off")
       return head 200
@@ -341,20 +315,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
-  def formulaExpForUser(price, quantity)
-    vip = UserHasVipPackage::find_by_user_id(@user.id)
-    if vip
-      exp = price * quantity * vip.vip_package.vip.exp_bonus
-      return exp
-    else
-      exp = price * quantity * 1
-      return exp
-    end
-  end
-
-  def formulaExpForBct(price, quantity)
-    return price * quantity * 10
-  end
 
   def getUsers
     redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)

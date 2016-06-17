@@ -597,6 +597,26 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @trade = @user.user_has_vip_packages.order(created_at: :desc).limit(10)
   end
 
+  def shareFBReceivedCoin
+    begin
+      graph = Koala::Facebook::API.new(params[:accessToken])
+      info = graph.get_object(params[:post_id])
+      if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
+        coin = 10
+        if update_coin(coin)
+          fb_logs(params[:post_id], coin)
+          render plain: 'Đã cộng tiền thành công!!!', status: 200
+        else
+          render plain: 'Vui lòng share lại để nhận xu!!!', status: 200
+        end
+      else
+        render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
+      end
+    rescue Exception => e
+      render plain: 'Bạn chưa chia sẽ livestar.vn lên tường nhà!!!', status: 400
+    end
+  end
+
   private
   def megabank_logs(info)
     MegabankLog.create()
@@ -612,6 +632,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if @user_sms.present?
       SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
     end
+  end
+
+  def fb_logs(post_id, coin)
+    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin)
   end
 
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
