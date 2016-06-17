@@ -337,10 +337,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def create_tmp_token
     name = Faker::Name.name
     email = Faker::Internet.email(name)
-    @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
+    @tmp_user = TmpUser.new
+    @tmp_user.email = email
+    @tmp_user.name = name
+    @tmp_user.exp = Time.now.to_i + 24 * 3600
     @tmp_token = JWT.encode JSON.parse(@tmp_user.to_json), Settings.hmac_secret, 'HS256'
     @tmp_user.token = @tmp_token
-    @tmp_user.save
   end
 
 end
