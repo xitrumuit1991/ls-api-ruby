@@ -13,7 +13,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def profile
     @broadcaster = Broadcaster.find(params[:id])
     @user = @broadcaster.user
-    @fan = @broadcaster.rooms.find_by_is_privated(false).heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
+    @fan = @broadcaster.public_room.heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
     # @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
   end
 
@@ -27,7 +27,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def broadcasterRevcivedItems
     if @user.is_broadcaster
-      giftLogs = @user.broadcaster.rooms.find_by_is_privated(false).gift_logs
+      giftLogs = @user.broadcaster.public_room.gift_logs
       @records = Array.new
       giftLogs.each do |giftLog|
         aryLog = OpenStruct.new({
@@ -45,7 +45,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
         @records = @records.push(aryLog)
       end
 
-      heartLogs = @user.broadcaster.rooms.find_by_is_privated(false).heart_logs
+      heartLogs = @user.broadcaster.public_room.heart_logs
       heartLogs.each do |heartLog|
         aryLog = OpenStruct.new({
             :id => heartLog.id, 
@@ -62,7 +62,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
         @records = @records.push(aryLog)
       end
 
-      actionLogs = @user.broadcaster.rooms.find_by_is_privated(false).action_logs
+      actionLogs = @user.broadcaster.public_room.action_logs
       actionLogs.each do |actionLog|
         aryLog = OpenStruct.new({
             :id => actionLog.id, 
