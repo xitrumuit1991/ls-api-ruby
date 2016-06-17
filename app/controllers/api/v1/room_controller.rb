@@ -56,7 +56,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def getPublicRoom
     if @user.is_broadcaster
-      @room = @user.broadcaster.rooms.order("is_privated DESC").first
+      @room = @user.broadcaster.public_room
       @backgrounds = RoomBackground.all
       @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
       # get All gift
@@ -117,7 +117,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSettings
-    room = @user.broadcaster.rooms.find_by_is_privated(false)
+    room = @user.broadcaster.public_room
 
     if room.present?
       if room.update(title: params[:title], room_type_id: params[:cat])
@@ -133,8 +133,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadThumb
     if params[:thumb].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
-
+      room = @user.broadcaster.public_room
       if room.present?
         if room.update(thumb: params[:thumb])
           render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
@@ -151,7 +150,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def thumbCrop
     if params[:thumb_crop].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       params[:thumb_crop] = optimizeKrakenWeb(params[:thumb_crop])
       if room.present?
         if room.update(thumb_crop: params[:thumb_crop])
@@ -192,7 +191,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def changeBackground
     if params[:background_id].present?
 
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       if room.present?
         room.update(broadcaster_background_id: params[:background_id])
         return head 200
@@ -207,7 +206,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def changeBackgroundDefault
     if params[:background_id].present?
 
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       if room.present?
         room.update(broadcaster_background_id: nil,room_background_id: params[:background_id])
 
@@ -222,7 +221,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def updateSchedule
     if params[:schedule].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
 
       if room.present?
         room.schedules.destroy_all
@@ -242,7 +241,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def deleteSchedule
     if params[:schedule_id].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
 
       if room.present?
         begin
@@ -337,10 +336,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def create_tmp_token
     name = Faker::Name.name
     email = Faker::Internet.email(name)
-    @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
+    @tmp_user = TmpUser.new
+    @tmp_user.email = email
+    @tmp_user.name = name
+    @tmp_user.exp = Time.now.to_i + 24 * 3600
     @tmp_token = JWT.encode JSON.parse(@tmp_user.to_json), Settings.hmac_secret, 'HS256'
     @tmp_user.token = @tmp_token
-    @tmp_user.save
   end
 
 end

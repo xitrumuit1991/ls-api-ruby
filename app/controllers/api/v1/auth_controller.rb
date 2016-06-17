@@ -475,22 +475,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     user = User.find_by(email: params[:email], token: params[:token])
     if user.present?
       begin
-        decoded_token = JWT.decode params[:token], Settings.hmac_secret
+        JWT.decode params[:token], Settings.hmac_secret
         return head 200
       rescue JWT::ExpiredSignature
         return head 400
       end
     else
-      tmp_user = TmpUser.find_by(email: params[:email], token: params[:token])
-      if tmp_user.present?
-        begin
-          decoded_token = JWT.decode params[:token], Settings.hmac_secret
-          return head 200
-        rescue Exception => e
-          render json: {error: e.message}, status: 400
-        end
-      else
-        render json: {error: 'User không tồn tại!'}, status: 401
+      begin
+        JWT.decode params[:token], Settings.hmac_secret
+        return head 200
+      rescue Exception
+        render json: {error: e.message}, status: 400
       end
     end
   end
