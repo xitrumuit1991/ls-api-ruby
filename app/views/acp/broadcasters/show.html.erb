@@ -98,7 +98,7 @@
                     <div class="col-sm-2">
                         <select class="form-control">
                             <% @room_types.each do |type| %>
-                            <option value="<%= type.id %>" <% if type.id == @data.rooms.find_by_is_privated(false).room_type_id %>selected<% end %>><%= type.title %></option>
+                            <option value="<%= type.id %>" <% if type.id == @data.public_room.room_type_id %>selected<% end %>><%= type.title %></option>
                             <% end %>
                         </select>
                     </div>

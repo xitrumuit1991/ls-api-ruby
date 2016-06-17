@@ -28,7 +28,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def room
-		if @room = @data.rooms.find_by_is_privated(false)
+		if @room = @data.public_room
 			@room_types = RoomType.all.order('id desc')
 			@room_backgrounds = RoomBackground.all.order('id desc')
 		else
@@ -37,7 +37,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	end
 
 	def gifts
-		if room = @data.rooms.find_by_is_privated(false)
+		if room = @data.public_room
 			@gifts = room.gift_logs.order('id desc')
 		else
 			redirect_to({ action: 'index' }, alert: 'Idol này chưa có phòng.')
@@ -111,7 +111,7 @@ class Acp::BroadcastersController < Acp::ApplicationController
 
 	def ajax_change_background
 		data_update = (params[:type] == 'default') ? {broadcaster_background_id: nil, room_background_id: params[:bg_id]} : {broadcaster_background_id: params[:bg_id], room_background_id: nil}
-		@data.rooms.find_by_is_privated(false).update(data_update)
+		@data.public_room.update(data_update)
 		render json: true
 	end
 
