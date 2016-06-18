@@ -334,12 +334,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def create_tmp_token
+    id = Time.now.to_i
     name = Faker::Name.name
     email = Faker::Internet.email(name)
-    exp = Time.now.to_i + 24 * 3600
-    payload = {id: nil, email: email, name: name, vip: 0, exp: exp}
+    exp = id + 24 * 3600
+    payload = {id: id, email: email, name: name, vip: 0, exp: exp}
 
     @tmp_user = TmpUser.new
+    @tmp_user.id = id
     @tmp_user.email = email
     @tmp_user.name = name
     @tmp_user.exp = exp
