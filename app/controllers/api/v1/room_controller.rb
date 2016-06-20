@@ -247,7 +247,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         begin
           room.schedules.find(params[:schedule_id].to_i).destroy
           return head 201
-        rescue ActiveRecord::RecordNotFound => e
+        rescue ActiveRecord::RecordNotFound
           render json: {error: 'Lịch diễn không tồn tại!, vui lòng thử lại nhé'}, status: 400
         end
       else
@@ -334,13 +334,18 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def create_tmp_token
+    id = Time.now.to_i
     name = Faker::Name.name
     email = Faker::Internet.email(name)
+    exp = id + 24 * 3600
+    payload = {id: id, email: email, name: name, vip: 0, exp: exp}
+
     @tmp_user = TmpUser.new
+    @tmp_user.id = id
     @tmp_user.email = email
     @tmp_user.name = name
-    @tmp_user.exp = Time.now.to_i + 24 * 3600
-    @tmp_token = JWT.encode JSON.parse(@tmp_user.to_json), Settings.hmac_secret, 'HS256'
+    @tmp_user.exp = exp
+    @tmp_token = JWT.encode payload, Settings.hmac_secret, 'HS256'
     @tmp_user.token = @tmp_token
   end
 

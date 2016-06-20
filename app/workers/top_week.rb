@@ -16,5 +16,9 @@ class TopWeek
 		weekly_user_logs.each do |weekly_user_log|
 			WeeklyTopUserSendGift.create(:user_id => weekly_user_log.user_id, :money => weekly_user_log.money)
 		end
+		Rails.cache.delete("top_user_use_coin_week")
+		Rails.cache.fetch("top_user_use_coin_week") do
+			WeeklyTopUserSendGift.order('money desc').limit(5)
+		end
 	end
 end
