@@ -169,7 +169,7 @@ class User < ActiveRecord::Base
 	def increaseMoney(money)
 		if money.to_i > 0
 			old = self.money
-			value = self.money + money
+			value = self.money + money.to_i
 			self.update(money: value)
 			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else
@@ -178,9 +178,9 @@ class User < ActiveRecord::Base
 	end
 
 	def decreaseMoney(money)
-		if self.money >= money then
+		if self.money >= money.to_i then
 			old = self.money
-			value = self.money - money
+			value = self.money - money.to_i
 			self.update(money: value)
 			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else
