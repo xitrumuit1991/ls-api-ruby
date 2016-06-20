@@ -147,7 +147,8 @@ class User < ActiveRecord::Base
 	end
 
 	def vip
-		vip = self.user_has_vip_packages.find_by_actived(true).present? ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.weight : 0
+		has_vip = self.user_has_vip_packages.where('actived = ? AND expiry_date < ?', true, Time.now)
+		vip = has_vip.present? ? has_vip.vip_package.vip.weight : 0
 	end
 
 	#check vip de su dung ham o authorize 
