@@ -41,7 +41,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     room_id = params[:room_id]
     vip_weight = @token_user["vip"]
     vip = fetch_vip vip_weight
-    no_char = vip["no_char"] ? vip["no_char"].to_i : 40
+    no_char = vip ? vip["no_char"].to_i : 40
 
     if message.length > 0
       if message.length <= no_char
