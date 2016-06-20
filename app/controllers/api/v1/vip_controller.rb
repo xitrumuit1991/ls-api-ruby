@@ -6,7 +6,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def buyVip
     vipPackage = VipPackage::find(params[:vip_package_id])
-      if @user.money >= vipPackage.price - vipPackage.discount
+    if @user.money >= vipPackage.price - vipPackage.discount
       if @user.user_has_vip_packages.where(:actived => true).present?
         user_vip = @user.user_has_vip_packages.where(:actived => true).take.vip_package
         if user_vip.vip.weight < vipPackage.vip.weight
@@ -32,7 +32,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
       render json: {error: "Bạn không có đủ tiền"}, status: 400
     end
   end
-  
+
   def confirmVip
     @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
   end

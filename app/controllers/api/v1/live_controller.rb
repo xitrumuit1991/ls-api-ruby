@@ -56,7 +56,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
         emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
         user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-        vip_data = vip != 0 ? {vip: vip.weight} : 0
+        vip_data = (vip.present? && vip != 0) ? {vip: vip.weight} : 0
         emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip_data});
 
         return head 201

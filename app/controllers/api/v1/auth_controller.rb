@@ -559,7 +559,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     def createToken(user)
-      payload = {id: user.id, email: user.email, name: user.name, exp: Time.now.to_i + 24 * 3600}
-      token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+      payload = {id: user.id, email: user.email, name: user.name, vip: user.vip, exp: Time.now.to_i + 24 * 3600}
+      JWT.encode payload, Settings.hmac_secret, 'HS256'
     end
 end
