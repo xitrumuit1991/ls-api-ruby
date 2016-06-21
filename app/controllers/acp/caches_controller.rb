@@ -25,7 +25,15 @@ class Acp::CachesController < Acp::ApplicationController
 		Rails.cache.fetch("home_featured") do
 			HomeFeatured.order(weight: :asc).limit(6)
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Featured successfully.')
+  	redirect_to({ action: 'index' }, notice: 'Clear Cache Home Featured successfully.')
+  end
+
+  def clearCacheRoomFeatured
+  	Rails.cache.delete("room_featured")
+		Rails.cache.fetch("room_featured") do
+			RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+		end
+  	redirect_to({ action: 'index' }, notice: 'Clear Cache Room Featured successfully.')
   end
 
   def clearCacheTopWeek
