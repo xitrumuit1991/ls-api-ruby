@@ -203,7 +203,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def getRoomFeatured
     @user = check_authenticate
     @totalUser = []
-    @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+    @featured = Rails.cache.fetch('room_featured')
     @featured.each do |f|
       if f.broadcaster.public_room.on_air
         @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length

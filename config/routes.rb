@@ -180,6 +180,7 @@ Rails.application.routes.draw do
     post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
     post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
     post '/caches/clear-home-featured' => 'caches#clearCacheHomeFeatured'
+    post '/caches/clear-room-featured' => 'caches#clearCacheRoomFeatured'
     post '/caches/clear-top-week' => 'caches#clearCacheTopWeek'
     post '/caches/clear-top-month' => 'caches#clearCacheTopMonth'
     post '/caches/clear-top-all' => 'caches#clearCacheTopAll'
