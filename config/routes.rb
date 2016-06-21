@@ -179,6 +179,7 @@ Rails.application.routes.draw do
     get '/caches/index' => 'caches#index'
     post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
     post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
+    post '/caches/clear-home-featured' => 'caches#clearCacheHomeFeatured'
     resources :caches
 
   end
