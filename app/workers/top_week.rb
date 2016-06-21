@@ -9,6 +9,10 @@ class TopWeek
 		hearts.each do |heart|
 			WeeklyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_week")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_week") do
+			WeeklyTopBctReceivedHeart::all
+		end
 
 		WeeklyTopUserSendGift.destroy_all
 		WeeklyTopUserSendGift.connection.execute("ALTER TABLE weekly_top_user_send_gifts AUTO_INCREMENT = 1")
@@ -18,7 +22,7 @@ class TopWeek
 		end
 		Rails.cache.delete("top_user_send_gift_week")
 		Rails.cache.fetch("top_user_send_gift_week") do
-			WeeklyTopUserSendGift.order('money desc').limit(5)
+			WeeklyTopUserSendGift::all
 		end
 	end
 end

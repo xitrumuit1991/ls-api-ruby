@@ -45,11 +45,11 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topBroadcasterRevcivedHeart
 		if params[:range] == nil or params[:range] == "week"
-			@top_heart = WeeklyTopBctReceivedHeart::all
+			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_week')
 		elsif params[:range] == "all"
-			@top_heart = TopBctReceivedHeart::all
+			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_all')
 		elsif params[:range] == "month"
-			@top_heart = MonthlyTopBctReceivedHeart::all
+			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_month')
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
@@ -140,6 +140,10 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		hearts.each do |heart|
 			WeeklyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_week")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_week") do
+			WeeklyTopBctReceivedHeart::all
+		end
 
 		WeeklyTopUserSendGift.destroy_all
 		WeeklyTopUserSendGift.connection.execute("ALTER TABLE weekly_top_user_send_gifts AUTO_INCREMENT = 1")
@@ -148,8 +152,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 			WeeklyTopUserSendGift.create(:user_id => weekly_user_log.user_id, :money => weekly_user_log.money)
 		end
 		Rails.cache.delete("top_user_send_gift_week")
-		@top_gift_users  = Rails.cache.fetch("top_user_send_gift_week") do
-			WeeklyTopUserSendGift.order('money desc').limit(5)
+		Rails.cache.fetch("top_user_send_gift_week") do
+			WeeklyTopUserSendGift::all
 		end
 		return head 200
 	end
@@ -161,6 +165,10 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		hearts.each do |heart|
 			MonthlyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_month")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_month") do
+			MonthlyTopBctReceivedHeart::all
+		end
 		
 		MonthlyTopUserSendGift.destroy_all
 		MonthlyTopUserSendGift.connection.execute("ALTER TABLE monthly_top_user_send_gifts AUTO_INCREMENT = 1")
@@ -169,8 +177,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 			MonthlyTopUserSendGift.create(:user_id => monthly_user_log.user_id, :money => monthly_user_log.money)
 		end
 		Rails.cache.delete("top_user_send_gift_month")
-		@top_gift_users  = Rails.cache.fetch("top_user_send_gift_month") do
-			MonthlyTopUserSendGift.order('money desc').limit(5)
+		Rails.cache.fetch("top_user_send_gift_month") do
+			MonthlyTopUserSendGift::all
 		end
 		return head 200
 	end
@@ -181,6 +189,10 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		hearts = HeartLog.select('room_id, sum(quantity) as quantity').group(:room_id).order('quantity DESC').limit(5)
 		hearts.each do |heart|
 			TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_all")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_all") do
+			TopBctReceivedHeart::all
 		end
 		return head 200
 	end
