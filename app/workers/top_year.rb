@@ -9,5 +9,9 @@ class TopYear
 		hearts.each do |heart|
 			TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_all")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_all") do
+			TopBctReceivedHeart::all
+		end
 	end
 end
