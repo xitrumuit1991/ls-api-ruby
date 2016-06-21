@@ -175,6 +175,17 @@ Rails.application.routes.draw do
     get '/reports/bank' => 'reports#bank'
     resources :reports
 
+    # Caches
+    get '/caches/index' => 'caches#index'
+    post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
+    post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
+    post '/caches/clear-home-featured' => 'caches#clearCacheHomeFeatured'
+    post '/caches/clear-room-featured' => 'caches#clearCacheRoomFeatured'
+    post '/caches/clear-top-week' => 'caches#clearCacheTopWeek'
+    post '/caches/clear-top-month' => 'caches#clearCacheTopMonth'
+    post '/caches/clear-top-all' => 'caches#clearCacheTopAll'
+    resources :caches
+
   end
 
   # API
@@ -278,9 +289,6 @@ Rails.application.routes.draw do
         get '/:room_id/top-user-use-in-room' => 'ranks#topUserUseMoneyRoom'
         get '/:room_id/top-user-use-money' => 'ranks#topUserUseMoneyCurrent'
         get '/:id/top-fans' => 'ranks#topUserFollowBroadcaster'
-        get '/topWeek' => 'ranks#topWeek'
-        get '/topMonth' => 'ranks#topMonth'
-        get '/topYear' => 'ranks#topYear'
         get '/optimize-users' => 'ranks#optimizeImageUsers'
         get '/optimize-rooms' => 'ranks#optimizeImagerooms'
         get '/optimize-bct-image' => 'ranks#optimizeImageBctImage'

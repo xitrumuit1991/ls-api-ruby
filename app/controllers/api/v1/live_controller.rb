@@ -149,7 +149,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           @room.broadcaster.increaseExp(expBct)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
-          $emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift["name"], image: "#{request.base_url}#{dbGift['image']['square']['url']}?timestamp=#{dbGift['updated_at'].to_i}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
+          $emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift["name"], image: "#{request.base_url}#{dbGift['image']['square']['url']}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
 
           # insert log
           GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
