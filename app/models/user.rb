@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
 	end
 
 	def is_banned room_id
-		banned = self.ban_users.find_by_room_id(room_id)
+		banned = self.ban_users.where(room_id: room_id).order(id: :desc).take
 		if banned.present?
 			expiry_date = banned.created_at + banned.days.days
 			return Time.now < expiry_date

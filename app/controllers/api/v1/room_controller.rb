@@ -84,11 +84,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detail
     if (params[:id].present?) && (params[:id].to_i.is_a? Integer)
       @user = check_authenticate
+      @room = Room.find(params[:id])
       if @user.nil?
         create_tmp_token
+      else
+        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
       end
-      @room = Room.find(params[:id])
-
       if !@room.present?
         render json: {error: t('error_room_not_found')}, status: 404
       end
