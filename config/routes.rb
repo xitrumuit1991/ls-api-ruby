@@ -175,7 +175,7 @@ Rails.application.routes.draw do
     get '/reports/bank' => 'reports#bank'
     resources :reports
 
-    # Reports
+    # Caches
     get '/caches/index' => 'caches#index'
     post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
     post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
