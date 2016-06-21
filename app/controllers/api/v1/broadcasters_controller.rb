@@ -186,10 +186,10 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def getFeatured
     @user = check_authenticate
     @totalUser = []
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
-    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 6
+    @featured = Featured.order(weight: :asc).limit(6).offset(offset)
     getAllRecord = Featured.all.length
-    @totalPage =  (Float(getAllRecord)/4).ceil
+    @totalPage =  (Float(getAllRecord)/6).ceil
 
     @featured.each do |f|
       @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
@@ -197,7 +197,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def getHomeFeatured
-    @featured = HomeFeatured.order(weight: :asc).limit(5)
+    @featured = Rails.cache.fetch('home_featured')
   end
 
   def getRoomFeatured
