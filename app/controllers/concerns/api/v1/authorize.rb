@@ -36,7 +36,8 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     def authenticate_token
       authenticate_with_http_token do |token, options|
         begin
-          JWT.decode token, Settings.hmac_secret, true
+          decoded_token = JWT.decode token, Settings.hmac_secret, true
+          @token_user = decoded_token[0]
           @user = User.find_by(token: token)
         rescue
           return head 401

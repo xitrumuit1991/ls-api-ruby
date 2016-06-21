@@ -147,7 +147,8 @@ class User < ActiveRecord::Base
 	end
 
 	def vip
-		vip = self.user_has_vip_packages.find_by_actived(true).present? ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.weight : 0
+		has_vip = self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now)
+		has_vip.present? ? has_vip.first.vip_package.vip.weight : 0
 	end
 
 	#check vip de su dung ham o authorize 
@@ -169,7 +170,7 @@ class User < ActiveRecord::Base
 	def increaseMoney(money)
 		if money.to_i > 0
 			old = self.money
-			value = self.money + money
+			value = self.money + money.to_i
 			self.update(money: value)
 			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else
@@ -178,9 +179,9 @@ class User < ActiveRecord::Base
 	end
 
 	def decreaseMoney(money)
-		if self.money >= money then
+		if self.money >= money.to_i then
 			old = self.money
-			value = self.money - money
+			value = self.money - money.to_i
 			self.update(money: value)
 			NotificationChangeMoneyJob.perform_later(self.email, old, value)
 		else

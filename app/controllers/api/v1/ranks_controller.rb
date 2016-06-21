@@ -67,9 +67,9 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	def topUserSendGift
 		if params[:range] == nil or params[:range] == "week"
-			@top_gift_users = Rails.cache.fetch('top_user_use_coin_week')
+			@top_gift_users = Rails.cache.fetch('top_user_send_gift_week')
 		elsif params[:range] == "month"
-			@top_gift_users = Rails.cache.fetch('top_user_use_coin_month')
+			@top_gift_users = Rails.cache.fetch('top_user_send_gift_month')
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
@@ -147,8 +147,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		weekly_user_logs.each do |weekly_user_log|
 			WeeklyTopUserSendGift.create(:user_id => weekly_user_log.user_id, :money => weekly_user_log.money)
 		end
-		Rails.cache.delete("top_user_use_coin_week")
-		@top_gift_users  = Rails.cache.fetch("top_user_use_coin_week") do
+		Rails.cache.delete("top_user_send_gift_week")
+		@top_gift_users  = Rails.cache.fetch("top_user_send_gift_week") do
 			WeeklyTopUserSendGift.order('money desc').limit(5)
 		end
 		return head 200
@@ -168,8 +168,8 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		monthly_user_logs.each do |monthly_user_log|
 			MonthlyTopUserSendGift.create(:user_id => monthly_user_log.user_id, :money => monthly_user_log.money)
 		end
-		Rails.cache.delete("top_user_use_coin_month")
-		@top_gift_users  = Rails.cache.fetch("top_user_use_coin_month") do
+		Rails.cache.delete("top_user_send_gift_month")
+		@top_gift_users  = Rails.cache.fetch("top_user_send_gift_month") do
 			MonthlyTopUserSendGift.order('money desc').limit(5)
 		end
 		return head 200

@@ -1,4 +1,3 @@
-require "redis"
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include YoutubeHelper
@@ -187,36 +186,33 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def getFeatured
     @user = check_authenticate
     @totalUser = []
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     offset = params[:page].nil? ? 0 : params[:page].to_i * 4
     @featured = Featured.order(weight: :asc).limit(4).offset(offset)
     getAllRecord = Featured.all.length
     @totalPage =  (Float(getAllRecord)/4).ceil
 
     @featured.each do |f|
-      @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+      @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
     end
   end
 
   def getHomeFeatured
     @featured = HomeFeatured.order(weight: :asc).limit(5)
   end
-  
+
   def getRoomFeatured
     @user = check_authenticate
     @totalUser = []
     @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
     @featured.each do |f|
       if f.broadcaster.public_room.on_air
-        redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-        @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+        @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
       end
     end
   end
 
   def search
     if params[:q].present?
-      redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
       @totalUser = []
       @user = check_authenticate
       offset = params[:page].nil? ? 0 : params[:page].to_i * 10
@@ -226,7 +222,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
       @bcts.each do |bct|
         if bct.public_room.present?
-          @totalUser[bct.public_room.id] = redis.hgetall(bct.public_room.id).length
+          @totalUser[bct.public_room.id] = $redis.hgetall(bct.public_room.id).length
         end
       end
     else
