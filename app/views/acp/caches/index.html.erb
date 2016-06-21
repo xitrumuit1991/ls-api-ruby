@@ -27,6 +27,7 @@
           </div>
         </div>
       <% end %>
+
       <%= form_tag(acp_caches_clear_cache_poster_path) do %>
         <div class="form-group">
           <div class="row">
@@ -39,11 +40,51 @@
           </div>
         </div>
       <% end %>
+
       <%= form_tag(acp_caches_clear_home_featured_path) do %>
         <div class="form-group">
           <div class="row">
             <div class="col-sm-3">
               <label class="col-sm-12">Cache Home Featured</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_week_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top Week</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_month_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top Month</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_all_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top All Time</label>
             </div>
             <div class="col-sm-6">
               <button class="btn btn-success" >Clear</button>
