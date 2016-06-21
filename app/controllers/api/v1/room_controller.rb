@@ -1,4 +1,3 @@
-require "redis"
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
@@ -9,11 +8,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def onair
     @user = check_authenticate
     @totalUser = []
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
     @rooms.each do |room|
-      @totalUser[room.id] = redis.hgetall(room.id).length
+      @totalUser[room.id] = $redis.hgetall(room.id).length
     end
     getAllRecord = Room.where(on_air: true).length
     @totalPage =  (Float(getAllRecord)/9).ceil
@@ -259,12 +257,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getActions
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("actions:#{params[:room_id]}:*")
+    keys = $redis.keys("actions:#{params[:room_id]}:*")
     @status = {}
     keys.each do |key|
       split = key.split(':')
-      @status[split[2].to_i] = redis.get(key).to_i
+      @status[split[2].to_i] = $redis.get(key).to_i
     end
     # @actions = RoomAction.where(status: 1)
     @bct_actions = BctAction.where('room_id = ? ',  params[:room_id].to_i)
@@ -276,15 +273,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getLounges
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("lounges:#{params[:room_id]}:*")
+    keys = $redis.keys("lounges:#{params[:room_id]}:*")
     status = []
     12.times do |n|
       status[n] = {user: {id: 0, name: ''}, cost: 50}
     end
     keys.each do |key|
       split = key.split(':')
-      status[split[2].to_i] = eval(redis.get(key))
+      status[split[2].to_i] = eval($redis.get(key))
     end
     render json: status, status: 200
   end

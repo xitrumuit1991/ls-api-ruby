@@ -9,12 +9,20 @@ class TopWeek
 		hearts.each do |heart|
 			WeeklyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
 		end
+		Rails.cache.delete("top_broadcaster_revcived_heart_week")
+		Rails.cache.fetch("top_broadcaster_revcived_heart_week") do
+			WeeklyTopBctReceivedHeart::all
+		end
 
 		WeeklyTopUserSendGift.destroy_all
 		WeeklyTopUserSendGift.connection.execute("ALTER TABLE weekly_top_user_send_gifts AUTO_INCREMENT = 1")
 		weekly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: 1.week.ago.beginning_of_week..1.week.ago.end_of_week).group(:user_id).order('money DESC').limit(5)
 		weekly_user_logs.each do |weekly_user_log|
 			WeeklyTopUserSendGift.create(:user_id => weekly_user_log.user_id, :money => weekly_user_log.money)
+		end
+		Rails.cache.delete("top_user_send_gift_week")
+		Rails.cache.fetch("top_user_send_gift_week") do
+			WeeklyTopUserSendGift::all
 		end
 	end
 end
