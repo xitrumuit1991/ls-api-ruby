@@ -113,7 +113,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
             render json: {error: e.message}, status: 400
           end
         else
-          render json: {error: "This action has been full"}, status: 403
+          $emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction["price"], voted: rAction, percent: 100, sender: {}})
+          render json: {error: "Hành động này đã được vote đầy!"}, status: 403
         end
       end
     else
