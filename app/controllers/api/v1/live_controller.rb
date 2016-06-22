@@ -227,12 +227,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     hearts = params[:hearts].to_i
     if(hearts > 0 && @user.no_heart >= hearts) then
       begin
+        @user.lock!
         @user.no_heart -= hearts
-        @room.broadcaster.recived_heart += hearts
-        @user.increaseExp(10)
-        @room.broadcaster.increaseExp(hearts)
-        if @user.save then
-          if @room.broadcaster.save then
+        if @user.save!
+          @user.increaseExp(10)
+          @room.broadcaster.lock!
+          @room.broadcaster.recived_heart += hearts
+          if @room.broadcaster.save!
+            @room.broadcaster.increaseExp(hearts)
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
             vip = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
             $emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
