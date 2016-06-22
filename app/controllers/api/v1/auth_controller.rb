@@ -5,6 +5,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Vas
   include Api::V1::Wap
   include CaptchaHelper
+  include KrakenHelper
 
   before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
@@ -406,7 +407,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.birthday           = profile['birthday'].present? ? profile['birthday'] : '2000-01-01'
         user.fb_id              = profile['id']
         user.user_level_id      = UserLevel.first().id
-        user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
+        user.remote_avatar_url      = graph.get_picture(profile['id'], type: :large)
+        user.remote_avatar_crop_url = uploadDowload(graph.get_picture(profile['id'], type: :large))
         user.password           = password
         user.active_code        = activeCode
         user.money              = 8
