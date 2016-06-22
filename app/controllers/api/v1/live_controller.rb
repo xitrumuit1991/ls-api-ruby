@@ -225,7 +225,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def sendHearts
     hearts = params[:hearts].to_i
-    @user.with_block do
+    @user.with_lock do
       if(hearts > 0 && @user.no_heart >= hearts) then
         begin
           @user.no_heart -= hearts
