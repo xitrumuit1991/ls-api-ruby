@@ -260,7 +260,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def getAvatar
     begin
       @u = User.find(params[:id])
-      send_file "#{@u.avatar_path[:avatar_w60h60]}", type: 'image/png', disposition: 'inline'
+      send_file "public#{@u.avatar_crop.w60h60.url}", type: 'image/png', disposition: 'inline'
     rescue
       send_file 'public/default/w60h60_no-avatar.png', type: 'image/png', disposition: 'inline'
     end
