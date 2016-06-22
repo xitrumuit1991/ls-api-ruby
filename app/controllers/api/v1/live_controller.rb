@@ -87,32 +87,34 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     dbAction = fetch_action action_id
     if dbAction
       rAction = $redis.get("actions:#{@room.id}:#{action_id}").to_i
-      if rAction < dbAction["max_vote"]
-        begin
-          @user.decreaseMoney(dbAction["price"])
-          new_value = rAction + 1
-          percent = new_value * 100 / dbAction["max_vote"]
-          $redis.incr("actions:#{@room.id}:#{action_id}")
-          
-          @user.increaseExp(dbAction["price"])
-          @room.broadcaster.increaseExp(dbAction["price"] * 10)
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          if dbAction["max_vote"] == new_value
-            $emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
-          else
-            $emitter.of("/room").in(@room.id).emit("action recived", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
+      $redis.lock_for_update("actions:#{@room.id}:#{action_id}") do
+        if rAction < dbAction["max_vote"]
+          begin
+            @user.decreaseMoney(dbAction["price"])
+            new_value = rAction + 1
+            percent = new_value * 100 / dbAction["max_vote"]
+            $redis.incr("actions:#{@room.id}:#{action_id}")
+
+            @user.increaseExp(dbAction["price"])
+            @room.broadcaster.increaseExp(dbAction["price"] * 10)
+            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            if dbAction["max_vote"] <= new_value
+              $emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
+            else
+              $emitter.of("/room").in(@room.id).emit("action recived", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
+            end
+
+            # insert log
+            ActionLogJob.perform_later(@user, @room.id, action_id, dbAction["price"])
+            UserLogJob.perform_later(@user, @room.id, dbAction["price"])
+
+            return head 201
+          rescue => e
+            render json: {error: e.message}, status: 400
           end
-
-          # insert log
-          ActionLogJob.perform_later(@user, @room.id, action_id, dbAction["price"])
-          UserLogJob.perform_later(@user, @room.id, dbAction["price"])
-
-          return head 201
-        rescue => e
-          render json: {error: e.message}, status: 400
+        else
+          render json: {error: "This action has been full"}, status: 403
         end
-      else
-        render json: {error: "This action has been full"}, status: 403
       end
     else
       render json: {error: "Action doesn\'t exist"}, status: 404

@@ -75,6 +75,7 @@ gem 'rack-cors', :require => 'rack/cors'
 
 # Redis client
 gem "redis"
+gem "redis-lock"
 
 # SocketIO emitter
 gem 'socket.io-emitter'
