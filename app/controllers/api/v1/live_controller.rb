@@ -225,35 +225,35 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def sendHearts
     hearts = params[:hearts].to_i
-    @user.lock!
-    if(hearts > 0 && @user.no_heart >= hearts) then
-      begin
-        @user.no_heart -= hearts
-        if @user.save!
-          @user.increaseExp(10)
-          @room.broadcaster.lock!
-          @room.broadcaster.recived_heart += hearts
-          if @room.broadcaster.save!
-            @room.broadcaster.increaseExp(hearts)
-            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            vip = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
-            $emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
+    @user.with_block do
+      if(hearts > 0 && @user.no_heart >= hearts) then
+        begin
+          @user.no_heart -= hearts
+          if @user.save!
+            @user.increaseExp(10)
+            @room.broadcaster.recived_heart += hearts
+            if @room.broadcaster.save
+              @room.broadcaster.increaseExp(hearts)
+              user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+              vip = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
+              $emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
-            # insert log
-            HeartLogJob.perform_later(@user, @room.id, hearts)
+              # insert log
+              HeartLogJob.perform_later(@user, @room.id, hearts)
 
-            return head 201
+              return head 201
+            else
+              render json: {error: "Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!"}, status: 400
+            end
           else
-            render json: {error: "Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!"}, status: 400
+            render json: {error: "Không thể gửi trái tim, Vui lòng thử lại lần nữa"}, status: 400
           end
-        else
-          render json: {error: "Không thể gửi trái tim, Vui lòng thử lại lần nữa"}, status: 400
+        rescue => e
+          render json: {error: e.message}, status: 400
         end
-      rescue => e
-        render json: {error: e.message}, status: 400
+      else
+        render json: {error: "Bạn không có đủ số trái tim"}, status: 403
       end
-    else
-      render json: {error: "Bạn không có đủ số trái tim"}, status: 403
     end
   end
 
