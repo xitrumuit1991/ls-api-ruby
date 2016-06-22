@@ -88,11 +88,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if dbAction
       rAction = $redis.get("actions:#{@room.id}:#{action_id}").to_i
       if rAction < dbAction["max_vote"]
-        new_value = rAction + 1
-        percent = new_value * 100 / dbAction["max_vote"]
-        $redis.incr("actions:#{@room.id}:#{action_id}")
         begin
           @user.decreaseMoney(dbAction["price"])
+          new_value = rAction + 1
+          percent = new_value * 100 / dbAction["max_vote"]
+          $redis.incr("actions:#{@room.id}:#{action_id}")
+          
           @user.increaseExp(dbAction["price"])
           @room.broadcaster.increaseExp(dbAction["price"] * 10)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
