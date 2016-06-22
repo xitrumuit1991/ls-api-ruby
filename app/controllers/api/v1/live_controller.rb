@@ -225,9 +225,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def sendHearts
     hearts = params[:hearts].to_i
+    @user.lock!
     if(hearts > 0 && @user.no_heart >= hearts) then
       begin
-        @user.lock!
         @user.no_heart -= hearts
         if @user.save!
           @user.increaseExp(10)

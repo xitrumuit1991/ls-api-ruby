@@ -125,7 +125,6 @@ class User < ActiveRecord::Base
 			}
 		end
 		return cover
-		# "#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
 	end
 
 	def horoscope
@@ -168,28 +167,30 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseMoney(money)
-		self.lock!
-		if money.to_i > 0
-			old = self.money
-			value = self.money + money.to_i
-			self.money = value
-			self.save!
-			NotificationChangeMoneyJob.perform_later(self.email, old, value)
-		else
-			raise "Số tiền không hợp lệ"
+		self.with_lock do
+			if money.to_i > 0
+				old = self.money
+				value = self.money + money.to_i
+				self.money = value
+				self.save!
+				NotificationChangeMoneyJob.perform_later(self.email, old, value)
+			else
+				raise "Số tiền không hợp lệ"
+			end
 		end
 	end
 
 	def decreaseMoney(money)
-		self.lock!
-		if self.money >= money.to_i then
-			old = self.money
-			value = self.money - money.to_i
-			self.money = value
-			self.save!
-			NotificationChangeMoneyJob.perform_later(self.email, old, value)
-		else
-			raise "Bạn không có đủ tiền"
+		self.with_lock do
+			if self.money >= money.to_i then
+				old = self.money
+				value = self.money - money.to_i
+				self.money = value
+				self.save!
+				NotificationChangeMoneyJob.perform_later(self.email, old, value)
+			else
+				raise "Bạn không có đủ tiền"
+			end
 		end
 	end
 
