@@ -2,3 +2,4 @@ redis_host: "localhost"
 redis_port: 6379
 livestar_path: "http://livestar.local:5002"
 m_livestar_path: "http://m.livestar.local:5002"
+base_url: 'http://localhost:3000/'
