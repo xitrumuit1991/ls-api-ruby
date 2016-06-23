@@ -22,7 +22,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       @user.update(last_login: Time.now, token: token)
       render json: { token: token }, status: 200
     else
-      render json: { token: nil }, status: 200
+      render json: { token: nil, msisdn: @msisdn }, status: 200
     end
   end
 
