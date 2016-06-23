@@ -142,10 +142,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => giftLog.id,
           :name => giftLog.gift.name,
-          :thumb => "#{request.base_url}#{giftLog.gift.image_path[:image]}",
-          :thumb_w50h50 => "#{request.base_url}#{giftLog.gift.image_path[:image_w50h50]}",
-          :thumb_w100h100 => "#{request.base_url}#{giftLog.gift.image_path[:image_w100h100]}",
-          :thumb_w200h200 => "#{request.base_url}#{giftLog.gift.image_path[:image_w200h200]}",
+          :thumb => "#{giftLog.gift.image_path[:image]}",
+          :thumb_w50h50 => "#{giftLog.gift.image_path[:image_w50h50]}",
+          :thumb_w100h100 => "#{giftLog.gift.image_path[:image_w100h100]}",
+          :thumb_w200h200 => "#{giftLog.gift.image_path[:image_w200h200]}",
           :quantity => giftLog.quantity,
           :cost => giftLog.cost.round(0),
           :total_cost => (giftLog.cost*giftLog.quantity).round(0),
@@ -176,10 +176,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => actionLog.id,
           :name => actionLog.room_action.name,
-          :thumb => "#{request.base_url}#{actionLog.room_action.image_path[:image]}", 
-          :thumb_w50h50 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w50h50]}", 
-          :thumb_w100h100 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w100h100]}", 
-          :thumb_w200h200 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w200h200]}",
+          :thumb => "#{actionLog.room_action.image_path[:image]}", 
+          :thumb_w50h50 => "#{actionLog.room_action.image_path[:image_w50h50]}", 
+          :thumb_w100h100 => "#{actionLog.room_action.image_path[:image_w100h100]}", 
+          :thumb_w200h200 => "#{actionLog.room_action.image_path[:image_w200h200]}",
           :quantity => 1,
           :cost => actionLog.cost.round(0),
           :total_cost => actionLog.cost.round(0),
@@ -365,8 +365,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
           megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
           megabanklog.save
           user        = User.find(megabanklog.user_id)
-          user.money  = user.money + megabanklog.megabank.coin
-          user.save
+          user.increaseMoney(megabanklog.megabank.coin)
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
           render json: {error: "Thất bại"}, status: 403
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
