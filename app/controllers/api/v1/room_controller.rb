@@ -335,7 +335,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     name = Faker::Name.name
     email = Faker::Internet.email(name)
     exp = id + 24 * 3600
-    payload = {id: id, email: email, name: name, vip: 0, exp: exp}
+    payload = {id: id, email: email, name: name, vip: 0, exp: exp, guest: true}
 
     @tmp_user = TmpUser.new
     @tmp_user.id = id
