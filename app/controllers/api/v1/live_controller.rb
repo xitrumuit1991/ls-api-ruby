@@ -272,8 +272,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def endRoom
     @room.on_air = false
-    if @room.save then
+    if @room.save
       $emitter.of("/room").in(@room.id).emit("room off")
+
+      # remove expired banned user
+      banned = $redis.keys("ban:#{@room.id}:*")
+      banned.each do |key|
+        expiry = $redis.get(key)
+        $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+      end
+
       return head 200
     else
       render json: {error: "Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ"}, status: 400
@@ -282,11 +290,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def kickUser
     if params[:user_id].present?
-      days = params[:days].present? ? params[:days].to_i : 1
-      note = params[:note].present? ? params[:note] : ''
-      @ban_user = User.find_by_id(params[:user_id])
-      if @ban_user.present?
-        @ban_user.ban @room.id, days, note
+      @user = User.find_by_id(params[:user_id])
+      if @user.present?
+        @user.ban @room.id
         return head 200
       else
         return head 404
