@@ -32,6 +32,7 @@ json.user_level		@user.user_level.level
 json.max_heart		@user.user_level.heart_per_day
 json.active_code	@user.active_code
 json.is_mbf       @user.mobifone_user.present?
+json.apple_payment false
 if !@vipInfo.nil?
   json.vip do
     json.vip 			@vipInfo.weight
