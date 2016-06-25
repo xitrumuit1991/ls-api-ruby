@@ -37,18 +37,15 @@ class User < ActiveRecord::Base
 	mount_base64_uploader :cover_crop, CoverCropUploader
 	mount_uploader :cover,  CoverUploader
 
-	def ban room_id, days = 1, note = ''
-		self.ban_users.create(room_id: room_id, days: days, note: note)
+	def ban room_id
+		expiry = Time.now + 1.day
+		$redis.set("ban:#{room_id}:#{self.email}", expiry.to_i)
+		$emitter.of("/room").in(room_id).emit("kick user", {email: self.email, name: self.name})
 	end
 
 	def is_banned room_id
-		banned = self.ban_users.where(room_id: room_id).order(id: :desc).take
-		if banned.present?
-			expiry_date = banned.created_at + banned.days.days
-			return Time.now < expiry_date
-		else
-			return false
-		end
+		ban = $redis.get("ban:#{room_id}:#{self.email}")
+		ban.nil? ? false : Time.now < Time.at(ban.to_i)
 	end
 
 	def is_locking

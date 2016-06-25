@@ -1,6 +1,7 @@
 class Acp::CachesController < Acp::ApplicationController
+  include Api::V1::CacheHelper
   # authorize_resource :class => false
-  
+
   def index
   end
 
@@ -98,6 +99,14 @@ class Acp::CachesController < Acp::ApplicationController
 			TopBctReceivedHeart::all
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Top All successfully.')
+  end
+
+  def clearCacheVip
+  	Vip.all.each do |vip|
+  		$redis.del "vip:#{vip.weight}"
+  		fetch_vip vip.weight
+  	end
+  	redirect_to({ action: 'index' }, notice: 'Clear Cache Vip successfully.')
   end
 
 end
