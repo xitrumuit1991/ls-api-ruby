@@ -24,7 +24,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
-  def vas_register phone, pkg_code = "VIP", username = nil, password = nil
+  def vas_register phone, pkg_code = "VIP", channel = "APP", username = nil, password = nil
     begin
       # call VAS webservice
       soapClient = Savon.client do |variable|
@@ -36,7 +36,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
         "tns:phone_number"  => phone.to_s,
         "tns:password"      => password.present? ? password.to_s : phone.to_s,
         "tns:pkg_code"      => pkg_code,
-        "tns:channel"       => "APP",
+        "tns:channel"       => channel,
         "tns:username"      => username.present? ? username.to_s : phone.to_s,
         "tns:partner_id"    => "DEFAULT",
       }

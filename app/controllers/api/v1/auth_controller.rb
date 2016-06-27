@@ -7,7 +7,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include CaptchaHelper
   include KrakenHelper
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response]
+  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -294,6 +294,28 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  def wap_mbf_publisher
+    # get msisdn
+    msisdn = check_mbf_auth ? @msisdn : nil
+    # call api mbf count
+    # do someting ...
+
+    if check_mbf_auth
+      if !@user.present?
+        # call api vas register
+        charge_result = vas_register msisdn, "VIP", "WAP"
+        if !charge_result[:is_error]
+          # create user mbf
+          mbf_create_user msisdn
+        else
+          render json: { error: "Vas error !" }, status: 400 and return
+        end
+      end
+    end
+
+    return head 200
+  end
+
   def login
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
@@ -563,5 +585,33 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     def createToken(user)
       payload = {id: user.id, email: user.email, name: user.name, vip: user.vip, exp: Time.now.to_i + 24 * 3600}
       JWT.encode payload, Settings.hmac_secret, 'HS256'
+    end
+
+    def mbf_create_user msisdn
+      activeCode = SecureRandom.hex(3).upcase
+      user = User.new
+      user.phone          = msisdn
+      user.email          = "#{msisdn}@mobifone.com.vn"
+      user.password       = msisdn
+      user.active_code    = activeCode
+      user.name           = msisdn
+      user.username       = msisdn
+      user.birthday       = '2000-01-01'
+      user.user_level_id  = UserLevel.first().id
+      user.money          = 8
+      user.user_exp       = 0
+      user.no_heart       = 0
+      user.actived        = true
+      user.active_date    = Time.now
+      user.save
+      # get vip1
+      vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+      # subscribe vip1
+      user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+      # create mobifone user vip logs
+      user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
+      # add bonus coins for user
+      money = user.money + vip1.discount
+      user.update(money: money)
     end
 end
