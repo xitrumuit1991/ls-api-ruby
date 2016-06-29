@@ -593,7 +593,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       activeCode = SecureRandom.hex(3).upcase
       user = User.new
       user.phone          = msisdn
-      user.email          = "#{msisdn}@mobifone.com.vn"
+      user.email          = "#{msisdn}@livestar.vn"
       user.password       = msisdn
       user.active_code    = activeCode
       user.name           = msisdn
