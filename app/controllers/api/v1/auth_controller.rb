@@ -296,7 +296,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def wap_mbf_publisher
     render json: { error: "Missing parameters !" }, status: 400 and return if !params[:publisher].present?
-    puts '=========11111111'
     # get msisdn
     msisdn = check_mbf_auth ? @msisdn : nil
     # call api vas update
