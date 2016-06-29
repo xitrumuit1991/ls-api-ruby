@@ -24,7 +24,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
-  def vas_register phone, pkg_code = "VIP", channel = "APP", username = nil, password = nil
+  def vas_register phone, pkg_code = "VIP", channel = "APP", partner_id = "DEFAULT", username = nil, password = nil
     begin
       # call VAS webservice
       soapClient = Savon.client do |variable|
@@ -38,7 +38,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
         "tns:pkg_code"      => pkg_code,
         "tns:channel"       => channel,
         "tns:username"      => username.present? ? username.to_s : phone.to_s,
-        "tns:partner_id"    => "DEFAULT",
+        "tns:partner_id"    => partner_id,
       }
       register_response = soapClient.call(:register, message: message)
       register_response.body[:register_response][:register_result]
@@ -65,6 +65,29 @@ module Api::V1::Vas extend ActiveSupport::Concern
       }
       charge_response = soapClient.call(:charge, message: message)
       charge_response.body[:charge_response][:charge_result]
+    rescue Savon::SOAPFault
+      return {is_error: true, message: 'System error!'}
+    end
+  end
+
+  def vas_update_partner_report msisdn, partner_id, pkg_code = "VIP", option = 0
+    begin
+      # call VAS webservice
+      soapClient = Savon.client do |variable|
+        variable.proxy Settings.vas_proxy
+        variable.wsdl Settings.vas_wsdl
+      end
+      
+      # params request
+      message = {
+        "tns:msisdn"      => msisdn.to_s,
+        "tns:partner_id"  => partner_id,
+        "tns:pkg_code"    => pkg_code,
+        "tns:option"      => option
+      }
+
+      response = soapClient.call(:update_partner_report, message: message)
+      response.body[:update_partner_report_response][:update_partner_report_result]
     rescue Savon::SOAPFault
       return {is_error: true, message: 'System error!'}
     end

@@ -295,16 +295,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def wap_mbf_publisher
+    render json: { error: "Missing parameters !" }, status: 400 and return if !params[:publisher].present?
+    puts '=========11111111'
     # get msisdn
     msisdn = check_mbf_auth ? @msisdn : nil
-    # call api mbf count
-    # do someting ...
-
+    # call api vas update
+    vas_update_partner_report msisdn, params[:publisher]
+    # detect user mbf 3g
     if check_mbf_auth
+      # check user mbf existed
       if !@user.present?
         # call api vas register
-        charge_result = vas_register msisdn, "VIP", "WAP"
-        if !charge_result[:is_error]
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher]
+        if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
         else
@@ -604,6 +607,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       user.actived        = true
       user.active_date    = Time.now
       user.save
+      # create mobifone user
+      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
       # get vip1
       vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
       # subscribe vip1
