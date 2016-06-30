@@ -32,7 +32,7 @@ en:
         #User
         user:
           username: ""
-          name: ""
+          name: "HỌ TÊN"
           email: ""
           password: ""
           user_exp: ""
