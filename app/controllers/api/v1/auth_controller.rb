@@ -305,7 +305,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # check user mbf existed
       if !@user.present?
         # call api vas register
-        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher]
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
