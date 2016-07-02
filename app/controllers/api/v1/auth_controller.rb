@@ -373,10 +373,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.email        = params[:email]
         user.password     = params[:password].to_s
         user.active_code  = activeCode
-
+        user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
+        user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
         if user.valid?
-          user.name           = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-          user.username       = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
           user.birthday       = '2000-01-01'
           user.user_level_id  = UserLevel.first().id
           user.money          = 8
