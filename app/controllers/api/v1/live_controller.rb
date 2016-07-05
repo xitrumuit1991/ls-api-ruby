@@ -291,7 +291,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def kickUser
     if params[:user_id].present?
       @user = User.find_by_id(params[:user_id])
-      if @user.present?
+      if @user.present? and !@user.is_broadcaster
         @user.ban @room.id
         return head 200
       else
