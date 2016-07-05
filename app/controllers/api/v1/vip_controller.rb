@@ -90,7 +90,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   private
     def create_vip_package vipPackage
-      charge_result = vas_register @user.phone, vipPackage.code
+      charge_result = vas_register @user.phone, vipPackage.code, "APP", "DEFAULT", @user.phone, SecureRandom.hex(3)
       if !charge_result[:is_error]
         # set actived false if user has vip package
         @user.user_has_vip_packages.find_by(actived: true).update(actived: false) if @user.user_has_vip_packages.find_by(actived: true).present?
