@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160615080342) do
+ActiveRecord::Schema.define(version: 20160707045436) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -341,6 +341,11 @@ ActiveRecord::Schema.define(version: 20160615080342) do
     t.integer  "coin",       limit: 4
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
+  end
+
+  create_table "mobifone_ips", primary_key: "ip", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "mobifone_user_money_logs", force: :cascade do |t|
