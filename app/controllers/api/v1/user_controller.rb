@@ -142,10 +142,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => giftLog.id,
           :name => giftLog.gift.name,
-          :thumb => "#{request.base_url}#{giftLog.gift.image_path[:image]}",
-          :thumb_w50h50 => "#{request.base_url}#{giftLog.gift.image_path[:image_w50h50]}",
-          :thumb_w100h100 => "#{request.base_url}#{giftLog.gift.image_path[:image_w100h100]}",
-          :thumb_w200h200 => "#{request.base_url}#{giftLog.gift.image_path[:image_w200h200]}",
+          :thumb => "#{giftLog.gift.image_path[:image]}",
+          :thumb_w50h50 => "#{giftLog.gift.image_path[:image_w50h50]}",
+          :thumb_w100h100 => "#{giftLog.gift.image_path[:image_w100h100]}",
+          :thumb_w200h200 => "#{giftLog.gift.image_path[:image_w200h200]}",
           :quantity => giftLog.quantity,
           :cost => giftLog.cost.round(0),
           :total_cost => (giftLog.cost*giftLog.quantity).round(0),
@@ -176,10 +176,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => actionLog.id,
           :name => actionLog.room_action.name,
-          :thumb => "#{request.base_url}#{actionLog.room_action.image_path[:image]}", 
-          :thumb_w50h50 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w50h50]}", 
-          :thumb_w100h100 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w100h100]}", 
-          :thumb_w200h200 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w200h200]}",
+          :thumb => "#{actionLog.room_action.image_path[:image]}", 
+          :thumb_w50h50 => "#{actionLog.room_action.image_path[:image_w50h50]}", 
+          :thumb_w100h100 => "#{actionLog.room_action.image_path[:image_w100h100]}", 
+          :thumb_w200h200 => "#{actionLog.room_action.image_path[:image_w200h200]}",
           :quantity => 1,
           :cost => actionLog.cost.round(0),
           :total_cost => actionLog.cost.round(0),
@@ -260,7 +260,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def getAvatar
     begin
       @u = User.find(params[:id])
-      send_file "#{@u.avatar_path[:avatar_w60h60]}", type: 'image/png', disposition: 'inline'
+      send_file "public#{@u.avatar_crop.w60h60.url}", type: 'image/png', disposition: 'inline'
     rescue
       send_file 'public/default/w60h60_no-avatar.png', type: 'image/png', disposition: 'inline'
     end
@@ -365,8 +365,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
           megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
           megabanklog.save
           user        = User.find(megabanklog.user_id)
-          user.money  = user.money + megabanklog.megabank.coin
-          user.save
+          user.increaseMoney(megabanklog.megabank.coin)
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
           render json: {error: "Thất bại"}, status: 403
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
@@ -572,11 +571,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
           card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
           info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
           if card_logs(cardChargingResponse, info)
-            if update_coin(info[:coin])
-              render plain: "Nạp tiền thành công.", status: 200
-            else
-              render plain: "Lổi hệ thống. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
-            end
+            @user.increaseMoney(info[:coin])
+            render plain: "Nạp tiền thành công.", status: 200
           else
             render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
           end
@@ -597,6 +593,22 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @trade = @user.user_has_vip_packages.order(created_at: :desc).limit(10)
   end
 
+  def shareFBReceivedCoin
+    begin
+      graph = Koala::Facebook::API.new(params[:accessToken])
+      info = graph.get_object(params[:post_id])
+      if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
+        @user.increaseMoney(10)
+        fb_logs(params[:post_id], 10)
+        render plain: 'Đã cộng tiền thành công!!!', status: 200
+      else
+        render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
+      end
+    rescue Exception => e
+      render plain: 'Bạn chưa chia sẽ livestar.vn lên tường nhà!!!', status: 400
+    end
+  end
+
   private
   def megabank_logs(info)
     MegabankLog.create()
@@ -614,11 +626,17 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+  def fb_logs(post_id, coin)
+    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin)
+  end
+
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
     @user_sms = User::find_by_active_code(subkeyword)
     coin  = SmsMobile::find_by_price(amount.to_i)
     money = @user_sms.money + coin.coin
-    if @user_sms.update(money: money)
+
+    if @user_sms.present?
+      @user_sms.increaseMoney(money)
       if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
         return true
       else
@@ -631,12 +649,4 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def update_coin(coin)
-    money = @user.money + coin.to_i
-    if @user.update(money: money)
-      return true
-    else
-      return false
-    end
-  end
 end

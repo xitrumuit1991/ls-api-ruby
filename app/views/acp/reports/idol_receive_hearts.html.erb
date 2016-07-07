@@ -43,29 +43,29 @@
           <thead>
           <tr>
             <th style="width:20%">Avatar</th>
-            <th style="width:20%">Name</th>
-            <th style="width:20%">Email</th>
+            <th style="width:20%" class="sorting" data-field="users.name">Name</th>
+            <th style="width:20%" class="sorting" data-field="users.email">Email</th>
             <th style="width:20%">Hearts</th>
           </tr>
           </thead>
           <tbody>
-          <% @data.each do |item| %>
-            <tr id="row_page_<%= item.room.id %>">
+          <% @rooms.each do |room| %>
+            <tr id="row_page_<%= room.id %>">
               <td class="v-align-middle">
-                <% if item.room.broadcaster.user.avatar? %>
-                  <img src="<%= item.room.broadcaster.user.avatar.minisquare.url %>" class="img-thumbnail">
+                <% if room.broadcaster.user.avatar? %>
+                  <img src="<%= room.broadcaster.user.avatar.minisquare.url %>" class="img-thumbnail">
                 <% else %>
                   <p>No Image</p>
                 <% end %>
               </td>
               <td class="v-align-middle">
-                <%= link_to(edit_acp_broadcaster_path(item.room.broadcaster)) do %><p><%= item.room.broadcaster.fullname %></p><% end %>
+                <%= link_to(edit_acp_broadcaster_path(room.broadcaster)) do %><p><%= room.name %></p><% end %>
               </td>
               <td class="v-align-middle">
-                <p><%= item.room.broadcaster.user.email %></p>
+                <p><%= room.email %></p>
               </td>
               <td class="v-align-middle">
-                <p><%= item.quantity %></p>
+                <p><%= room.quantity %></p>
               </td>
             </tr>
           <% end %>
@@ -74,7 +74,7 @@
       </form>
       <div class="row">
         <div class="col-md-12">
-          <%= paginate @data %>
+          <%= paginate @rooms %>
         </div>
       </div>
     </div>

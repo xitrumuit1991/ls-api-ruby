@@ -88,8 +88,8 @@
                   <p><%= item.user.email %></p>
                 </td>
                 <td class="v-align-middle">
-                  <% if item.rooms.find_by_is_privated(false).present? %>
-                      <p><%=item.rooms.find_by_is_privated(false).title%></p>
+                  <% if item.public_room.present? %>
+                      <p><%=item.public_room.title%></p>
                   <% else %>
                       <p>Idol chưa có room</p>
                   <% end %>

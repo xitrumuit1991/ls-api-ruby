@@ -1,8 +1,6 @@
-require 'socket.io-emitter'
-require "redis"
-
 class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
+  include Api::V1::CacheHelper
 
   before_action :authenticate, :checkSubscribed
   before_action :checkStarted, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
@@ -15,7 +13,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def addHeartInRoom
     maxHeart  = @user.user_level.heart_per_day
     userHeart = UserReceivedHeart.find_by_user_id(@user.id)
-    hearts    = params[:hearts].to_i
+    # hearts    = params[:hearts].to_i
     if !userHeart
       userHeart = UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
     end
@@ -25,8 +23,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           userHeart.update(:hearts => userHeart.hearts.to_i + 1)
           @user.update(:no_heart => @user.no_heart.to_i + 1)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("add hearts", {hearts: @user.no_heart, sender: user})
+          $emitter.of("/room").in(@room.id).emit("add hearts", {hearts: @user.no_heart, sender: user})
           return head 201
         rescue => e
           render json: {error: e.message}, status: 400
@@ -40,43 +37,24 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def sendMessage
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     message = params[:message]
     room_id = params[:room_id]
+    vip_weight = @token_user["vip"]
+    vip = fetch_vip vip_weight
+    no_char = vip ? vip["no_char"].to_i : 40
 
-    vipPackage = @user.user_has_vip_packages.find_by_actived(true)
-    no_char = vipPackage.present? ? vipPackage.vip_package.vip.no_char : 40
-    last_message = redis.get("last_message:#{room_id}:#{@user.id}")
-    timeLastMsg = !last_message.blank? ? last_message : 0
-    duration = params[:timestamp].to_i - timeLastMsg.to_i
-
-    if @user.is_broadcaster && @user.public_room.id == room_id.to_i
-      timeChat = 0
-    elsif vipPackage.present?
-      timeChat = vipPackage.vip_package.vip.screen_text_time
-    else
-      timeChat = 200
-    end
-    timeChat = 0
-    @user.increaseExp(1)
     if message.length > 0
       if message.length <= no_char
-        if duration >= timeChat
-          redis.set("last_message:#{room_id}:#{@user.id}", params[:timestamp]);
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          vip = @vip != 0 ? {vip: @vip.weight} : 0
-          emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip});
+        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+        vip_data = vip_weight ? {vip: vip_weight} : 0
+        $emitter.of("/room").in(room_id).emit('message', {message: message, sender: user, vip: vip_data});
 
-          return head 201
-        else
-          render json:{message: "Vui lòng gửi tin nhắn sau #{timeChat - duration} s!"}, status: 200
-        end
+        return head 201
       else
-        render json:{error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
+        render json: {error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
       end
     else
-      render json:{error: "Vui lòng nhập nội dung chat trước khi gởi !"}, status: 400
+      render json: {error: "Vui lòng nhập nội dung chat trước khi gởi !"}, status: 400
     end
   end
 
@@ -88,13 +66,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         @user.decreaseMoney(cost)
         @user.increaseExp(10)
         @room.broadcaster.increaseExp(10)
-        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-        emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-        emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
+        user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username }
+        $emitter.of("/room").in(@room.id).emit('screen text', { message: message, sender: user });
 
         # insert log
         @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
-        @user.user_logs.create(room_id: @room.id, money: cost)
+        UserLogJob.perform_later(@user, @room.id, cost)
 
         return head 201
       rescue => e
@@ -106,39 +83,39 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def voteAction
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     action_id = params[:action_id]
-    dbAction = RoomAction.find(action_id)
+    dbAction = fetch_action action_id
     if dbAction
-      rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
-      if rAction < dbAction.max_vote
-        new_value = rAction + 1
-        percent = new_value * 100 / dbAction.max_vote
-        redis.set("actions:#{@room.id}:#{action_id}", new_value);
-        expUser = formulaExpForUser(dbAction.price, 1)
-        expBct = formulaExpForBct(dbAction.price, 1)
-        begin
-          @user.decreaseMoney(dbAction.price)
-          @user.increaseExp(expUser)
-          @room.broadcaster.increaseExp(expBct)
-          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          if dbAction.max_vote == new_value
-            emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
-          else
-            emitter.of("/room").in(@room.id).emit("action recived", {id: action_id, price: dbAction.price, voted: new_value, percent: percent, sender: user})
+      rAction = $redis.get("actions:#{@room.id}:#{action_id}").to_i
+      $redis.lock_for_update("actions:#{@room.id}:#{action_id}") do
+        if rAction < dbAction["max_vote"]
+          begin
+            @user.decreaseMoney(dbAction["price"])
+            new_value = rAction + 1
+            percent = new_value * 100 / dbAction["max_vote"]
+            $redis.incr("actions:#{@room.id}:#{action_id}")
+
+            @user.increaseExp(dbAction["price"])
+            @room.broadcaster.increaseExp(dbAction["price"] * 10)
+            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+            if dbAction["max_vote"] <= new_value
+              $emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
+            else
+              $emitter.of("/room").in(@room.id).emit("action recived", {id: action_id, price: dbAction["price"], voted: new_value, percent: percent, sender: user})
+            end
+
+            # insert log
+            ActionLogJob.perform_later(@user, @room.id, action_id, dbAction["price"])
+            UserLogJob.perform_later(@user, @room.id, dbAction["price"])
+
+            return head 201
+          rescue => e
+            render json: {error: e.message}, status: 400
           end
-
-          # insert log
-          @user.action_logs.create(room_id: @room.id, room_action_id: action_id, cost: dbAction.price)
-          @user.user_logs.create(room_id: @room.id, money: dbAction.price)
-
-          return head 201
-        rescue => e
-          render json: {error: e.message}, status: 400
+        else
+          $emitter.of("/room").in(@room.id).emit("action full", {id: action_id, price: dbAction["price"], voted: rAction, percent: 100, sender: {}})
+          render json: {error: "Hành động này đã được vote đầy!"}, status: 403
         end
-      else
-        render json: {error: "This action has been full"}, status: 403
       end
     else
       render json: {error: "Action doesn\'t exist"}, status: 404
@@ -146,15 +123,13 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def doneAction
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     action_id = params[:action_id]
-    dbAction = RoomAction.find(action_id)
+    dbAction = fetch_action action_id
     if dbAction
-      rAction = redis.get("actions:#{@room.id}:#{action_id}").to_i
-      if dbAction.max_vote <= rAction
-        redis.set("actions:#{@room.id}:#{action_id}", 0)
-        emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-        emitter.of("/room").in(@room.id).emit("action done", { id: dbAction.id, image: dbAction.image.square })
+      rAction = $redis.get("actions:#{@room.id}:#{action_id}").to_i
+      if dbAction["max_vote"] <= rAction
+        $redis.set("actions:#{@room.id}:#{action_id}", 0)
+        $emitter.of("/room").in(@room.id).emit("action done", { id: dbAction["id"] })
         return head 200
       else
         render json: {error: "Hành động này phải được Vote trước khi được duyệt"}, status: 400
@@ -167,27 +142,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def sendGifts
     gift_id = params[:gift_id].to_i
     quantity = params[:quantity].to_i
-    dbGift = Gift.find(gift_id)
-    if dbGift then
-      if quantity >= 1 then
-        expUser = formulaExpForUser(dbGift.price, quantity)
-        if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
-          expUser += 10
-        end
-        total = dbGift.price * quantity
-        expBct = formulaExpForBct(dbGift.price, quantity)
+    dbGift = fetch_gift gift_id
+    if dbGift
+      if quantity >= 1
+        total = dbGift["price"] * quantity
+        expBct = dbGift["price"] * quantity * 10
         begin
           @user.decreaseMoney(total)
-          @user.increaseExp(expUser)
+          @user.increaseExp(total)
           @room.broadcaster.increaseExp(expBct)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-          vip = @vip != 0 ? {vip: @vip.weight} : 0
-          emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-          emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift.name, image: "#{request.base_url}#{dbGift.image.square}?timestamp=#{dbGift.updated_at.to_i}"}, quantity:quantity, total: total, sender: user, vip: vip})
+          vip_data = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
+          $emitter.of("/room").in(@room.id).emit("gifts recived", {gift: {id: gift_id, name: dbGift["name"], image: "#{request.base_url}#{dbGift['image']['square']['url']}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
 
           # insert log
-          @user.gift_logs.create(room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
-          @user.user_logs.create(room_id: @room.id, money: total)
+          GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
+          UserLogJob.perform_later(@user, @room.id, total)
 
           return head 201
         rescue => e
@@ -202,32 +172,28 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def buyLounge
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     cost = params[:cost].to_i
     lounge = params[:lounge].to_i
     if lounge >= 0 && lounge <= 11
       if @user.money >= cost then
         if cost > 50
           begin
-            if current_lounge = redis.get("lounges:#{@room.id}:#{lounge}")
+            if current_lounge = $redis.get("lounges:#{@room.id}:#{lounge}")
               current_lounge = eval(current_lounge)
               if current_lounge[:cost].to_i >= cost
                 render json: {error: "Giá mua của bạn phải lớn hơn giá hiện tại"}, status: 400 and return
               end
             end
-            expUser = formulaExpForUser(cost, 1)
-            if UserLog.where("user_id = ? AND created_at > ? AND created_at < ?", @user.id, Time.now.beginning_of_day, Time.now).count == 0
-              expUser += 10
-            end
-            expBct = formulaExpForBct(cost, 1)
+
+            expBct = cost * 10
             @user.decreaseMoney(cost)
-            @user.increaseExp(expUser)
+            @user.increaseExp(cost)
             @room.broadcaster.increaseExp(expBct)
             user = {
-                id: @user.id, 
-                email: @user.email, 
-                name: @user.name, 
-                username: @user.username, 
+                id: @user.id,
+                email: @user.email,
+                name: @user.name,
+                username: @user.username,
                 avatar: @user.avatar_path[:avatar],
                 avatar_w60h60: @user.avatar_path[:avatar_w60h60],
                 avatar_w100h100: @user.avatar_path[:avatar_w100h100],
@@ -235,16 +201,15 @@ class Api::V1::LiveController < Api::V1::ApplicationController
                 avatar_w200h200: @user.avatar_path[:avatar_w200h200],
                 avatar_w240h240: @user.avatar_path[:avatar_w240h240],
                 avatar_w300h300: @user.avatar_path[:avatar_w300h300],
-                avatar_w400h400: @user.avatar_path[:avatar_w400h400],
+                avatar_w400h400: @user.avatar_path[:avatar_w400h400]
               }
-            vip = @vip != 0 ? {vip: @vip.weight} : 0
-            redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
-            emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-            emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip });
+            vip_data = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
+            $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost});
+            $emitter.of("/room").in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip_data });
 
             # insert log
-            @user.lounge_logs.create(room_id: @room.id, lounge: lounge, cost: cost)
-            @user.user_logs.create(room_id: @room.id, money: cost)
+            LoungeLogJob.perform_later(@user, lounge, cost)
+            UserLogJob.perform_later(@user, @room.id, cost)
 
             return head 201
           rescue => e
@@ -262,43 +227,43 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def sendHearts
-    emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
     hearts = params[:hearts].to_i
-    if(hearts > 0 && @user.no_heart >= hearts) then
-      begin
-        @user.no_heart -= hearts
-        @room.broadcaster.recived_heart += hearts
-        @user.increaseExp(10)
-        @room.broadcaster.increaseExp(hearts)
-        if @user.save then
-          if @room.broadcaster.save then
-            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            vip = @vip != 0 ? {vip: @vip.weight} : 0
-            emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
+    @user.with_lock do
+      if(hearts > 0 && @user.no_heart >= hearts) then
+        begin
+          @user.no_heart -= hearts
+          if @user.save!
+            @user.increaseExp(10)
+            @room.broadcaster.recived_heart += hearts
+            if @room.broadcaster.save
+              @room.broadcaster.increaseExp(hearts)
+              user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+              vip = @token_user["vip"] ? {vip: @token_user["vip"]} : 0
+              $emitter.of("/room").in(@room.id).emit("hearts recived", {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
 
-            # insert log
-            @user.heart_logs.create(room_id: @room.id, quantity: hearts)
+              # insert log
+              HeartLogJob.perform_later(@user, @room.id, hearts)
 
-            return head 201
+              return head 201
+            else
+              render json: {error: "Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!"}, status: 400
+            end
           else
-            render json: {error: "Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!"}, status: 400
+            render json: {error: "Không thể gửi trái tim, Vui lòng thử lại lần nữa"}, status: 400
           end
-        else
-          render json: {error: "Không thể gửi trái tim, Vui lòng thử lại lần nữa"}, status: 400
+        rescue => e
+          render json: {error: e.message}, status: 400
         end
-      rescue => e
-        render json: {error: e.message}, status: 400
+      else
+        render json: {error: "Bạn không có đủ số trái tim"}, status: 403
       end
-    else
-      render json: {error: "Bạn không có đủ số trái tim"}, status: 403
     end
   end
 
   def startRoom
     @room.on_air = true
     if @room.save then
-      emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-      emitter.of("/room").in(@room.id).emit("room on-air")
+      $emitter.of("/room").in(@room.id).emit("room on-air")
       return head 200
     else
       render json: {error: "Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ"}, status: 400
@@ -306,18 +271,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   def endRoom
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     @room.on_air = false
-    if @room.save then
-      # Delete actions and lounges
-      rActions = redis.keys("actions:#{@room.id}:*")
-      # rLounges = redis.keys("lounges:#{@room.id}:*")
-      redis.del rActions if !rActions.empty?
-      # redis.del rLounges if !rLounges.empty?
+    if @room.save
+      $emitter.of("/room").in(@room.id).emit("room off")
 
-      # Broadcast to room
-      emitter = SocketIO::Emitter.new({redis: Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)})
-      emitter.of("/room").in(@room.id).emit("room off")
+      # remove expired banned user
+      banned = $redis.keys("ban:#{@room.id}:*")
+      banned.each do |key|
+        expiry = $redis.get(key)
+        $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+      end
+
       return head 200
     else
       render json: {error: "Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ"}, status: 400
@@ -326,11 +290,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def kickUser
     if params[:user_id].present?
-      days = params[:days].present? ? params[:days].to_i : 1
-      note = params[:note].present? ? params[:note] : ''
-      @ban_user = User.find_by_id(params[:user_id])
-      if @ban_user.present?
-        @ban_user.ban @room.id, days, note
+      @user = User.find_by_id(params[:user_id])
+      if @user.present? and !@user.is_broadcaster
+        @user.ban @room.id
         return head 200
       else
         return head 404
@@ -341,24 +303,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
-  def formulaExpForUser(price, quantity)
-    vip = UserHasVipPackage::find_by_user_id(@user.id)
-    if vip
-      exp = price * quantity * vip.vip_package.vip.exp_bonus
-      return exp
-    else
-      exp = price * quantity * 1
-      return exp
-    end
-  end
-
-  def formulaExpForBct(price, quantity)
-    return price * quantity * 10
-  end
 
   def getUsers
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    @userlist = redis.hgetall(@room.id)
+    @userlist = $redis.hgetall(@room.id)
     @userlist.each do |key, val|
       @userlist[key] = eval(val)
     end

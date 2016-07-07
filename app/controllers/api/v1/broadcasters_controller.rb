@@ -1,4 +1,3 @@
-require "redis"
 class Api::V1::BroadcastersController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include YoutubeHelper
@@ -13,8 +12,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def profile
     @broadcaster = Broadcaster.find(params[:id])
     @user = @broadcaster.user
-    @fan = @broadcaster.rooms.find_by_is_privated(false).heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
-    # @followers = UserFollowBct.select('*,sum(top_user_send_gifts.quantity) as quantity, sum(top_user_send_gifts.quantity*top_user_send_gifts.money) as total_money').where(broadcaster_id: @broadcaster.id).joins('LEFT JOIN top_user_send_gifts on user_follow_bcts.broadcaster_id = top_user_send_gifts.broadcaster_id and user_follow_bcts.user_id = top_user_send_gifts.user_id LEFT JOIN users on user_follow_bcts.user_id = users.id').group('user_follow_bcts.user_id').order('total_money desc').limit(10)
+    @fan = @broadcaster.public_room.heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
   end
 
   def defaultBackground
@@ -27,7 +25,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
   def broadcasterRevcivedItems
     if @user.is_broadcaster
-      giftLogs = @user.broadcaster.rooms.find_by_is_privated(false).gift_logs
+      giftLogs = @user.broadcaster.public_room.gift_logs
       @records = Array.new
       giftLogs.each do |giftLog|
         aryLog = OpenStruct.new({
@@ -45,7 +43,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
         @records = @records.push(aryLog)
       end
 
-      heartLogs = @user.broadcaster.rooms.find_by_is_privated(false).heart_logs
+      heartLogs = @user.broadcaster.public_room.heart_logs
       heartLogs.each do |heartLog|
         aryLog = OpenStruct.new({
             :id => heartLog.id, 
@@ -62,7 +60,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
         @records = @records.push(aryLog)
       end
 
-      actionLogs = @user.broadcaster.rooms.find_by_is_privated(false).action_logs
+      actionLogs = @user.broadcaster.public_room.action_logs
       actionLogs.each do |actionLog|
         aryLog = OpenStruct.new({
             :id => actionLog.id, 
@@ -188,36 +186,33 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   def getFeatured
     @user = check_authenticate
     @totalUser = []
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 4
-    @featured = Featured.order(weight: :asc).limit(4).offset(offset)
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 8
+    @featured = Featured.order(weight: :asc).limit(8).offset(offset)
     getAllRecord = Featured.all.length
-    @totalPage =  (Float(getAllRecord)/4).ceil
+    @totalPage =  (Float(getAllRecord)/8).ceil
 
     @featured.each do |f|
-      @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+      @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
     end
   end
 
   def getHomeFeatured
-    @featured = HomeFeatured.order(weight: :asc).limit(5)
+    @featured = Rails.cache.fetch('home_featured')
   end
-  
+
   def getRoomFeatured
     @user = check_authenticate
     @totalUser = []
-    @featured = RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
+    @featured = Rails.cache.fetch('room_featured')
     @featured.each do |f|
       if f.broadcaster.public_room.on_air
-        redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-        @totalUser[f.broadcaster.public_room.id] = redis.hgetall(f.broadcaster.public_room.id).length
+        @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
       end
     end
   end
 
   def search
     if params[:q].present?
-      redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
       @totalUser = []
       @user = check_authenticate
       offset = params[:page].nil? ? 0 : params[:page].to_i * 10
@@ -227,7 +222,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
 
       @bcts.each do |bct|
         if bct.public_room.present?
-          @totalUser[bct.public_room.id] = redis.hgetall(bct.public_room.id).length
+          @totalUser[bct.public_room.id] = $redis.hgetall(bct.public_room.id).length
         end
       end
     else

@@ -1,4 +1,3 @@
-require "redis"
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
@@ -9,11 +8,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def onair
     @user = check_authenticate
     @totalUser = []
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
     @rooms.each do |room|
-      @totalUser[room.id] = redis.hgetall(room.id).length
+      @totalUser[room.id] = $redis.hgetall(room.id).length
     end
     getAllRecord = Room.where(on_air: true).length
     @totalPage =  (Float(getAllRecord)/9).ceil
@@ -21,28 +19,33 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def comingSoon
     @user = check_authenticate
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 9
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 18
 
     if params[:category_id].nil?
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 18 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
       sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     else
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 18 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
       sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     end
 
-    @totalPage =  (Float(total_record)/9).ceil
+    @totalPage =  (Float(total_record)/18).ceil
   end
 
   def myIdol
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
-    total_record = @user.user_follow_bcts.length
-    @user_follow = @user.user_follow_bcts.limit(9).offset(offset)
-    @totalPage = (Float(total_record)/9).ceil
+    select = "user_follow_bcts.broadcaster_id ,schedules.start"
+    joins = "INNER JOIN broadcasters ON broadcasters.id = user_follow_bcts.broadcaster_id " +
+            "INNER JOIN rooms ON rooms.broadcaster_id = broadcasters.id " +
+            "LEFT JOIN schedules ON schedules.room_id = rooms.id"
+    where = "user_follow_bcts.user_id = #{@user.id} AND rooms.is_privated = 0"
+    @data = UserFollowBct.select(select).joins(joins).where(where).group("user_follow_bcts.broadcaster_id").order("rooms.on_air desc, -schedules.start desc").limit(9).offset(offset)
+    count = UserFollowBct.joins(joins).where(where).group("user_follow_bcts.broadcaster_id").count.length
+    @totalPage = (Float(count) / 9).ceil
   end
 
   def roomType
@@ -51,7 +54,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def getPublicRoom
     if @user.is_broadcaster
-      @room = @user.broadcaster.rooms.order("is_privated DESC").first
+      @room = @user.broadcaster.public_room
       @backgrounds = RoomBackground.all
       @bct_backgrounds = BroadcasterBackground.where(broadcaster_id: @user.broadcaster.id)
       # get All gift
@@ -81,11 +84,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detail
     if (params[:id].present?) && (params[:id].to_i.is_a? Integer)
       @user = check_authenticate
+      @room = Room.find(params[:id])
       if @user.nil?
         create_tmp_token
+      else
+        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
       end
-      @room = Room.find(params[:id])
-
       if !@room.present?
         render json: {error: t('error_room_not_found')}, status: 404
       end
@@ -112,7 +116,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def updateSettings
-    room = @user.broadcaster.rooms.find_by_is_privated(false)
+    room = @user.broadcaster.public_room
 
     if room.present?
       if room.update(title: params[:title], room_type_id: params[:cat])
@@ -128,8 +132,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def uploadThumb
     if params[:thumb].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
-
+      room = @user.broadcaster.public_room
       if room.present?
         if room.update(thumb: params[:thumb])
           render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
@@ -146,7 +149,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def thumbCrop
     if params[:thumb_crop].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       params[:thumb_crop] = optimizeKrakenWeb(params[:thumb_crop])
       if room.present?
         if room.update(thumb_crop: params[:thumb_crop])
@@ -187,7 +190,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def changeBackground
     if params[:background_id].present?
 
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       if room.present?
         room.update(broadcaster_background_id: params[:background_id])
         return head 200
@@ -202,7 +205,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def changeBackgroundDefault
     if params[:background_id].present?
 
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
       if room.present?
         room.update(broadcaster_background_id: nil,room_background_id: params[:background_id])
 
@@ -217,7 +220,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def updateSchedule
     if params[:schedule].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
 
       if room.present?
         room.schedules.destroy_all
@@ -237,13 +240,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def deleteSchedule
     if params[:schedule_id].present?
-      room = @user.broadcaster.rooms.find_by_is_privated(false)
+      room = @user.broadcaster.public_room
 
       if room.present?
         begin
           room.schedules.find(params[:schedule_id].to_i).destroy
           return head 201
-        rescue ActiveRecord::RecordNotFound => e
+        rescue ActiveRecord::RecordNotFound
           render json: {error: 'Lịch diễn không tồn tại!, vui lòng thử lại nhé'}, status: 400
         end
       else
@@ -255,12 +258,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getActions
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("actions:#{params[:room_id]}:*")
+    keys = $redis.keys("actions:#{params[:room_id]}:*")
     @status = {}
     keys.each do |key|
       split = key.split(':')
-      @status[split[2].to_i] = redis.get(key).to_i
+      @status[split[2].to_i] = $redis.get(key).to_i
     end
     # @actions = RoomAction.where(status: 1)
     @bct_actions = BctAction.where('room_id = ? ',  params[:room_id].to_i)
@@ -272,15 +274,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getLounges
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("lounges:#{params[:room_id]}:*")
+    keys = $redis.keys("lounges:#{params[:room_id]}:*")
     status = []
     12.times do |n|
       status[n] = {user: {id: 0, name: ''}, cost: 50}
     end
     keys.each do |key|
       split = key.split(':')
-      status[split[2].to_i] = eval(redis.get(key))
+      status[split[2].to_i] = eval($redis.get(key))
     end
     render json: status, status: 200
   end
@@ -330,12 +331,19 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def create_tmp_token
+    id = Time.now.to_i
     name = Faker::Name.name
     email = Faker::Internet.email(name)
-    @tmp_user = TmpUser.create(email: email, name: name, exp: Time.now.to_i + 24 * 3600)
-    @tmp_token = JWT.encode JSON.parse(@tmp_user.to_json), Settings.hmac_secret, 'HS256'
+    exp = id + 24 * 3600
+    payload = {id: id, email: email, name: name, vip: 0, exp: exp, guest: true}
+
+    @tmp_user = TmpUser.new
+    @tmp_user.id = id
+    @tmp_user.email = email
+    @tmp_user.name = name
+    @tmp_user.exp = exp
+    @tmp_token = JWT.encode payload, Settings.hmac_secret, 'HS256'
     @tmp_user.token = @tmp_token
-    @tmp_user.save
   end
 
 end
