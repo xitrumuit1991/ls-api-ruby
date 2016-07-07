@@ -1,4 +1,5 @@
 require 'jwt'
+require 'ipaddr'
 
 module Api::V1::Authorize extend ActiveSupport::Concern
 
@@ -51,8 +52,20 @@ module Api::V1::Authorize extend ActiveSupport::Concern
     end
 
     def scan_ip(ip)
-      # TODO
-      return true
+      ips = MobifoneIp.all
+      return false if !ips.present?
+      begin
+        ips.each do |e|
+          list_ips = IPAddr.new(e.ip)
+          user_ip = IPAddr.new(ip)
+          if list_ips.include?(user_ip)
+            return true
+          end
+        end
+        return false
+      rescue => ex # or rescue Exception
+        return false
+      end
     end
 
 end
