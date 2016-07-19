@@ -196,6 +196,11 @@ Rails.application.routes.draw do
       get '/' => 'index#index'
       get '/msisdn' => 'index#msisdn'
 
+      # device
+      scope '/device' do
+        post '/register' => 'device#register'
+      end
+
       # auth
       scope '/auth' do
         get '/logout' => 'auth#logout'
