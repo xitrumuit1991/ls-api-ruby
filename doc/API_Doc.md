@@ -1838,3 +1838,21 @@
     "status_purchase": 1
 }
 ```
+## Register Device token
+- Namespace URL: **/device**
+
+### Register
+- URI: **/register**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+```
+{
+  "device_token":"f6wXbI3avkg:APA91bFq4oU55e_XWXcjtv",
+  "type":"android"
+}
+```
+- Response:
+  + status: **201**, **401**, **500**
