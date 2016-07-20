@@ -9,7 +9,10 @@ module KrakenHelper
       :api_key => Settings.kraken_key,
       :api_secret => Settings.kraken_secret
     )
-    thumb = kraken.upload(fileParams.tempfile.path, 'lossy' => true)
+    params = {
+      :wait => true
+    }
+    thumb = kraken.upload(fileParams.tempfile.path, params)
     if thumb.success
       File.write(fileParams.tempfile.path, open(thumb.kraked_url).read, { :mode => 'wb' })
       return fileParams
@@ -23,7 +26,10 @@ module KrakenHelper
       :api_key => Settings.kraken_key,
       :api_secret => Settings.kraken_secret
     )
-    thumb = kraken.url(url, 'lossy' => true)
+    params = {
+      :wait => true
+    }
+    thumb = kraken.url(url, params)
     if thumb.success
       Rails.logger.info "ANGCO DEBUG Kraken: #{thumb.kraked_url}"
       return thumb.kraked_url
@@ -40,7 +46,10 @@ module KrakenHelper
       :api_key => Settings.kraken_key,
       :api_secret => Settings.kraken_secret
     )
-    thumb = kraken.upload(file.path, 'lossy' => true)
+    params = {
+      :wait => true
+    }
+    thumb = kraken.upload(file.path, params)
     if thumb.success
       File.write(file.path, open(thumb.kraked_url).read, { :mode => 'wb' })
       return file
