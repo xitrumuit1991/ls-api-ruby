@@ -1856,3 +1856,17 @@
 ```
 - Response:
   + status: **201**, **401**, **500**
+  ```
+### Push Notification
+- URI: **/push-notification**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Request:
+```
+{
+  "device_type":"ios/android"
+}
+```
+- Response:
+  + status: **200**, **401**, **500**
