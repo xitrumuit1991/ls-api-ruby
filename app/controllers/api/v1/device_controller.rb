@@ -30,5 +30,6 @@ class Api::V1::DeviceController < Api::V1::ApplicationController
       room_id = @user.broadcaster.public_room.id
       DeviceNotificationJob.perform_later(title, room_id, list_tokens)
     end
+    return head 200
   end
 end
