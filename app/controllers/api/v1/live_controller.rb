@@ -2,7 +2,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::CacheHelper
 
-  before_action :authenticate,  :is_subscribed
+  before_action :authenticate, :is_banned, :is_subscribed
   before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
   before_action :check_permission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
