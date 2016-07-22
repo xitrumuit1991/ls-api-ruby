@@ -1,4 +1,4 @@
-arequire 'jwt'
+require 'jwt'
 require 'ipaddr'
 
 module Api::V1::Authorize extend ActiveSupport::Concern
