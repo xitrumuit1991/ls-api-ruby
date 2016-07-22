@@ -2,7 +2,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::CacheHelper
 
-  before_action :authenticate, :is_banned, :is_subscribed
+  before_action :authenticate, :is_subscribed
   before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
   before_action :check_permission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
@@ -313,6 +313,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       @room = Room.find(params[:room_id])
       get_users
       render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
+      render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
     else
       render json: {error: 'Thiếu tham số room_id'}, status: 404 and return
     end
@@ -326,10 +327,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     if @user.email != @room.broadcaster.user.email
       render json: {error: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 403 and return
     end
-  end
-
-  def is_banned
-    render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
   end
 
 end
