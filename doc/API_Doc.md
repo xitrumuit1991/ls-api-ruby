@@ -1838,6 +1838,7 @@
     "status_purchase": 1
 }
 ```
+
 ## Register Device token
 - Namespace URL: **/device**
 
@@ -1862,11 +1863,5 @@
 - Method: **POST**
 - Header:
   + Content-Type: application/json
-- Request:
-```
-{
-  "device_type":"ios/android"
-}
-```
 - Response:
   + status: **200**, **401**, **500**

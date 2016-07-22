@@ -260,6 +260,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   def startRoom
     @room.on_air = true
     if @room.save
+      DeviceNotificationJob.perform_later(@user)
       $emitter.of('/room').in(@room.id).emit('room on-air')
       return head 200
     else
