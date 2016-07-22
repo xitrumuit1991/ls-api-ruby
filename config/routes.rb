@@ -199,7 +199,6 @@ Rails.application.routes.draw do
       # device
       scope '/device' do
         post '/register' => 'device#register'
-        post '/push-notification' => 'device#pushNotification'
       end
 
       # auth
