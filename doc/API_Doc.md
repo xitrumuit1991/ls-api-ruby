@@ -1838,3 +1838,31 @@
     "status_purchase": 1
 }
 ```
+
+## Register Device token
+- Namespace URL: **/device**
+
+### Register
+- URI: **/register**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+```
+{
+  "device_token":"f6wXbI3avkg:APA91bFq4oU55e_XWXcjtv",
+  "device_id":"as2d12a1sd5we1545wer5421ds51w5r45",
+  "type":"android",
+}
+```
+- Response:
+  + status: **201**, **401**, **500**
+  ```
+### Push Notification
+- URI: **/push-notification**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Response:
+  + status: **200**, **401**, **500**
