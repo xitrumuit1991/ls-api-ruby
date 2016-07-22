@@ -16,8 +16,11 @@ class DeviceNotificationJob < ActiveJob::Base
         end
       end
     end
+    puts '============Settings.url_notification+"/ios"========'
+    puts Settings.url_notification+"/ios"
+    puts '===================='
     if list_ios_tokens.count > 0
-    	uri = URI.parse("http://localhost:3001/ios")
+    	uri = URI.parse(Settings.url_notification+"/ios")
 	    http = Net::HTTP.new(uri.host,uri.port)
 		request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
 	    request.body = {'title' => title, 'description' => description, 'room_id' => room_id, 'tokens' => list_ios_tokens}.to_json
@@ -25,7 +28,7 @@ class DeviceNotificationJob < ActiveJob::Base
 		http.request(request)
     end
     if list_android_tokens.count > 0
-      	uri = URI.parse("http://localhost:3001/android")
+      	uri = URI.parse(Settings.url_notification+"/android")
 	    http = Net::HTTP.new(uri.host,uri.port)
 		request = Net::HTTP::Post.new(uri.request_uri, 'Content-Type' => 'application/json')
 	    request.body = {'title' => title, 'description' => description, 'room_id' => room_id, 'tokens' => list_android_tokens}.to_json
