@@ -14,9 +14,6 @@ class Api::V1::DeviceController < Api::V1::ApplicationController
       if device.user_id != @user.id
         device.user_id = @user.id
       end
-      puts '===================='
-      puts params[:type]
-      puts '===================='
       device.device_type = params[:type]
       device.save
       return head 201
