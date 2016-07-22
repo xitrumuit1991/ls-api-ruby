@@ -1852,7 +1852,8 @@
 ```
 {
   "device_token":"f6wXbI3avkg:APA91bFq4oU55e_XWXcjtv",
-  "type":"android"
+  "device_id":"as2d12a1sd5we1545wer5421ds51w5r45",
+  "type":"android",
 }
 ```
 - Response:
