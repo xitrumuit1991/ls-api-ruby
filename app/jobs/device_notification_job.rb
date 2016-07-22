@@ -16,9 +16,6 @@ class DeviceNotificationJob < ActiveJob::Base
         end
       end
     end
-    puts '============Settings.url_notification+"/ios"========'
-    puts Settings.url_notification+"/ios"
-    puts '===================='
     if list_ios_tokens.count > 0
     	uri = URI.parse(Settings.url_notification+"/ios")
 	    http = Net::HTTP.new(uri.host,uri.port)
