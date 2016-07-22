@@ -28,3 +28,5 @@ kraken_secret: '9cc25aabaf1aa0a90aa55ffce38d793204026f5c'
 # WAP
 wap_mbf_key: 'lMGiNUrKx3RyPXkQ'
 wap_register_url: 'http://dangky.mobifone.com.vn/wap/html/sp/confirm.jsp'
+# Url livestar-notifition
+url_notification: 'http://localhost:3001'

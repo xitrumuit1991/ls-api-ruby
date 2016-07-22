@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	has_one :broadcaster
 	has_one :mobifone_user
 	has_many :statuses
-	has_many :device_tokens 
+	has_many :device_tokens
 	has_many :user_follow_bcts
 	has_many :broadcasters, through: :user_follow_bcts
 	has_many :screen_text_logs
