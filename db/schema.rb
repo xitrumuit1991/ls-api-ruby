@@ -354,6 +354,11 @@ ActiveRecord::Schema.define(version: 20160722095338) do
     t.datetime "updated_at",           null: false
   end
 
+  create_table "mobifone_ips", primary_key: "ip", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "mobifone_user_money_logs", force: :cascade do |t|
     t.integer  "mobifone_user_id", limit: 4
     t.string   "money",            limit: 255
