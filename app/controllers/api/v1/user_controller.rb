@@ -633,10 +633,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
     @user_sms = User::find_by_active_code(subkeyword)
     coin  = SmsMobile::find_by_price(amount.to_i)
-    money = @user_sms.money + coin.coin
 
     if @user_sms.present?
-      @user_sms.increaseMoney(money)
+      @user_sms.increaseMoney(coin.coin)
       if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
         return true
       else

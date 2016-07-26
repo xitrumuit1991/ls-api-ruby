@@ -24,7 +24,7 @@ module Ebaysms
 			url         += '&receivernumber=' + userid
 			url         += '&shortcode=' + shortcode
 			url         += '&keyword=' + keyword
-			mt_content  = 'Ban+da+nap+thanh+cong+' + amount + '+xu+vao+ma+tai+khoan+'+shortcode+'+tren+website+livestar.vn'
+			mt_content  = 'Ban+da+nap+thanh+cong+' + amount + '+vnd+vao+ma+tai+khoan+'+keyword+'+tren+website+livestar.vn'
 			url         += '&content=' + mt_content
 			url         += '&messagetype=1'
 			url         += '&totalmessage=1'
