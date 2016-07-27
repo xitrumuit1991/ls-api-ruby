@@ -30,3 +30,6 @@ wap_mbf_key: 'lMGiNUrKx3RyPXkQ'
 wap_register_url: 'http://dangky.mobifone.com.vn/wap/html/sp/confirm.jsp'
 # Url livestar-notifition
 url_notification: 'http://localhost:3001'
+# link recode stream
+url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='
+url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'

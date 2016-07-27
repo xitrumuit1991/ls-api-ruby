@@ -1,6 +1,7 @@
 class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::CacheHelper
+  include RecordStreamHelper
 
   before_action :authenticate, :is_subscribed
   before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
@@ -261,6 +262,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     @room.on_air = true
     if @room.save
       DeviceNotificationJob.perform_later(@user)
+      start_stream @room
       $emitter.of('/room').in(@room.id).emit('room on-air')
       return head 200
     else
@@ -272,6 +274,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     @room.on_air = false
     if @room.save
       $emitter.of('/room').in(@room.id).emit('room off')
+      end_stream @room
 
       # remove expired banned user
       banned = $redis.keys("ban:#{@room.id}:*")
@@ -279,7 +282,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         expiry = $redis.get(key)
         $redis.del(key) if Time.now >= Time.at(expiry.to_i)
       end
-
       return head 200
     else
       render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
@@ -329,5 +331,4 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       render json: {error: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 403 and return
     end
   end
-
 end
