@@ -1,7 +1,7 @@
 module RecodeStreamHelper
   def start_stream room
     $redis.set("stream_room_id:#{room.id}", {year: Time.now.year.to_s, month: Time.now.month.to_s, day: Time.now.day.to_s, hour: Time.now.hour.to_s})
-    linkRecode = "http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname=#{room.id.to_s}&outputFile=#{room.id.to_s}_#{Time.now.year.to_s}_#{Time.now.month.to_s}_#{Time.now.day.to_s}_#{Time.now.hour.to_s}.mp4&option=overwrite&action=startRecording"
+    linkRecode = "#{Settings.url_stream}#{room.id.to_s}&outputFile=#{room.id.to_s}_#{Time.now.year.to_s}_#{Time.now.month.to_s}_#{Time.now.day.to_s}_#{Time.now.hour.to_s}.mp4&option=overwrite&action=startRecording"
     recode linkRecode 
     Rails.logger.info "ANGCO DEBUG linkRecode: #{linkRecode}"
     return true
@@ -9,9 +9,9 @@ module RecodeStreamHelper
 
   def end_stream room
     redis_stream = $redis.get("stream_room_id:#{room.id}")
-    linkRecode = 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='+room.id+'&outputFile='+room.id+'_'+redis_stream.year+'_'+redis_stream.month+'_'+redis_stream.day+'_'+redis_stream.hour+'.mp4&option=overwrite&action=startRecording'
+    linkRecode = "#{Settings.url_stream}#{room.id}&outputFile=#{room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4&option=overwrite&action=startRecording"
     recode linkRecode 
-    linkVideo = "http://stream.livestar.vn:80/livestar-vod/mp4:#{room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
+    linkVideo = "#{Settings.url_video_stream}#{room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
     Rails.logger.info "ANGCO DEBUG StopLinkRecode: #{linkVideo}"
     add_vod(linkVideo, room)
     return true
