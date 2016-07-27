@@ -297,7 +297,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         expiry = $redis.get(key)
         $redis.del(key) if Time.now >= Time.at(expiry.to_i)
       end
-      return head 200 
+      return head 200
     else
       render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
     end
@@ -359,10 +359,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def is_banned
     render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
-  end
-
-  def start_stream
-    
   end
 
 end
