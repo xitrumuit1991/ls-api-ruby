@@ -263,11 +263,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       DeviceNotificationJob.perform_later(@user)
       $redis.set("stream_room_id:#{@room.id}", {year: Time.now.year.to_s, month: Time.now.month.to_s, day: Time.now.day.to_s, hour: Time.now.hour.to_s})
       linkRecode = 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='+@room.id.to_s+'&outputFile='+@room.id.to_s+'_'+Time.now.year.to_s+'_'+Time.now.month.to_s+'_'+Time.now.day.to_s+'_'+Time.now.hour.to_s+'.mp4&option=overwrite&action=startRecording'
-      uri = URI.parse(linkRecode)
-      http = Net::HTTP.new(uri.host,uri.port)
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.basic_auth 'record', 'JmCpjEWHjcdO'
-      http.request(request)
+      recode linkRecode 
       Rails.logger.info "ANGCO DEBUG linkRecode: #{linkRecode}"
       $emitter.of('/room').in(@room.id).emit('room on-air')
       return head 200
@@ -282,14 +278,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       $emitter.of('/room').in(@room.id).emit('room off')
       redis_stream = $redis.get("stream_room_id:#{@room.id}")
       linkRecode = 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='+@room.id+'&outputFile='+@room.id+'_'+redis_stream.year+'_'+redis_stream.month+'_'+redis_stream.day+'_'+redis_stream.hour+'.mp4&option=overwrite&action=startRecording'
-      uri = URI.parse(linkRecode)
-      http = Net::HTTP.new(uri.host,uri.port)
-      request = Net::HTTP::Post.new(uri.request_uri)
-      request.basic_auth 'record', 'JmCpjEWHjcdO'
-      http.request(request)
-      link = "http://stream.livestar.vn:80/livestar-vod/mp4:#{@room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
-      Rails.logger.info "ANGCO DEBUG StopLinkRecode: #{link}"
-      add_vod link
+      recode linkRecode 
+      linkVideo = "http://stream.livestar.vn:80/livestar-vod/mp4:#{@room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
+      Rails.logger.info "ANGCO DEBUG StopLinkRecode: #{linkVideo}"
+      add_vod linkVideo
 
       # remove expired banned user
       banned = $redis.keys("ban:#{@room.id}:*")
@@ -318,6 +310,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   end
 
   private
+
+  def recode link
+    uri = URI.parse(linkRecode)
+    http = Net::HTTP.new(uri.host,uri.port)
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.basic_auth 'record', 'JmCpjEWHjcdO'
+    http.request(request)
+  end
 
   def get_users
     @user_list = $redis.hgetall(@room.id)
