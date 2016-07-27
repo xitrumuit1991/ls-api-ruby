@@ -297,8 +297,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         expiry = $redis.get(key)
         $redis.del(key) if Time.now >= Time.at(expiry.to_i)
       end
-      render json: {link: link}, status: 200 and return # chinh render de test
-      # return head 200  #tam an de test
+      return head 200 
     else
       render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
     end
