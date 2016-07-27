@@ -316,6 +316,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       @room = Room.find(params[:room_id])
       get_users
       render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
+      render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
     else
       render json: {error: 'Thiếu tham số room_id'}, status: 404 and return
     end
