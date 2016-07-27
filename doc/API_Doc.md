@@ -22,6 +22,26 @@
     + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
   + body: ```{"token": "this-is-jwt-token"}```
 
+### Login Broadcaster
+- URI: **/login-broadcaster**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Request:
+```
+{
+  "email": "peter@gmail.com",
+  "password": "******"
+}
+```
+- Response:
+  + status: **200** *(OK)*,**403** *(Forbidden)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+    + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }```
+    + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
+    + 403: ```{ error: "Bạn không phải Idol !" }```
+  + body: ```{"token": "this-is-jwt-token"}```
+
+
 ### Register
 - URI: **/register**
 - Method: **POST**
