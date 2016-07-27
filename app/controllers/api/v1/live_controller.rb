@@ -2,7 +2,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::CacheHelper
 
-  before_action :authenticate, :is_banned, :is_subscribed
+  before_action :authenticate, :is_subscribed , :is_banned
   before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
   before_action :check_permission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
@@ -261,6 +261,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     @room.on_air = true
     if @room.save
       DeviceNotificationJob.perform_later(@user)
+      $redis.set("stream_room_id:#{@room.id}", {year: Time.now.year.to_s, month: Time.now.month.to_s, day: Time.now.day.to_s, hour: Time.now.hour.to_s})
+      linkRecode = 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='+@room.id.to_s+'&outputFile='+@room.id.to_s+'_'+Time.now.year.to_s+'_'+Time.now.month.to_s+'_'+Time.now.day.to_s+'_'+Time.now.hour.to_s+'.mp4&option=overwrite&action=startRecording'
+      uri = URI.parse(linkRecode)
+      http = Net::HTTP.new(uri.host,uri.port)
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.basic_auth 'record', 'JmCpjEWHjcdO'
+      http.request(request)
+      Rails.logger.info "ANGCO DEBUG linkRecode: #{linkRecode}"
       $emitter.of('/room').in(@room.id).emit('room on-air')
       return head 200
     else
@@ -272,6 +280,16 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     @room.on_air = false
     if @room.save
       $emitter.of('/room').in(@room.id).emit('room off')
+      redis_stream = $redis.get("stream_room_id:#{@room.id}")
+      linkRecode = 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='+@room.id+'&outputFile='+@room.id+'_'+redis_stream.year+'_'+redis_stream.month+'_'+redis_stream.day+'_'+redis_stream.hour+'.mp4&option=overwrite&action=startRecording'
+      uri = URI.parse(linkRecode)
+      http = Net::HTTP.new(uri.host,uri.port)
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.basic_auth 'record', 'JmCpjEWHjcdO'
+      http.request(request)
+      link = "http://stream.livestar.vn:80/livestar-vod/mp4:#{@room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
+      Rails.logger.info "ANGCO DEBUG StopLinkRecode: #{link}"
+      add_vod link
 
       # remove expired banned user
       banned = $redis.keys("ban:#{@room.id}:*")
@@ -279,8 +297,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         expiry = $redis.get(key)
         $redis.del(key) if Time.now >= Time.at(expiry.to_i)
       end
-
-      return head 200
+      render json: {link: link}, status: 200 and return # chinh render de test
+      # return head 200  #tam an de test
     else
       render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
     end
@@ -309,6 +327,17 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
+  def add_vod link
+    BctVideo.create(broadcaster_id: @room.broadcaster.id, video: link)
+    videos = @room.broadcaster.videos
+    if videos.count > 5
+      videos.order('created_at DESC').destroy_all
+      videos.each do |video|
+        BctVideo.create(broadcaster_id: video.broadcaster_id, video: video.video, thumb: video.thumb, created_at: video.created_at, updated_at: video.updated_at)
+      end
+    end
+  end
+
   def is_subscribed
     if params.has_key?(:room_id)
       @room = Room.find(params[:room_id])
@@ -331,6 +360,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
   def is_banned
     render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
+  end
+
+  def start_stream
+    
   end
 
 end
