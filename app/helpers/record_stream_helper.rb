@@ -1,4 +1,4 @@
-module RecodeStreamHelper
+module RecordStreamHelper
   def start_stream room
     $redis.set("stream_room_id:#{room.id}", {year: Time.now.year.to_s, month: Time.now.month.to_s, day: Time.now.day.to_s, hour: Time.now.hour.to_s})
     linkRecode = "#{Settings.url_stream}#{room.id.to_s}&outputFile=#{room.id.to_s}_#{Time.now.year.to_s}_#{Time.now.month.to_s}_#{Time.now.day.to_s}_#{Time.now.hour.to_s}.mp4&option=overwrite&action=startRecording"

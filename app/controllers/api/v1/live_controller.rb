@@ -1,7 +1,7 @@
 class Api::V1::LiveController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include Api::V1::CacheHelper
-  include RecodeStreamHelper
+  include RecordStreamHelper
 
   before_action :authenticate, :is_subscribed
   before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
