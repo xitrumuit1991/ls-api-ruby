@@ -14,6 +14,7 @@ module RecordStreamHelper
     stream_logger = Logger.new("#{Rails.root}/log/StopStream.log")
     linkRecode = "#{Settings.url_stream}#{room.id}&outputFile=#{room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4&option=overwrite&action=startRecording"
     linkVideo = "#{Settings.url_video_stream}#{room.id}_#{redis_stream.year}_#{redis_stream.month}_#{redis_stream.day}_#{redis_stream.hour}.mp4/playlist.m3u8"
+    stream_logger.info("ANGCO DEBUG room: #{room} \n")
     stream_logger.info("ANGCO DEBUG room: #{redis_stream} \n")
     stream_logger.info("ANGCO DEBUG StopLinkRecode: #{linkRecode} \n")
     stream_logger.info("ANGCO DEBUG room: #{linkVideo} \n")
