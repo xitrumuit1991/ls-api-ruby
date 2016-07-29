@@ -175,6 +175,18 @@ Rails.application.routes.draw do
     get '/reports/bank' => 'reports#bank'
     resources :reports
 
+    # Caches
+    get '/caches/index' => 'caches#index'
+    post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
+    post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
+    post '/caches/clear-home-featured' => 'caches#clearCacheHomeFeatured'
+    post '/caches/clear-room-featured' => 'caches#clearCacheRoomFeatured'
+    post '/caches/clear-top-week' => 'caches#clearCacheTopWeek'
+    post '/caches/clear-top-month' => 'caches#clearCacheTopMonth'
+    post '/caches/clear-top-all' => 'caches#clearCacheTopAll'
+    post '/caches/clear-vip' => 'caches#clearCacheVip'
+    resources :caches
+
   end
 
   # API
@@ -184,10 +196,16 @@ Rails.application.routes.draw do
       get '/' => 'index#index'
       get '/msisdn' => 'index#msisdn'
 
+      # device
+      scope '/device' do
+        post '/register' => 'device#register'
+      end
+
       # auth
       scope '/auth' do
         get '/logout' => 'auth#logout'
         post '/login' => 'auth#login'
+        post '/login-broadcaster' => 'auth#loginBct'
         post '/register' => 'auth#register'
         post '/fb-register' => 'auth#fbRegister'
         post '/gp-register' => 'auth#gpRegister'
@@ -203,8 +221,9 @@ Rails.application.routes.draw do
         put   '/mobifone' 			=> 'auth#mbf_sync'
         patch '/mobifone' 			=> 'auth#mbf_verify'
         # Wap
-        get   'wap-mbf-register' => 'auth#wap_mbf_register_request'
-        post 	'wap-mbf-register' => 'auth#wap_mbf_register_response'
+        get   'wap-mbf-register'  => 'auth#wap_mbf_register_request'
+        post  'wap-mbf-register'  => 'auth#wap_mbf_register_response'
+        post 	'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
       end
 
       # users
@@ -278,9 +297,6 @@ Rails.application.routes.draw do
         get '/:room_id/top-user-use-in-room' => 'ranks#topUserUseMoneyRoom'
         get '/:room_id/top-user-use-money' => 'ranks#topUserUseMoneyCurrent'
         get '/:id/top-fans' => 'ranks#topUserFollowBroadcaster'
-        get '/topWeek' => 'ranks#topWeek'
-        get '/topMonth' => 'ranks#topMonth'
-        get '/topYear' => 'ranks#topYear'
         get '/optimize-users' => 'ranks#optimizeImageUsers'
         get '/optimize-rooms' => 'ranks#optimizeImagerooms'
         get '/optimize-bct-image' => 'ranks#optimizeImageBctImage'

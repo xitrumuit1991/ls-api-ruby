@@ -1,4 +1,3 @@
-require "redis"
 class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
@@ -9,11 +8,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def onair
     @user = check_authenticate
     @totalUser = []
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
     @rooms = Room.where(on_air: true).limit(9).offset(offset)
     @rooms.each do |room|
-      @totalUser[room.id] = redis.hgetall(room.id).length
+      @totalUser[room.id] = $redis.hgetall(room.id).length
     end
     getAllRecord = Room.where(on_air: true).length
     @totalPage =  (Float(getAllRecord)/9).ceil
@@ -21,21 +19,21 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def comingSoon
     @user = check_authenticate
-    offset = params[:page].nil? ? 0 : params[:page].to_i * 9
+    offset = params[:page].nil? ? 0 : params[:page].to_i * 18
 
     if params[:category_id].nil?
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 18 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
       sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     else
-      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 9 offset #{offset}"
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 18 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
       sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     end
 
-    @totalPage =  (Float(total_record)/9).ceil
+    @totalPage =  (Float(total_record)/18).ceil
   end
 
   def myIdol
@@ -86,11 +84,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def detail
     if (params[:id].present?) && (params[:id].to_i.is_a? Integer)
       @user = check_authenticate
+      @room = Room.find(params[:id])
       if @user.nil?
         create_tmp_token
+      else
+        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
       end
-      @room = Room.find(params[:id])
-
       if !@room.present?
         render json: {error: t('error_room_not_found')}, status: 404
       end
@@ -259,12 +258,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getActions
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("actions:#{params[:room_id]}:*")
+    keys = $redis.keys("actions:#{params[:room_id]}:*")
     @status = {}
     keys.each do |key|
       split = key.split(':')
-      @status[split[2].to_i] = redis.get(key).to_i
+      @status[split[2].to_i] = $redis.get(key).to_i
     end
     # @actions = RoomAction.where(status: 1)
     @bct_actions = BctAction.where('room_id = ? ',  params[:room_id].to_i)
@@ -276,15 +274,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def getLounges
-    redis = Redis.new(:host => Settings.redis_host, :port => Settings.redis_port)
-    keys = redis.keys("lounges:#{params[:room_id]}:*")
+    keys = $redis.keys("lounges:#{params[:room_id]}:*")
     status = []
     12.times do |n|
       status[n] = {user: {id: 0, name: ''}, cost: 50}
     end
     keys.each do |key|
       split = key.split(':')
-      status[split[2].to_i] = eval(redis.get(key))
+      status[split[2].to_i] = eval($redis.get(key))
     end
     render json: status, status: 200
   end
@@ -338,7 +335,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     name = Faker::Name.name
     email = Faker::Internet.email(name)
     exp = id + 24 * 3600
-    payload = {id: id, email: email, name: name, vip: 0, exp: exp}
+    payload = {id: id, email: email, name: name, vip: 0, exp: exp, guest: true}
 
     @tmp_user = TmpUser.new
     @tmp_user.id = id

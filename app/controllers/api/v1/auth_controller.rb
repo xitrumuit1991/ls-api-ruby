@@ -5,8 +5,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include Api::V1::Vas
   include Api::V1::Wap
   include CaptchaHelper
+  include KrakenHelper
 
-  before_action :authenticate, except: [:login, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response]
+  before_action :authenticate, except: [:login, :loginBct, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -21,7 +22,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       @user.update(last_login: Time.now, token: token)
       render json: { token: token }, status: 200
     else
-      render json: { token: nil }, status: 200
+      render json: { token: nil, msisdn: @msisdn }, status: 200
     end
   end
 
@@ -293,6 +294,30 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  def wap_mbf_publisher
+    render json: { error: "Missing parameters !" }, status: 400 and return if !params[:publisher].present?
+    # get msisdn
+    msisdn = check_mbf_auth ? @msisdn : nil
+    # call api vas update
+    vas_update_partner_report msisdn, params[:publisher]
+    # detect user mbf 3g
+    if check_mbf_auth
+      # check user mbf existed
+      if !@user.present?
+        # call api vas register
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
+        if !register_result[:is_error]
+          # create user mbf
+          mbf_create_user msisdn
+        else
+          render json: { error: "Vas error !" }, status: 400 and return
+        end
+      end
+    end
+
+    return head 200
+  end
+
   def login
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
@@ -334,6 +359,50 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  def loginBct
+    if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+      @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
+      @user_attempt = User.find_by(email: params[:email])
+    else
+      phone = "84#{params[:email][1..-1]}"
+      @user = User.find_by(phone: phone).try(:authenticate, params[:password])
+      @user_attempt = User.find_by(phone: phone)
+    end
+    if @user_attempt.present?
+        if @user_attempt.is_locking
+          render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
+        end
+    end
+
+    if @user.present?
+      if (Time.now.to_i - @user.last_login.to_i) <= 86400
+        @user.increaseExp(20)
+      end
+      if @user.actived
+        if @user.is_broadcaster
+          # create token
+          token = createToken(@user)
+
+          # update token
+          @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
+
+          render json: { token: token }, status: 200
+        else
+          render json: { error: "Bạn không phải là Idol !" }, status: 403
+        end
+      else
+        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
+      end
+    else
+      if @user_attempt.present?
+        @user_attempt.login_fail
+        render json: { error: "Đăng nhập không thành công lần thứ #{@user_attempt.failed_attempts}/5 xin hãy thử lại !" }, status: 401
+      else
+        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+      end
+    end
+  end
+
   def logout
     @user.update(token: '')
     return head 200
@@ -348,10 +417,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.email        = params[:email]
         user.password     = params[:password].to_s
         user.active_code  = activeCode
-
+        user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
+        user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
         if user.valid?
-          user.name           = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-          user.username       = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
           user.birthday       = '2000-01-01'
           user.user_level_id  = UserLevel.first().id
           user.money          = 8
@@ -406,7 +474,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.birthday           = profile['birthday'].present? ? profile['birthday'] : '2000-01-01'
         user.fb_id              = profile['id']
         user.user_level_id      = UserLevel.first().id
-        user.remote_avatar_url  = graph.get_picture(profile['id'], type: :large)
+        user.remote_avatar_url      = graph.get_picture(profile['id'], type: :large)
+        user.remote_avatar_crop_url = uploadDowload(graph.get_picture(profile['id'], type: :large))
         user.password           = password
         user.active_code        = activeCode
         user.money              = 8
@@ -561,5 +630,35 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     def createToken(user)
       payload = {id: user.id, email: user.email, name: user.name, vip: user.vip, exp: Time.now.to_i + 24 * 3600}
       JWT.encode payload, Settings.hmac_secret, 'HS256'
+    end
+
+    def mbf_create_user msisdn
+      activeCode = SecureRandom.hex(3).upcase
+      user = User.new
+      user.phone          = msisdn
+      user.email          = "#{msisdn}@livestar.vn"
+      user.password       = msisdn
+      user.active_code    = activeCode
+      user.name           = msisdn
+      user.username       = msisdn
+      user.birthday       = '2000-01-01'
+      user.user_level_id  = UserLevel.first().id
+      user.money          = 8
+      user.user_exp       = 0
+      user.no_heart       = 0
+      user.actived        = true
+      user.active_date    = Time.now
+      user.save
+      # create mobifone user
+      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      # get vip1
+      vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
+      # subscribe vip1
+      user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
+      # create mobifone user vip logs
+      user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
+      # add bonus coins for user
+      money = user.money + vip1.discount
+      user.update(money: money)
     end
 end

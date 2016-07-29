@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
 	has_one :broadcaster
 	has_one :mobifone_user
 	has_many :statuses
+	has_many :device_tokens
 	has_many :user_follow_bcts
 	has_many :broadcasters, through: :user_follow_bcts
 	has_many :screen_text_logs
@@ -24,7 +25,7 @@ class User < ActiveRecord::Base
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
 	validates :username, presence: true, uniqueness: true, on: :update
-	validates :name, presence: true, length: {minimum: 6, maximum: 150}, on: :update
+	validates :name, presence: true, length: {minimum: 6, maximum: 150}
 	# validates :password, presence: true, length: {minimum: 8, maximum: 50}
 	validates :phone, uniqueness: true, :allow_nil => true
 	validates :active_code, uniqueness: true
@@ -37,18 +38,15 @@ class User < ActiveRecord::Base
 	mount_base64_uploader :cover_crop, CoverCropUploader
 	mount_uploader :cover,  CoverUploader
 
-	def ban room_id, days = 1, note = ''
-		self.ban_users.create(room_id: room_id, days: days, note: note)
+	def ban room_id
+		expiry = Time.now + 1.day
+		$redis.set("ban:#{room_id}:#{self.email}", expiry.to_i)
+		$emitter.of("/room").in(room_id).emit("kick user", {email: self.email, name: self.name})
 	end
 
 	def is_banned room_id
-		banned = self.ban_users.find_by_room_id(room_id)
-		if banned.present?
-			expiry_date = banned.created_at + banned.days.days
-			return Time.now < expiry_date
-		else
-			return false
-		end
+		ban = $redis.get("ban:#{room_id}:#{self.email}")
+		ban.nil? ? false : Time.now < Time.at(ban.to_i)
 	end
 
 	def is_locking
@@ -125,7 +123,6 @@ class User < ActiveRecord::Base
 			}
 		end
 		return cover
-		# "#{Settings.base_url}/api/v1/users/#{self.id}/cover?timestamp=#{self.updated_at.to_i}"
 	end
 
 	def horoscope
@@ -147,7 +144,8 @@ class User < ActiveRecord::Base
 	end
 
 	def vip
-		vip = self.user_has_vip_packages.find_by_actived(true).present? ? self.user_has_vip_packages.find_by_actived(true).vip_package.vip.weight : 0
+		has_vip = self.user_has_vip_packages.where('actived = ? AND expiry_date > ?', true, Time.now)
+		has_vip.present? ? has_vip.first.vip_package.vip.weight : 0
 	end
 
 	#check vip de su dung ham o authorize 
@@ -167,24 +165,30 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseMoney(money)
-		if money.to_i > 0
-			old = self.money
-			value = self.money + money.to_i
-			self.update(money: value)
-			NotificationChangeMoneyJob.perform_later(self.email, old, value)
-		else
-			raise "Số tiền không hợp lệ"
+		self.with_lock do
+			if money.to_i > 0
+				old = self.money
+				value = self.money + money.to_i
+				self.money = value
+				self.save!
+				NotificationChangeMoneyJob.perform_later(self.email, old, value)
+			else
+				raise "Số tiền không hợp lệ"
+			end
 		end
 	end
 
 	def decreaseMoney(money)
-		if self.money >= money.to_i then
-			old = self.money
-			value = self.money - money.to_i
-			self.update(money: value)
-			NotificationChangeMoneyJob.perform_later(self.email, old, value)
-		else
-			raise "Bạn không có đủ tiền"
+		self.with_lock do
+			if self.money >= money.to_i then
+				old = self.money
+				value = self.money - money.to_i
+				self.money = value
+				self.save!
+				NotificationChangeMoneyJob.perform_later(self.email, old, value)
+			else
+				raise "Bạn không có đủ tiền"
+			end
 		end
 	end
 

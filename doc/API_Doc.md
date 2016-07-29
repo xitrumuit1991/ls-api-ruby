@@ -22,6 +22,26 @@
     + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
   + body: ```{"token": "this-is-jwt-token"}```
 
+### Login Broadcaster
+- URI: **/login-broadcaster**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Request:
+```
+{
+  "email": "peter@gmail.com",
+  "password": "******"
+}
+```
+- Response:
+  + status: **200** *(OK)*,**403** *(Forbidden)*, **400** *(Bad request)*, **401** *(Unauthorize)*
+    + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }```
+    + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
+    + 403: ```{ error: "Bạn không phải Idol !" }```
+  + body: ```{"token": "this-is-jwt-token"}```
+
+
 ### Register
 - URI: **/register**
 - Method: **POST**
@@ -1838,3 +1858,31 @@
     "status_purchase": 1
 }
 ```
+
+## Register Device token
+- Namespace URL: **/device**
+
+### Register
+- URI: **/register**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+```
+{
+  "device_token":"f6wXbI3avkg:APA91bFq4oU55e_XWXcjtv",
+  "device_id":"as2d12a1sd5we1545wer5421ds51w5r45",
+  "type":"android",
+}
+```
+- Response:
+  + status: **201**, **401**, **500**
+  ```
+### Push Notification
+- URI: **/push-notification**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Response:
+  + status: **200**, **401**, **500**

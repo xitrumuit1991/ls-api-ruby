@@ -142,10 +142,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => giftLog.id,
           :name => giftLog.gift.name,
-          :thumb => "#{request.base_url}#{giftLog.gift.image_path[:image]}",
-          :thumb_w50h50 => "#{request.base_url}#{giftLog.gift.image_path[:image_w50h50]}",
-          :thumb_w100h100 => "#{request.base_url}#{giftLog.gift.image_path[:image_w100h100]}",
-          :thumb_w200h200 => "#{request.base_url}#{giftLog.gift.image_path[:image_w200h200]}",
+          :thumb => "#{giftLog.gift.image_path[:image]}",
+          :thumb_w50h50 => "#{giftLog.gift.image_path[:image_w50h50]}",
+          :thumb_w100h100 => "#{giftLog.gift.image_path[:image_w100h100]}",
+          :thumb_w200h200 => "#{giftLog.gift.image_path[:image_w200h200]}",
           :quantity => giftLog.quantity,
           :cost => giftLog.cost.round(0),
           :total_cost => (giftLog.cost*giftLog.quantity).round(0),
@@ -176,10 +176,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       aryLog = OpenStruct.new({
           :id => actionLog.id,
           :name => actionLog.room_action.name,
-          :thumb => "#{request.base_url}#{actionLog.room_action.image_path[:image]}", 
-          :thumb_w50h50 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w50h50]}", 
-          :thumb_w100h100 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w100h100]}", 
-          :thumb_w200h200 => "#{request.base_url}#{actionLog.room_action.image_path[:image_w200h200]}",
+          :thumb => "#{actionLog.room_action.image_path[:image]}", 
+          :thumb_w50h50 => "#{actionLog.room_action.image_path[:image_w50h50]}", 
+          :thumb_w100h100 => "#{actionLog.room_action.image_path[:image_w100h100]}", 
+          :thumb_w200h200 => "#{actionLog.room_action.image_path[:image_w200h200]}",
           :quantity => 1,
           :cost => actionLog.cost.round(0),
           :total_cost => actionLog.cost.round(0),
@@ -260,7 +260,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def getAvatar
     begin
       @u = User.find(params[:id])
-      send_file "#{@u.avatar_path[:avatar_w60h60]}", type: 'image/png', disposition: 'inline'
+      send_file "public#{@u.avatar_crop.w60h60.url}", type: 'image/png', disposition: 'inline'
     rescue
       send_file 'public/default/w60h60_no-avatar.png', type: 'image/png', disposition: 'inline'
     end
@@ -365,8 +365,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
           megabanklog.status            = @result[:comfirm_response][:comfirm_result][:status]
           megabanklog.save
           user        = User.find(megabanklog.user_id)
-          user.money  = user.money + megabanklog.megabank.coin
-          user.save
+          user.increaseMoney(megabanklog.megabank.coin)
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "01" && @result != false
           render json: {error: "Thất bại"}, status: 403
         elsif @result[:comfirm_response][:comfirm_result][:responsecode] == "02" && @result != false
@@ -634,10 +633,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
     @user_sms = User::find_by_active_code(subkeyword)
     coin  = SmsMobile::find_by_price(amount.to_i)
-    money = @user_sms.money + coin.coin
 
     if @user_sms.present?
-      @user_sms.increaseMoney(money)
+      @user_sms.increaseMoney(coin.coin)
       if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
         return true
       else

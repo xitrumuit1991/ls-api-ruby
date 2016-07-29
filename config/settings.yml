@@ -16,8 +16,6 @@ magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
 # SMS
 partnerid: '10184'
 partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
-# BaseURL CẤM THAY ĐỔI CHỔ NÀY
-base_url: 'http://api.livestar.vn/'
 #captcha
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
@@ -30,3 +28,8 @@ kraken_secret: '9cc25aabaf1aa0a90aa55ffce38d793204026f5c'
 # WAP
 wap_mbf_key: 'lMGiNUrKx3RyPXkQ'
 wap_register_url: 'http://dangky.mobifone.com.vn/wap/html/sp/confirm.jsp'
+# Url livestar-notifition
+url_notification: 'http://localhost:3001'
+# link recode stream
+url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&segmentDuration=7500&streamname='
+url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'

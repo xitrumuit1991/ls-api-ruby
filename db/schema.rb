@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160615080342) do
+ActiveRecord::Schema.define(version: 20160722095338) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -224,6 +224,17 @@ ActiveRecord::Schema.define(version: 20160615080342) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
+  create_table "device_tokens", force: :cascade do |t|
+    t.integer  "user_id",      limit: 4
+    t.string   "device_id",    limit: 255
+    t.string   "device_token", limit: 255
+    t.string   "device_type",  limit: 20
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "device_tokens", ["user_id"], name: "index_device_tokens_on_user_id", using: :btree
+
   create_table "fb_share_logs", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
     t.string   "post_id",    limit: 255
@@ -341,6 +352,11 @@ ActiveRecord::Schema.define(version: 20160615080342) do
     t.integer  "coin",       limit: 4
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
+  end
+
+  create_table "mobifone_ips", primary_key: "ip", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "mobifone_user_money_logs", force: :cascade do |t|
@@ -887,6 +903,7 @@ ActiveRecord::Schema.define(version: 20160615080342) do
   add_foreign_key "broadcasters", "users"
   add_foreign_key "cart_logs", "providers"
   add_foreign_key "cart_logs", "users"
+  add_foreign_key "device_tokens", "users"
   add_foreign_key "fb_share_logs", "users"
   add_foreign_key "featureds", "broadcasters"
   add_foreign_key "gift_logs", "gifts"

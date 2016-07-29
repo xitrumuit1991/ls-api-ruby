@@ -1,0 +1,124 @@
+<div class="jumbotron" data-pages="parallax">
+  <div class="container-fluid sm-p-l-20 sm-p-r-20">
+    <div class="inner">
+      <!-- START BREADCRUMB -->
+      <ul class="breadcrumb">
+        <li><a href="/acp">Home</a></li>
+        <li><a href="#" class="active">Caches List</a></li>
+      </ul>
+      <!-- END BREADCRUMB -->
+    </div>
+  </div>
+</div>
+<div class="container-fluid bg-white">
+  <%= render 'shared/alert' %>
+  <!-- START PANEL -->
+  <div class="panel panel-transparent">
+    <div class="panel-body">
+      <%= form_tag(acp_caches_clear_cache_clider_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Slider</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_cache_poster_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Poster</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_home_featured_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Home Featured</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_room_featured_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Room Featured</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_week_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top Week</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_month_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top Month</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_top_all_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Top All Time</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_tag(acp_caches_clear_vip_path) do %>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-3">
+              <label class="col-sm-12">Cache Vip</label>
+            </div>
+            <div class="col-sm-6">
+              <button class="btn btn-success" >Clear</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <!-- END PANEL -->
+</div>
