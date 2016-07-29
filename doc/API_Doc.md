@@ -39,7 +39,7 @@
     + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }```
     + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
     + 403: ```{ error: "Bạn không phải Idol !" }```
-  + body: ```{"token": "this-is-jwt-token"}```
+  + body: ```{"token": "this-is-jwt-token", "room_id": "123"}```
 
 
 ### Register
