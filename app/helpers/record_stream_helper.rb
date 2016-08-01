@@ -10,7 +10,7 @@ module RecordStreamHelper
   end
 
   def end_stream room
-    redis_stream = $redis.get("stream_room_id:#{room.id}")
+    redis_stream = eval($redis.get("stream_room_id:#{room.id}"))
     stream_logger = Logger.new("#{Rails.root}/log/StopStream.log")
     stream_logger.info("ANGCO DEBUG room: #{room} \n")
     stream_logger.info("ANGCO DEBUG room: #{redis_stream} \n")
