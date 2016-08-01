@@ -28,10 +28,20 @@ module RecordStreamHelper
     http = Net::HTTP.new(uri.host,uri.port)
     request = Net::HTTP::Post.new(uri.request_uri)
     request.basic_auth 'record', 'JmCpjEWHjcdO'
-    http.request(request)
+    response = http.request(request)
+    stream_logger = Logger.new("#{Rails.root}/log/Response.log")
+    stream_logger.info("ANGCO DEBUG Response: #{response} \n")
+    stream_logger.info("ANGCO DEBUG Link: #{linkRecode} \n")
   end
 
   def add_vod(link, room)
     BctVideo.create(broadcaster_id: room.broadcaster.id, video: link)
+    videos = room.broadcaster.videos
+    if videos.count > 5
+      videos.order('created_at DESC').destroy_all
+      videos.each do |video|
+        BctVideo.create(broadcaster_id: video.broadcaster_id, video: video.video, thumb: video.thumb, created_at: video.created_at, updated_at: video.updated_at)
+      end
+    end
   end
 end
