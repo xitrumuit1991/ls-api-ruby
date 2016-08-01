@@ -31,7 +31,7 @@ module RecordStreamHelper
     response = http.request(request)
     stream_logger = Logger.new("#{Rails.root}/log/Response.log")
     stream_logger.info("ANGCO DEBUG Response: #{response} \n")
-    stream_logger.info("ANGCO DEBUG Link: #{linkRecode} \n")
+    stream_logger.info("ANGCO DEBUG Link: #{link} \n")
   end
 
   def add_vod(link, room)
