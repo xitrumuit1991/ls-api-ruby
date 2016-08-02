@@ -30,7 +30,7 @@ module RecordStreamHelper
     request.basic_auth 'record', 'JmCpjEWHjcdO'
     response = http.request(request)
     stream_logger = Logger.new("#{Rails.root}/public/backups/Response.log")
-    stream_logger.info("ANGCO DEBUG Response: #{response} \n")
+    stream_logger.info("ANGCO DEBUG Response: #{response.to_yaml} \n")
     stream_logger.info("ANGCO DEBUG Link: #{link} \n")
   end
 
