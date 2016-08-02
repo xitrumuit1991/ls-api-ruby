@@ -5,7 +5,7 @@ module RecordStreamHelper
     stream_logger = Logger.new("#{Rails.root}/public/backups/StartStream.log")
     stream_logger.info("ANGCO DEBUG StartLinkRecode: #{linkRecode} \n")
     stream_logger.info("ANGCO DEBUG room: #{room} \n")
-    recode linkRecode 
+    stream_action linkRecode 
     return true
   end
 
@@ -14,11 +14,11 @@ module RecordStreamHelper
     stream_logger = Logger.new("#{Rails.root}/public/backups/StopStream.log")
     stream_logger.info("ANGCO DEBUG room: #{room} \n")
     stream_logger.info("ANGCO DEBUG room: #{redis_stream} \n")
-    linkRecode = "http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname=#{room.id.to_s}&outputFile=#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}.mp4&option=overwrite&action=startRecording"
+    linkRecode = "http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname=#{room.id.to_s}&outputFile=#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}.mp4&option=overwrite&action=stopRecording"
     linkVideo = "http://stream.livestar.vn:80/livestar-vod/mp4:#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}.mp4/playlist.m3u8"
     stream_logger.info("ANGCO DEBUG StopLinkRecode: #{linkRecode} \n")
     stream_logger.info("ANGCO DEBUG room: #{linkVideo} \n")
-    recode linkRecode 
+    stream_action linkRecode 
     add_vod(linkVideo, room)
     return true
   end
@@ -32,6 +32,20 @@ module RecordStreamHelper
     stream_logger = Logger.new("#{Rails.root}/public/backups/Response.log")
     stream_logger.info("ANGCO DEBUG Response: #{response.to_yaml} \n")
     stream_logger.info("ANGCO DEBUG Link: #{link} \n")
+  end
+  
+  def stream_action link
+    digest_auth = Net::HTTP::DigestAuth.new
+    uri = URI.parse link
+    uri.user = 'record'
+    uri.password = 'JmCpjEWHjcdO'
+    http = Net::HTTP.new uri.host, uri.port
+    req = Net::HTTP::Get.new uri.request_uri
+    res = http.request req
+    auth = digest_auth.auth_header uri, res['www-authenticate'], 'GET'
+    req = Net::HTTP::Get.new uri.request_uri
+    req.add_field 'Authorization', auth
+    res = http.request req
   end
 
   def add_vod(link, room)
