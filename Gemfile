@@ -143,3 +143,5 @@ gem 'axlsx', '2.1.0.pre'
 
 # Axlsx-Rails
 gem 'axlsx_rails'
+
+gem 'net-http-digest_auth'
