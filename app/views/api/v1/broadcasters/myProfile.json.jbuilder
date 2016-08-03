@@ -40,10 +40,10 @@ json.photos @user.broadcaster.images do |photo|
 end
 
 json.videos @user.broadcaster.videos do |video|
-	json.id				video.id
-	json.link			video.video
-	json.thumb 			video.thumb_path[:thum]
-	json.thum_w190h108 	video.thumb_path[:thum_w190h108]
-	json.thum_w380h216 	video.thumb_path[:thum_w380h216]
-	json.thum_w760h432 	video.thumb_path[:thum_w760h432]
+	json.id					video.id
+	json.link				video.video
+	json.thumb 				video.thumb_path[:thumb]
+	json.thumb_w190h108 	video.thumb_path[:thumb_w190h108]
+	json.thumb_w380h216 	video.thumb_path[:thumb_w380h216]
+	json.thumb_w760h432 	video.thumb_path[:thumb_w760h432]
 end

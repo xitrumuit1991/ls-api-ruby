@@ -60,6 +60,15 @@ json.broadcaster do
 	else
 		json.isFollow		false
 	end
+	if @room.on_air
+		json.videos @room.broadcaster.videos do |video|
+			json.id		video.id
+			json.title 	video.title
+			json.type 	video.type
+			json.link	video.video
+			json.thumb 	video.thumb_path[:thumb]
+		end
+	end
 end
 
 json.schedules @room.schedules do |schedule|

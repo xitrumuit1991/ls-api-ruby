@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160802124640) do
+ActiveRecord::Schema.define(version: 20160803045735) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -131,6 +131,7 @@ ActiveRecord::Schema.define(version: 20160802124640) do
   create_table "bct_videos", force: :cascade do |t|
     t.integer  "broadcaster_id", limit: 4
     t.string   "title",          limit: 255
+    t.string   "type",           limit: 50
     t.string   "video",          limit: 255
     t.string   "thumb",          limit: 255
     t.datetime "created_at",                 null: false
