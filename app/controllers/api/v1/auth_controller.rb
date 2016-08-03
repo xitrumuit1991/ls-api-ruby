@@ -443,6 +443,31 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+  def loginFbBct
+    begin
+      graph = Koala::Facebook::API.new(params[:access_token])
+      profile = graph.get_object("me?fields=id,name,email,birthday,gender")
+      user = User.find_by_email(profile['email'])
+      if user.present?
+        if !user.fb_id.blank?
+          if user.is_broadcaster
+            token = createToken(user)
+            user.update(last_login: Time.now, token: token)
+            render json: {token: token, room_id: user.broadcaster.public_room.id}, status: 200
+          else
+            render json: { error: "Bạn không phải Idol!" }, status: 403
+          end
+        else
+          render json: { error: "Không phải thành viên facebook!" }, status: 403
+        end
+      else
+        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+      end
+    rescue Koala::Facebook::APIError => exc
+      render json: exc, status: 400
+    end
+  end
+
   def fbRegister
     begin
       graph = Koala::Facebook::API.new(params[:access_token])

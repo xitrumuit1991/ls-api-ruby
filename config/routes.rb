@@ -205,6 +205,7 @@ Rails.application.routes.draw do
       scope '/auth' do
         get '/logout' => 'auth#logout'
         post '/login' => 'auth#login'
+        post '/login-fb-broadcaster' => 'auth#loginFbBct'
         post '/login-broadcaster' => 'auth#loginBct'
         post '/register' => 'auth#register'
         post '/fb-register' => 'auth#fbRegister'
