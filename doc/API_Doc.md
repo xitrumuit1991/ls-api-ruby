@@ -35,11 +35,11 @@
 }
 ```
 - Response:
-  + status: **200** *(OK)*,**403** *(Forbidden)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-    + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }```
-    + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }```
-    + 403: ```{ error: "Bạn không phải Idol !" }```
-  + body: ```{"token": "this-is-jwt-token", "room_id": "123"}```
+  + status:
+    + 401: ```{ error: "Tài khoản này chưa được kích hoạt !" }``` (account isn't avtived)
+    + 401: ```{ error: "Email hoặc mật khẩu bạn vừa nhập không chính xác !" }``` (email or password invalid)
+    + 403: ```{ error: "Bạn không phải Idol !" }``` (you isn't idol)
+    + 200: ```{"token": "this-is-jwt-token", "room_id": "123"}```
 
 ### Login Facebook is broadcaster
 - URI: **/login-fb-broadcaster**
