@@ -449,16 +449,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
       user = User.find_by_email(profile['email'])
       if user.present?
-        if !user.fb_id.blank?
-          if user.is_broadcaster
+        if user.is_broadcaster
+          user.fb_id  = profile['id']
+          if user.save
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
             render json: {token: token, room_id: user.broadcaster.public_room.id}, status: 200
           else
-            render json: { error: "Bạn không phải Idol!" }, status: 403
+            render json: user.errors.messages, status: 400
           end
         else
-          render json: { error: "Không phải thành viên facebook!" }, status: 403
+          render json: { error: "Bạn không phải Idol!" }, status: 403
         end
       else
         render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
