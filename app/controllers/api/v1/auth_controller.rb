@@ -7,7 +7,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include CaptchaHelper
   include KrakenHelper
 
-  before_action :authenticate, except: [:login, :loginBct, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher]
+  before_action :authenticate, except: [:loginFbBct, :login, :loginBct, :fbRegister, :gpRegister, :register, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
