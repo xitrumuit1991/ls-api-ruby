@@ -56,23 +56,6 @@
   + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*, **403** *(Forbidden)*
   + body: ```{"token": "this-is-jwt-token", "room_id": 123}```
 
-### Register by Google Plus
-- URI: **/fb-register**
-- Method: **POST**
-- Header:
-  + Content-Type: application/json
-- Request:
-```
-{
-  "email": "peter@gmail.com",
-  "access_token": "this-is-facebook-access-token"
-}
-```
-- Response:
-  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*
-  + body: ```{"token": "this-is-jwt-token"}```
-
-
 ### Register
 - URI: **/register**
 - Method: **POST**
