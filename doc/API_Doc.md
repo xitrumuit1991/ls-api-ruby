@@ -41,6 +41,20 @@
     + 403: ```{ error: "Bạn không phải Idol !" }```
   + body: ```{"token": "this-is-jwt-token", "room_id": "123"}```
 
+### Login Facebook is broadcaster
+- URI: **/login-fb-broadcaster**
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+- Request:
+```
+{
+  "access_token": "this-is-facebook-access-token"
+}
+```
+- Response:
+  + status: **200** *(OK)*, **400** *(Bad request)*, **401** *(Unauthorize)*, **403** *(Forbidden)*
+  + body: ```{"token": "this-is-jwt-token", "room_id": 123}```
 
 ### Register
 - URI: **/register**
@@ -80,7 +94,6 @@
 - Request:
 ```
 {
-  "email": "peter@gmail.com",
   "access_token": "this-is-facebook-access-token"
 }
 ```
