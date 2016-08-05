@@ -63,8 +63,16 @@ json.broadcaster do
 	if !@room.on_air
 		json.videos @room.broadcaster.videos do |video|
 			json.id		video.id
-			json.title 	video.title
-			json.type 	video.video_type
+			if video.title.nil?
+				json.title 	@room.broadcaster.user.name
+			else
+				json.title 	video.title				
+			end
+			if video.video_type.nil?
+				json.type 	'youtube'
+			else
+				json.type 	video.video_type				
+			end
 			json.link	video.video
 			json.thumb 	video.thumb_path[:thumb]
 		end
