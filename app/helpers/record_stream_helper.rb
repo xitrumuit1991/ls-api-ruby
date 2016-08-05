@@ -49,7 +49,7 @@ module RecordStreamHelper
   end
 
   def add_vod(link, room, time)
-    BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: room.thumb_path.thumb_w160h190)
+    BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: room.thumb_path[:thumb_w160h190])
     videos = room.broadcaster.videos.order('created_at DESC')
     if videos.count > 5
       videos.last.delete
