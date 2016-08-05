@@ -164,6 +164,7 @@ Rails.application.routes.draw do
 
     # Reports
     get '/reports/users' => 'reports#users'
+    get '/reports/mbf_users' => 'reports#mbf_users'
     get '/reports/user-online' => 'reports#user_online'
     get '/reports/user-send-gifts' => 'reports#user_send_gifts'
     get '/reports/user-send-hearts' => 'reports#user_send_hearts'

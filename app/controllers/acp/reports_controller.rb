@@ -23,6 +23,26 @@ class Acp::ReportsController < Acp::ApplicationController
     end
   end
 
+  def mbf_users
+    where = Hash.new
+    where['created_at'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day
+
+    if params[:start_date].present? && params[:end_date].present?
+      where['created_at'] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'mbf_users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "id desc"
+
+    @total = MobifoneUser.where(where).count
+    @users = params[:format].present? ? MobifoneUser.where(where).order(order) : MobifoneUser.where(where).order(order).page(params[:page])
+    respond_to do |format|
+      format.html
+      format.xlsx
+    end
+  end
+
   def user_online
   	where = Hash.new
   	where['last_login'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day
