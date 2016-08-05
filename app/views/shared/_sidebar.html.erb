@@ -546,6 +546,13 @@
           </li>
           <% end %>
 
+          <% if can? :mbf_users, :report %>
+          <li class="<% if controller_name == 'reports' && action_name == 'mbf_users' %>active<% end %>">
+            <%= link_to(acp_reports_mbf_users_path) do %><span class="title">Mobifone Users</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <% end %>
+
           <% if can? :user_online, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'user_online' %>active<% end %>">
             <%= link_to(acp_reports_user_online_path) do %><span class="title">User Online</span><% end %>
