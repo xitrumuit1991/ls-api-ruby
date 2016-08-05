@@ -230,6 +230,47 @@
 }
 ```
 
+### Get List rooms
+- URI: **/room-list**
+- Method: **GET**
+- Header
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+  + page: page number or null
+- Resoponse
+  + status: **200**, **400**,  **401**
+  + errors:
+    + status 400: ```{error: "an awnsome fucking error"}```
+  + body (status: 200):
+```
+{
+    "totalPage":4,
+    "rooms":[
+      {
+        "id": 2,
+        "on_air": true,
+        "title": "Room LiveStar",
+        "slug": "room-2",
+        "totalUser": 0,
+        "thumb": "http://.../thumb_cute_girl_12.jpg?timestamp=1449103220",
+        "thumb_mb": "http://.../thumb_mb_cute_girl_12.jpg?timestamp=1449103220",
+        "broadcaster": {
+            "id": 2,
+            "bct_id": 2,
+            "name": "Thị Màu",
+            "avatar": "http://.../avatar?timestamp=1449132581",
+            "heart": 2,
+            "exp": 953,
+            "level": 10,
+            "isFollow": false
+        }
+      },
+      ...
+    ]
+}
+```
+
 ### Get coming soon rooms
 - URI: **/coming-soon**
 - Method: **GET**

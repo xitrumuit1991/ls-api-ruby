@@ -2,8 +2,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
 
-  before_action :authenticate, except: [:onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
-  before_action :checkIsBroadcaster, except: [:roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
 
   def onair
     @user = check_authenticate
@@ -34,6 +34,27 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
 
     @totalPage =  (Float(total_record)/18).ceil
+  end
+
+  def listIdol
+    @totalUser = []
+    @user = check_authenticate
+    page = 5
+    offset = params[:page].nil? ? 0 : params[:page].to_i * page
+    if params[:category_id].nil?
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY on_air desc, -start desc limit #{page} offset #{offset}"
+      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY on_air desc, -start desc"
+    else
+      sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY on_air desc, -start desc limit #{page} offset #{offset}"
+      sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY on_air desc, -start desc"
+    end
+    @rooms = Room.where(on_air: true).limit(page).offset(offset)
+    @rooms.each do |room|
+      @totalUser[room.id] = $redis.hgetall(room.id).length
+    end
+    @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
+    total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
+    @totalPage =  (Float(total_record)/5).ceil
   end
 
   def myIdol

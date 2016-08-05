@@ -3,7 +3,7 @@ class Room < ActiveRecord::Base
 	belongs_to :room_type
 	belongs_to :room_background
 	belongs_to :broadcaster_background
-	has_many :schedules
+	has_many :schedules, -> { order(start: :desc) }
 	has_many :heart_logs
 	has_many :action_logs
 	has_many :gift_logs

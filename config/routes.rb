@@ -318,6 +318,7 @@ Rails.application.routes.draw do
         get '/my-idol' => 'room#myIdol' #
         get '/coming-soon' => 'room#comingSoon' #
         get '/room-type' => 'room#roomType'
+        get '/room-list' => 'room#listIdol'
         get '/slug/:slug' => 'room#detailBySlug'
         get '/actions' => 'room#getActions' #
         get '/gifts' => 'room#getGifts' #
