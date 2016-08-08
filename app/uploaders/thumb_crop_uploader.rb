@@ -17,7 +17,7 @@ class ThumbCropUploader < CarrierWave::Uploader::Base
   end
 
   version :w160h190 do
-    process resize_to_fill: [160, 190]
+    process resize_to_fill: [160, 90]
   end
 
   version :w240h135 do
