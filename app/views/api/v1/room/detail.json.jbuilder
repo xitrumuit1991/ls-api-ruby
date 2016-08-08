@@ -67,6 +67,7 @@ json.broadcaster do
 			json.type   video.video_type.nil? ? 'youtube' : video.video_type
 			json.link	video.video
 			json.thumb 	video.thumb_path[:thumb]
+			json.thumb  video.thumb.nil? ? @room.thumb_path[:thumb_w720h405] : video.thumb_path[:thumb]
 		end
 	end
 end
