@@ -66,11 +66,7 @@ json.broadcaster do
 			json.title  video.title.nil? ? @room.broadcaster.user.name : video.title
 			json.type   video.video_type.nil? ? 'youtube' : video.video_type
 			json.link	video.video
-			if video.video_type == 'vod'
-				json.thumb  @room.thumb_path[:thumb_w720h405]
-			else
-				json.thumb  video.thumb_path[:thumb]
-			end
+			json.thumb  video.video_type == 'vod' ? @room.thumb_path[:thumb_w720h405] :  video.thumb_path[:thumb]
 		end
 	end
 end
