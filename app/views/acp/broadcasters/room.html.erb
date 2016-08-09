@@ -21,6 +21,7 @@
         <div class="panel-body">
             <%= form_for [:acp, @room], :html => {:class => "form_room", multipart: true } do |f| %>
                 <input type="hidden" name="broadcaster_id" value="<%= @data.id %>">
+                <input type="hidden" name="room[thumb_crop]">
                 <div class="form-group">
                   <div class="row">
                     <label class="col-sm-12">#ID: <%= @room.id %></label>
@@ -28,13 +29,25 @@
                 </div>
                 <div class="form-group">
                   <div class="row">
-                    <label class="col-sm-12">Banner</label>
+                    <label class="col-sm-12">Banner (16x9)</label>
                     <div class="col-sm-5">
                       <img src="<%= @room.thumb_url %>" class="img-thumbnail" >
                       <div class="cleafix">
                         <label class="btn btn-success">
                           <input type="file" name="room[thumb]" class="hidden">
                           Upload banner
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-12">Poster(9x16)</label>
+                    <div class="col-sm-5">
+                      <img src="<%= @room.thumb_poster_url %>" class="img-thumbnail" >
+                      <div class="cleafix">
+                        <label class="btn btn-success">
+                          <input type="file" name="room[thumb_poster]" class="hidden">
+                          Upload poster
                         </label>
                       </div>
                     </div>

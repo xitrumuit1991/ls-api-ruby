@@ -26,11 +26,20 @@
                     <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
                   </div>
                 <% end %>
+                <input type="hidden" name="room[thumb_crop]">
                 <div class="form-group">
                   <div class="row">
-                    <label class="col-sm-12">Banner</label>
+                    <label class="col-sm-12">Banner (16x9)</label>
                     <div class="col-sm-5">
                       <input type="file" name="room[thumb]" >
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="row">
+                    <label class="col-sm-12">Poster (9x16)</label>
+                    <div class="col-sm-5">
+                      <input type="file" name="room[thumb_poster]" >
                     </div>
                   </div>
                 </div>

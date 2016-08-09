@@ -20,6 +20,7 @@ class Room < ActiveRecord::Base
 	validates :room_type_id, presence: true
 	mount_uploader :thumb, RoomThumbUploader
 	mount_base64_uploader :thumb_crop, ThumbCropUploader
+	mount_uploader :thumb_poster, ThumbPosterUploader
 
 	def thumb_path
 		thumb = {}
@@ -30,21 +31,39 @@ class Room < ActiveRecord::Base
 					thumb_w240h135: 	"#{Settings.base_url}#{self.thumb_crop.w240h135.url}",
 					thumb_w320h180: 	"#{Settings.base_url}#{self.thumb_crop.w320h180.url}",
 					thumb_w720h405: 	"#{Settings.base_url}#{self.thumb_crop.w720h405.url}",
-					thumb_w768h432: 	"#{Settings.base_url}#{self.thumb_crop.w768h432.url}",
-					thumb_w960h540: 	"#{Settings.base_url}#{self.thumb_crop.w960h540.url}",
+					thumb_w960h540: 	"#{Settings.base_url}#{self.thumb_crop.w960h540.url}"
 				}
 		else
 			thumb = {
-					thumb: 			"#{Settings.base_url}default/no-thum-room.png",
-					thumb_w160h190: 	"#{Settings.base_url}default/w160h190_no-thum-room.png",
-					thumb_w240h135: 	"#{Settings.base_url}default/w240h135_no-thum-room.png",
-					thumb_w320h180: 	"#{Settings.base_url}default/w320h180_no-thum-room.png",
-					thumb_w720h405: 	"#{Settings.base_url}default/w720h405_no-thum-room.png",
-					thumb_w768h432: 	"#{Settings.base_url}default/w768h432_no-thum-room.png",
-					thumb_w960h540: 	"#{Settings.base_url}default/w960h540_no-thum-room.png",
+					thumb: 			"#{Settings.base_url}default/no-thum-room.jpg",
+					thumb_w160h190: 	"#{Settings.base_url}default/w160h90_no-thum-room.jpg",
+					thumb_w240h135: 	"#{Settings.base_url}default/w240h135_no-thum-room.jpg",
+					thumb_w320h180: 	"#{Settings.base_url}default/w320h180_no-thum-room.jpg",
+					thumb_w720h405: 	"#{Settings.base_url}default/w720h405_no-thum-room.jpg",
+					thumb_w960h540: 	"#{Settings.base_url}default/w720h405_no-thum-room.jpg"
 				}
 		end
 		return thumb
 		# "#{Settings.base_url}/api/v1/users/#{self.id}/avatar?timestamp=#{self.updated_at.to_i}"
+	end
+
+	def thumb_poster_path
+		thumb_poster = {}
+		if !self.thumb_poster.url.nil?
+			thumb_poster = {
+					thumb: 		"#{Settings.base_url}#{self.thumb_crop.url}", 
+					thumb_w360h640: 	"#{Settings.base_url}#{self.thumb_crop.w360h640.url}",
+					thumb_w720h1280: 	"#{Settings.base_url}#{self.thumb_crop.w720h1280.url}",
+					thumb_w1080h1920: 	"#{Settings.base_url}#{self.thumb_crop.w1080h1920.url}"
+				}
+		else
+			thumb_poster = {
+					thumb: 			"#{Settings.base_url}default/no-thumb-poster-room.jpg",
+					thumb_w360h640: 	"#{Settings.base_url}default/w360h640_no-thumb-poster-room.jpg",
+					thumb_w720h1280: 	"#{Settings.base_url}default/w720h1280_no-thumb-poster-room.jpg",
+					thumb_w1080h1920: 	"#{Settings.base_url}default/w1080h1920_no-thumb-poster-room.jpg"
+				}
+		end
+		return thumb_poster
 	end
 end

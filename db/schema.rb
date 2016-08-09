@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803083212) do
+ActiveRecord::Schema.define(version: 20160809085524) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -539,6 +539,7 @@ ActiveRecord::Schema.define(version: 20160803083212) do
     t.string   "slug",                      limit: 255
     t.string   "thumb",                     limit: 512
     t.string   "thumb_crop",                limit: 255
+    t.string   "thumb_poster",              limit: 255
     t.boolean  "on_air",                                default: false
     t.boolean  "is_privated"
     t.datetime "created_at",                                            null: false
