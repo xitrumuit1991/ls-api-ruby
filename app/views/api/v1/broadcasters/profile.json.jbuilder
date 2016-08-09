@@ -44,6 +44,7 @@ end
 json.videos @broadcaster.videos do |video|
 	json.id		video.id
 	json.link	video.video
+	json.type	video.video_type
 	json.thumb 			video.thumb_path[:thumb]
 	json.thum_w190h108 	video.thumb_path[:thumb_w190h108]
 	json.thum_w380h216 	video.thumb_path[:thumb_w380h216]
