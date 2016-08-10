@@ -35,12 +35,12 @@ class Room < ActiveRecord::Base
 				}
 		else
 			thumb = {
-					thumb: 			"#{Settings.base_url}default/no-thum-room.jpg",
-					thumb_w160h190: 	"#{Settings.base_url}default/w160h90_no-thum-room.jpg",
-					thumb_w240h135: 	"#{Settings.base_url}default/w240h135_no-thum-room.jpg",
-					thumb_w320h180: 	"#{Settings.base_url}default/w320h180_no-thum-room.jpg",
-					thumb_w720h405: 	"#{Settings.base_url}default/w720h405_no-thum-room.jpg",
-					thumb_w960h540: 	"#{Settings.base_url}default/w720h405_no-thum-room.jpg"
+					thumb: 			"#{Settings.base_url}default/no-thumb-room.jpg",
+					thumb_w160h190: 	"#{Settings.base_url}default/w160h90_no-thumb-room.jpg",
+					thumb_w240h135: 	"#{Settings.base_url}default/w240h135_no-thumb-room.jpg",
+					thumb_w320h180: 	"#{Settings.base_url}default/w320h180_no-thumb-room.jpg",
+					thumb_w720h405: 	"#{Settings.base_url}default/w720h405_no-thumb-room.jpg",
+					thumb_w960h540: 	"#{Settings.base_url}default/w720h405_no-thumb-room.jpg"
 				}
 		end
 		return thumb
