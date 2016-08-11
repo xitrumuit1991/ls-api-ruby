@@ -24,6 +24,8 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def create
 		parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
+		parameters[:thumb_crop] = parameters[:thumb]
+		parameters[:thumb_poster] = parameters[:thumb_poster].nil? ? parameters[:thumb_poster] : optimizeKraken(parameters[:thumb_poster])
 		@data = @model.new(parameters)
 		@data.is_privated = false
 		@data.thumb_crop = parameters[:thumb]
@@ -37,7 +39,9 @@ class Acp::RoomsController < Acp::ApplicationController
 
 	def update
     prev_path = Rails.application.routes.recognize_path(request.referrer)
-		@data.thumb_crop = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
+		parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
+		parameters[:thumb_crop] = parameters[:thumb]
+		parameters[:thumb_poster] = parameters[:thumb_poster].nil? ? parameters[:thumb_poster] : optimizeKraken(parameters[:thumb_poster])
 		if @data.update(parameters)
 			if prev_path[:controller] == 'acp/rooms'
         redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
@@ -79,6 +83,6 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		def parameters
-			params.require(:room).permit(:thumb, :broadcaster_id, :title, :slug, :room_type_id)
+			params.require(:room).permit(:thumb, :thumb_crop, :thumb_poster, :broadcaster_id, :title, :slug, :room_type_id)
 		end
 end
