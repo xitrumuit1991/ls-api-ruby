@@ -219,7 +219,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def wap_mbf_register_request
     sp_id       = 140
     trans_id    = SecureRandom.hex(8)
-    pkg         = "VIP7"
+    pkg         = "VIP"
     price       = 2000
     back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
     information = "String 1||String 2"
