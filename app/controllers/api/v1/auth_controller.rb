@@ -220,7 +220,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     sp_id       = 140
     trans_id    = SecureRandom.hex(8)
     pkg         = "VIP7"
-    price       = 0
+    price       = 2000
     back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
     information = "String 1||String 2"
 
