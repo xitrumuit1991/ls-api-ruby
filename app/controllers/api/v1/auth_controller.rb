@@ -220,8 +220,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def wap_mbf_register_request
     sp_id       = 140
     trans_id    = SecureRandom.hex(8)
-    pkg         = "VIP7"
-    price       = 0
+    pkg         = "VIP"
+    price       = 2000
     back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
     information = "String 1||String 2"
 
@@ -230,7 +230,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
     link = encrypt data
-    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
+    render json: { 
+      sp_id: sp_id,
+      trans_id: trans_id,
+      pkg: pkg,
+      price: price,
+      back_url: back_url,
+      information: information,
+      encrypt: link,
+      link_wap_mobifone: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" 
+      }, status: 200
+    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
     # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
   end
 
@@ -665,7 +675,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       user.email          = "#{msisdn}@livestar.vn"
       user.password       = msisdn
       user.active_code    = activeCode
-      user.name           = msisdn
+      user.name           = msisdn.to_s[0,phone.to_s.length-3]+"xxx"
       user.username       = msisdn
       user.birthday       = '2000-01-01'
       user.user_level_id  = UserLevel.first().id
