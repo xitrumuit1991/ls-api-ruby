@@ -675,7 +675,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       user.email          = "#{msisdn}@livestar.vn"
       user.password       = msisdn
       user.active_code    = activeCode
-      user.name           = msisdn
+      user.name           = msisdn.to_s[0,phone.to_s.length-3]+"xxx"
       user.username       = msisdn
       user.birthday       = '2000-01-01'
       user.user_level_id  = UserLevel.first().id
