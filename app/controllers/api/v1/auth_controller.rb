@@ -240,6 +240,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     #   encrypt: link,
     #   link_wap_mobifone: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" 
     #   }, status: 200
+    sleep 2
     redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
     # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
   end
