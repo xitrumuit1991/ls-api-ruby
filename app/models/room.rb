@@ -51,10 +51,10 @@ class Room < ActiveRecord::Base
 		thumb_poster = {}
 		if !self.thumb_poster.url.nil?
 			thumb_poster = {
-					thumb: 		"#{Settings.base_url}#{self.thumb_crop.url}", 
-					thumb_w360h640: 	"#{Settings.base_url}#{self.thumb_crop.url(:w360h640)}",
-					thumb_w720h1280: 	"#{Settings.base_url}#{self.thumb_crop.url(:w720h1280)}",
-					thumb_w1080h1920: 	"#{Settings.base_url}#{self.thumb_crop.url(:w1080h1920)}"
+					thumb: 		"#{Settings.base_url}#{self.thumb_poster.url}", 
+					thumb_w360h640: 	"#{Settings.base_url}#{self.thumb_poster.url(:w360h640)}",
+					thumb_w720h1280: 	"#{Settings.base_url}#{self.thumb_poster.url(:w720h1280)}",
+					thumb_w1080h1920: 	"#{Settings.base_url}#{self.thumb_poster.url(:w1080h1920)}"
 				}
 		else
 			thumb_poster = {
