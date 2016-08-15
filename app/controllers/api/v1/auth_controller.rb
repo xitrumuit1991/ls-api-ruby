@@ -230,7 +230,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
     link = encrypt data
-    redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
+    render json: { 
+      sp_id: sp_id,
+      trans_id: trans_id,
+      pkg: pkg,
+      price: price,
+      back_url: back_url,
+      information: information,
+      encrypt: link,
+      link_wap_mobifone: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" 
+      }, status: 200
+    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
     # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
   end
 
