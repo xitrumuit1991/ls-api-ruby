@@ -14,7 +14,6 @@ json.rooms @room_schedules do |room|
     json.thumb_w240h135     room.thumb_path[:thumb_w240h135]
     json.thumb_w320h180     room.thumb_path[:thumb_w320h180]
     json.thumb_w720h405     room.thumb_path[:thumb_w720h405]
-    json.thumb_w768h432     room.thumb_path[:thumb_w768h432]
     json.thumb_w960h540     room.thumb_path[:thumb_w960h540]
     json.thumb_poster       room.thumb_poster_path[:thumb]
     json.thumb_poster_w360h640      room.thumb_poster_path[:thumb_w360h640]
@@ -56,7 +55,6 @@ json.rooms @room_schedules do |room|
     json.thumb_w240h135    room.thumb_path[:thumb_w240h135]
     json.thumb_w320h180    room.thumb_path[:thumb_w320h180]
     json.thumb_w720h405    room.thumb_path[:thumb_w720h405]
-    json.thumb_w768h432    room.thumb_path[:thumb_w768h432]
     json.thumb_w960h540    room.thumb_path[:thumb_w960h540]
     json.broadcaster do
       json.id		room.broadcaster.user.id
