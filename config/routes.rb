@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
     get "/" => "index#index"
     get "/import" => "index#import"
+    get "/import-black-list" => "index#importBlackList"
     get "/script" => "index#script"
 
     # Admin
