@@ -223,25 +223,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     pkg         = "VIP"
     price       = 2000
     back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
-    information = "String 1||String 2"
+    information = "Miễn phí ngày đầu"
 
     # insert wap mbf logs
     WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+
     link = encrypt data
-    render json: { 
-      sp_id: sp_id,
-      trans_id: trans_id,
-      pkg: pkg,
-      price: price,
-      back_url: back_url,
-      information: information,
-      encrypt: link,
-      link_wap_mobifone: "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" 
-      }, status: 200
-    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}" and return
-    # redirect_to "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=DFYsKBDB9u3uGOOzptM/WdcWVRo9wk+G8ePpRRviZicw8p43i7y6ssigMfI8VBlDGhD9C5rwzSn6TVlEPXQeuwP7vp1G11tKtttx4Q7qzRDLbhNjPXNwOvSS0iLYZLM0" and return
+    url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
+    render json: { url: url }
   end
 
   def wap_mbf_register_response
@@ -261,8 +252,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.email        = "#{msisdn}@mobifone.com.vn"
         user.password     = msisdn
         user.active_code  = activeCode
+        user.name         = msisdn.to_s[0,phone.to_s.length-3]+"xxx"
         if user.valid?
-          user.name           = msisdn
           user.username       = msisdn
           user.birthday       = '2000-01-01'
           user.user_level_id  = UserLevel.first().id
