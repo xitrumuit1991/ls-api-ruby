@@ -49,6 +49,7 @@ json.rooms @room_schedules do |room|
     json.on_air room.on_air
     json.title		room.title
     json.slug		room.slug
+    json.totalUser    @totalUser[room.id].nil? ? 0 : @totalUser[room.id]
     json.thumb             room.thumb_path[:thumb]
     json.thumb_mb          room.thumb_path[:thumb_w720h405]
     json.thumb_w160h190    room.thumb_path[:thumb_w160h190]
