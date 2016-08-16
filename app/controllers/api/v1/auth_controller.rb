@@ -223,7 +223,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     pkg         = "VIP"
     price       = 2000
     back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
-    information = "Miễn phí ngày đầu"
+    information = "Mien phi ngay dau"
 
     # insert wap mbf logs
     WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
