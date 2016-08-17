@@ -93,4 +93,24 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
+  def vas_delete_sub subid
+    begin
+      # call VAS webservice
+      soapClient = Savon.client do |variable|
+        variable.proxy Settings.vas_proxy
+        variable.wsdl Settings.vas_wsdl
+      end
+      
+      # params request
+      message = {
+        "tns:subid" => subid.to_s
+      }
+
+      response = soapClient.call(:delete_sub, message: message)
+      response.body[:delete_sub_response][:delete_sub_result]
+    rescue Savon::SOAPFault
+      return {is_error: true, message: 'System error!'}
+    end
+  end
+
 end

@@ -1,5 +1,6 @@
 require 'roo'
 class Acp::IndexController < Acp::ApplicationController
+	include Api::V1::Vas
 
 	def index
 	end
@@ -31,6 +32,15 @@ class Acp::IndexController < Acp::ApplicationController
 	def script
 		User.where("is_banned IS NULL").update_all(is_banned: 0)
 		redirect_to "/acp"
+	end
+
+	def vas_delete_sub
+		result = vas_delete_sub params[:sub]
+    if !result[:is_error]
+      render plain: "OK", status: 200
+    else
+    	render plain: "ERROR", status: 400
+    end
 	end
 
 end
