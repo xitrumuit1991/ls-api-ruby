@@ -34,13 +34,9 @@ class Acp::IndexController < Acp::ApplicationController
 		redirect_to "/acp"
 	end
 
-	def vas_delete_sub
+	def vas_delete_sub_id
 		result = vas_delete_sub params[:sub]
-    if !result[:is_error]
-      render plain: "OK", status: 200
-    else
-    	render plain: "ERROR", status: 400
-    end
+    render plain: result, status: 200
 	end
 
 end
