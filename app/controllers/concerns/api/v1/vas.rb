@@ -88,29 +88,73 @@ module Api::V1::Vas extend ActiveSupport::Concern
 
       response = soapClient.call(:update_partner_report, message: message)
       response.body[:update_partner_report_response][:update_partner_report_result]
+      
+      $redis.incr("vas:publisher:count:total:#{Time.now.strftime('%Y%m%d')}")
+      $redis.incr("vas:publisher:count:#{partner_id}:#{Time.now.strftime('%Y%m%d')}")
     rescue Savon::SOAPFault
       return {is_error: true, message: 'System error!'}
     end
   end
 
-  def vas_delete_sub subid
+  def vas_get_adv_info
     begin
-      # call VAS webservice
       soapClient = Savon.client do |variable|
         variable.proxy Settings.vas_proxy
         variable.wsdl Settings.vas_wsdl
       end
-      
-      # params request
-      message = {
-        "tns:subid" => subid.to_s
-      }
 
-      response = soapClient.call(:delete_sub, message: message)
-      response.body[:delete_sub_response][:delete_sub_result]
-    rescue Savon::SOAPFault
-      return {is_error: true, message: 'System error!'}
+      response = soapClient.call(:adv_quota_info)
+      result = response.body[:adv_quota_info_response][:adv_quota_info_result]
+      pub_quota = result[:pub_quota][:pub_attr]
+
+      $redis.set('vas:publisher:updated_at', Time.now.to_i)
+      $redis.set('vas:publisher:total_quota', result[:total_quota])
+      pub_quota.each do |pub|
+        $redis.set("vas:publisher:pub_quota:#{pub[:pub_id]}", pub[:quota])
+      end
+
+      result
+    rescue
+      return {is_error: true, message: 'System error'}
     end
   end
+
+  def check_pub_quota pub_id
+    date = Time.now.strftime('%Y%m%d')
+    if $redis.get('vas:publisher:updated_at')
+      count = $redis.get("vas:publisher:count:total:#{date}").to_i
+      total_quota = $redis.get('vas:publisher:total_quota').to_i
+      if count < total_quota
+        pub_count = $redis.get("vas:publisher:count:#{pub_id}:#{date}").to_i
+        pub_quota = $redis.get("vas:publisher:pub_quota:#{pub_id}").to_i
+        return pub_count < pub_quota
+      end
+    else
+      vas_get_adv_info
+      return true
+    end
+    return false
+  end
+
+  def vas_delete_sub subid
+     begin
+       # call VAS webservice
+       soapClient = Savon.client do |variable|
+         variable.proxy Settings.vas_proxy
+         variable.wsdl Settings.vas_wsdl
+  
+       end
+       
+       # params request
+       message = {
+         "tns:subid" => subid.to_s
+       }
+ 
+       response = soapClient.call(:delete_sub, message: message)
+       response.body[:delete_sub_response][:delete_sub_result]
+     rescue Savon::SOAPFault
+       return {is_error: true, message: 'System error!'}
+     end
+   end
 
 end
