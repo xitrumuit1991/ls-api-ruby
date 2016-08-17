@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     get "/import" => "index#import"
     get "/import-black-list" => "index#importBlackList"
     get "/script" => "index#script"
+    get "/vas-delete-sub/:sub" => "index#vas_delete_sub"
 
     # Admin
     resources :admins
