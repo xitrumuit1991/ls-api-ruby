@@ -227,7 +227,8 @@ Rails.application.routes.draw do
         # Wap
         get   'wap-mbf-register'  => 'auth#wap_mbf_register_request'
         post  'wap-mbf-register'  => 'auth#wap_mbf_register_response'
-        post 	'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
+        post  'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
+        get   'wap-mbf-publisher-directly/:publisher' => 'auth#wap_mbf_publisher_directly'
       end
 
       # users

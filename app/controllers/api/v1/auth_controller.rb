@@ -320,6 +320,27 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     return head 200
   end
 
+  def wap_mbf_publisher_directly
+    redirect_to 'http://m.livestar.vn' if !params[:publisher].present?
+    # get msisdn
+    msisdn = check_mbf_auth ? @msisdn : nil
+    # call api vas update
+    vas_update_partner_report msisdn, params[:publisher]
+    # detect user mbf 3g
+    if check_mbf_auth
+      # check user mbf existed
+      if !@user.present?
+        # call api vas register
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
+        if !register_result[:is_error]
+          # create user mbf
+          mbf_create_user msisdn
+        end
+      end
+    end
+    redirect_to 'http://m.livestar.vn'
+  end
+
   def login
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
