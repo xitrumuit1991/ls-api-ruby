@@ -222,7 +222,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     trans_id    = SecureRandom.hex(8)
     pkg         = "VIP"
     price       = 2000
-    back_url    = "#{Settings.m_livestar_path}/user-mbf-result"
+    back_url    = "#{Settings.m_livestar_path}/wapmbfresult"
     information = "Mien phi ngay dau"
 
     # insert wap mbf logs
@@ -252,7 +252,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.email        = "#{msisdn}@mobifone.com.vn"
         user.password     = msisdn
         user.active_code  = activeCode
-        user.name         = msisdn.to_s[0,phone.to_s.length-3]+"xxx"
+        user.name         = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
         if user.valid?
           user.username       = msisdn
           user.birthday       = '2000-01-01'
@@ -331,7 +331,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # check user mbf existed
       if !@user.present?
         # call api vas register
-        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
+        register_result = vas_register msisdn, "VIP", "PUBLISHER", params[:publisher], msisdn, SecureRandom.hex(3)
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
@@ -688,7 +688,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       user.email          = "#{msisdn}@livestar.vn"
       user.password       = msisdn
       user.active_code    = activeCode
-      user.name           = msisdn.to_s[0,phone.to_s.length-3]+"xxx"
+      user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
       user.username       = msisdn
       user.birthday       = '2000-01-01'
       user.user_level_id  = UserLevel.first().id
