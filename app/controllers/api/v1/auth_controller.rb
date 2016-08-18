@@ -222,7 +222,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     trans_id    = SecureRandom.hex(8)
     pkg         = "VIP"
     price       = 2000
-    back_url    = "#{Settings.m_livestar_path}/wapmbfresult"
+    back_url    = "#{Settings.m_livestar_path}/dangky"
     information = "Mien phi ngay dau"
 
     # insert wap mbf logs
@@ -306,7 +306,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # check user mbf existed
       if !@user.present?
         # call api vas register
-        register_result = vas_register msisdn, "VIP", "PUBLISHER", params[:publisher], msisdn, SecureRandom.hex(3)
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
@@ -331,7 +331,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # check user mbf existed
       if !@user.present?
         # call api vas register
-        register_result = vas_register msisdn, "VIP", "PUBLISHER", params[:publisher], msisdn, SecureRandom.hex(3)
+        register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
