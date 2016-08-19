@@ -8,7 +8,7 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   end
 
   def check_blacklist(sub_id)
-    return MobifoneBlacklist::find_by_sub_id(sub_id).nil? ? false : true
+    return MobifoneBlacklist::find_by_sub_id(sub_id).present? ? true : false
   end
 
   def check_authenticate
@@ -28,11 +28,13 @@ module Api::V1::Authorize extend ActiveSupport::Concern
         ip = request.headers['HTTP_X_FORWARDED_FOR'].scan /\d+\.\d+\.\d+\.\d+/
         if scan_ip ip[0]
           @msisdn = request.headers['HTTP_MSISDN']
-          if MobifoneUser.where(sub_id: @msisdn).exists?
-            @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
-            @user = @mbf_user.user
+          unless check_blacklist @msisdn
+            if MobifoneUser.where(sub_id: @msisdn).exists?
+              @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+              @user = @mbf_user.user
+            end
+            return true
           end
-          return true
         end
       rescue
         return false
