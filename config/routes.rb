@@ -229,7 +229,6 @@ Rails.application.routes.draw do
         post  'wap-mbf-register'  => 'auth#wap_mbf_register_response'
         post  'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
         get   'wap-mbf-publisher-directly/:publisher' => 'auth#wap_mbf_publisher_directly'
-        post  'wap-mbf-htt' => 'auth#wap_mbf_htt'
         post  'wap-mbf-htt-back' => 'auth#wap_mbf_htt_back'
       end
 

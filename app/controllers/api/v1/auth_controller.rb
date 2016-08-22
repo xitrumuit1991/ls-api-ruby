@@ -335,25 +335,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
-          redirect_to({ action: 'wap_mbf_htt' })
+          # redirect to page cancel service of mbf
+          wap_mbf_htt
         end
       end
     end
     redirect_to 'http://m.livestar.vn'
-  end
-
-  def wap_mbf_htt
-    sp_id       = 140
-    trans_id    = Time.now.to_i
-    pkg         = "VIP"
-    back_url    = "#{Settings.base_url}api/v1/auth/wap-mbf-htt-back"
-    information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
-
-    # encrypt data
-    data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-    link = encrypt data
-
-    redirect_to "http://dangky.mobifone.com.vn/wap/html/sp_htt/confirm.jsp?sp_id=#{sp_id}&link=#{link}"
   end
 
   def wap_mbf_htt_back
@@ -751,5 +738,19 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # add bonus coins for user
       money = user.money + vip1.discount
       user.update(money: money)
+    end
+
+    def wap_mbf_htt
+      sp_id       = 140
+      trans_id    = Time.now.to_i
+      pkg         = "VIP"
+      back_url    = "#{Settings.base_url}api/v1/auth/wap-mbf-htt-back"
+      information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
+
+      # encrypt data
+      data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
+      link = encrypt data
+
+      redirect_to "http://dangky.mobifone.com.vn/wap/html/sp_htt/confirm.jsp?sp_id=#{sp_id}&link=#{link}"
     end
 end
