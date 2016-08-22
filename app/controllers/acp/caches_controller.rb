@@ -1,56 +1,56 @@
 class Acp::CachesController < Acp::ApplicationController
-  include Api::V1::CacheHelper
-  # authorize_resource :class => false
+	include Api::V1::CacheHelper
+	# authorize_resource :class => false
 
-  def index
-  end
+	def index
+	end
 
-  def clearCacheClider
-  	Rails.cache.delete("home_slider")
+	def clearCacheClider
+		Rails.cache.delete("home_slider")
 		Rails.cache.fetch("home_slider") do
 			Slide.all().order('weight asc').limit(3)
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Clider successfully.')
-  end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Clider successfully.')
+	end
 
-  def clearCachePoster
-  	Rails.cache.delete("home_poster")
+	def clearCachePoster
+		Rails.cache.delete("home_poster")
 		Rails.cache.fetch("home_poster") do
 			Poster.all().order('weight asc').limit(4)
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Poster successfully.')
-  end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Poster successfully.')
+	end
 
-  def clearCacheHomeFeatured
-  	Rails.cache.delete("home_featured")
+	def clearCacheHomeFeatured
+		Rails.cache.delete("home_featured")
 		Rails.cache.fetch("home_featured") do
 			HomeFeatured.order(weight: :asc).limit(6)
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Home Featured successfully.')
-  end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Home Featured successfully.')
+	end
 
-  def clearCacheBlackList
-  	blackList = [];
-  	MobifoneBlacklist::all.each do |number|
-  		blackList << number.sub_id
-  	end
-  	Rails.cache.delete("black_list")
+	def clearCacheBlackList
+		blackList = [];
+		MobifoneBlacklist::all.each do |number|
+			blackList << number.sub_id
+		end
+		Rails.cache.delete("black_list")
 		Rails.cache.fetch("black_list") do
 			blackList
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Black List successfully.')
-  end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Black List successfully.')
+	end
 
-  def clearCacheRoomFeatured
-  	Rails.cache.delete("room_featured")
+	def clearCacheRoomFeatured
+		Rails.cache.delete("room_featured")
 		Rails.cache.fetch("room_featured") do
 			RoomFeatured.joins(broadcaster: :rooms).where('rooms.is_privated' => false).order('rooms.on_air desc, weight asc').limit(16)
 		end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Room Featured successfully.')
-  end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Room Featured successfully.')
+	end
 
-  def clearCacheTopWeek
-  	WeeklyTopBctReceivedHeart.destroy_all
+	def clearCacheTopWeek
+		WeeklyTopBctReceivedHeart.destroy_all
 		WeeklyTopBctReceivedHeart.connection.execute("ALTER TABLE top_bct_received_hearts AUTO_INCREMENT = 1")
 		hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: 1.week.ago.beginning_of_week..1.week.ago.end_of_week).group(:room_id).order('quantity DESC').limit(5)
 		hearts.each do |heart|
@@ -72,10 +72,10 @@ class Acp::CachesController < Acp::ApplicationController
 			WeeklyTopUserSendGift::all
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Top Week successfully.')
-  end
+	end
 
-  def clearCacheTopMonth
-  	MonthlyTopBctReceivedHeart.destroy_all
+	def clearCacheTopMonth
+		MonthlyTopBctReceivedHeart.destroy_all
 		MonthlyTopBctReceivedHeart.connection.execute("ALTER TABLE monthly_top_bct_received_hearts AUTO_INCREMENT = 1")
 		hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).group(:room_id).order('quantity DESC').limit(5)
 		hearts.each do |heart|
@@ -85,7 +85,7 @@ class Acp::CachesController < Acp::ApplicationController
 		Rails.cache.fetch("top_broadcaster_revcived_heart_month") do
 			MonthlyTopBctReceivedHeart::all
 		end
-		
+
 		MonthlyTopUserSendGift.destroy_all
 		MonthlyTopUserSendGift.connection.execute("ALTER TABLE monthly_top_user_send_gifts AUTO_INCREMENT = 1")
 		monthly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).group(:user_id).order('money DESC').limit(5)
@@ -97,10 +97,10 @@ class Acp::CachesController < Acp::ApplicationController
 			MonthlyTopUserSendGift::all
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Top Month successfully.')
-  end
+	end
 
-  def clearCacheTopAll
-  	TopBctReceivedHeart.destroy_all
+	def clearCacheTopAll
+		TopBctReceivedHeart.destroy_all
 		TopBctReceivedHeart.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
 		hearts = HeartLog.select('room_id, sum(quantity) as quantity').group(:room_id).order('quantity DESC').limit(5)
 		hearts.each do |heart|
@@ -111,14 +111,14 @@ class Acp::CachesController < Acp::ApplicationController
 			TopBctReceivedHeart::all
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Top All successfully.')
-  end
+	end
 
-  def clearCacheVip
-  	Vip.all.each do |vip|
-  		$redis.del "vip:#{vip.weight}"
-  		fetch_vip vip.weight
-  	end
-  	redirect_to({ action: 'index' }, notice: 'Clear Cache Vip successfully.')
-  end
+	def clearCacheVip
+		Vip.all.each do |vip|
+			$redis.del "vip:#{vip.weight}"
+			fetch_vip vip.weight
+		end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Vip successfully.')
+	end
 
 end
