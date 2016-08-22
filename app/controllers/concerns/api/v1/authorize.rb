@@ -8,7 +8,7 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   end
 
   def check_blacklist(sub_id)
-    return MobifoneBlacklist::find_by_sub_id(sub_id).present? ? true : false
+    return Rails.cache.fetch("black_list").include?(sub_id)
   end
 
   def check_authenticate
