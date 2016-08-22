@@ -1,6 +1,6 @@
 module Api::V1::Wap extend ActiveSupport::Concern
 
-  def encrypt data, iv = ""
+  def wap_mbf_encrypt data, iv = ""
     iv = Digest::MD5.digest(iv)
     padding = 16 - data.length % 16
     data += padding.chr * padding
@@ -11,7 +11,7 @@ module Api::V1::Wap extend ActiveSupport::Concern
     encrypted = Base64.encode64(cipher.update(data)).gsub("\n",'')
   end
 
-  def decrypt data, iv = ""
+  def wap_mbf_decrypt data, iv = ""
     data = Base64.decode64(data)
     cipher = OpenSSL::Cipher::Cipher.new("aes-128-ecb")
     cipher.decrypt
