@@ -29,6 +29,18 @@ class Acp::CachesController < Acp::ApplicationController
   	redirect_to({ action: 'index' }, notice: 'Clear Cache Home Featured successfully.')
   end
 
+  def clearCacheBlackList
+  	blackList = [];
+  	MobifoneBlacklist::all.each do |number|
+  		blackList << number.sub_id
+  	end
+  	Rails.cache.delete("black_list")
+		Rails.cache.fetch("black_list") do
+			blackList
+		end
+  	redirect_to({ action: 'index' }, notice: 'Clear Cache Black List successfully.')
+  end
+
   def clearCacheRoomFeatured
   	Rails.cache.delete("room_featured")
 		Rails.cache.fetch("room_featured") do
