@@ -222,7 +222,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     trans_id    = Time.now.to_i
     pkg         = "VIP"
     price       = 2000
-    back_url    = "#{Settings.m_livestar_path}/dangky"
+    back_url    = "#{Settings.base_url}api/v1/auth/twotouches"
     information = "Mien phi ngay dau"
 
     # insert wap mbf logs
@@ -237,62 +237,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def wap_mbf_register_response
     # decypt data
-    data = decrypt params[:data]
+    data = decrypt params[:link]
     data = data.split("&")
+    # update log
+    WapMbfLog.find_by(trans_id: data[0]).update(msisdn: data[1], status: data[2])
     # check status
     if data[2] == 1
       msisdn = data[1]
       # call api vas register
-      charge_result = vas_register msisdn
-      if !charge_result[:is_error]
-        # create user
-        activeCode = SecureRandom.hex(3).upcase
-        user = User.new
-        user.phone        = msisdn
-        user.email        = "#{msisdn}@mobifone.com.vn"
-        user.password     = msisdn
-        user.active_code  = activeCode
-        user.name         = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
-        if user.valid?
-          user.username       = msisdn
-          user.birthday       = '2000-01-01'
-          user.user_level_id  = UserLevel.first().id
-          user.money          = 8
-          user.user_exp       = 0
-          user.no_heart       = 0
-          user.actived        = true
-          user.active_date    = Time.now
-          if user.save
-            # find log
-            wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
-            # update log
-            wap_mbf_log.update(msisdn: data[1], status: data[2])
-            # get vip1
-            vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
-            # subscribe vip1
-            user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-            # create mobifone user vip logs
-            user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
-            # add bonus coins for user
-            money = user.money + vip1.discount
-            user.update(money: money)
-            render json: { status: data[2] }, status: 200
-          else
-            render json: { error: "System error !" }, status: 400
-          end
-        else
-          render json: { error: user.errors.full_messages }, status: 400
-        end
-      else
-        render json: { error: "Vas error !" }, status: 400
+      result = vas_register msisdn
+      if !result[:is_error]
+        # create user mbf
+        mbf_create_user msisdn
       end
-    else
-      # find log
-      wap_mbf_log = WapMbfLog.find_by(trans_id: data[0])
-      # update log
-      wap_mbf_log.update(msisdn: data[1], status: data[2])
-      render json: { status: data[2] }, status: 200
     end
+    redirect_to 'http://m.livestar.vn'
   end
 
   def wap_mbf_publisher
