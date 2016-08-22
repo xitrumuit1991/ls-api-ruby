@@ -230,14 +230,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
 
-    link = encrypt data
+    link = wap_mbf_encrypt data
     url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
     render json: { url: url }
   end
 
   def wap_mbf_register_response
+    redirect_to 'http://m.livestar.vn' if !params[:link].present?
     # decypt data
-    data = decrypt params[:link]
+    data = wap_mbf_decrypt params[:link]
     data = data.split("&")
     # update log
     WapMbfLog.find_by(trans_id: data[0]).update(msisdn: data[1], status: data[2])
