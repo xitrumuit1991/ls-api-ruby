@@ -139,24 +139,50 @@ class VasController < ApplicationController
 
   def charge
     if params[:sub_id].present? && params[:pkg_code].present?
-      sub_id = params[:sub_id]
-      mbf_user = MobifoneUser.find_by_sub_id(sub_id)
-      if mbf_user.present?
-        pkg_code = params[:pkg_code]
-        vip_package = VipPackage.find_by_code(pkg_code)
-        if vip_package.present?
-          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
-          render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
+      pkg_code = params[:pkg_code]
+      vip_package = VipPackage.find_by_code(pkg_code) 
+      if vip_package.present?
+        sub_id = params[:sub_id]
+        mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+        if mbf_user.present?
+          user = mbf_user.user
         else
-          render soap: { error: 2, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
+          if create_user sub_id, sub_id
+            user = @user
+          else
+            render soap: { error: 2, message: 'Khong the tao tai khoan, vui long lien he ho tro ky thuat livestar' } and return
+          end
         end
+        subscribed = subscribe_vip user, vip_package, Time.now
+        render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
       else
-        render soap: { error: 2, message: "Thue bao #{sub_id} khong ton tai tren he thong" }
+        render soap: { error: 2, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
       end
     else
       render soap: { error: 1, message: 'Vui long nhap day du tham so' }
     end
   end
+
+  # def charge
+  #   if params[:sub_id].present? && params[:pkg_code].present?
+  #     sub_id = params[:sub_id]
+  #     mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+  #     if mbf_user.present?
+  #       pkg_code = params[:pkg_code]
+  #       vip_package = VipPackage.find_by_code(pkg_code) 
+  #       if vip_package.present?
+  #         subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+  #         render soap: { error: 0, message: "Gia han goi VIP thanh cong", pkg_code: pkg_code, active_date: subscribed.active_date, expiry_date: subscribed.expiry_date }
+  #       else
+  #         render soap: { error: 2, message: "Goi cuoc #{pkg_code} khong ton tai, vui long kiem tra lai" }
+  #       end
+  #     else
+  #       render soap: { error: 2, message: "Thue bao #{sub_id} khong ton tai tren he thong" }
+  #     end
+  #   else
+  #     render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+  #   end
+  # end
 
 
   # Gia hạn gói cước cho nhiều thuê bao
@@ -176,11 +202,20 @@ class VasController < ApplicationController
         object    = item.split("_")
         sub_id    = object[0]
         pkg_code  = object[1]
-        mbf_user = MobifoneUser.find_by_sub_id(sub_id)
-        if mbf_user.present?
-          vip_package = VipPackage.find_by_code(pkg_code)
-          subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
-          successes << sub_id
+        vip_package = VipPackage.find_by_code(pkg_code)
+        if vip_package.present?
+          mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+          if mbf_user.present?
+            subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+            successes << sub_id
+          else
+            if create_user sub_id, sub_id
+              subscribed = subscribe_vip @user, vip_package, Time.now
+              successes << sub_id
+            else
+              errors << sub_id
+            end
+          end
         else
           errors << sub_id
         end
@@ -190,6 +225,30 @@ class VasController < ApplicationController
       render soap: { error: 1, message: 'Vui long nhap day du tham so' }
     end
   end
+
+  # def mcharge
+  #   if params[:data].present?
+  #     successes = []
+  #     errors = []
+  #     data = params[:data].split(",")
+  #     data.each do |item|
+  #       object    = item.split("_")
+  #       sub_id    = object[0]
+  #       pkg_code  = object[1]
+  #       mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+  #       if mbf_user.present?
+  #         vip_package = VipPackage.find_by_code(pkg_code)
+  #         subscribed = subscribe_vip mbf_user.user, vip_package, Time.now
+  #         successes << sub_id
+  #       else
+  #         errors << sub_id
+  #       end
+  #     end
+  #     render soap: { error: 0, message: '', successes: successes, errors: errors }
+  #   else
+  #     render soap: { error: 1, message: 'Vui long nhap day du tham so' }
+  #   end
+  # end
 
   # Kiểm tra username tồn tại
   # Args:
