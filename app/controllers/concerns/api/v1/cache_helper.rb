@@ -25,4 +25,16 @@ module Api::V1::CacheHelper extend ActiveSupport::Concern
 		end
 		JSON.load gift
 	end
+
+	def clear_action
+		RoomAction.all.each do |action|
+			$redis.set "action:#{action.id}", action.to_json
+		end
+	end
+
+	def clear_gift
+		Gift.all.each do |gift|
+			$redis.set "gift:#{gift.id}", gift.to_json
+		end
+	end
 end
