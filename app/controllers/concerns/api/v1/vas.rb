@@ -96,6 +96,27 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
+  def vas_cancel_service phone_number, pkg_code, channel, username
+    begin
+      # call VAS webservice
+      soapClient = Savon.client do |variable|
+        variable.proxy Settings.vas_proxy
+        variable.wsdl Settings.vas_wsdl
+      end
+      # params request
+      message = {
+        "tns:phone_number"  => phone_number,
+        "tns:pkg_code"      => pkg_code,
+        "tns:channel"       => channel,
+        "tns:username"      => username
+      }
+      response = soapClient.call(:cancel_service, message: message)
+      response.body[:cancel_service_response][:cancel_service_result]
+    rescue Savon::SOAPFault
+      return {is_error: true, message: 'System error!'}
+    end
+  end
+
   def vas_get_adv_info
     begin
       soapClient = Savon.client do |variable|
