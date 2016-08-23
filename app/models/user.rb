@@ -140,7 +140,7 @@ class User < ActiveRecord::Base
 			"Aquarius"    =>  "Bảo Bình",
 			"Pisces"      =>  "Song Ngư"
 		}
-		arr[self.birthday.zodiac_sign]
+		self.birthday.blank? ? '' : arr[self.birthday.zodiac_sign]
 	end
 
 	def vip

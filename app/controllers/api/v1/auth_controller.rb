@@ -603,7 +603,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       begin
         JWT.decode params[:token], Settings.hmac_secret
         return head 200
-      rescue Exception
+      rescue e
         render json: {error: e.message}, status: 400
       end
     end
