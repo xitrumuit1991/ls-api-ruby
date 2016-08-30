@@ -704,7 +704,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       sp_id       = 140
       trans_id    = Time.now.to_i
       pkg         = "VIP"
-      back_url    = "#{Settings.base_url}api/v1/auth/wap-mbf-htt-back"
+      back_url    = "#{Settings.base_url}api/v1/auth/wapmbfhttback"
       information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
 
       # encrypt data
