@@ -36,6 +36,7 @@ class Acp::CachesController < Acp::ApplicationController
 				user.update(actived: false)
 			end
 		end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Users Blacklist successfully.')
 	end
 
 	def clearCacheEmailBlackList
@@ -47,7 +48,7 @@ class Acp::CachesController < Acp::ApplicationController
 		Rails.cache.fetch("email_black_list") do
 			blackList
 		end
-		redirect_to({ action: 'index' }, notice: 'Clear Cache Black List successfully.')
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Email Black List successfully.')
 	end
 
 	def clearCacheBlackList
