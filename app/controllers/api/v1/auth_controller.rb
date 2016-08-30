@@ -421,39 +421,39 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
-    activeCode = SecureRandom.hex(3).upcase
-    if params[:email].present? &&  params[:password].present?
-      # checkCaptcha = eval(checkCaptcha(params[:key_register]))
-      if true
-        user = User.new
-        user.email        = params[:email]
-        user.password     = params[:password].to_s
-        user.active_code  = activeCode
-        user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-        user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
-        if user.valid?
-          user.birthday       = '2000-01-01'
-          user.user_level_id  = UserLevel.first().id
-          user.money          = 8
-          user.user_exp       = 0
-          user.actived        = 0
-          user.no_heart       = 0
-          if user.save
-            SendCodeJob.perform_later(user, activeCode)
-            render json: { success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }, status: 201
-          else
-            render json: { error: "System error !" }, status: 500
-          end
-        else
-          render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
-        end
-      else
-        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
-      end
-    else
-      render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
-    end
-  end
+		activeCode = SecureRandom.hex(3).upcase
+		if params[:email].present? &&  params[:password].present?
+			# checkCaptcha = eval(checkCaptcha(params[:key_register]))
+			if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
+				user = User.new
+				user.email        = params[:email]
+				user.password     = params[:password].to_s
+				user.active_code  = activeCode
+				user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
+				user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
+				if user.valid?
+					user.birthday       = '2000-01-01'
+					user.user_level_id  = UserLevel.first().id
+					user.money          = 8
+					user.user_exp       = 0
+					user.actived        = 0
+					user.no_heart       = 0
+					if user.save
+						SendCodeJob.perform_later(user, activeCode)
+						render json: { success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }, status: 201
+					else
+						render json: { error: "System error !" }, status: 500
+					end
+				else
+					render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
+				end
+			else
+				render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+			end
+		else
+			render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+		end
+	end
 
   def loginFbBct
     begin
