@@ -1,4 +1,5 @@
 class Acp::CachesController < Acp::ApplicationController
+	authorize_resource :class => false
 	include Api::V1::CacheHelper
 	# authorize_resource :class => false
 
@@ -27,6 +28,26 @@ class Acp::CachesController < Acp::ApplicationController
 			HomeFeatured.order(weight: :asc).limit(6)
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Home Featured successfully.')
+	end
+
+	def deactiveUserBlacklist
+		User.all.where(actived: true, deleted: 0).each do |user|
+			if Rails.cache.fetch("email_black_list").include?(user.email.split("@")[1])
+				user.update(actived: false)
+			end
+		end
+	end
+
+	def clearCacheEmailBlackList
+		blackList = [];
+		EmailDomainBlacklist::all.each do |email|
+			blackList << email.domain
+		end
+		Rails.cache.delete("email_black_list")
+		Rails.cache.fetch("email_black_list") do
+			blackList
+		end
+		redirect_to({ action: 'index' }, notice: 'Clear Cache Black List successfully.')
 	end
 
 	def clearCacheBlackList

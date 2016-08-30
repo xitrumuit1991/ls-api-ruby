@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160816073542) do
+ActiveRecord::Schema.define(version: 20160830043918) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -236,6 +236,10 @@ ActiveRecord::Schema.define(version: 20160816073542) do
   end
 
   add_index "device_tokens", ["user_id"], name: "index_device_tokens_on_user_id", using: :btree
+
+  create_table "email_domain_blacklists", id: false, force: :cascade do |t|
+    t.string "domain", limit: 100
+  end
 
   create_table "fb_share_logs", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
