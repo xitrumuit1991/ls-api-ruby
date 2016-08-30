@@ -33,7 +33,7 @@ class Acp::CachesController < Acp::ApplicationController
 	def deactiveUserBlacklist
 		User.all.where(actived: true, deleted: 0).each do |user|
 			if Rails.cache.fetch("email_black_list").include?(user.email.split("@")[1])
-				user.update(actived: false)
+				EmailDomainBlacklistJob.perform_later(user)
 			end
 		end
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Users Blacklist successfully.')
