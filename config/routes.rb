@@ -230,7 +230,7 @@ Rails.application.routes.draw do
         get   'twotouches'  => 'auth#wap_mbf_register_response'
         post  'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
         get   'wap-mbf-publisher-directly/:publisher' => 'auth#wap_mbf_publisher_directly'
-        post  'wap-mbf-htt-back' => 'auth#wap_mbf_htt_back'
+        post  'wapmbfhttback' => 'auth#wap_mbf_htt_back'
       end
 
       # users
