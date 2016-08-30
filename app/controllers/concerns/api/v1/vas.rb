@@ -96,7 +96,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
     end
   end
 
-  def vas_cancel_service phone_number, pkg_code, channel, username
+  def vas_cancel_service phone_number, pkg_code, channel, username, sms_option = 1
     begin
       # call VAS webservice
       soapClient = Savon.client do |variable|
@@ -108,7 +108,8 @@ module Api::V1::Vas extend ActiveSupport::Concern
         "tns:phone_number"  => phone_number,
         "tns:pkg_code"      => pkg_code,
         "tns:channel"       => channel,
-        "tns:username"      => username
+        "tns:username"      => username,
+        "tns:sms_option"    => sms_option
       }
       response = soapClient.call(:cancel_service, message: message)
       response.body[:cancel_service_response][:cancel_service_result]
