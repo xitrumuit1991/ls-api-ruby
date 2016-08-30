@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     get "/" => "index#index"
     get "/import" => "index#import"
     get "/import-black-list" => "index#importBlackList"
+    get "/import-email-black-list" => "index#importEmailBlackList"
     get "/script" => "index#script"
     get "/vas-delete-sub/:sub" => "index#vas_delete_sub_id"
 
