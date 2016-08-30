@@ -188,6 +188,7 @@ Rails.application.routes.draw do
     post '/caches/clear-top-month' => 'caches#clearCacheTopMonth'
     post '/caches/clear-top-all' => 'caches#clearCacheTopAll'
     post '/caches/clear-vip' => 'caches#clearCacheVip'
+    post '/caches/clear-black-list' => 'caches#clearCacheBlackList'
     resources :caches
 
   end

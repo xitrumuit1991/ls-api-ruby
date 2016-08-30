@@ -9,7 +9,7 @@ class Broadcaster < ActiveRecord::Base
 	has_many :rooms
 	has_many :broadcaster_backgrounds
 	has_many :images, class_name:'BctImage'
-	has_many :videos, -> { order('video_type DESC') }, class_name:'BctVideo'
+	has_many :videos, -> { order('video_type DESC, id DESC') }, class_name:'BctVideo'
 
 	validates :user_id, :bct_type_id, :broadcaster_level_id, :fullname, presence: true
 	validates :broadcaster_exp, :recived_heart, numericality: { only_integer: true }
