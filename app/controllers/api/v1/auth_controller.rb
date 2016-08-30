@@ -711,6 +711,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
       link = wap_mbf_encrypt data Settings.wap_mbf_htt_key
 
-      redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}"
+      redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
     end
 end
