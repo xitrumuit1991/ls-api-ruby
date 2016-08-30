@@ -230,7 +230,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
 
-    link = wap_mbf_encrypt data
+    link = wap_mbf_encrypt data Settings.wap_mbf_key
     url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
     render json: { url: url }
   end
@@ -238,7 +238,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def wap_mbf_register_response
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
     # decypt data
-    data = wap_mbf_decrypt params[:link]
+    data = wap_mbf_decrypt params[:link] Settings.wap_mbf_key
     data = data.split("&")
     # update log
     WapMbfLog.find_by(trans_id: data[0]).update(msisdn: data[1], status: data[2])
@@ -307,7 +307,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
 
     # decypt data
-    data = decrypt params[:link]
+    data = wap_mbf_decrypt params[:link] Settings.wap_mbf_htt_key
     data = data.split("&")
     # check status
     if data[2] == 1
@@ -709,8 +709,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-      link = encrypt data
+      link = wap_mbf_encrypt data Settings.wap_mbf_htt_key
 
-      redirect_to "http://dangky.mobifone.com.vn/wap/html/sp_htt/confirm.jsp?sp_id=#{sp_id}&link=#{link}"
+      redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}"
     end
 end
