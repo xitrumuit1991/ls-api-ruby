@@ -19,7 +19,8 @@ class WapController < ApplicationController
           # create user mbf
           mbf_create_user msisdn
           # redirect to page cancel service of mbf
-          mbf_htt
+          rdlink = mbf_htt
+          redirect_to rdlink and return
         end
       end
     end
@@ -95,7 +96,7 @@ class WapController < ApplicationController
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
       link = wap_mbf_encrypt data, Settings.wap_mbf_htt_key
 
-      redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
+      return "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}"
     end
 
 end
