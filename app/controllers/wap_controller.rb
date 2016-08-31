@@ -30,7 +30,7 @@ class WapController < ApplicationController
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
 
     # decypt data
-    data = wap_mbf_decrypt params[:link] Settings.wap_mbf_htt_key
+    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_htt_key
     data = data.split("&")
     # check status
     if data[2] == 1
@@ -93,7 +93,7 @@ class WapController < ApplicationController
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-      link = wap_mbf_encrypt data Settings.wap_mbf_htt_key
+      link = wap_mbf_encrypt data, Settings.wap_mbf_htt_key
 
       redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
     end
