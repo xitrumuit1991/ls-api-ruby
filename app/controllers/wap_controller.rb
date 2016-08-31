@@ -33,7 +33,7 @@ class WapController < ApplicationController
     data = wap_mbf_decrypt params[:link], Settings.wap_mbf_htt_key
     data = data.split("&")
     # check status
-    if data[2] == 1
+    if data[2].to_i == 1
       # get phone
       sub_id = data[1]
       # check user mbf
