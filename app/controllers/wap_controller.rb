@@ -1,10 +1,10 @@
 class WapController < ApplicationController
-	include Api::V1::Authorize
-	include Api::V1::Vas
+  include Api::V1::Authorize
+  include Api::V1::Vas
   include Api::V1::Wap
 
   def mbf_publisher_directly
-    redirect_to 'http://m.livestar.vn' if !params[:publisher].present? or !check_pub_quota(params[:publisher])
+    redirect_to 'http://m.livestar.vn' and return if !params[:publisher].present? or !check_pub_quota(params[:publisher])
     # get msisdn
     msisdn = check_mbf_auth ? @msisdn : nil
     # call api vas update
@@ -27,13 +27,13 @@ class WapController < ApplicationController
   end
 
   def mbf_htt_back
-    redirect_to 'http://m.livestar.vn' if !params[:link].present?
+    redirect_to 'http://m.livestar.vn' and return if !params[:link].present?
 
     # decypt data
-    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_htt_key
+    data = wap_mbf_decrypt(params[:link].gsub(' ', '+'), Settings.wap_mbf_htt_key)
     data = data.split("&")
     # check status
-    if data[2] == 1
+    if data[2].to_i == 1
       # get phone
       sub_id = data[1]
       # check user mbf
@@ -89,11 +89,11 @@ class WapController < ApplicationController
       trans_id    = Time.now.to_i
       pkg         = "VIP"
       back_url    = "#{Settings.base_url}/huy"
-      information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
+      information = "Mien phi 1 ngay"
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-      link = wap_mbf_encrypt data, Settings.wap_mbf_htt_key
+      link = wap_mbf_encrypt(data, Settings.wap_mbf_htt_key)
 
       redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
     end
