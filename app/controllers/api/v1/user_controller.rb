@@ -597,9 +597,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     begin
       graph = Koala::Facebook::API.new(params[:accessToken])
       info = graph.get_object(params[:post_id])
-      if !FbShareLog.where('user_id = ? AND created_at > ?', @user.id, Time.now.beginning_of_day).present?
+      fb_id = params[:post_id].split("_")[0]
+      if !FbShareLog.where('fb_id = ? AND created_at > ?', fb_id, Time.now.beginning_of_day).present?
         @user.increaseMoney(10)
-        fb_logs(params[:post_id], 10)
+        fb_logs(params[:post_id], 10, fb_id)
         render plain: 'Đã cộng tiền thành công!!!', status: 200
       else
         render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
@@ -626,8 +627,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def fb_logs(post_id, coin)
-    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin)
+  def fb_logs(post_id, coin, fb_id)
+    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin, fb_id: fb_id)
   end
 
   def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
