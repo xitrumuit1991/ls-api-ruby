@@ -90,7 +90,7 @@ class WapController < ApplicationController
       trans_id    = Time.now.to_i
       pkg         = "VIP"
       back_url    = "#{Settings.base_url}/huy"
-      information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
+      information = "Quý khách được miển phí 1 ngày, sau KM, cước 2.000đ ngày"
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
