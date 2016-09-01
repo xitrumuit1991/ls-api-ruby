@@ -1772,6 +1772,25 @@
   + errors: 
       + status 401: ```{error: "Unauthorized "}```
       + status 404: ```{error: "Room not found "}```
+      
+### Idol Kick user
+- URI: **/kick-user  **
+- Method: **POST**
+- Header:
+  + Content-Type: application/json
+  + Authorization: Token token="this-is-jwt-token"
+- Request
+    ```
+    {
+        room_id: 123,
+        user_id: 321
+    }
+    ```
+- Response:
+  + status: **401**, **404**
+  + errors: 
+      + status 401: ```{error: "Unauthorized "}```
+      + status 404: ```{error: "Room not found "}```
 
 ### Get curent rank
 
