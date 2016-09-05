@@ -22,6 +22,10 @@ class WapController < ApplicationController
           rdlink = mbf_htt
           redirect_to rdlink and return
         end
+      else
+        if !@user.vip
+          redirect_to wap_mbf_register_request and return
+        end
       end
     end
     redirect_to 'http://m.livestar.vn' and return
@@ -97,6 +101,23 @@ class WapController < ApplicationController
       link = wap_mbf_encrypt(data, Settings.wap_mbf_htt_key)
 
       return "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}"
+    end
+    
+    def wap_mbf_register_request
+      sp_id       = 140
+      trans_id    = Time.now.to_i
+      pkg         = "VIP"
+      price       = 2000
+      back_url    = "#{Settings.base_url}api/v1/auth/twotouches"
+      information = "Mien phi ngay dau"
+    
+      # insert wap mbf logs
+      WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
+      # encrypt data
+      data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    
+      link = wap_mbf_encrypt data, Settings.wap_mbf_key
+      return "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
     end
 
 end
