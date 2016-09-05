@@ -671,24 +671,29 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     def mbf_create_user msisdn
-      activeCode = SecureRandom.hex(3).upcase
-      user = User.new
-      user.phone          = msisdn
-      user.email          = "#{msisdn}@livestar.vn"
-      user.password       = msisdn
-      user.active_code    = activeCode
-      user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
-      user.username       = msisdn
-      user.birthday       = '2000-01-01'
-      user.user_level_id  = UserLevel.first().id
-      user.money          = 8
-      user.user_exp       = 0
-      user.no_heart       = 0
-      user.actived        = true
-      user.active_date    = Time.now
-      user.save
-      # create mobifone user
-      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+        user = mbf_user.user
+      else
+        activeCode = SecureRandom.hex(3).upcase
+        user = User.new
+        user.phone          = msisdn
+        user.email          = "#{msisdn}@livestar.vn"
+        user.password       = msisdn
+        user.active_code    = activeCode
+        user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
+        user.username       = msisdn
+        user.birthday       = '2000-01-01'
+        user.user_level_id  = UserLevel.first().id
+        user.money          = 8
+        user.user_exp       = 0
+        user.no_heart       = 0
+        user.actived        = true
+        user.active_date    = Time.now
+        user.save
+        # create mobifone user
+        user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      end
       # get vip1
       vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
       # subscribe vip1
