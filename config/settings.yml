@@ -20,7 +20,6 @@ partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
 #megacards
 'megacardWsUrl': 'http://gachthe.megapay.net.vn/chargingApi'
 'megacardPartnerId': '11394'
-'megacardTargetAcc': 'livestar'
 'megacardPassword': 'e01081'
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
