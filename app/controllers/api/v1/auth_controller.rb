@@ -230,7 +230,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
 
-    link = wap_mbf_encrypt data
+    link = wap_mbf_encrypt data, Settings.wap_mbf_key
     url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
     render json: { url: url }
   end
@@ -238,7 +238,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def wap_mbf_register_response
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
     # decypt data
-    data = wap_mbf_decrypt params[:link]
+    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_key
     data = data.split("&")
     # update log
     WapMbfLog.find_by(trans_id: data[0]).update(msisdn: data[1], status: data[2])
@@ -307,7 +307,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
 
     # decypt data
-    data = decrypt params[:link]
+    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_htt_key
     data = data.split("&")
     # check status
     if data[2] == 1
@@ -421,39 +421,39 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
-    activeCode = SecureRandom.hex(3).upcase
-    if params[:email].present? &&  params[:password].present?
-      # checkCaptcha = eval(checkCaptcha(params[:key_register]))
-      if true
-        user = User.new
-        user.email        = params[:email]
-        user.password     = params[:password].to_s
-        user.active_code  = activeCode
-        user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-        user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
-        if user.valid?
-          user.birthday       = '2000-01-01'
-          user.user_level_id  = UserLevel.first().id
-          user.money          = 8
-          user.user_exp       = 0
-          user.actived        = 0
-          user.no_heart       = 0
-          if user.save
-            SendCodeJob.perform_later(user, activeCode)
-            render json: { success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }, status: 201
-          else
-            render json: { error: "System error !" }, status: 500
-          end
-        else
-          render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
-        end
-      else
-        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
-      end
-    else
-      render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
-    end
-  end
+		activeCode = SecureRandom.hex(3).upcase
+		if params[:email].present? &&  params[:password].present?
+			# checkCaptcha = eval(checkCaptcha(params[:key_register]))
+			if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
+				user = User.new
+				user.email        = params[:email]
+				user.password     = params[:password].to_s
+				user.active_code  = activeCode
+				user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
+				user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
+				if user.valid?
+					user.birthday       = '2000-01-01'
+					user.user_level_id  = UserLevel.first().id
+					user.money          = 8
+					user.user_exp       = 0
+					user.actived        = 0
+					user.no_heart       = 0
+					if user.save
+						SendCodeJob.perform_later(user, activeCode)
+						render json: { success: "Vui lòng kiểm tra mail để kích hoạt tài khoản của bạn !" }, status: 201
+					else
+						render json: { error: "System error !" }, status: 500
+					end
+				else
+					render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
+				end
+			else
+				render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+			end
+		else
+			render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+		end
+	end
 
   def loginFbBct
     begin
@@ -671,24 +671,29 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     def mbf_create_user msisdn
-      activeCode = SecureRandom.hex(3).upcase
-      user = User.new
-      user.phone          = msisdn
-      user.email          = "#{msisdn}@livestar.vn"
-      user.password       = msisdn
-      user.active_code    = activeCode
-      user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
-      user.username       = msisdn
-      user.birthday       = '2000-01-01'
-      user.user_level_id  = UserLevel.first().id
-      user.money          = 8
-      user.user_exp       = 0
-      user.no_heart       = 0
-      user.actived        = true
-      user.active_date    = Time.now
-      user.save
-      # create mobifone user
-      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+        user = mbf_user.user
+      else
+        activeCode = SecureRandom.hex(3).upcase
+        user = User.new
+        user.phone          = msisdn
+        user.email          = "#{msisdn}@livestar.vn"
+        user.password       = msisdn
+        user.active_code    = activeCode
+        user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
+        user.username       = msisdn
+        user.birthday       = '2000-01-01'
+        user.user_level_id  = UserLevel.first().id
+        user.money          = 8
+        user.user_exp       = 0
+        user.no_heart       = 0
+        user.actived        = true
+        user.active_date    = Time.now
+        user.save
+        # create mobifone user
+        user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      end
       # get vip1
       vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
       # subscribe vip1
@@ -704,13 +709,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       sp_id       = 140
       trans_id    = Time.now.to_i
       pkg         = "VIP"
-      back_url    = "#{Settings.base_url}api/v1/auth/wap-mbf-htt-back"
+      back_url    = "#{Settings.base_url}api/v1/auth/wapmbfhttback"
       information = "Quy khach duoc mien phi 1 ngay, sau KM, cuoc 2.000d ngay"
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-      link = encrypt data
+      link = wap_mbf_encrypt data, Settings.wap_mbf_htt_key
 
-      redirect_to "http://dangky.mobifone.com.vn/wap/html/sp_htt/confirm.jsp?sp_id=#{sp_id}&link=#{link}"
+      redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
     end
 end

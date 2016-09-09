@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   root 'index#index'
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
+  # WAP
+  get   '/chatvoihotgirl/:publisher' => 'wap#mbf_publisher_directly'
+  get   '/huy' => 'wap#mbf_htt_back'
+
   # ACP
   namespace :acp do
     authenticate do
@@ -18,6 +22,7 @@ Rails.application.routes.draw do
     get "/" => "index#index"
     get "/import" => "index#import"
     get "/import-black-list" => "index#importBlackList"
+    get "/import-email-black-list" => "index#importEmailBlackList"
     get "/script" => "index#script"
     get "/vas-delete-sub/:sub" => "index#vas_delete_sub_id"
 
@@ -189,6 +194,8 @@ Rails.application.routes.draw do
     post '/caches/clear-top-all' => 'caches#clearCacheTopAll'
     post '/caches/clear-vip' => 'caches#clearCacheVip'
     post '/caches/clear-black-list' => 'caches#clearCacheBlackList'
+    post '/caches/clear-email-black-list' => 'caches#clearCacheEmailBlackList'
+	post '/caches/deactive-user' => 'caches#deactiveUserBlacklist'
     resources :caches
 
   end

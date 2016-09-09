@@ -29,6 +29,17 @@ class Acp::IndexController < Acp::ApplicationController
 		redirect_to "/acp"
 	end
 
+	def importEmailBlackList
+		file = Roo::CSV.new("#{Rails.root}/public/default/email-blacklist.csv")
+		(1..file.last_row).each do |i|
+			row = file.row(i)
+			email_domain = EmailDomainBlacklist.new
+			email_domain.domain = row[0]
+			email_domain.save
+		end
+		redirect_to "/acp"
+	end
+
 	def script
 		User.where("is_banned IS NULL").update_all(is_banned: 0)
 		redirect_to "/acp"
