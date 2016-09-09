@@ -21,6 +21,10 @@ class WapController < ApplicationController
           # redirect to page cancel service of mbf
           rdlink = mbf_htt
           redirect_to rdlink and return
+        else
+          if register_result[:message] == 'OUT_OF_SYSTEM_QUOTA' or register_result[:message] == 'OUT_OF_PUB_QUOTA'
+            redirect_to wap_mbf_register_request and return
+          end
         end
       else
         if !@user.vip
