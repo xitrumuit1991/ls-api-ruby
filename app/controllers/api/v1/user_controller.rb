@@ -2,6 +2,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   require "./lib/payments/epaysms"
   require "./lib/payments/magebanks"
+  require "./lib/payments/magecards"
   include Api::V1::Authorize
   include KrakenHelper
   helper YoutubeHelper
@@ -534,6 +535,17 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def getMegabanks
     @megabanks = Megabank::all
+  end
+
+  def megacards
+    # nha mang cung cap
+    m_ws_url      = Settings.megacardWsUrl
+    m_partnerId   = Settings.megacardPartnerId
+    m_cardSerial  = params[:serial]
+    m_cardPin     = params[:pin].to_s.delete('')
+    m_telcoCode   = params[:provider]
+    m_password    = Settings.megacardPassword
+    m_targetAcc   = @user.username
   end
 
   def payments
