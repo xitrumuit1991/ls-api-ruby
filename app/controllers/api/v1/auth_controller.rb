@@ -230,7 +230,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # encrypt data
     data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
 
-    link = wap_mbf_encrypt data Settings.wap_mbf_key
+    link = wap_mbf_encrypt data, Settings.wap_mbf_key
     url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
     render json: { url: url }
   end
@@ -238,7 +238,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def wap_mbf_register_response
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
     # decypt data
-    data = wap_mbf_decrypt params[:link] Settings.wap_mbf_key
+    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_key
     data = data.split("&")
     # update log
     WapMbfLog.find_by(trans_id: data[0]).update(msisdn: data[1], status: data[2])
@@ -307,7 +307,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     redirect_to 'http://m.livestar.vn' if !params[:link].present?
 
     # decypt data
-    data = wap_mbf_decrypt params[:link] Settings.wap_mbf_htt_key
+    data = wap_mbf_decrypt params[:link], Settings.wap_mbf_htt_key
     data = data.split("&")
     # check status
     if data[2] == 1
@@ -671,24 +671,29 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     def mbf_create_user msisdn
-      activeCode = SecureRandom.hex(3).upcase
-      user = User.new
-      user.phone          = msisdn
-      user.email          = "#{msisdn}@livestar.vn"
-      user.password       = msisdn
-      user.active_code    = activeCode
-      user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
-      user.username       = msisdn
-      user.birthday       = '2000-01-01'
-      user.user_level_id  = UserLevel.first().id
-      user.money          = 8
-      user.user_exp       = 0
-      user.no_heart       = 0
-      user.actived        = true
-      user.active_date    = Time.now
-      user.save
-      # create mobifone user
-      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      if MobifoneUser.where(sub_id: @msisdn).exists?
+        mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+        user = mbf_user.user
+      else
+        activeCode = SecureRandom.hex(3).upcase
+        user = User.new
+        user.phone          = msisdn
+        user.email          = "#{msisdn}@livestar.vn"
+        user.password       = msisdn
+        user.active_code    = activeCode
+        user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
+        user.username       = msisdn
+        user.birthday       = '2000-01-01'
+        user.user_level_id  = UserLevel.first().id
+        user.money          = 8
+        user.user_exp       = 0
+        user.no_heart       = 0
+        user.actived        = true
+        user.active_date    = Time.now
+        user.save
+        # create mobifone user
+        user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
+      end
       # get vip1
       vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
       # subscribe vip1
@@ -709,7 +714,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
-      link = wap_mbf_encrypt data Settings.wap_mbf_htt_key
+      link = wap_mbf_encrypt data, Settings.wap_mbf_htt_key
 
       redirect_to "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}" and return
     end

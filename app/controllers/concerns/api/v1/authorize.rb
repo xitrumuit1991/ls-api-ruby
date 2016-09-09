@@ -23,19 +23,14 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   end
 
   def check_mbf_auth
-    if request.headers['HTTP_MSISDN'].present? and request.headers['HTTP_X_FORWARDED_FOR'].present?
+    if request.headers['HTTP_MSISDN'].present?
       begin
-        ip = request.headers['HTTP_X_FORWARDED_FOR'].scan /\d+\.\d+\.\d+\.\d+/
-        if scan_ip ip[0]
-          @msisdn = request.headers['HTTP_MSISDN']
-          unless check_blacklist @msisdn
-            if MobifoneUser.where(sub_id: @msisdn).exists?
-              @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
-              @user = @mbf_user.user
-            end
-            return true
-          end
+        @msisdn = request.headers['HTTP_MSISDN']
+        if MobifoneUser.where(sub_id: @msisdn).exists?
+          @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+          @user = @mbf_user.user
         end
+        return true
       rescue
         return false
       end
