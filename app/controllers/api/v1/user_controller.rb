@@ -2,7 +2,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
   require "./lib/payments/paygates"
   require "./lib/payments/epaysms"
   require "./lib/payments/magebanks"
-  require "./lib/payments/magecards"
+  require "./lib/payments/megacards"
   include Api::V1::Authorize
   include KrakenHelper
   helper YoutubeHelper
@@ -541,11 +541,25 @@ class Api::V1::UserController < Api::V1::ApplicationController
     # nha mang cung cap
     m_ws_url      = Settings.megacardWsUrl
     m_partnerId   = Settings.megacardPartnerId
-    m_cardSerial  = params[:serial]
-    m_cardPin     = params[:pin].to_s.delete('')
-    m_telcoCode   = params[:provider]
+    m_cardSerial  = params[:cardSerial]
+    m_cardPin     = params[:cardPin].to_s.delete(' ')
+    m_telcoCode   = params[:telcoCode]
     m_password    = Settings.megacardPassword
     m_targetAcc   = @user.username
+    megaCardCharging  = Megacard::MegacardAPIServices.new
+    megaCardCharging.m_ws_url       = m_ws_url
+    megaCardCharging.m_partnerId    = m_partnerId
+    megaCardCharging.m_cardSerial   = m_cardSerial
+    megaCardCharging.m_cardPin      = m_cardPin
+    megaCardCharging.m_telcoCode    = m_telcoCode
+    megaCardCharging.m_targetAcc    = m_targetAcc
+    megaCardCharging.m_password     = m_password
+    response = megaCardCharging.charging
+    if response.message == 200
+      render plain: response.message, status: 200
+    else
+      render plain: response.message, status: 400
+    end
   end
 
   def payments
