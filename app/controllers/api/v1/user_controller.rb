@@ -541,9 +541,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
     # nha mang cung cap
     m_ws_url      = Settings.megacardWsUrl
     m_partnerId   = Settings.megacardPartnerId
-    m_cardSerial  = params[:cardSerial]
-    m_cardPin     = params[:cardPin].to_s.delete(' ')
-    m_telcoCode   = params[:telcoCode]
+    m_cardSerial  = params[:serial]
+    m_cardPin     = params[:pin].to_s.delete(' ')
+    m_telcoCode   = params[:provider]
     m_password    = Settings.megacardPassword
     m_targetAcc   = @user.username
     megaCardCharging  = Megacard::MegacardAPIServices.new
@@ -555,8 +555,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
     megaCardCharging.m_targetAcc    = m_targetAcc
     megaCardCharging.m_password     = m_password
     response = megaCardCharging.charging
-    if response.message == 200
-      render plain: response.message, status: 200
+    if response.status == 200
+      card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
+      info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: card.coin.to_s }
+      if card_logs(response, info)
+        @user.increaseMoney(info[:coin])
+        render plain: response.message, status: 200
+      else
+        render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn(transId: #{response.transId})", status: 500
+      end
     else
       render plain: response.message, status: 400
     end
@@ -600,7 +607,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
             @user.increaseMoney(info[:coin])
             render plain: "Nạp tiền thành công.", status: 200
           else
-            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng liên hệ quản trị viên để được tư vấn.", status: 500
+            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", status: 500
           end
         elsif cardChargingResponse.status == 400
           render plain: cardChargingResponse.message, status: 400
@@ -643,7 +650,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def card_logs(obj, info)
     provider  = Provider::find_by_name info[:provider]
-    CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: 200)
+    CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
   end
 
   def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)

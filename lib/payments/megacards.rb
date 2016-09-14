@@ -15,13 +15,13 @@ module Megacard
 			url += "&telcoCode=#{m_telcoCode}"
 			url += "&targetAcc=#{m_targetAcc}"
 			url += "&password=#{Digest::MD5.hexdigest(m_password)}"
-			url += "&signature=#{signature_hash()}"
+			url += "&signature=#{signature_hash(transId)}"
 			res = parseHash(get_curl(url))
-			Rails.logger.info "ANGCO DEBUG Response: #{res}"
+			Rails.logger.info "ANGCO DEBUG Response: #{url}"
 			case res['status']
 			when '00'
 				objResponse.status	= 200
-				objResponse.message = 'Giao dịch thành công.'
+				objResponse.message = 'Nạp thẻ thành công.'
 			when '01'
 				objResponse.status 	= 400
 				objResponse.message = 'Đối tác không tồn tại.'
@@ -135,7 +135,7 @@ module Megacard
 				objResponse.message = 'Không nằm trong hệ thông lỗi.'
 			end
 			objResponse.transId = res['transId']
-			objResponse.realAmount = res['realAmount']
+			objResponse.m_RESPONSEAMOUNT = res['realAmount']
 			return objResponse;
 		end
 
@@ -143,14 +143,13 @@ module Megacard
 			return "#{m_partnerId}_#{Time.now.strftime('%Y%m%d%H%M%S')}_#{rand(999)}"
 		end
 		
-		def signature_hash
-			return Digest::MD5.hexdigest("#{m_partnerId}&#{m_cardSerial}&#{m_cardPin}&#{get_transid()}&#{m_telcoCode}&#{Digest::MD5.hexdigest(m_password)}")
+		def signature_hash transId
+			return Digest::MD5.hexdigest("#{m_partnerId}&#{m_cardSerial}&#{m_cardPin}&#{transId}&#{m_telcoCode}&#{Digest::MD5.hexdigest(m_password)}")
 		end
 
 		def get_curl(url)
 			str = Curl::Easy.http_get(url)
-			Rails.logger.info "ANGCO DEBUG confirm_str: #{str}"
-			puts str.body_str
+			Rails.logger.info "ANGCO DEBUG str: #{str}"
 			return str.body_str
 		end
 
@@ -163,6 +162,6 @@ module Megacard
 		end
 	end
 	class MegaCardChargingResponse
-		attr_accessor :transId, :realAmount, :status, :message #:status return ra web
+		attr_accessor :transId, :m_RESPONSEAMOUNT, :status, :message #:status return ra web
 	end
 end
