@@ -267,6 +267,7 @@ Rails.application.routes.draw do
         post '/avatar-crop' => 'user#avatarCrop'
         post '/payments' => 'user#payments' # Để sau, chưa đổi
         post '/internet-banking' => 'user#internetBank' # Để sau, chưa đổi
+        post '/mega-card' => 'user#megacards' # Để sau, chưa đổi
         post '/confirm' => 'user#confirmEbay' # Để sau, chưa đổi
       end
 

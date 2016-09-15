@@ -49,6 +49,6 @@ module RecordStreamHelper
   end
 
   def add_vod(link, room, time)
-    BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: "http://stream.livestar.vn:8080/screenshots/#{time[:hour]}_#{time[:min]}_#{time[:day]}_#{time[:month]}_#{time[:year]}")
+    BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: "http://stream.livestar.vn:8080/screenshots/#{room.id}_#{time[:year]}_#{time[:month]}_#{time[:day]}_#{time[:hour]}_#{time[:min]}")
   end
 end

@@ -17,8 +17,13 @@ magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
 partnerid: '10184'
 partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
 #captcha
+#megacards
+'megacardWsUrl': 'http://gachthe.megapay.net.vn/chargingApi'
+'megacardPartnerId': '11394'
+'megacardPassword': 'e01081'
 # secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
 secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
+# secret_key_captcha: '6LckDSoTAAAAAO096VH9BgxK_nCIfvZr0cNWo4h8' #local
 # VAS
 vas_proxy: http://124.158.4.211:9387
 vas_wsdl: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
