@@ -303,7 +303,7 @@ class VasController < ApplicationController
   private
     def subscribe_vip user, vip_package, actived_date, expiry = false
       expiry_date  = expiry ? expiry : actived_date + vip_package.no_day.to_i.day
-      user.user_has_vip_packages.update_all(actived: false)
+      user.user_has_vip_packages.update_all(actived: false) if user.user_has_vip_packages.present?
       user.mobifone_user.update(pkg_code: vip_package.code, active_date: actived_date, expiry_date: expiry_date)
       user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
       MobifoneUserVipLog.create(mobifone_user_id: user.mobifone_user.id, user_has_vip_package_id: user_has_vip_package.id, pkg_code: user.mobifone_user.pkg_code)

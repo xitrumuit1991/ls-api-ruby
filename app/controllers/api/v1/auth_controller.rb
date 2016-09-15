@@ -336,7 +336,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def login
-    logger = Logger.new("#{Rails.root}/log/login.log")
+    # logger = Logger.new("#{Rails.root}/log/login.log")
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
       @user_attempt = User.find_by(email: params[:email])
@@ -348,7 +348,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
     if @user_attempt.present?
         if @user_attempt.is_locking
-          logger.info("user: #{params[:email]} result: CLOCKING")
+          # logger.info("user: #{params[:email]} result: CLOCKING")
           render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
         end
     end
@@ -363,7 +363,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
         # update token
         @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
-        logger.info("email: #{params[:email]} result: OK")
+        # logger.info("email: #{params[:email]} result: OK")
         render json: { token: token }, status: 200
       else
         render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
@@ -375,7 +375,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       else
         render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
       end
-      logger.info("email: #{params[:email]} result: FAILS")
+      # logger.info("email: #{params[:email]} result: FAILS")
     end
   end
 
