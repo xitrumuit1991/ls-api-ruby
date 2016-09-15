@@ -11,18 +11,23 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
+    logger = Logger.new("#{Rails.root}/log/mbf_login.log")
     token = createToken(@user)
     @user.update(last_login: Time.now, token: token)
+    logger.info("phone: #{@user.phone} last_login: #{@user.last_login}")
     render json: { token: token }, status: 200
   end
 
   def mbf_detection
+    logger = Logger.new("#{Rails.root}/log/mbf_detection.log")
     if @user.present?
       token = createToken(@user)
       @user.update(last_login: Time.now, token: token)
       render json: { token: token }, status: 200
+      logger.info("phone: #{@user.phone} last_login: #{@user.last_login} result: OK")
     else
       render json: { token: nil, msisdn: @msisdn }, status: 200
+      logger.info("phone: #{@user.phone} last_login: #{@user.last_login} result: USER_NOT_FOUND")
     end
   end
 
@@ -331,6 +336,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def login
+    logger = Logger.new("#{Rails.root}/log/login.log")
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
       @user_attempt = User.find_by(email: params[:email])
@@ -342,6 +348,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
     if @user_attempt.present?
         if @user_attempt.is_locking
+          logger.info("user: #{params[:email]} result: CLOCKING")
           render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
         end
     end
@@ -356,7 +363,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
         # update token
         @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
-
+        logger.info("email: #{params[:email]} result: OK")
         render json: { token: token }, status: 200
       else
         render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
@@ -368,6 +375,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       else
         render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
       end
+      logger.info("email: #{params[:email]} result: FAILS")
     end
   end
 
@@ -482,6 +490,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def fbRegister
+    logger = Logger.new("#{Rails.root}/log/fbRegister.log")
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
@@ -492,13 +501,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           if user.save
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
+            logger.info("email: #{user.email} result: OK")
             render json: {token: token}, status: 200
           else
+            logger.info("email: #{user.email} result: FAILS error: #{user.errors.messages}")
             render json: user.errors.messages, status: 400
           end
         else
           token = createToken(user)
           user.update(last_login: Time.now, token: token)
+          logger.info("email: #{user.email} result: OK")
           render json: {token: token}, status: 200
         end
       else
@@ -525,12 +537,15 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user = User.find_by_email(profile['email'])
           token = createToken(user)
           user.update(last_login: Time.now, token: token)
+          logger.info("email: #{user.email} result: OK")
           render json: { token: token }, status: 200
         else
+          logger.info("email: #{user.email} result: FALSE error: #{user.errors.messages}")
           render json: { error: user.errors.messages }, status: 400
         end
       end
     rescue Koala::Facebook::APIError => exc
+      logger.info("email: #{user.email} result: FALSE error: #{exc}")
       render json: exc, status: 400
     end
   end
