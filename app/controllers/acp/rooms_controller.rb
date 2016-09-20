@@ -67,13 +67,17 @@ class Acp::RoomsController < Acp::ApplicationController
 		redirect_to({ action: 'index' }, notice: 'Rooms were successfully destroyed.')
 	end
 
+	def idol_autocomplete
+		@idols = Broadcaster.where("fullname LIKE :query", query: "%#{params[:key]}%")
+	end
+
 	private
 		def init
 			@model = controller_name.classify.constantize
 		end
 
 		def load_data
-			@idols = Broadcaster.all.order('id desc')
+			@idols = Broadcaster.all.order('id desc').limit(1)
       @room_types = RoomType.all.order('id desc')
 			@room_backgrounds = RoomBackground.all.order('id desc')
     end

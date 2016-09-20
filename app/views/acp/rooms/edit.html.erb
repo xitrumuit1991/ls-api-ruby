@@ -52,7 +52,7 @@
                   <div class="row">
                     <label class="col-sm-12">Idols</label>
                     <div class="col-sm-2">
-                        <select class="form-control select2" name="room[broadcaster_id]">
+                        <select class="form-control search-key" data-url="/acp/rooms/search-complete" name="room[broadcaster_id]">
                             <% @idols.each do |idol| %>
                             <option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
                             <% end %>

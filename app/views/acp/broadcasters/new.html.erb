@@ -29,7 +29,7 @@
                   <div class="row">
                     <label class="col-sm-12">User</label>
                     <div class="col-sm-5">
-                        <select class="form-control select2" name="data[user_id]">
+                        <select class="form-control search-key" data-url="/acp/broadcasters/search-complete" name="data[user_id]">
                             <% @users.each do |user| %>
                             <option value="<%= user.id %>" <% if user.id == @data.user_id %>selected<% end %>><%= user.name %></option>
                             <% end %>
