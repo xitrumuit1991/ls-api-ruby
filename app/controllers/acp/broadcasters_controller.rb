@@ -115,13 +115,17 @@ class Acp::BroadcastersController < Acp::ApplicationController
 		render json: true
 	end
 
+	def user_autocomplete
+		@users = User.where("name LIKE :query", query: "%#{params[:key]}%")
+	end
+
 	private
 		def init
 			@model = controller_name.classify.constantize
 		end
 
 		def load_data
-			@users 			= User.all.order('id desc')
+			@users 			= User.all.order('id desc').limit(1)
 			@bct_types 	= BctType.all.order('id desc')
 			@levels 		= BroadcasterLevel.all
 		end

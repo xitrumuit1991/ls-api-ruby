@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     post '/broadcasters/trash_m' 		=> 'broadcasters#trash_m'
     post '/broadcasters/restore_m' 	=> 'broadcasters#restore_m'
     post '/broadcasters/destroy_m' 	=> 'broadcasters#destroy_m'
+    get 'broadcasters/search-complete'	=> 'broadcasters#user_autocomplete'
     resources :broadcasters do
       get '/basic' 		=> 'broadcasters#basic'
       get '/room' 				=> 'broadcasters#room'
@@ -56,6 +57,7 @@ Rails.application.routes.draw do
     end
 
     # Rooms
+    get 'rooms/search-complete'	=> 'rooms#idol_autocomplete'
     resources :rooms
 
     # banks
@@ -196,7 +198,7 @@ Rails.application.routes.draw do
     post '/caches/clear-vip' => 'caches#clearCacheVip'
     post '/caches/clear-black-list' => 'caches#clearCacheBlackList'
     post '/caches/clear-email-black-list' => 'caches#clearCacheEmailBlackList'
-	post '/caches/deactive-user' => 'caches#deactiveUserBlacklist'
+		post '/caches/deactive-user' => 'caches#deactiveUserBlacklist'
     resources :caches
 
   end
