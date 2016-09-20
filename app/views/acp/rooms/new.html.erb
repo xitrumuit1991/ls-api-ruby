@@ -1,100 +1,100 @@
 <div class="jumbotron" data-pages="parallax">
-  <div class="container-fluid sm-p-l-20 sm-p-r-20">
-    <div class="inner">
-      <!-- START BREADCRUMB -->
-      <ul class="breadcrumb">
-        <li><a href="/acp">Home</a></li>
-        <li><a href="/acp/<%= controller_name %>">Rooms</a></li>
-        <li><a href="#" class="active">Add</a></li>
-      </ul>
-      <!-- END BREADCRUMB -->
-    </div>
-  </div>
+	<div class="container-fluid sm-p-l-20 sm-p-r-20">
+		<div class="inner">
+			<!-- START BREADCRUMB -->
+			<ul class="breadcrumb">
+				<li><a href="/acp">Home</a></li>
+				<li><a href="/acp/<%= controller_name %>">Rooms</a></li>
+				<li><a href="#" class="active">Add</a></li>
+			</ul>
+			<!-- END BREADCRUMB -->
+		</div>
+	</div>
 </div>
 <!-- END JUMBOTRON -->
 <!-- START CONTAINER FLUID -->
 <div class="container-fluid bg-white">
-  <!-- START PANEL -->
-    <%= render 'shared/alert' %>
-    <div class="panel panel-transparent">
-        <div class="panel-body">
-            <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
-                <% if @data.errors.any? %>
-                  <div class="alert alert-danger" role="alert">
-                    <button class="close" data-dismiss="alert"></button>
-                    <p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu phòng này: </p>
-                    <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
-                  </div>
-                <% end %>
-                <input type="hidden" name="room[thumb_crop]">
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Banner (16x9)</label>
-                    <div class="col-sm-5">
-                      <input type="file" name="room[thumb]" >
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Poster (9x16)</label>
-                    <div class="col-sm-5">
-                      <input type="file" name="room[thumb_poster]" >
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Idols</label>
-                    <div class="col-sm-2">
-                        <select class="form-control select2" name="room[broadcaster_id]">
-                            <% @idols.each do |idol| %>
-                            <option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
-                            <% end %>
-                        </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Tên phòng</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control slug" name="room[title]" value="<%= @data.title %>" >
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Slug</label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" name="room[slug]" value="<%= @data.slug %>" placeholder="http://livestar.vn/rooms/livestar-vn">
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <label class="col-sm-12">Loại phòng</label>
-                    <div class="col-sm-2">
-                        <select class="form-control select2" name="room[room_type_id]">
-                            <% @room_types.each do |type| %>
-                            <option value="<%= type.id %>" <% if type.id == @data.room_type_id %>selected<% end %>><%= type.title %></option>
-                            <% end %>
-                        </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <button class="btn btn-success" name="save">Lưu</button>
-                      <button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
-                      <button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
-                      <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
-                    </div>
-                  </div>
-                </div>
-            <% end %>
-        </div>
-    </div>
-  <!-- END PANEL -->
+	<!-- START PANEL -->
+		<%= render 'shared/alert' %>
+		<div class="panel panel-transparent">
+				<div class="panel-body">
+						<%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}", multipart: true} do |f| %>
+								<% if @data.errors.any? %>
+									<div class="alert alert-danger" role="alert">
+										<button class="close" data-dismiss="alert"></button>
+										<p>Có <%= pluralize(@data.errors.count, "") %> lỗi xảy ra, Bạn không thể lưu phòng này: </p>
+										<ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+									</div>
+								<% end %>
+								<input type="hidden" name="room[thumb_crop]">
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Banner (16x9)</label>
+										<div class="col-sm-5">
+											<input type="file" name="room[thumb]" >
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Poster (9x16)</label>
+										<div class="col-sm-5">
+											<input type="file" name="room[thumb_poster]" >
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Idols</label>
+										<div class="col-sm-2">
+												<select class="form-control search-key"  data-url="/acp/rooms/search-complete" name="room[broadcaster_id]">
+														<% @idols.each do |idol| %>
+														<option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
+														<% end %>
+												</select>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Tên phòng</label>
+										<div class="col-sm-5">
+												<input type="text" class="form-control slug" name="room[title]" value="<%= @data.title %>" >
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Slug</label>
+										<div class="col-sm-5">
+												<input type="text" class="form-control" name="room[slug]" value="<%= @data.slug %>" placeholder="http://livestar.vn/rooms/livestar-vn">
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<label class="col-sm-12">Loại phòng</label>
+										<div class="col-sm-2">
+												<select class="form-control select2" name="room[room_type_id]">
+														<% @room_types.each do |type| %>
+														<option value="<%= type.id %>" <% if type.id == @data.room_type_id %>selected<% end %>><%= type.title %></option>
+														<% end %>
+												</select>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-sm-12">
+											<button class="btn btn-success" name="save">Lưu</button>
+											<button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
+											<button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
+											<a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
+										</div>
+									</div>
+								</div>
+						<% end %>
+				</div>
+		</div>
+	<!-- END PANEL -->
 </div>
