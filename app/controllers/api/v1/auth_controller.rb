@@ -445,7 +445,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 						render json: { error: "System error !" }, status: 500
 					end
 				else
-					render json: {error: t('error_system') , bugs: user.errors.full_messages}, status: 400
+					render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
 				end
 			else
 				render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
