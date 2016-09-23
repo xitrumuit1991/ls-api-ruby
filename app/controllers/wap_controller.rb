@@ -52,6 +52,7 @@ class WapController < ApplicationController
 
     allowed_pkg = ['VIP','VIP7','VIP30','VIP2N','VIP2','VIP3N','VIP3N','VIP4']
 
+    waplogger.info("allowed_pkg: #{allowed_pkg.include?(params[:pkg])}")
     redirect_to Settings.m_livestar_path and return if !allowed_pkg.include?(params[:pkg])
 
     package = VipPackage.find_by_code(params[:pkg])

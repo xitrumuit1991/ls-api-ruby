@@ -27,7 +27,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       logger.info("phone: #{@user.phone} last_login: #{@user.last_login} result: OK")
     else
       render json: { token: nil, msisdn: @msisdn }, status: 200
-      logger.info("phone: #{@user.phone} last_login: #{@user.last_login} result: USER_NOT_FOUND")
+      logger.info("result: USER_NOT_FOUND")
     end
   end
 
