@@ -302,14 +302,16 @@ class VasController < ApplicationController
 
   private
     def subscribe_vip user, vip_package, actived_date, expiry = false
+      unless check_package_free user
+        # add bonus coins for user
+        money = user.money + vip_package.discount
+        user.update(money: money)
+      end
       expiry_date  = expiry ? expiry : actived_date + vip_package.no_day.to_i.day
       user.user_has_vip_packages.update_all(actived: false) if user.user_has_vip_packages.present?
       user.mobifone_user.update(pkg_code: vip_package.code, active_date: actived_date, expiry_date: expiry_date)
       user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip_package.id, actived: true, active_date: actived_date, expiry_date: expiry_date)
       MobifoneUserVipLog.create(mobifone_user_id: user.mobifone_user.id, user_has_vip_package_id: user_has_vip_package.id, pkg_code: user.mobifone_user.pkg_code)
-      # add bonus coins for user
-      money = user.money + vip_package.discount
-      user.update(money: money)
       return user_has_vip_package
     end
 
@@ -336,6 +338,18 @@ class VasController < ApplicationController
           @user.no_heart       = 0
           return true if @user.save and @user.create_mobifone_user(sub_id: phone)
         end
+        return false
+      end
+    end
+
+    def check_package_free user
+      if user.user_has_vip_packages.present?
+        if user.user_has_vip_packages.first.active_date.to_date == Time.now.to_date
+          return true
+        else
+          return false
+        end
+      else
         return false
       end
     end
