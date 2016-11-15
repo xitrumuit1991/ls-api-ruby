@@ -16,6 +16,7 @@ class User < ActiveRecord::Base
 	has_many :vip_packages, through: :user_has_vip_packages
 	has_many :otps
 	has_many :trade_logs
+	has_many :fb_share_logs
 	has_many :ban_users
 	has_many :banned_rooms, through: :ban_users, class_name: 'Room', foreign_key: 'room_id', source: :room
 	has_many :cart_logs
