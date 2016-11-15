@@ -634,7 +634,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 			fb_id = params[:post_id].split("_")[0]
 			if params['room'].present? && params['room']['on_air'] == "true"
 				money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 100 : money
-				if FbShareLog.where('room_id = ? AND created_at > ?', params['room']['id'].to_i, Time.now.beginning_of_day).count < 1
+				if FbShareLog.where('user_id = ? AND room_id = ? AND created_at > ?', @user.id, params['room']['id'].to_i, Time.now.beginning_of_day).count < 1
 					@user.increaseMoney(money)
 					fb_logs(params[:post_id], money, fb_id, params['room']['id'].to_i)
 					render plain: 'Đã cộng tiền thành công!!!', status: 200
