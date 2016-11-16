@@ -38,6 +38,9 @@
 					<div class="col-md-1">
 						<button class="btn btn-info" type="submit">Search</button>
 					</div>
+					<div class="col-md-5">
+						<%= link_to(acp_reports_bct_time_logs_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
+					</div>
 					<!-- <div class="col-md-2">
 						<%= link_to(new_acp_user_path) do %><i class="fs-14 pg-plus">Add new</i><% end %>
 					</div> -->
