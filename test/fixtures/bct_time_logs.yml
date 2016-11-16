@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  room_id: 
+  last_login: 2016-11-16 14:36:26
+  start_room: 2016-11-16 14:36:26
+  end_room: 2016-11-16 14:36:26
+  status: false
+  flag: false
+
+two:
+  room_id: 
+  last_login: 2016-11-16 14:36:26
+  start_room: 2016-11-16 14:36:26
+  end_room: 2016-11-16 14:36:26
+  status: false
+  flag: false

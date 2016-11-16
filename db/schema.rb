@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161103045334) do
+ActiveRecord::Schema.define(version: 20161116073626) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -119,6 +119,19 @@ ActiveRecord::Schema.define(version: 20161103045334) do
   end
 
   add_index "bct_images", ["broadcaster_id"], name: "index_bct_images_on_broadcaster_id", using: :btree
+
+  create_table "bct_time_logs", force: :cascade do |t|
+    t.integer  "room_id",    limit: 4
+    t.datetime "last_login"
+    t.datetime "start_room"
+    t.datetime "end_room"
+    t.boolean  "status",               default: true
+    t.boolean  "flag",                 default: false
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "bct_time_logs", ["room_id"], name: "index_bct_time_logs_on_room_id", using: :btree
 
   create_table "bct_types", force: :cascade do |t|
     t.string   "title",       limit: 255
@@ -910,6 +923,7 @@ ActiveRecord::Schema.define(version: 20161103045334) do
   add_foreign_key "bct_gifts", "gifts"
   add_foreign_key "bct_gifts", "rooms"
   add_foreign_key "bct_images", "broadcasters"
+  add_foreign_key "bct_time_logs", "rooms"
   add_foreign_key "bct_videos", "broadcasters"
   add_foreign_key "broadcaster_backgrounds", "broadcasters"
   add_foreign_key "broadcasters", "bct_types"
