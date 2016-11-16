@@ -1,7 +1,7 @@
 wb = xlsx_package.workbook
-wb.add_worksheet(name: "Card") do |sheet|
-	sheet.add_row ["Name", "Email", "Provider", "Serial", "Price", "Date"]
+wb.add_worksheet(name: "Time BCT") do |sheet|
+	sheet.add_row ["IDOL", "ROOM", "START", "END", "TIME"]
   @data.each do |item|
-    sheet.add_row [item.user.name, item.user.email, item.provider.name, item.serial, item.price, item.created_at.strftime('%d/%m/%Y')]
+    sheet.add_row [item.room.broadcaster.fullname, item.room.title, item.start_room, item.end_room, Time.at((item.end_room - item.start_room).round).utc.strftime("%H:%M:%S")]
   end
 end
