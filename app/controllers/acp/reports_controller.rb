@@ -23,6 +23,22 @@ class Acp::ReportsController < Acp::ApplicationController
     end
   end
 
+  def bct_time_logs
+    @idols = Broadcaster.all.order('id desc').limit(1)
+    where = Hash.new
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'bct_time_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+    where[:room_id] = params[:room] if params[:room].present?
+    @data = BctTimeLog.all.where(where).order('id desc').page params[:page]
+  end
+
+  def idol_autocomplete
+    @idols = Broadcaster.where("fullname LIKE :query", query: "%#{params[:key]}%")
+  end
+
   def mbf_users
     where = Hash.new
     where['created_at'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day

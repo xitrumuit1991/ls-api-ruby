@@ -531,7 +531,7 @@
       <!--END Resources-->
 
       <!--BEGIN Reports-->
-      <% if can?(:users, :report) or can?(:user_online, :report) or can?(:user_send_gifts, :report) or can?(:user_send_hearts, :report) or can?(:idol_receive_coins, :report) or can?(:idol_receive_hearts, :report) or can?(:sms, :report) or can?(:card, :report) or can?(:bank, :report) %>
+      <% if can?(:users, :report) or can?(:user_online, :report) or can?(:user_send_gifts, :report) or can?(:user_send_hearts, :report) or can?(:idol_receive_coins, :report) or can?(:idol_receive_hearts, :report) or can?(:sms, :report) or can?(:card, :report) or can?(:bank, :report) or can?(:bct_time_logs, :report) %>
       <li class="<% if controller_name == 'reports' %>active<% end %>">
         <a href="#">
           <span class="title">Report</span>
@@ -584,6 +584,13 @@
           <% if can? :idol_receive_hearts, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'idol_receive_hearts' %>active<% end %>">
             <%= link_to(acp_reports_idol_receive_hearts_path) do %><span class="title">Idol receive hearts</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <% end %>
+
+          <% if can? :bct_time_logs, :report %>
+          <li class="<% if controller_name == 'reports' && action_name == 'bct_time_logs' %>active<% end %>">
+            <%= link_to(acp_reports_bct_time_logs_path) do %><span class="title">Times</span><% end %>
             <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
           </li>
           <% end %>

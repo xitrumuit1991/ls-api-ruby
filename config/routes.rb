@@ -182,8 +182,11 @@ Rails.application.routes.draw do
     get '/reports/idol-receive-coins' => 'reports#idol_receive_coins'
     get '/reports/idol-receive-hearts' => 'reports#idol_receive_hearts'
     get '/reports/sms' => 'reports#sms'
+    get '/reports/bct_time_logs' => 'reports#bct_time_logs'
     get '/reports/card' => 'reports#card'
     get '/reports/bank' => 'reports#bank'
+    # Rooms
+    get '/reports/search-complete' => 'reports#idol_autocomplete'
     resources :reports
 
     # Caches
