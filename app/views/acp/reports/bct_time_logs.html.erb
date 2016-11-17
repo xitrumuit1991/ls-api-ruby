@@ -77,14 +77,14 @@
 								<p><%= item.room.title %></p>
 							</td>
 							<td class="v-align-middle">
-								<p><%= item.start_room %></p>
+								<p><%= item.start_room.in_time_zone("Hanoi") %></p>
 							</td>
 							<td class="v-align-middle">
 								<% if item.end_room != nil %>
 								<p>
 									<% total += (item.end_room - item.start_room).round %>
+									<%= item.end_room.in_time_zone("Hanoi") %>
 								</p>
-								<%= item.end_room %>
 								<% else %>
 								<p style="color: red;">
 									LIVE
