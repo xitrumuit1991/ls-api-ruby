@@ -69,7 +69,6 @@
 					<tbody>
 					<% total = 0%>
 					<% @data.each do |item| %>
-						<% total += (item.end_room - item.start_room).round %>
 						<tr class="<% if !item.status %>active<%end%>">
 							<td class="v-align-middle">
 								<p><%= item.room.broadcaster.fullname %></p>
@@ -81,10 +80,26 @@
 								<p><%= item.start_room %></p>
 							</td>
 							<td class="v-align-middle">
-								<p><%= item.end_room %></p>
+								<% if item.end_room != nil %>
+								<p>
+									<% total += (item.end_room - item.start_room).round %>
+								</p>
+								<%= item.end_room %>
+								<% else %>
+								<p style="color: red;">
+									LIVE
+								</p>
+								<% end %>
 							</td>
 							<td class="v-align-middle">
-								<p><%= Time.at((item.end_room - item.start_room).round).utc.strftime("%H:%M:%S") %></p>
+								<p>
+									<% if item.end_room != nil %>
+									<%= Time.at((item.end_room - item.start_room).round).utc.strftime("%H:%M:%S") %>
+									<% else %>
+									<%= Time.at((Time.now - item.start_room).round).utc.strftime("%H:%M:%S") %>
+									<% end %>
+									
+								</p>
 							</td>
 						</tr>
 					<% end %>
