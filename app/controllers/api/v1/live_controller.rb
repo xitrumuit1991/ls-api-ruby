@@ -300,7 +300,7 @@
         bct_log.end_room = endRoom
         bct_log.flag = flag
         time_log = Time.now - bct_log.start_room
-        if time_log.round >= 7200 and @room.broadcaster.user.last_login == bct_log.last_login
+        if time_log.round >= 3600 and @room.broadcaster.user.last_login == bct_log.last_login
           status = true 
         else
           status = false
