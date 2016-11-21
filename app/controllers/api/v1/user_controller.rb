@@ -302,8 +302,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	def internetBank
 		# epay cung cap
 		if params[:key_megabank].present?
-			# checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
-			if true
+			checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
+			if checkCaptcha[:success]
 				webservice    = Settings.magebankWS
 				bank          = Bank.find_by_bankID(params[:bank_id])
 				megabanklog   = MegabankLog.create(bank_id: bank.id, megabank_id: params[:megabank_id], user_id: @user.id)
@@ -539,33 +539,42 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 	def megacards
 		# nha mang cung cap
-		m_ws_url      = Settings.megacardWsUrl
-		m_partnerId   = Settings.megacardPartnerId
-		m_cardSerial  = params[:serial]
-		m_cardPin     = params[:pin].to_s.delete(' ')
-		m_telcoCode   = params[:provider]
-		m_password    = Settings.megacardPassword
-		m_targetAcc   = @user.username
-		megaCardCharging  = Megacard::MegacardAPIServices.new
-		megaCardCharging.m_ws_url       = m_ws_url
-		megaCardCharging.m_partnerId    = m_partnerId
-		megaCardCharging.m_cardSerial   = m_cardSerial
-		megaCardCharging.m_cardPin      = m_cardPin
-		megaCardCharging.m_telcoCode    = m_telcoCode
-		megaCardCharging.m_targetAcc    = m_targetAcc
-		megaCardCharging.m_password     = m_password
-		response = megaCardCharging.charging
-		if response.status == 200
-			card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
-			info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: card.coin.to_s }
-			if card_logs(response, info)
-				@user.increaseMoney(info[:coin])
-				render plain: response.message, status: 200
+		if params[:key_payment].present?
+			checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+			if checkCaptcha[:success]
+				m_ws_url      = Settings.megacardWsUrl
+				m_partnerId   = Settings.megacardPartnerId
+				m_cardSerial  = params[:serial]
+				m_cardPin     = params[:pin].to_s.delete(' ')
+				m_telcoCode   = params[:provider]
+				m_password    = Settings.megacardPassword
+				m_targetAcc   = @user.username
+				megaCardCharging  = Megacard::MegacardAPIServices.new
+				megaCardCharging.m_ws_url       = m_ws_url
+				megaCardCharging.m_partnerId    = m_partnerId
+				megaCardCharging.m_cardSerial   = m_cardSerial
+				megaCardCharging.m_cardPin      = m_cardPin
+				megaCardCharging.m_telcoCode    = m_telcoCode
+				megaCardCharging.m_targetAcc    = m_targetAcc
+				megaCardCharging.m_password     = m_password
+				response = megaCardCharging.charging
+				if response.status == 200
+					card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
+					info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: card.coin.to_s }
+					if card_logs(response, info)
+						@user.increaseMoney(info[:coin])
+						render plain: response.message, status: 200
+					else
+						render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn(transId: #{response.transId})", status: 500
+					end
+				else
+					render plain: response.message, status: 400
+				end
 			else
-				render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn(transId: #{response.transId})", status: 500
+				render plain: "Vui lòng kiểm tra Captcha", status: 400
 			end
 		else
-			render plain: response.message, status: 400
+			render plain: "Vui lòng kiểm tra Captcha", status: 400
 		end
 	end
 

@@ -224,6 +224,7 @@ Rails.application.routes.draw do
         post '/login-fb-broadcaster' => 'auth#loginFbBct'
         post '/login-broadcaster' => 'auth#loginBct'
         post '/register' => 'auth#register'
+        post '/register-web' => 'auth#registerWeb'
         post '/fb-register' => 'auth#fbRegister'
         post '/gp-register' => 'auth#gpRegister'
         post '/verify-token' => 'auth#verifyToken'
