@@ -421,7 +421,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
-    activeCode = SecureRandom.hex(3).upcase
     if params[:email].present? &&  params[:password].present?
       if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
         _createUser params
@@ -434,7 +433,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def registerWeb
-    activeCode = SecureRandom.hex(3).upcase
     if params[:email].present? &&  params[:password].present?
       checkCaptcha = eval(checkCaptcha(params[:key_register]))
       if checkCaptcha[:success]
@@ -667,6 +665,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
 
     def _createUser params_user
+      activeCode = SecureRandom.hex(3).upcase
       user = User.new
       user.email        = params_user[:email]
       user.password     = params_user[:password].to_s
