@@ -424,28 +424,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     activeCode = SecureRandom.hex(3).upcase
     if params[:email].present? &&  params[:password].present?
       if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
-        user = User.new
-        user.email        = params[:email]
-        user.password     = params[:password].to_s
-        user.active_code  = activeCode
-        user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-        user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
-        if user.valid?
-          user.birthday       = '2000-01-01'
-          user.user_level_id  = UserLevel.first().id
-          user.money          = 8
-          user.user_exp       = 0
-          user.actived        = 1
-          user.no_heart       = 0
-          if user.save
-            # SendCodeJob.perform_later(user, activeCode)
-            render json: { success: "Đăng ký thành công." }, status: 201
-          else
-            render json: { error: "System error !" }, status: 500
-          end
-        else
-          render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
-        end
+        _createUser params
       else
         render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
       end
@@ -460,27 +439,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       checkCaptcha = eval(checkCaptcha(params[:key_register]))
       if checkCaptcha[:success]
         if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
-          user = User.new
-          user.email        = params[:email]
-          user.password     = params[:password].to_s
-          user.active_code  = activeCode
-          user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
-          user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
-          if user.valid?
-            user.birthday       = '2000-01-01'
-            user.user_level_id  = UserLevel.first().id
-            user.money          = 8
-            user.user_exp       = 0
-            user.actived        = 1
-            user.no_heart       = 0
-            if user.save
-              render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
-            else
-              render json: { error: "System error !" }, status: 500
-            end
-          else
-            render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
-          end
+          _createUser params
         else
           render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
         end
@@ -489,6 +448,30 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       end
     else
       render json: {error: "Email hoặc password không được để trống!" }, status: 400
+    end
+  end
+
+  def _createUser params_user
+    user = User.new
+    user.email        = params_user[:email]
+    user.password     = params_user[:password].to_s
+    user.active_code  = activeCode
+    user.name         = params_user[:email].split("@")[0].length >= 6 ? params_user[:email].split("@")[0] : params_user[:email].split("@")[0] + SecureRandom.hex(3)
+    user.username     = params_user[:email].split("@")[0] + SecureRandom.hex(3).upcase
+    if user.valid?
+      user.birthday       = '2000-01-01'
+      user.user_level_id  = UserLevel.first().id
+      user.money          = 8
+      user.user_exp       = 0
+      user.actived        = 1
+      user.no_heart       = 0
+      if user.save
+        render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
+      else
+        render json: { error: "System error !" }, status: 500
+      end
+    else
+      render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
     end
   end
 
