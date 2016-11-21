@@ -451,30 +451,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
-  def _createUser params_user
-    user = User.new
-    user.email        = params_user[:email]
-    user.password     = params_user[:password].to_s
-    user.active_code  = activeCode
-    user.name         = params_user[:email].split("@")[0].length >= 6 ? params_user[:email].split("@")[0] : params_user[:email].split("@")[0] + SecureRandom.hex(3)
-    user.username     = params_user[:email].split("@")[0] + SecureRandom.hex(3).upcase
-    if user.valid?
-      user.birthday       = '2000-01-01'
-      user.user_level_id  = UserLevel.first().id
-      user.money          = 8
-      user.user_exp       = 0
-      user.actived        = 1
-      user.no_heart       = 0
-      if user.save
-        render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
-      else
-        render json: { error: "System error !" }, status: 500
-      end
-    else
-      render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
-    end
-  end
-
   def loginFbBct
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
@@ -688,6 +664,30 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     def createToken(user)
       payload = {id: user.id, email: user.email, name: user.name, vip: user.vip, exp: Time.now.to_i + 24 * 3600}
       JWT.encode payload, Settings.hmac_secret, 'HS256'
+    end
+
+    def _createUser params_user
+      user = User.new
+      user.email        = params_user[:email]
+      user.password     = params_user[:password].to_s
+      user.active_code  = activeCode
+      user.name         = params_user[:email].split("@")[0].length >= 6 ? params_user[:email].split("@")[0] : params_user[:email].split("@")[0] + SecureRandom.hex(3)
+      user.username     = params_user[:email].split("@")[0] + SecureRandom.hex(3).upcase
+      if user.valid?
+        user.birthday       = '2000-01-01'
+        user.user_level_id  = UserLevel.first().id
+        user.money          = 8
+        user.user_exp       = 0
+        user.actived        = true
+        user.no_heart       = 0
+        if user.save
+          render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
+        else
+          render json: { error: "System error !" }, status: 500
+        end
+      else
+        render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
+      end
     end
 
     def mbf_create_user msisdn
