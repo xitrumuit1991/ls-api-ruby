@@ -5,6 +5,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	require "./lib/payments/megacards"
 	include Api::V1::Authorize
 	include KrakenHelper
+	include CaptchaHelper
 	helper YoutubeHelper
 	before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms]
 
