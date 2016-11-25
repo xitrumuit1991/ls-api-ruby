@@ -10,6 +10,7 @@ class MbuyController < ApplicationController
   def receiveChargingResult
     if params[:totalAmount].present? && params[:isdn].present? && params[:result].present?
       isdn = params[:isdn]
+      isdn = '84' + isdn[1..isdn.length]
       money =  params[:totalAmount].to_i * 0.008
       result_parts = params[:result].split('|')
 
@@ -28,7 +29,7 @@ class MbuyController < ApplicationController
           render soap: { receiveChargingResultResult: "So dien thoai #{isdn} khong ton tai" } and return
         end
       end
-      render soap: { receiveChargingResultResult: "" } and return
+      render soap: { receiveChargingResultResult: "" } and return 
     else
       render soap: { receiveChargingResultResult: "Khong the cong tien, vui long lien he ky thuat vien" } and return
     end
