@@ -11,8 +11,8 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
   # WAP
-  get   '/chatvoihotgirl/:publisher' => 'wap#mbf_publisher_directly'
-  get   '/huy' => 'wap#mbf_htt_back'
+  get '/chatvoihotgirl/:publisher' => 'wap#mbf_publisher_directly'
+  get '/huy' => 'wap#mbf_htt_back'
 
   # ACP
   namespace :acp do
@@ -212,6 +212,8 @@ Rails.application.routes.draw do
       # root
       get '/' => 'index#index'
       get '/msisdn' => 'index#msisdn'
+
+      get '/mbuy-transaction' => 'index#mbuy'
 
       # device
       scope '/device' do
