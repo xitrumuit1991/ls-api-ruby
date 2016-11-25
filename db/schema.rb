@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161116073626) do
+ActiveRecord::Schema.define(version: 20161125051617) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -350,6 +350,18 @@ ActiveRecord::Schema.define(version: 20161116073626) do
 
   add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
   add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
+
+  create_table "mbuy_requests", force: :cascade do |t|
+    t.string   "command",      limit: 255
+    t.string   "cp_code",      limit: 255
+    t.string   "content_code", limit: 255
+    t.string   "total_amount", limit: 255
+    t.string   "account",      limit: 255
+    t.string   "isdn",         limit: 255
+    t.string   "result",       limit: 255
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
 
   create_table "megabank_logs", force: :cascade do |t|
     t.integer  "bank_id",       limit: 4

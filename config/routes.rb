@@ -4,6 +4,7 @@ require 'sidetiq/web'
 Rails.application.routes.draw do
 
   wash_out :vas
+  wash_out :mbuy
   apipie
   devise_for :admins, controllers: { sessions: "admins/sessions" }
   root 'index#index'
