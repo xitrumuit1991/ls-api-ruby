@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161125051617) do
+ActiveRecord::Schema.define(version: 20161128082003) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -362,6 +362,20 @@ ActiveRecord::Schema.define(version: 20161125051617) do
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
   end
+
+  create_table "mbuy_transactions", force: :cascade do |t|
+    t.string   "trans_id",     limit: 255
+    t.string   "isdn",         limit: 255
+    t.string   "total_amount", limit: 255
+    t.string   "checksum",     limit: 255
+    t.integer  "user_id",      limit: 4
+    t.string   "response",     limit: 255
+    t.integer  "status",       limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "mbuy_transactions", ["user_id"], name: "index_mbuy_transactions_on_user_id", using: :btree
 
   create_table "megabank_logs", force: :cascade do |t|
     t.integer  "bank_id",       limit: 4
@@ -956,6 +970,7 @@ ActiveRecord::Schema.define(version: 20161125051617) do
   add_foreign_key "ios_receipts", "users"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
+  add_foreign_key "mbuy_transactions", "users"
   add_foreign_key "megabank_logs", "banks"
   add_foreign_key "megabank_logs", "megabanks"
   add_foreign_key "megabank_logs", "users"
