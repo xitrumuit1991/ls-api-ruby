@@ -6,13 +6,4 @@ class IndexController < ApplicationController
   def index
     render plain: 'Livestar v1'
   end
-
-
-  def mbuy
-  	render layout: false
-  end
-
-  def create_transaction_mbuy
-    render plain: create_cp_transaction(params[:isdn], params[:amount])
-  end
 end
