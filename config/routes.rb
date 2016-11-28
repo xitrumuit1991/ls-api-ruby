@@ -14,6 +14,10 @@ Rails.application.routes.draw do
   get '/chatvoihotgirl/:publisher' => 'wap#mbf_publisher_directly'
   get '/huy' => 'wap#mbf_htt_back'
 
+  #MBUY
+  get '/mbuy-transaction' => 'index#mbuy'
+  post '/mbuy-transaction' => 'index#create_transaction_mbuy'
+
   # ACP
   namespace :acp do
     authenticate do
@@ -212,8 +216,6 @@ Rails.application.routes.draw do
       # root
       get '/' => 'index#index'
       get '/msisdn' => 'index#msisdn'
-
-      get '/mbuy-transaction' => 'index#mbuy'
 
       # device
       scope '/device' do
