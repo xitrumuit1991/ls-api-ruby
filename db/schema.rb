@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161128082003) do
+ActiveRecord::Schema.define(version: 20161129031441) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -356,6 +356,7 @@ ActiveRecord::Schema.define(version: 20161128082003) do
     t.string   "cp_code",      limit: 255
     t.string   "content_code", limit: 255
     t.string   "total_amount", limit: 255
+    t.string   "total_final",  limit: 255
     t.string   "account",      limit: 255
     t.string   "isdn",         limit: 255
     t.string   "result",       limit: 255
