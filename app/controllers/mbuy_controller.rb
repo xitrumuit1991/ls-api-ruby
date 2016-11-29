@@ -17,7 +17,7 @@ class MbuyController < ApplicationController
       mbuy_request = MbuyRequest.create(command: params[:command], cp_code: params[:cpCode], content_code: params[:ContentCode], total_amount: params[:totalAmount], account: params[:account], isdn: params[:isdn], result: params[:result])
 
       if result_parts[1].present? && result_parts[1] == 'MPAY-0000'
-        transaction = MbuyTransaction.find_by_trans_id(trans_id: result_parts[0])
+        transaction = MbuyTransaction.find_by_trans_id(result_parts[0])
         if transaction.present?
           new_money = user.money + money.to_i;
           if transaction.user.update(money: new_money)
