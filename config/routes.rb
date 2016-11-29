@@ -11,8 +11,9 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
   # WAP
-  get '/chatvoihotgirl/:publisher' => 'wap#mbf_publisher_directly'
-  get '/huy' => 'wap#mbf_htt_back'
+  get   '/chatvoihotgirl/:publisher/:pkg' => 'wap#mbf_publisher'
+  get   '/chatvoihotgirl/:publisher'      => 'wap#mbf_publisher_directly'
+  get   '/huy'                            => 'wap#mbf_htt_back'
 
   # ACP
   namespace :acp do
