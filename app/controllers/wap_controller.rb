@@ -4,9 +4,12 @@ class WapController < ApplicationController
   include Api::V1::Wap
 
   def mbf_publisher_directly
-    redirect_to 'http://m.livestar.vn' and return if !params[:publisher].present? or !check_pub_quota(params[:publisher])
+    waplogger = Logger.new("#{Rails.root}/log/wap_mbf_publisher_directly.log")
+    waplogger.info("#{params[:publisher]}")
+    redirect_to Settings.m_livestar_path and return if !params[:publisher].present?
     # get msisdn
     msisdn = check_mbf_auth ? @msisdn : nil
+    waplogger.info("msisdn: #{msisdn}")
     # call api vas update
     vas_update_partner_report msisdn, params[:publisher]
     # detect user mbf 3g
@@ -15,27 +18,87 @@ class WapController < ApplicationController
       if !@user.present?
         # call api vas register
         register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
+        waplogger.info(register_result)
         if !register_result[:is_error]
-          # create user mbf
-          mbf_create_user msisdn
           # redirect to page cancel service of mbf
           rdlink = mbf_htt
           redirect_to rdlink and return
+        else
+          if register_result[:message] == 'OUT_OF_SYSTEM_QUOTA' or register_result[:message] == 'OUT_OF_PUB_QUOTA'
+            rdlink = wap_mbf_register_request
+            waplogger.info("redirect to  #{rdlink}")
+            redirect_to rdlink and return
+          end
         end
       else
-        if !@user.vip
-          redirect_to wap_mbf_register_request and return
+        waplogger.info("user.vip #{@user.vip}")
+        if @user.vip == 0
+          rdlink = wap_mbf_register_request
+          waplogger.info("redirect to #{rdlink}")
+          redirect_to rdlink and return
         end
       end
     end
-    redirect_to 'http://m.livestar.vn' and return
+    redirect_to Settings.m_livestar_path and return
+  end
+
+
+  def mbf_publisher
+    waplogger = Logger.new("#{Rails.root}/log/wap_mbf_publisher_directly.log")
+    waplogger.info("publisher: #{params[:publisher]}")
+    waplogger.info("pkg: #{params[:pkg]}")
+
+    redirect_to Settings.m_livestar_path and return if !params[:publisher].present? or !params[:pkg].present?
+
+    allowed_pkg = ['VIP','VIP7','VIP30','VIP2N','VIP2','VIP3N','VIP3','VIP4']
+
+    waplogger.info("allowed_pkg: #{allowed_pkg.include?(params[:pkg])}")
+    redirect_to Settings.m_livestar_path and return if !allowed_pkg.include?(params[:pkg])
+
+    package = VipPackage.find_by_code(params[:pkg])
+
+    # get msisdn
+    msisdn = check_mbf_auth ? @msisdn : nil
+    waplogger.info("msisdn: #{msisdn}")
+    # call api vas update
+    vas_update_partner_report msisdn, params[:publisher], package.code
+    # detect user mbf 3g
+    if check_mbf_auth
+      # check user mbf existed
+      if !@user.present?
+        # call api vas register
+        register_result = vas_register msisdn, package.code, "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
+        waplogger.info(register_result)
+        if !register_result[:is_error]
+          # redirect to page cancel service of mbf
+          rdlink = mbf_htt(package.code)
+          waplogger.info("redirect to  #{rdlink}")
+          redirect_to rdlink and return
+        else
+          if register_result[:message] == 'OUT_OF_SYSTEM_QUOTA' or register_result[:message] == 'OUT_OF_PUB_QUOTA'
+            rdlink = wap_mbf_register_request(package.code, package.price)
+            waplogger.info("redirect to  #{rdlink}")
+            redirect_to rdlink and return
+          end
+        end
+      else
+        if !@user.vip
+          rdlink = wap_mbf_register_request(package.code, package.price)
+          waplogger.info("redirect to  #{rdlink}")
+          redirect_to rdlink and return
+        end
+      end
+    end
+    redirect_to Settings.m_livestar_path and return
   end
 
   def mbf_htt_back
-    redirect_to 'http://m.livestar.vn' and return if !params[:link].present?
+    waplogger = Logger.new("#{Rails.root}/log/wap_mbf_publisher_directly.log")
+    redirect_to Settings.m_livestar_path and return if !params[:link].present?
 
     # decypt data
     data = wap_mbf_decrypt(params[:link].gsub(' ', '+'), Settings.wap_mbf_htt_key)
+    waplogger.info("data: #{data}")
     data = data.split("&")
     # check status
     if data[2].to_i == 1
@@ -43,9 +106,11 @@ class WapController < ApplicationController
       sub_id = data[1]
       # check user mbf
       mbf_user = MobifoneUser.find_by_sub_id(sub_id)
+      waplogger.info("mbf_user.present?: #{mbf_user.present?}")
       if mbf_user.present?
         # call api vas cancel service
-        result = vas_cancel_service sub_id, "VIP", "WAP", mbf_user.user.username
+        result = vas_cancel_service sub_id, mbf_user.pkg_code, "WAP", mbf_user.user.username
+        waplogger.info(result)
         if !result[:is_error]
           mbf_user.user.user_has_vip_packages.update_all(actived: false)
         else
@@ -55,61 +120,31 @@ class WapController < ApplicationController
         render json: { error: "Thue bao #{sub_id} khong ton tai tren he thong !" }, status: 400
       end
     end
-    redirect_to 'http://m.livestar.vn'
+    redirect_to Settings.m_livestar_path
   end
 
   private
-  	def mbf_create_user msisdn
-      activeCode = SecureRandom.hex(3).upcase
-      user = User.new
-      user.phone          = msisdn
-      user.email          = "#{msisdn}@livestar.vn"
-      user.password       = msisdn
-      user.active_code    = activeCode
-      user.name           = msisdn.to_s[0,msisdn.to_s.length-3]+"xxx"
-      user.username       = msisdn
-      user.birthday       = '2000-01-01'
-      user.user_level_id  = UserLevel.first().id
-      user.money          = 8
-      user.user_exp       = 0
-      user.no_heart       = 0
-      user.actived        = true
-      user.active_date    = Time.now
-      user.save
-      # create mobifone user
-      user.create_mobifone_user(sub_id: msisdn, pkg_code: "VIP", register_channel: "WAP", active_date: Time.now, expiry_date: Time.now + 1.days, status: 1)
-      # get vip1
-      vip1 = VipPackage.find_by(code: 'VIP', no_day: 1)
-      # subscribe vip1
-      user_has_vip_package = user.user_has_vip_packages.create(vip_package_id: vip1.id, actived: 1, active_date: Time.now, expiry_date: Time.now + 1.days)
-      # create mobifone user vip logs
-      user.mobifone_user.mobifone_user_vip_logs.create(user_has_vip_package_id: user_has_vip_package.id, pkg_code: "VIP")
-      # add bonus coins for user
-      money = user.money + vip1.discount
-      user.update(money: money)
-    end
-
-  	def mbf_htt
+  	def mbf_htt(pkg = "VIP")
+      waplogger = Logger.new("#{Rails.root}/log/wap_mbf_publisher_directly.log")
       sp_id       = 140
       trans_id    = Time.now.to_i
-      pkg         = "VIP"
+      pkg         = pkg
       back_url    = "#{Settings.base_url}/huy"
-      information = "Quý khách được miển phí 1 ngày, sau KM, cước 2.000đ ngày"
+      information = pkg_info(pkg)
 
       # encrypt data
       data = "#{trans_id}&#{pkg}&#{back_url}&#{information}"
       link = wap_mbf_encrypt(data, Settings.wap_mbf_htt_key)
+      waplogger.info("return: #{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}")
 
       return "#{Settings.wap_mbf_htt_url}?sp_id=#{sp_id}&link=#{link}"
     end
     
-    def wap_mbf_register_request
+    def wap_mbf_register_request(pkg = "VIP", price = 2000)
       sp_id       = 140
       trans_id    = Time.now.to_i
-      pkg         = "VIP"
-      price       = 2000
       back_url    = "#{Settings.base_url}api/v1/auth/twotouches"
-      information = "Mien phi ngay dau"
+      information = pkg_info(pkg)
     
       # insert wap mbf logs
       WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
@@ -118,6 +153,21 @@ class WapController < ApplicationController
     
       link = wap_mbf_encrypt data, Settings.wap_mbf_key
       return "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
+    end
+
+    def pkg_info(pkg)
+      pkg_info = {
+        "VIP": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##50;##46;##48;##48;##48;##273;##47;##110;##103;##224;##121;",
+        "VIP7": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##49;##48;##46;##48;##48;##48;##273;##47;##116;##117;##7847;##110;",
+        "VIP30": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##51;##48;##46;##48;##48;##48;##273;##47;##116;##104;##225;##110;##103;",
+        "VIP2N": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##51;##46;##48;##48;##48;##273;##47;##110;##103;##224;##121;",
+        "VIP2": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##50;##48;##46;##48;##48;##48;##273;##47;##116;##117;##7847;##110;",
+        "VIP3N": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##53;##46;##48;##48;##48;##273;##47;##110;##103;##224;##121;",
+        "VIP3": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##51;##48;##46;##48;##48;##48;##273;##47;##116;##117;##7847;##110;",
+        "VIP4": "##81;##117;##253;##32;##107;##104;##225;##99;##104;##32;##273;##432;##7907;##99;##32;##109;##105;##7877;##110;##32;##112;##104;##237;##32;##49;##32;##110;##103;##224;##121;##44;##32;##115;##97;##117;##32;##75;##77;##44;##32;##99;##432;##7899;##99;##32;##53;##48;##46;##48;##48;##48;##273;##47;##116;##117;##7847;##110;",
+      }
+
+      return pkg_info[pkg.to_sym]
     end
 
 end
