@@ -19,7 +19,7 @@ class MbuyController < ApplicationController
       if result_parts[1].present? && result_parts[1] == 'MPAY-0000'
         transaction = MbuyTransaction.find_by_trans_id(result_parts[0])
         if transaction.present?
-          new_money = user.money + money.to_i;
+          new_money = transaction.user.money + money.to_i;
           if transaction.user.update(money: new_money)
             mbuy_request.update(total_final: money)
             transaction.update(status: 1)
