@@ -24,8 +24,9 @@ module Api::V1::Mbuy extend ActiveSupport::Concern
 
       response = client.call(:create_cp_transaction, message: message)
       reponse_body = response.body[:create_cp_transaction_response][:return]
+      result = reponse_body.split('|')
       
-      MbuyTransaction.create(trans_id: transaction, isdn: isdn, total_amount: total_amount, checksum: checksum, user_id: @user.id, response: reponse_body, status: 0)
+      MbuyTransaction.create(trans_id: transaction, trans_code: result[1], isdn: isdn, total_amount: total_amount, checksum: checksum, user_id: @user.id, response: reponse_body, status: 0)
 
       reponse_body
     rescue Savon::SOAPFault
