@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161129031441) do
+ActiveRecord::Schema.define(version: 20161130080250) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -366,6 +366,7 @@ ActiveRecord::Schema.define(version: 20161129031441) do
 
   create_table "mbuy_transactions", force: :cascade do |t|
     t.string   "trans_id",     limit: 255
+    t.string   "trans_code",   limit: 255
     t.string   "isdn",         limit: 255
     t.string   "total_amount", limit: 255
     t.string   "checksum",     limit: 255
