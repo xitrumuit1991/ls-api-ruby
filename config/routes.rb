@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     get "/import-black-list" => "index#importBlackList"
     get "/import-email-black-list" => "index#importEmailBlackList"
     get "/script" => "index#script"
+    get "/update-room-background/:id" => "index#update_room_background"
     get "/vas-delete-sub/:sub" => "index#vas_delete_sub_id"
 
     # Admin
