@@ -39,7 +39,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def listIdol
     @totalUser = []
     @user = check_authenticate
-    page = 5
+    page = 8
     offset = params[:page].nil? ? 0 : params[:page].to_i * page
     if params[:category_id].nil?
       sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL or on_air = 1) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY on_air desc, -start desc limit #{page} offset #{offset}"
@@ -54,7 +54,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
     @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
     total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
-    @totalPage =  (Float(total_record)/5).ceil
+    @totalPage =  (Float(total_record)/8).ceil
   end
 
   def myIdol
