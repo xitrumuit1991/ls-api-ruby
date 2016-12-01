@@ -1,5 +1,8 @@
 $(document).ready(function () {
 		$("#form-work").validate();
+		$('form').submit(function(){
+			$(this).find('button[type="submit"]').prop('disabled', true);
+		});
 		$('.select2').select2();
 		$('.datetimepicker').datetimepicker({format: 'DD/MM/YYYY LT'});
 		$('.datepicker').datepicker({format: 'dd/mm/yyyy'});

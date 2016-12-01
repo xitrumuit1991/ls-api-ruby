@@ -53,9 +53,7 @@
                     <label class="col-sm-12">Idols</label>
                     <div class="col-sm-2">
                         <select class="form-control search-key" data-url="/acp/rooms/search-complete" name="room[broadcaster_id]">
-                            <% @idols.each do |idol| %>
-                            <option value="<%= idol.id %>" <% if idol.id == @data.broadcaster_id %>selected<% end %>><%= idol.fullname %></option>
-                            <% end %>
+                            <option value="<%= @data.broadcaster_id %>"><%= @data.broadcaster.fullname %></option>
                         </select>
                     </div>
                   </div>
@@ -174,7 +172,7 @@
                 <div class="form-group">
                   <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn btn-success" name="save">Lưu</button>
+                        <button class="btn btn-success" type="submit" name="save">Lưu</button>
                         <button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
                         <button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
                         <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
