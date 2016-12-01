@@ -45,6 +45,14 @@ class Acp::IndexController < Acp::ApplicationController
 		redirect_to "/acp"
 	end
 
+	def update_room_background
+		render plain: "Error", status: 400 and return if !params[:id].present?
+		Room.all.each do |room|
+			room.update(broadcaster_background_id: nil, room_background_id: params[:id])
+		end
+		render plain: "OK", status: 200  and return
+	end
+
 	def vas_delete_sub_id
 		result = vas_delete_sub params[:sub]
     render plain: result, status: 200

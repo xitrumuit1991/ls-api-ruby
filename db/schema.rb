@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161116073626) do
+ActiveRecord::Schema.define(version: 20161130080250) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -350,6 +350,34 @@ ActiveRecord::Schema.define(version: 20161116073626) do
 
   add_index "lounge_logs", ["room_id"], name: "index_lounge_logs_on_room_id", using: :btree
   add_index "lounge_logs", ["user_id"], name: "index_lounge_logs_on_user_id", using: :btree
+
+  create_table "mbuy_requests", force: :cascade do |t|
+    t.string   "command",      limit: 255
+    t.string   "cp_code",      limit: 255
+    t.string   "content_code", limit: 255
+    t.string   "total_amount", limit: 255
+    t.string   "total_final",  limit: 255
+    t.string   "account",      limit: 255
+    t.string   "isdn",         limit: 255
+    t.string   "result",       limit: 255
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  create_table "mbuy_transactions", force: :cascade do |t|
+    t.string   "trans_id",     limit: 255
+    t.string   "trans_code",   limit: 255
+    t.string   "isdn",         limit: 255
+    t.string   "total_amount", limit: 255
+    t.string   "checksum",     limit: 255
+    t.integer  "user_id",      limit: 4
+    t.string   "response",     limit: 255
+    t.integer  "status",       limit: 4
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "mbuy_transactions", ["user_id"], name: "index_mbuy_transactions_on_user_id", using: :btree
 
   create_table "megabank_logs", force: :cascade do |t|
     t.integer  "bank_id",       limit: 4
@@ -944,6 +972,7 @@ ActiveRecord::Schema.define(version: 20161116073626) do
   add_foreign_key "ios_receipts", "users"
   add_foreign_key "lounge_logs", "rooms"
   add_foreign_key "lounge_logs", "users"
+  add_foreign_key "mbuy_transactions", "users"
   add_foreign_key "megabank_logs", "banks"
   add_foreign_key "megabank_logs", "megabanks"
   add_foreign_key "megabank_logs", "users"
