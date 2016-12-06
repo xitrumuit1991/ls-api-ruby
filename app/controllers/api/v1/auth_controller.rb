@@ -406,7 +406,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           # update token
           @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
 
-          render json: { token: token , room_id: @user.broadcaster.public_room.id, on_air:@user.broadcaster.public_room.on_air}, status: 200
+          render json: { token: token , room_id: @user.broadcaster.public_room.id, on_air:@user.broadcaster.public_room.on_air, id: @user.id, email: @user.email, name: @user.name, avatar: @user.avatar_path[:avatar_w60h60]}, status: 200
         else
           render json: { error: "Bạn không phải là Idol !" }, status: 403
         end

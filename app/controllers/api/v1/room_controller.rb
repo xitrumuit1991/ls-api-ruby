@@ -54,7 +54,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
     @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
     total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
-    @totalPage =  (Float(total_record)/8).ceil
+    @totalPage =  (Float(total_record) / limit).ceil
   end
 
   def myIdol
