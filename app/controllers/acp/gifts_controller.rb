@@ -23,7 +23,7 @@ class Acp::GiftsController < Acp::ApplicationController
     parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     @data = @model.new(parameters)
     if @data.save
-      redirect_to({ action: 'index' }, notice: 'Room type was successfully created.')
+      redirect_to({ action: 'index' }, notice: 'Gift was successfully created.')
     else
       render :new
     end
@@ -45,6 +45,9 @@ class Acp::GiftsController < Acp::ApplicationController
 
   def ajax_update_handle_checkbox
     if @data.update(params[:attrs].to_hash)
+      unless @data.status
+        BctGift.where(gift_id: @data.id).destroy_all
+      end
       render plain: 'Success', status: 200
     else
       render plain: 'Error', status: 400
