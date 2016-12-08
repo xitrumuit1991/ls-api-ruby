@@ -53,6 +53,17 @@ class Acp::IndexController < Acp::ApplicationController
 		render plain: "OK", status: 200  and return
 	end
 
+	def update_status_actions_gifts
+		Gift.where(status: false).each do |gift|
+			BctGift.where(gift_id: gift.id).destroy_all
+		end
+
+		RoomAction.where(status: false).each do |action|
+			BctAction.where(room_action_id: action.id).destroy_all
+		end
+		render plain: "OK", status: 200  and return
+	end
+
 	def vas_delete_sub_id
 		result = vas_delete_sub params[:sub]
     render plain: result, status: 200

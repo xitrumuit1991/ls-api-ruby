@@ -45,6 +45,9 @@ class Acp::RoomActionsController < Acp::ApplicationController
 
   def ajax_update_handle_checkbox
     if @data.update(params[:attrs].to_hash)
+      unless @data.status
+        BctAction.where(room_action_id: @data.id).destroy_all
+      end 
       render plain: 'Success', status: 200
     else
       render plain: 'Error', status: 400
