@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     get "/import" => "index#import"
     get "/import-black-list" => "index#importBlackList"
     get "/import-email-black-list" => "index#importEmailBlackList"
+    get "/import-virtual-user" => "index#importVirtualUser"
     get "/script" => "index#script"
     get "/update-room-background/:id" => "index#update_room_background"
     get "/update-status-actions-gifts" => "index#update_status_actions_gifts"

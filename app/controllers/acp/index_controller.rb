@@ -6,36 +6,49 @@ class Acp::IndexController < Acp::ApplicationController
 	end
 
 	def import
-		file = Roo::CSV.new("#{Rails.root}/public/default/IP_pool_updated_20160517.csv")
-
-		(1..file.last_row).each do |i|
-			row = file.row(i)
-			mbf_ip = MobifoneIp.new
-			mbf_ip.ip = row[0]
-			mbf_ip.save
-		end
-
+		# file = Roo::CSV.new("#{Rails.root}/public/default/IP_pool_updated_20160517.csv")
+		# (1..file.last_row).each do |i|
+		# 	row = file.row(i)
+		# 	mbf_ip = MobifoneIp.new
+		# 	mbf_ip.ip = row[0]
+		# 	mbf_ip.save
+		# end
 		redirect_to "/acp"
 	end
 
 	def importBlackList
-		file = Roo::CSV.new("#{Rails.root}/public/default/livestar-mbf.csv")
-		(1..file.last_row).each do |i|
-			row = file.row(i)
-			mbf_ip = MobifoneBlacklist.new
-			mbf_ip.sub_id = row[0]
-			mbf_ip.save
-		end
+		# file = Roo::CSV.new("#{Rails.root}/public/default/livestar-mbf.csv")
+		# (1..file.last_row).each do |i|
+		# 	row = file.row(i)
+		# 	mbf_ip = MobifoneBlacklist.new
+		# 	mbf_ip.sub_id = row[0]
+		# 	mbf_ip.save
+		# end
 		redirect_to "/acp"
 	end
 
 	def importEmailBlackList
-		file = Roo::CSV.new("#{Rails.root}/public/default/email-blacklist.csv")
+		# file = Roo::CSV.new("#{Rails.root}/public/default/email-blacklist.csv")
+		# (1..file.last_row).each do |i|
+		# 	row = file.row(i)
+		# 	email_domain = EmailDomainBlacklist.new
+		# 	email_domain.domain = row[0]
+		# 	email_domain.save
+		# end
+		redirect_to "/acp"
+	end
+
+	def importVirtualUser
+		file = Roo::CSV.new("#{Rails.root}/public/default/virtual-users.csv")
 		(1..file.last_row).each do |i|
 			row = file.row(i)
-			email_domain = EmailDomainBlacklist.new
-			email_domain.domain = row[0]
-			email_domain.save
+			user = VirtualUser.new
+			user.name 	= row[1]
+			user.email 	= row[2]
+			user.phone 	= row[3]
+			user.fb_id 	= row[10]
+			user.remote_avatar_url = row[9]
+			user.save
 		end
 		redirect_to "/acp"
 	end
