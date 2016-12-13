@@ -2,8 +2,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
 
-  before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
-  before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb]
+  before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers]
+  before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers]
 
   def onair
     @user = check_authenticate
@@ -34,6 +34,14 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
 
     @totalPage =  (Float(total_record)/18).ceil
+  end
+
+  def addVirtualUsers
+    @listUsers = VirtualUser.offset(rand(VirtualUser.count)).limit(rand(4..8))
+    @listUsers.each do |user|
+      $redis.set("VirtualUsers:#{params[:room_id]}:#{user.id}", user.to_json)
+      # addVirtualUsers = $redis.get("addVirtualUsers:#{params[:room_id]}:#{user.id}")
+    end
   end
 
   def listIdol
