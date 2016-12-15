@@ -141,7 +141,7 @@ class Acp::ReportsController < Acp::ApplicationController
   	if params[:start_date].present? && params[:end_date].present?
   		where['heart_logs.created_at'] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
   	elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
-  		redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+  		redirect_to({ action: 'idol_receive_hearts' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
   	end
 
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "quantity desc"
@@ -151,6 +151,63 @@ class Acp::ReportsController < Acp::ApplicationController
       format.html
       format.xlsx
     end
+  end
+
+  def idol_gift_logs
+    where = Hash.new
+    where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'idol_gift_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
+
+    @rooms = Room.where(is_privated: false)
+    @all = GiftLog.where(where)
+    @logs = @all.order(order).page(params[:page])
+    @total = @all.to_a.sum(&:cost)
+    @total_page = @logs.to_a.sum(&:cost)
+  end
+
+  def idol_action_logs
+    where = Hash.new
+    where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'idol_gift_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
+
+    @rooms = Room.where(is_privated: false)
+    @all = ActionLog.where(where)
+    @logs = @all.order(order).page(params[:page])
+    @total = @all.to_a.sum(&:cost)
+    @total_page = @logs.to_a.sum(&:cost)
+  end
+
+  def idol_lounge_logs
+    where = Hash.new
+    where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'idol_gift_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
+
+    @rooms = Room.where(is_privated: false)
+    @all = LoungeLog.where(where)
+    @logs = @all.order(order).page(params[:page])
+    @total = @all.to_a.sum(&:cost)
+    @total_page = @logs.to_a.sum(&:cost)
   end
 
   def sms

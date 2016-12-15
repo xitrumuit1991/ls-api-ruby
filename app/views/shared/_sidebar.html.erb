@@ -588,6 +588,27 @@
           </li>
           <% end %>
 
+          <% if can? :idol_gift_logs, :report %>
+          <li class="<% if controller_name == 'reports' && action_name == 'idol_gift_logs' %>active<% end %>">
+            <%= link_to(acp_reports_idol_gift_logs_path) do %><span class="title">Idol gift logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <% end %>
+
+          <% if can? :idol_action_logs, :report %>
+          <li class="<% if controller_name == 'reports' && action_name == 'idol_action_logs' %>active<% end %>">
+            <%= link_to(acp_reports_idol_action_logs_path) do %><span class="title">Idol action logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <% end %>
+
+          <% if can? :idol_lounge_logs, :report %>
+          <li class="<% if controller_name == 'reports' && action_name == 'idol_lounge_logs' %>active<% end %>">
+            <%= link_to(acp_reports_idol_lounge_logs_path) do %><span class="title">Idol lounge logs</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <% end %>
+
           <% if can? :bct_time_logs, :report %>
           <li class="<% if controller_name == 'reports' && action_name == 'bct_time_logs' %>active<% end %>">
             <%= link_to(acp_reports_bct_time_logs_path) do %><span class="title">Times</span><% end %>
