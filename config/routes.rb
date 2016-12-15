@@ -344,6 +344,7 @@ Rails.application.routes.draw do
       scope 'rooms' do
         get '/on-air' => 'room#onair' #
         get '/add-virtual-users' => 'room#addVirtualUsers'
+        get '/leave-virtual-users' => 'room#leaveVirtualUsers'
         get '/my-idol' => 'room#myIdol' #
         get '/coming-soon' => 'room#comingSoon' #
         get '/room-type' => 'room#roomType'
