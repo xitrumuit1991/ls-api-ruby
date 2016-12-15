@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161130080250) do
+ActiveRecord::Schema.define(version: 20161212102433) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -872,6 +872,17 @@ ActiveRecord::Schema.define(version: 20161130080250) do
     t.float    "exp_bonus",          limit: 24
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+  end
+
+  create_table "virtual_users", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.string   "email",      limit: 255
+    t.string   "phone",      limit: 255
+    t.string   "avatar",     limit: 255
+    t.string   "fb_id",      limit: 255
+    t.integer  "vip",        limit: 4,   default: 0
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
   create_table "wap_mbf_logs", force: :cascade do |t|
