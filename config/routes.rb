@@ -185,6 +185,9 @@ Rails.application.routes.draw do
     get '/reports/idols' => 'reports#idols'
     get '/reports/idol-receive-coins' => 'reports#idol_receive_coins'
     get '/reports/idol-receive-hearts' => 'reports#idol_receive_hearts'
+    get '/reports/idol-gift-logs' => 'reports#idol_gift_logs'
+    get '/reports/idol-action-logs' => 'reports#idol_action_logs'
+    get '/reports/idol-lounge-logs' => 'reports#idol_lounge_logs'
     get '/reports/sms' => 'reports#sms'
     get '/reports/bct_time_logs' => 'reports#bct_time_logs'
     get '/reports/card' => 'reports#card'
@@ -297,6 +300,9 @@ Rails.application.routes.draw do
         get '/broadcaster-background' => 'broadcasters#broadcasterBackground' # api is not using
         get '/top-hearter' => 'broadcasters#reportTopHearter' #
         get '/top-spender' => 'broadcasters#reportTopSpender' #
+        get 'gift-logs' => 'broadcasters#giftLogs' #
+        get 'action-logs' => 'broadcasters#actionLogs' #
+        get 'lounge-logs' => 'broadcasters#loungeLogs' #
         get '/:id' => 'broadcasters#profile' #
         post '/status' => 'broadcasters#status' # #Liem - Không thấy dùng bên web
         post '/pictures' => 'broadcasters#pictures' #
