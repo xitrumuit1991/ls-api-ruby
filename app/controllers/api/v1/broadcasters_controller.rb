@@ -27,7 +27,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     limit  = 5
     offset = params[:page].nil? ? 0 : params[:page].to_i * limit
     count  = @user.broadcaster.public_room.gift_logs.count
-    @logs = @user.broadcaster.public_room.gift_logs.order(id: :desc)
+    @logs = @user.broadcaster.public_room.gift_logs.order(id: :desc).limit(limit).offset(offset)
     @total_money = @logs.to_a.sum(&:cost)
     # @total_money = GiftLog.where(id: @logs.pluck(:id)).sum("quantity * cost")
     @total_pages = (Float(count) / limit).ceil
@@ -37,7 +37,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     limit  = 5
     offset = params[:page].nil? ? 0 : params[:page].to_i * limit
     count  = @user.broadcaster.public_room.action_logs.count
-    @logs = @user.broadcaster.public_room.action_logs.order(id: :desc)
+    @logs = @user.broadcaster.public_room.action_logs.order(id: :desc).limit(limit).offset(offset)
     @total_money = @logs.to_a.sum(&:cost)
     @total_pages = (Float(count) / limit).ceil
   end
@@ -46,7 +46,7 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     limit  = 5
     offset = params[:page].nil? ? 0 : params[:page].to_i * limit
     count  = @user.broadcaster.public_room.lounge_logs.count
-    @logs = @user.broadcaster.public_room.lounge_logs.order(id: :desc)
+    @logs = @user.broadcaster.public_room.lounge_logs.order(id: :desc).limit(limit).offset(offset)
     @total_money = @logs.to_a.sum(&:cost)
     @total_pages = (Float(count) / limit).ceil
   end
