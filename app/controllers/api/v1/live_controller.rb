@@ -284,11 +284,29 @@
           expiry = $redis.get(key)
           $redis.del(key) if Time.now >= Time.at(expiry.to_i)
         end
+        # remove virtual users in redis
+        $redis.del($redis.keys("VirtualUsers:#{@room.id}:*"))
         return head 200
       else
         render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
     end
+
+    def kickUser
+      if params[:user_id].present?
+        @user = User.find_by_id(params[:user_id])
+        if @user.present? and !@user.is_broadcaster
+          @user.ban @room.id
+          return head 200
+        else
+          return head 404
+        end
+      else
+        render json: {error: 'Không đủ tham số'}, status: 400 and return
+      end
+    end
+
+    private
 
     def _bctTimeLog
       if @room.on_air
@@ -308,23 +326,8 @@
         bct_log.status = status
         bct_log.save
       end
+      return true
     end
-
-    def kickUser
-      if params[:user_id].present?
-        @user = User.find_by_id(params[:user_id])
-        if @user.present? and !@user.is_broadcaster
-          @user.ban @room.id
-          return head 200
-        else
-          return head 404
-        end
-      else
-        render json: {error: 'Không đủ tham số'}, status: 400 and return
-      end
-    end
-
-    private
 
     def get_users
       @user_list = $redis.hgetall(@room.id)

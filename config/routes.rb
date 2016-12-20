@@ -274,6 +274,7 @@ Rails.application.routes.draw do
         get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
         get '/get-megabanks' => 'user#getMegabanks'
+        get '/count-share' => 'user#countShare' #
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
         post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #
