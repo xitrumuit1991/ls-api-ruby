@@ -2,8 +2,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   include Api::V1::Authorize
   include KrakenHelper
 
-  before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers]
-  before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers]
+  before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers, :leaveVirtualUsers]
+  before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers, :leaveVirtualUsers]
 
   def onair
     @user = check_authenticate
@@ -37,11 +37,37 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def addVirtualUsers
-    @listUsers = VirtualUser.offset(rand(VirtualUser.count)).limit(rand(4..8))
+    listVirtualUsers = $redis.keys("VirtualUsers:#{params[:room_id]}:*")
+    list = []
+    if listVirtualUsers
+      listVirtualUsers.each do |redis|
+        user = JSON.parse($redis.get(redis))
+        list<<user["id"]
+      end
+    end
+    list = list.length == 0 ? 0 : list
+    limit = rand(4..8)
+    offset = rand((VirtualUser.count/limit).ceil)
+    @listUsers = VirtualUser.where("id NOT IN (?)", list).offset(offset).limit(limit)
     @listUsers.each do |user|
       $redis.set("VirtualUsers:#{params[:room_id]}:#{user.id}", user.to_json)
-      # addVirtualUsers = $redis.get("addVirtualUsers:#{params[:room_id]}:#{user.id}")
     end
+  end
+
+  def leaveVirtualUsers
+    listVirtualUsers = $redis.keys("VirtualUsers:#{params[:room_id]}:*")
+    list = []
+    if listVirtualUsers
+      listVirtualUsers.each do |redis|
+        user = JSON.parse($redis.get(redis))
+        list<<user["id"]
+      end
+    end
+    list = list.sample(rand(4..8))
+    list.each do |id|
+      $redis.del("VirtualUsers:#{params[:room_id]}:#{id}")
+    end
+    @listUsers = VirtualUser.where("id IN (?)", list)
   end
 
   def listIdol

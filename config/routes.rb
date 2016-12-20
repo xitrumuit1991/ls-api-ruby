@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     get "/import-black-list" => "index#importBlackList"
     get "/import-email-black-list" => "index#importEmailBlackList"
     get "/import-virtual-user" => "index#importVirtualUser"
+    get "/update-email-virtual-user" => "index#updateEmailVirtualUser"
     get "/script" => "index#script"
     get "/update-room-background/:id" => "index#update_room_background"
     get "/update-status-actions-gifts" => "index#update_status_actions_gifts"
@@ -350,6 +351,7 @@ Rails.application.routes.draw do
       scope 'rooms' do
         get '/on-air' => 'room#onair' #
         get '/add-virtual-users' => 'room#addVirtualUsers'
+        get '/leave-virtual-users' => 'room#leaveVirtualUsers'
         get '/my-idol' => 'room#myIdol' #
         get '/coming-soon' => 'room#comingSoon' #
         get '/room-type' => 'room#roomType'

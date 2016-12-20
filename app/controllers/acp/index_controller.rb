@@ -53,6 +53,11 @@ class Acp::IndexController < Acp::ApplicationController
 		redirect_to "/acp"
 	end
 
+	def updateEmailVirtualUser
+		VirtualUsersJob.perform_later
+		redirect_to "/acp"
+	end
+
 	def script
 		User.where("is_banned IS NULL").update_all(is_banned: 0)
 		redirect_to "/acp"
