@@ -637,13 +637,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	end
 
 	def countShare
-		begin
-		 	if params[:room_id]
-		 		render json: {number: FbShareLog.where('room_id = ?', params[:room_id]).count } , status: 200
-		 	end
-		rescue Exception => e
+		if params[:room_id]
+	 		render json: {number: FbShareLog.where('room_id = ?', params[:room_id]).count } , status: 200
+	 	else
 			render plain: 'Vui lòng kiểm tra lại!!!', status: 400
-		end
+	 	end
 	end
 
 	def shareFBReceivedCoin
