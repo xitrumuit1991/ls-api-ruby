@@ -1232,6 +1232,21 @@
     + status 400: ```{error: "Thông báo lỗi "}```
     + status 401: ```{error: "Thông báo lỗi chưa đăng nhập "}```
 
+### share fb received coin
+- URI: **/share-fb-received-coin**
+- Method: **POST**
+- Header:
+  + Authorization: Token token="this-is-jwt-token"
+- Request:
+  + room: room
+  + post_id: post_id
+  + accessToken: accessToken of fb
+- Response:
+  + status: **200**, **400**
+  + errors:
+    + status 200: ```{plain: "Đã cộng tiền thành công!!! "}```
+    + status 400: ```{plain: "Mỗi ngày chỉ được nhận xu một lần!!! "}```
+
 ### Update cover
 - URI: **/cover**
 - Method: **POST**
