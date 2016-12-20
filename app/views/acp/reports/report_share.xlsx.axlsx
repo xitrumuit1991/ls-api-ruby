@@ -1,0 +1,7 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Count Share") do |sheet|
+	sheet.add_row ["Name", "Email", "Count"]
+  @data.each do |item|
+    sheet.add_row [item.room.broadcaster.user.name, item.room.broadcaster.user.email, item.count]
+  end
+end
