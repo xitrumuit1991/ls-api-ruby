@@ -59,6 +59,27 @@ class Acp::ReportsController < Acp::ApplicationController
     end
   end
 
+  def report_share
+    where = Hash.new
+    where[:created_at] = Time.zone.now.beginning_of_month..Time.zone.now.end_of_month
+    if params[:broadcaster_id].present?
+      where[:room_id] = Broadcaster.find_by_id(params[:broadcaster_id]).public_room.id if Broadcaster.find_by_id(params[:broadcaster_id]).public_room.present?
+    end
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'users' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+    @idols = Broadcaster.where(deleted: 0)
+    order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "id desc"
+    @data = params[:format].present? ? FbShareLog.select('room_id, COUNT(*) AS count').where(where).group(:room_id).order(order) : FbShareLog.select('room_id, COUNT(*) AS count').where(where).group(:room_id).order(order).page(params[:page])
+    respond_to do |format|
+      format.html
+      format.xlsx
+    end
+  end
+
   def user_online
   	where = Hash.new
   	where['last_login'] = Time.zone.now.beginning_of_day..Time.zone.now.end_of_day

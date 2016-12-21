@@ -189,6 +189,7 @@ Rails.application.routes.draw do
     get '/reports/idol-gift-logs' => 'reports#idol_gift_logs'
     get '/reports/idol-action-logs' => 'reports#idol_action_logs'
     get '/reports/idol-lounge-logs' => 'reports#idol_lounge_logs'
+    get '/reports/report-share' => 'reports#report_share'
     get '/reports/sms' => 'reports#sms'
     get '/reports/bct_time_logs' => 'reports#bct_time_logs'
     get '/reports/card' => 'reports#card'
@@ -274,6 +275,7 @@ Rails.application.routes.draw do
         get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
         get '/get-megabanks' => 'user#getMegabanks'
+        get '/count-share' => 'user#countShare' #
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
         post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #

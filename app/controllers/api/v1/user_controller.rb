@@ -7,7 +7,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	include KrakenHelper
 	include CaptchaHelper
 	helper YoutubeHelper
-	before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms]
+	before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms, :countShare]
 
 	def profile
 		@vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
@@ -634,6 +634,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 	def getTradeHistory
 		@trade = @user.user_has_vip_packages.order(created_at: :desc).limit(10)
+	end
+
+	def countShare
+		if params[:room_id]
+	 		render json: {number: FbShareLog.where('room_id = ?', params[:room_id]).count } , status: 200
+	 	else
+			render plain: 'Vui lòng kiểm tra lại!!!', status: 400
+	 	end
 	end
 
 	def shareFBReceivedCoin
