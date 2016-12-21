@@ -82,7 +82,7 @@
 							<td class="v-align-middle">
 								<% if item.end_room != nil %>
 								<p>
-									<% total += (item.end_room - item.start_room).round %>
+									<% total += item.end_room.to_i - item.start_room.to_i %>
 									<%= item.end_room.in_time_zone("Hanoi") %>
 								</p>
 								<% else %>
@@ -108,7 +108,10 @@
 			</form>
 			<div class="row">
 				<div class="col-md-12">
-					<h4>Total: <span class="semi-bold"><%= Time.at(total).utc.strftime("%H:%M:%S") %></span></h4>
+					<% mm, ss = total.divmod(60) %>
+					<% hh, mm = mm.divmod(60) %>
+					<% dd, hh = hh.divmod(24) %>
+					<h4>Total: <span class="semi-bold"><%= "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss] %></span></h4>
 				</div>
 			</div>
 			<div class="row">

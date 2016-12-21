@@ -33,6 +33,11 @@ class Acp::ReportsController < Acp::ApplicationController
     end
     where[:room_id] = params[:room] if params[:room].present?
     @data = BctTimeLog.all.where(where).order('id desc').page params[:page]
+    @dataxlsx = BctTimeLog.all.where(where).order('id desc')
+    respond_to do |format|
+      format.html
+      format.xlsx
+    end
   end
 
   def idol_autocomplete
@@ -74,6 +79,7 @@ class Acp::ReportsController < Acp::ApplicationController
     @idols = Broadcaster.where(deleted: 0)
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "id desc"
     @data = params[:format].present? ? FbShareLog.select('room_id, COUNT(*) AS count').where(where).group(:room_id).order(order) : FbShareLog.select('room_id, COUNT(*) AS count').where(where).group(:room_id).order(order).page(params[:page])
+    @dataxlsx = FbShareLog.select('room_id, COUNT(*) AS count').where(where).group(:room_id).order(order)
     respond_to do |format|
       format.html
       format.xlsx
@@ -149,6 +155,7 @@ class Acp::ReportsController < Acp::ApplicationController
 
   	@idols = Broadcaster.where(deleted: 0)
     @rooms = params[:format].present? ? Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id) : Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id).page(params[:page])
+    @roomsxlsx = Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id)
     respond_to do |format|
       format.html
       format.xlsx
