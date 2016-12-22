@@ -4,8 +4,8 @@ wb.add_worksheet(name: "Time BCT") do |sheet|
     sum = 0
   @dataxlsx.each do |item|
     total = item.end_room != nil ? Time.at((item.end_room.to_i - item.start_room.to_i).round).utc.strftime("%H:%M:%S") : "00:00:00"
-    end_room = item.end_room != nil ? item.end_room.in_time_zone("Hanoi") : "Live"
-    sheet.add_row [item.room.broadcaster.fullname, item.room.title, item.start_room.in_time_zone("Hanoi"), end_room, total, item.status.to_s]
+    end_room = item.end_room != nil ? item.end_room : "Live"
+    sheet.add_row [item.room.broadcaster.fullname, item.room.title, item.start_room, end_room, total, item.status.to_s]
     sum += item.end_room != nil ? item.end_room.to_i - item.start_room.to_i : 0
   end
   mm, ss = sum.divmod(60)
