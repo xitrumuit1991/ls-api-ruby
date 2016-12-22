@@ -1,8 +1,15 @@
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "Time BCT") do |sheet|
-	sheet.add_row ["IDOL", "ROOM", "START", "END", "TIME"]
-  @data.each do |item|
-  	total = item.end_room != nil ? Time.at((item.end_room - item.start_room).round).utc.strftime("%H:%M:%S") : "00:00:00"
-    sheet.add_row [item.room.broadcaster.fullname, item.room.title, item.start_room, item.end_room, total]
+    sheet.add_row ["IDOL", "ROOM", "START", "END", "TIME", "STATUS"]
+    sum = 0
+  @dataxlsx.each do |item|
+    total = item.end_room != nil ? Time.at((item.end_room.to_i - item.start_room.to_i).round).utc.strftime("%H:%M:%S") : "00:00:00"
+    sheet.add_row [item.room.broadcaster.fullname, item.room.title, item.start_room.in_time_zone("Hanoi"), item.end_room.in_time_zone("Hanoi"), total, item.status.to_s]
+    sum += item.end_room != nil ? item.end_room.to_i - item.start_room.to_i : 0
   end
+  mm, ss = sum.divmod(60)
+  hh, mm = mm.divmod(60)
+  dd, hh = hh.divmod(24)
+  sheet.add_row ["", "", "", "", ""]
+  sheet.add_row ["", "", "", "Total", "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss]]
 end
