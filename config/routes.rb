@@ -201,6 +201,7 @@ Rails.application.routes.draw do
     # Caches
     get '/caches/index' => 'caches#index'
     post '/caches/clear-cache-clider' => 'caches#clearCacheClider'
+    post '/caches/edit-tim-bct' => 'caches#edit_tim_bct'
     post '/caches/clear-cache-poster' => 'caches#clearCachePoster'
     post '/caches/clear-home-featured' => 'caches#clearCacheHomeFeatured'
     post '/caches/clear-room-featured' => 'caches#clearCacheRoomFeatured'
