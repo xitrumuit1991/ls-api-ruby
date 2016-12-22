@@ -304,7 +304,7 @@
 
     def _bctTimeLog
       if @room.on_air
-        BctTimeLog.create({:room_id => @room.id, :last_login => @room.broadcaster.user.last_login, :start_room => Time.now })
+        BctTimeLog.create({:room_id => @room.id, :last_login => @room.broadcaster.user.last_login, :start_room => Time.now, :status => false })
       else
         bct_log = BctTimeLog.where(:room_id => @room.id, :end_room => nil, :flag => false).order("id desc").take
         endRoom = Time.now
