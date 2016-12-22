@@ -80,7 +80,7 @@
 								<p><%= item.start_room.in_time_zone("Hanoi") %></p>
 							</td>
 							<td class="v-align-middle">
-								<% end_room = item.end_room != nil ? item.end_room : "LIVE" %>
+								<% end_room = item.end_room != nil ? item.end_room.in_time_zone("Hanoi") : "LIVE" %>
 								<% total += item.end_room != nil ? item.end_room.to_i - item.start_room.to_i : 0 %>
 								<p style="color: red;">
 									<%= end_room %>
