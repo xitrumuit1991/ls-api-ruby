@@ -143,4 +143,14 @@ class Acp::CachesController < Acp::ApplicationController
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Vip successfully.')
 	end
 
+	def edit_tim_bct
+		logbct = BctTimeLog.all.where(:created_at=>Time.parse("2016-11-30 12:56:00 +0700")..Time.parse("2016-12-22 15:57:00 +0700")).order('id desc')
+		logbct.each do |iteamLog|
+			timeStart = iteamLog.start_room + 7.hours
+			timeEnd = iteamLog.end_room != nil ? iteamLog.end_room + 7.hours : nil
+			iteamLog.update(:start_room => timeStart, :end_room => timeEnd)
+		end
+        redirect_to({ action: 'index' }, notice: 'Edit time successfully.')
+	end
+
 end
