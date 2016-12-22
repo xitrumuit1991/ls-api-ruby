@@ -12,24 +12,18 @@
     end
 
     def addHeartInRoom
-      max_heart  = @user.user_level.heart_per_day
       user_heart = UserReceivedHeart.find_by_user_id(@user.id) || UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
       if (DateTime.now.to_i - user_heart.updated_at.to_i) >= Settings.timeAddHeart
-        if @user.no_heart < max_heart
-          begin
-            user_heart.update(:hearts => user_heart.hearts.to_i + 1)
-            @user.update(:no_heart => @user.no_heart.to_i + 1)
-            user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
-            $emitter.of('/room').in(@room.id).emit('add hearts', {hearts: @user.no_heart, sender: user})
-            return head 201
-          rescue => e
-            render json: {error: e.message}, status: 400
-          end
-        else
-          return head 204
+        begin
+          user_heart.update(:hearts => user_heart.hearts.to_i + 1)
+          @user.update(:no_heart => @user.no_heart.to_i + 1)
+          user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
+          $emitter.of('/room').in(@room.id).emit('add hearts', {hearts: @user.no_heart, sender: user})
+          return head 201
+        rescue => e
+          render json: {error: e.message}, status: 400
         end
       end
-
       return head 204
     end
 
