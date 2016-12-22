@@ -191,7 +191,7 @@ Rails.application.routes.draw do
     get '/reports/idol-lounge-logs' => 'reports#idol_lounge_logs'
     get '/reports/report-share' => 'reports#report_share'
     get '/reports/sms' => 'reports#sms'
-    get '/reports/bct_time_logs' => 'reports#bct_time_logs'
+    get '/reports/bct-time-logs' => 'reports#bct_time_logs'
     get '/reports/card' => 'reports#card'
     get '/reports/bank' => 'reports#bank'
     # Rooms
