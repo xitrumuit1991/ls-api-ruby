@@ -83,7 +83,11 @@ Rails.application.routes.draw do
 
     # Sms mobile
     resources :sms_logs
-    post '/sms_logs/destroy_m' => 'sms_logs#destroy_m'
+    post '/sms_logs/destroy_m' => 'sms_logs#destroy_m' 
+
+    # OS Versions
+    resources :app_configs
+    post '/app_configs/destroy_m' => 'app_configs#destroy_m'
 
     # Sms mobile
     resources :cart_logs
@@ -258,6 +262,11 @@ Rails.application.routes.draw do
         post  'wap-mbf-publisher' => 'auth#wap_mbf_publisher'
         get   'wap-mbf-publisher-directly/:publisher' => 'auth#wap_mbf_publisher_directly'
         post  'wap-mbf-htt-back' => 'auth#wap_mbf_htt_back'
+      end
+
+      # users
+      scope '/configs' do
+        post '/' => 'app_configs#versionCheck' #
       end
 
       # users
