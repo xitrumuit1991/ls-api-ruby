@@ -401,6 +401,7 @@ Rails.application.routes.draw do
         post '/start-room' => 'live#startRoom'
         post '/end-room' => 'live#endRoom'
         post '/kick-user' => 'live#kickUser'
+        post '/force-end-room' => 'live#forceEnd'
       end
       # Vip
       scope 'vips' do

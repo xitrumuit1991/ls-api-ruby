@@ -3,8 +3,8 @@
     include Api::V1::CacheHelper
     include RecordStreamHelper
 
-    before_action :authenticate, :is_subscribed
-    before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser]
+    before_action :authenticate, :is_subscribed, except: [:forceEnd]
+    before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser, :forceEnd]
     before_action :check_permission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
     def getUserList
@@ -266,6 +266,30 @@
     end
 
     def endRoom
+      @room.on_air = false
+      if @room.save
+        _bctTimeLog()
+        $emitter.of('/room').in(@room.id).emit('room off')
+        end_stream @room
+
+        # remove expired banned user
+        banned = $redis.keys("ban:#{@room.id}:*")
+        banned.each do |key|
+          expiry = $redis.get(key)
+          $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+        end
+        # remove virtual users in redis
+        $redis.del($redis.keys("VirtualUsers:#{@room.id}:*"))
+        return head 200
+      else
+        render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
+      end
+    end
+
+    def forceEnd
+      @room = Room.find(params[:room_id])
+      return head 200 if @room.on_air == false
+
       @room.on_air = false
       if @room.save
         _bctTimeLog()
