@@ -43,7 +43,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if listVirtualUsers
         listVirtualUsers.each do |redis|
           user = JSON.parse($redis.get(redis))
-          list<<user["id"]
+          list << user["id"]
         end
       end
       list = list.length == 0 ? 0 : list
