@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161223075102) do
+ActiveRecord::Schema.define(version: 20161227034627) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -266,6 +266,7 @@ ActiveRecord::Schema.define(version: 20161223075102) do
     t.integer  "room_id",    limit: 4
     t.string   "fb_id",      limit: 100
     t.string   "post_id",    limit: 255
+    t.string   "device_id",  limit: 255
     t.string   "coin",       limit: 255
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
@@ -506,15 +507,6 @@ ActiveRecord::Schema.define(version: 20161223075102) do
   add_index "monthly_top_user_send_gifts", ["broadcaster_id"], name: "index_monthly_top_user_send_gifts_on_broadcaster_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["room_id"], name: "index_monthly_top_user_send_gifts_on_room_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["user_id"], name: "index_monthly_top_user_send_gifts_on_user_id", using: :btree
-
-  create_table "os_versions", force: :cascade do |t|
-    t.string   "version",      limit: 20
-    t.string   "os",           limit: 20
-    t.string   "app",          limit: 20
-    t.boolean  "force_update",            default: false
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-  end
 
   create_table "otps", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
