@@ -677,22 +677,23 @@ class Api::V1::UserController < Api::V1::ApplicationController
           money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 100 : 20
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
-            render plain: 'Facebook đã chia sẽ trước đó!!!', status: 200
+            render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
+
           elsif FbShareLog.where('user_id = ? AND device_id = ? AND room_id = ? AND created_at > ?', @user.id, params[:device_id], room.id, Time.now.beginning_of_day).count < 1
             @user.increaseMoney(money)
             fb_logs(nil, money, fb_id, room.id, params[:device_id])
-            render plain: 'Đã cộng tiền thành công!!!', status: 200
+            render json: {message: "Đã cộng tiền thành công!!!" } , status: 200
           else
-            render plain: 'Facebook đã chia sẽ trước đó!!!', status: 400
+            render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
           end
         else
-          render plain: 'Phong đang ở trạng thái đống !!!', status: 400
+          render json: {message: "Phong đang ở trạng thái đống !!!" } , status: 400
         end
       else
-        render plain: 'Bạn phải cài app trước khi share!!!', status: 400
+        render json: {message: "Bạn phải cài app trước khi share!!!" } , status: 400
       end
     rescue Exception => e
-      render plain: 'Bạn chưa chia sẽ livestar.vn lên tường nhà!!!', status: 400
+      render json: {message: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
     end
   end
 
