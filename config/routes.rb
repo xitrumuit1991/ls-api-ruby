@@ -289,6 +289,7 @@ Rails.application.routes.draw do
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
         post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #
+        post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #
         post '/update-password' => 'user#updatePassword'
         post '/avatar' => 'user#uploadAvatar' #
         post '/cover' => 'user#uploadCover' #
