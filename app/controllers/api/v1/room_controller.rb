@@ -37,20 +37,22 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   def addVirtualUsers
-    listVirtualUsers = $redis.keys("VirtualUsers:#{params[:room_id]}:*")
-    list = []
-    if listVirtualUsers
-      listVirtualUsers.each do |redis|
-        user = JSON.parse($redis.get(redis))
-        list<<user["id"]
+    if Room.find(params[:room_id]).on_air
+      listVirtualUsers = $redis.keys("VirtualUsers:#{params[:room_id]}:*")
+      list = []
+      if listVirtualUsers
+        listVirtualUsers.each do |redis|
+          user = JSON.parse($redis.get(redis))
+          list << user["id"]
+        end
       end
-    end
-    list = list.length == 0 ? 0 : list
-    limit = rand(4..8)
-    offset = rand((VirtualUser.count/limit).ceil)
-    @listUsers = VirtualUser.where("id NOT IN (?)", list).offset(offset).limit(limit)
-    @listUsers.each do |user|
-      $redis.set("VirtualUsers:#{params[:room_id]}:#{user.id}", user.to_json)
+      list = list.length == 0 ? 0 : list
+      limit = rand(4..8)
+      offset = rand((VirtualUser.count/limit).ceil)
+      @listUsers = VirtualUser.where("id NOT IN (?)", list).offset(offset).limit(limit)
+      @listUsers.each do |user|
+        $redis.set("VirtualUsers:#{params[:room_id]}:#{user.id}", user.to_json)
+      end
     end
   end
 

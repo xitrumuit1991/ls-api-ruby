@@ -83,7 +83,11 @@ Rails.application.routes.draw do
 
     # Sms mobile
     resources :sms_logs
-    post '/sms_logs/destroy_m' => 'sms_logs#destroy_m'
+    post '/sms_logs/destroy_m' => 'sms_logs#destroy_m' 
+
+    # OS Versions
+    resources :app_configs
+    post '/app_configs/destroy_m' => 'app_configs#destroy_m'
 
     # Sms mobile
     resources :cart_logs
@@ -261,6 +265,11 @@ Rails.application.routes.draw do
       end
 
       # users
+      scope '/configs' do
+        post '/' => 'app_configs#versionCheck' #
+      end
+
+      # users
       scope '/users' do
         get '/:id/avatar' => 'user#getAvatar'
         get '/:id/real-avatar' => 'user#real_avatar'
@@ -280,6 +289,7 @@ Rails.application.routes.draw do
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
         post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #
+        post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #
         post '/update-password' => 'user#updatePassword'
         post '/avatar' => 'user#uploadAvatar' #
         post '/cover' => 'user#uploadCover' #
@@ -392,6 +402,7 @@ Rails.application.routes.draw do
         post '/start-room' => 'live#startRoom'
         post '/end-room' => 'live#endRoom'
         post '/kick-user' => 'live#kickUser'
+        post '/force-end-room' => 'live#forceEnd'
       end
       # Vip
       scope 'vips' do
