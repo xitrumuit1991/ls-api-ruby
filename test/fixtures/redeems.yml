@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  name: MyString
+  coin: 1
+  status: false
+  start_date: 2017-01-02 15:24:01
+  end_date: 2017-01-02 15:24:01
+  deleted: false
+
+two:
+  code: MyString
+  name: MyString
+  coin: 1
+  status: false
+  start_date: 2017-01-02 15:24:01
+  end_date: 2017-01-02 15:24:01
+  deleted: false
