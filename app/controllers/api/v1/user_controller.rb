@@ -688,13 +688,33 @@ class Api::V1::UserController < Api::V1::ApplicationController
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
           end
         else
-          render json: {message: "Phong đang ở trạng thái đống !!!" } , status: 400
+          render json: {error: "Phong đang ở trạng thái đống !!!" } , status: 400
         end
       else
-        render json: {message: "Bạn phải cài app trước khi share!!!" } , status: 400
+        render json: {error: "Bạn phải cài app trước khi share!!!" } , status: 400
       end
     rescue Exception => e
-      render json: {message: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+      render json: {error: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+    end
+  end
+
+  def userRevcivedCoin
+    begin
+      redeem = Redeem.where('code = ? AND start_date < ? AND end_date > ?', params[:code], DateTime.now, DateTime.now).take
+      if redeem.present?
+        redeem_log = RedeemLog.where(:user_id => @user.id, :redeem_id => redeem.id).take
+        if redeem_log.nil?
+          @user.increaseMoney(redeem.coin)
+          redeemLog(redeem.id)
+          render json: {message: "Đã cộng tiền thành công vào tài khoản của bạn!!!" } , status: 200
+        else
+          render json: {error: "Mỗi thành viên chỉ được nhận một lần!!!" } , status: 400
+        end
+      else
+        render json: {error: "Mã chưa đúng hoặc sự kiện đã hết, vui lòng thử lại!!!" } , status: 400
+      end
+    rescue Exception => e
+      render json: {error: "Đã gặp vấn đề trong việc kiểm tra mã, vui lòng hử lại!!!" } , status: 400
     end
   end
 
@@ -706,6 +726,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def card_logs(obj, info)
     provider  = Provider::find_by_name info[:provider]
     CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
+  end
+
+  def redeemLog(redeem_id)
+    RedeemLog.create(user_id: @user.id, redeem_id: redeem_id)
   end
 
   def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)

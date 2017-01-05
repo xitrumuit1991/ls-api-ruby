@@ -670,6 +670,28 @@
       <% end %>
       <!--END Reports-->
 
+      <!--REDEEMS CODE -->
+      <% if can? :read, Resource %>
+      <li class="<% if controller_name == 'redeems' %>active<% end %>">
+        <a href="#">
+          <span class="title">Redeem</span>
+          <span class=" arrow<% if controller_name == 'redeems' %> open<% end %>"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'redeems' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_redeems_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'redeems' && action_name == 'new' %>active<% end %>">
+            <%= link_to(new_acp_redeem_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <% end %>
+      <!--END REDEEMS CODE -->
+
       <!--BEGIN Cache -->
       <li class="<% if controller_name == 'caches' %>active<% end %>">
         <a href="#">
