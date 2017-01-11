@@ -1,0 +1,69 @@
+<div class="jumbotron" data-pages="parallax">
+  <div class="container-fluid sm-p-l-20 sm-p-r-20">
+    <div class="inner">
+      <!-- START BREADCRUMB -->
+      <ul class="breadcrumb">
+        <li><a href="/acp">Home</a></li>
+        <li><a href="#" class="active">Gift Logs</a></li>
+      </ul>
+      <!-- END BREADCRUMB -->
+    </div>
+  </div>
+</div>
+<div class="container-fluid bg-white">
+  <%= render 'shared/alert' %>
+  <!-- START PANEL -->
+  <div class="panel panel-transparent">
+    <div class="panel-heading">
+      <div class="row">
+        <form action="" method="get" id="form-search">
+          <input type="hidden" name="sort" value="<%= params[:sort] %>" id="sort">
+          <input type="hidden" name="field" value="<%= params[:field] %>" id="field">
+          <div class="col-md-4">
+            <select name="broadcaster_id[]" class="select2" style="width:100%">
+              <% @idols.each do |idol| %>
+                <% selected = params[:broadcaster_id].present? && params[:broadcaster_id].include?(idol.id.to_s) ? 'selected' : '' %>
+                <option value="<%= idol.id %>" <%= selected %>><%= idol.fullname %></option>
+              <% end %>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <div class="input-daterange input-group">
+              <input type="text" class="form-control" name="start_date" value="<%= params[:start_date] %>" id="start_date" aria-invalid="false">
+              <span class="input-group-addon">to</span>
+              <input type="text" class="form-control" name="end_date" value="<%= params[:end_date] %>" id="end_date" aria-invalid="false">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-info" type="submit">Search</button>
+          </div>
+        </form>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+      <form action="" method="post">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <table class="table table-hover no-more-tables dataTable">
+          <thead>
+            <tr>
+              <th style="width:20%">Avatar</th>
+              <th style="width:20%" class="sorting" data-field="users.name">Name</th>
+              <th style="width:20%" class="sorting" data-field="users.email">Email</th>
+              <th style="width:20%">Coins</th>
+            </tr>
+          </thead>
+          <tbody>
+          
+          </tbody>
+        </table>
+      </form>
+      <div class="row">
+        <div class="col-md-12">
+          <%#= paginate @rooms %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END PANEL -->
+</div>

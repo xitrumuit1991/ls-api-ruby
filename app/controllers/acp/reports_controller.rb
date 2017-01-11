@@ -184,6 +184,7 @@ class Acp::ReportsController < Acp::ApplicationController
   def idol_gift_logs
     where = Hash.new
     where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
+    where[:gift_id] = params[:gift_id].present? ? params[:gift_id] : 0
 
     if params[:start_date].present? && params[:end_date].present?
       where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
@@ -194,8 +195,10 @@ class Acp::ReportsController < Acp::ApplicationController
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
 
     @rooms = Room.where(is_privated: false)
+    @gifts = Gift.all
     @all = GiftLog.where(where)
     @logs = @all.order(order).page(params[:page])
+    @quantity = @all.to_a.sum(&:quantity)
     @total = @all.to_a.sum(&:cost)
     @total_page = @logs.to_a.sum(&:cost)
   end
@@ -203,6 +206,7 @@ class Acp::ReportsController < Acp::ApplicationController
   def idol_action_logs
     where = Hash.new
     where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
+    where[:room_action_id] = params[:room_action_id].present? ? params[:room_action_id] : 0
 
     if params[:start_date].present? && params[:end_date].present?
       where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
@@ -213,8 +217,10 @@ class Acp::ReportsController < Acp::ApplicationController
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
 
     @rooms = Room.where(is_privated: false)
+    @actions = RoomAction.all
     @all = ActionLog.where(where)
     @logs = @all.order(order).page(params[:page])
+    @quantity = @all.count
     @total = @all.to_a.sum(&:cost)
     @total_page = @logs.to_a.sum(&:cost)
   end
