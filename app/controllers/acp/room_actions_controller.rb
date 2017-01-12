@@ -1,5 +1,6 @@
 class Acp::RoomActionsController < Acp::ApplicationController
   include KrakenHelper
+  include Api::V1::CacheHelper
   load_and_authorize_resource
   before_filter :init
   before_action :set_data, only: [:show, :edit, :update, :destroy, :ajax_update_handle_checkbox]
@@ -23,6 +24,7 @@ class Acp::RoomActionsController < Acp::ApplicationController
     parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     @data = @model.new(parameters)
     if @data.save
+      clear_action
       redirect_to({ action: 'index' }, notice: 'Room action was successfully created.')
     else
       render :new
@@ -32,6 +34,7 @@ class Acp::RoomActionsController < Acp::ApplicationController
   def update
     parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     if @data.update(parameters)
+      clear_action
       redirect_to({ action: 'index' }, notice: 'Room action was successfully updated.')
     else
       render :edit
