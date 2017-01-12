@@ -11,7 +11,8 @@ class Api::V1::VipController < Api::V1::ApplicationController
         user_vip = @user.user_has_vip_packages.where(:actived => true).take.vip_package
         if user_vip.vip.weight < vipPackage.vip.weight
           @user.user_has_vip_packages.update_all(actived: false)
-          UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + vipPackage.no_day.to_i.day)
+          no_day = vipPackage.no_day.to_i == 30 ? no_day = 60 : no_day = vipPackage.no_day.to_i
+          UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + no_day.day)
           @user.decreaseMoney(vipPackage.price - vipPackage.discount)
           return head 200
         elsif user_vip.vip.weight == vipPackage.vip.weight
