@@ -522,7 +522,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.remote_avatar_crop_url = uploadDowload(graph.get_picture(profile['id'], type: :large))
         user.password           = password
         user.active_code        = activeCode
-        user.money              = 200
+        user.money              = 20
         user.user_exp           = 0
         user.no_heart           = 0
         user.actived            = 1

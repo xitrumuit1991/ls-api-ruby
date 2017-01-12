@@ -561,7 +561,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
         response = megaCardCharging.charging
         if response.status == 200
           card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
-          info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: card.coin.to_s }
+          card_logs = CartLog::find_by_user_id(@user.id)
+          if card.price.to_i == 200000 && card_logs.nil?
+            coin = card.coin + card.coin/100*50
+          else
+            coin = card.coin
+          end
+          info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
           if card_logs(response, info)
             @user.increaseMoney(info[:coin])
             render plain: response.message, status: 200
@@ -675,7 +681,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if dvToken.present?
         room = Room.find(params[:room_id])
         if room.on_air
-          money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 100 : 20
+          money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
