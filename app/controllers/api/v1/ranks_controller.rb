@@ -4,6 +4,10 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 	before_action :authenticate, only: [:userRanking]
 
+	def topBctShareFB
+		@topShareFb = FbShareLog.select("room_id, count(*) as total_count").where("created_at > ? AND created_at < ?", DateTime.now.beginning_of_month-1.month, DateTime.now.end_of_month-1.month).group("room_id").limit(5).order('total_count DESC')
+	end
+
 	def userRanking
 		if @user.is_broadcaster
 			if total_hearts_received = TopBctReceivedHeart.select("sum(quantity) as total").where(broadcaster_id: @user.broadcaster.id).group(:broadcaster_id).take
