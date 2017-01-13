@@ -342,6 +342,7 @@ Rails.application.routes.draw do
       # ranks
       scope '/ranks' do
         get '/user-ranking' => 'ranks#userRanking'
+        get '/bct-share-fb' => 'ranks#topBctShareFB'
         get '/top-heart-broadcaster' => 'ranks#topBroadcasterRevcivedHeart'
         get '/top-level-grow-broadcaster' => 'ranks#topBroadcasterLevelGrow'
         get '/top-level-grow-user' => 'ranks#topUserLevelGrow'

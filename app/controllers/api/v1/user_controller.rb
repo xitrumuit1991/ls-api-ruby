@@ -657,7 +657,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       fb_id = params[:post_id].split("_")[0]
       room = Room.find(params[:room_id])
       if room.on_air == true
-        money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 20
+        money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
         if FbShareLog.where('fb_id = ? AND room_id = ? AND created_at > ?', fb_id, room.id, Time.now.beginning_of_day).count > 0
           render plain: 'Facebook đã chia sẽ trước đó!!!', status: 200
         elsif FbShareLog.where('user_id = ? AND room_id = ? AND created_at > ?', @user.id, room.id, Time.now.beginning_of_day).count < 1
