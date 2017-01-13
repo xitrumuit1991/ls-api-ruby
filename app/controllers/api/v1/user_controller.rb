@@ -563,7 +563,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
           card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
           card_logs = CartLog::find_by_user_id(@user.id)
           if card.price.to_i == 200000 && card_logs.nil?
-            coin = card.coin + card.coin/100*50
+            coin = 3000
           else
             coin = card.coin
           end
