@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161227034627) do
+ActiveRecord::Schema.define(version: 20170102120232) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -537,6 +537,28 @@ ActiveRecord::Schema.define(version: 20161227034627) do
     t.datetime "updated_at",                null: false
   end
 
+  create_table "redeem_logs", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4
+    t.integer  "redeem_id",  limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "redeem_logs", ["redeem_id"], name: "index_redeem_logs_on_redeem_id", using: :btree
+  add_index "redeem_logs", ["user_id"], name: "index_redeem_logs_on_user_id", using: :btree
+
+  create_table "redeems", force: :cascade do |t|
+    t.string   "code",       limit: 10
+    t.string   "name",       limit: 255
+    t.integer  "coin",       limit: 4
+    t.boolean  "status",                 default: true
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean  "deleted",                default: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
   create_table "resources", force: :cascade do |t|
     t.string   "name",        limit: 255
     t.text     "description", limit: 65535
@@ -1007,6 +1029,8 @@ ActiveRecord::Schema.define(version: 20161227034627) do
   add_foreign_key "monthly_top_user_send_gifts", "rooms"
   add_foreign_key "monthly_top_user_send_gifts", "users"
   add_foreign_key "otps", "users"
+  add_foreign_key "redeem_logs", "redeems"
+  add_foreign_key "redeem_logs", "users"
   add_foreign_key "room_featureds", "broadcasters"
   add_foreign_key "rooms", "broadcaster_backgrounds"
   add_foreign_key "rooms", "broadcasters"

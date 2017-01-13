@@ -65,6 +65,10 @@ Rails.application.routes.draw do
     get 'rooms/search-complete'	=> 'rooms#idol_autocomplete'
     resources :rooms
 
+    # redeems
+    resources :redeems
+    post '/redeems/destroy_m' => 'banks#destroy_m'
+
     # banks
     resources :banks
     post '/banks/destroy_m' => 'banks#destroy_m'
@@ -292,6 +296,7 @@ Rails.application.routes.draw do
         post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #
         post '/update-password' => 'user#updatePassword'
         post '/avatar' => 'user#uploadAvatar' #
+        post '/redeem' => 'user#userRevcivedCoin' #
         post '/cover' => 'user#uploadCover' #
         post '/cover-crop' => 'user#coverCrop'
         post '/avatar-crop' => 'user#avatarCrop'

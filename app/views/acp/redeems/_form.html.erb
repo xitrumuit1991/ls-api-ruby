@@ -1,0 +1,124 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <% if @data.errors.any? %>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <p>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra, Bạn không thể lưu:</p>
+                  <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                </div>
+            <% end %>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Tên event</label>
+                  <input type="text" class="form-control" name="data[name]" value="<%=@data.name%>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Coin</label>
+                  <input type="number" class="form-control" name="data[coin]" value="<%=@data.coin%>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Ngày bắt đầu</label>
+                  <input type="text" class="date form-control" name="data[start_date]" value="<%=@data.start_date%>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Ngày Kết thúc</label>
+                  <input type="text" class="date form-control" name="data[end_date]" value="<%=@data.end_date%>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Mã</label>
+                  <input type="text" class="form-control" id="redeem-code" name="data[code]" value="<%=@data.code%>" required>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="checkbox check-success">
+                  <input type="checkbox" value="1" class="handle-checkbox" name="random" id="random" dât-field="random">
+                  <label for="random">Tự chọn</label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Submit">
+                <span>Cập nhật</span>
+              </button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>
+<% content_for :javascript do %>
+  <%= javascript_include_tag "/assets/plugins/timepicker/timepicker.min", "/assets/plugins/datepair/jquery.datepair.min", "/assets/js/idol" %>
+  <script>
+  // initialize input widgets first
+  $('.date').datepicker({
+      'format': 'd/m/yyyy',
+      'autoclose': true
+  });
+
+  // initialize datepair
+  $('.row .date').datepair({
+      defaultTimeDelta: 7200000
+  });
+
+  var randomString = function (len, bits)
+  {
+    bits = bits || 36;
+    var outStr = "", newStr;
+    while (outStr.length < len)
+    {
+        newStr = Math.random().toString(bits).slice(2);
+        outStr += newStr.slice(0, Math.min(newStr.length, (len - outStr.length)));
+    }
+    return outStr.toUpperCase();
+  };
+
+  // random code
+  $('#random').change(function() {
+    if($(this).is(":checked")) {
+      $("#redeem-code").val(randomString(6));
+    }else{
+      $("#redeem-code").val('');
+    }
+  });
+  </script>
+<% end %>
+
+<% content_for :stylesheets do %>
+  <style>
+  .datepicker.dropdown-menu{z-index: 9999 !important}
+  .ui-timepicker-wrapper{
+    overflow-y: auto;
+    height: 150px;
+    width: 5.7em;
+    background: #fff;
+    border: 1px solid #ddd;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    outline: none;
+    z-index: 10001;
+    margin: 0;
+  }
+  .ui-timepicker-list{margin: 0;padding: 0;list-style: none;}
+  .ui-timepicker-list li{cursor: pointer;}
+  </style>
+<% end %>

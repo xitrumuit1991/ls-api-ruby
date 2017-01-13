@@ -561,7 +561,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
         response = megaCardCharging.charging
         if response.status == 200
           card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
-          info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: card.coin.to_s }
+          card_logs = CartLog::find_by_user_id(@user.id)
+          if card.price.to_i == 200000 && card_logs.nil?
+            coin = card.coin + card.coin/100*50
+          else
+            coin = card.coin
+          end
+          info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
           if card_logs(response, info)
             @user.increaseMoney(info[:coin])
             render plain: response.message, status: 200
@@ -675,7 +681,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if dvToken.present?
         room = Room.find(params[:room_id])
         if room.on_air
-          money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 100 : 20
+          money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
@@ -688,13 +694,33 @@ class Api::V1::UserController < Api::V1::ApplicationController
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
           end
         else
-          render json: {message: "Phong đang ở trạng thái đống !!!" } , status: 400
+          render json: {error: "Phong đang ở trạng thái đống !!!" } , status: 400
         end
       else
-        render json: {message: "Bạn phải cài app trước khi share!!!" } , status: 400
+        render json: {error: "Bạn phải cài app trước khi share!!!" } , status: 400
       end
     rescue Exception => e
-      render json: {message: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+      render json: {error: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+    end
+  end
+
+  def userRevcivedCoin
+    begin
+      redeem = Redeem.where('code = ? AND start_date < ? AND end_date > ?', params[:code], DateTime.now, DateTime.now).take
+      if redeem.present?
+        redeem_log = RedeemLog.where(:user_id => @user.id, :redeem_id => redeem.id).take
+        if redeem_log.nil?
+          @user.increaseMoney(redeem.coin)
+          redeemLog(redeem.id)
+          render json: {message: "Đã cộng tiền thành công vào tài khoản của bạn!!!" } , status: 200
+        else
+          render json: {error: "Mỗi thành viên chỉ được nhận một lần!!!" } , status: 400
+        end
+      else
+        render json: {error: "Mã chưa đúng hoặc sự kiện đã hết, vui lòng thử lại!!!" } , status: 400
+      end
+    rescue Exception => e
+      render json: {error: "Đã gặp vấn đề trong việc kiểm tra mã, vui lòng hử lại!!!" } , status: 400
     end
   end
 
@@ -706,6 +732,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
   def card_logs(obj, info)
     provider  = Provider::find_by_name info[:provider]
     CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
+  end
+
+  def redeemLog(redeem_id)
+    RedeemLog.create(user_id: @user.id, redeem_id: redeem_id)
   end
 
   def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
