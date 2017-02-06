@@ -197,6 +197,8 @@ Rails.application.routes.draw do
     get '/reports/idol-gift-logs' => 'reports#idol_gift_logs'
     get '/reports/idol-action-logs' => 'reports#idol_action_logs'
     get '/reports/idol-lounge-logs' => 'reports#idol_lounge_logs'
+    get '/reports/gift-logs' => 'reports#gift_logs'
+    get '/reports/action-logs' => 'reports#action_logs'
     get '/reports/report-share' => 'reports#report_share'
     get '/reports/sms' => 'reports#sms'
     get '/reports/bct-time-logs' => 'reports#bct_time_logs'
