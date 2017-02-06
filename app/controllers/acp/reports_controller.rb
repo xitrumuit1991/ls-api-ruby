@@ -244,6 +244,34 @@ class Acp::ReportsController < Acp::ApplicationController
     @total_page = @logs.to_a.sum(&:cost)
   end
 
+  def gift_logs
+    where = Hash.new
+    where[:gift_id] = params[:gift_id].present? ? params[:gift_id] : 0
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'gift_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    @gifts = Gift.all
+    @logs = GiftLog.select('room_id, sum(cost) as total').where(where).group(:room_id).order('total desc').page(params[:page])
+  end
+
+  def action_logs
+    where = Hash.new
+    where[:room_action_id] = params[:room_action_id].present? ? params[:room_action_id] : 0
+
+    if params[:start_date].present? && params[:end_date].present?
+      where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
+    elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
+      redirect_to({ action: 'action_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
+    end
+
+    @actions = RoomAction.all
+    @logs = ActionLog.select('room_id, sum(cost) as total').where(where).group(:room_id).order('total desc').page(params[:page])
+  end
+
   def sms
     where = Hash.new
     where[:phone] = params[:phone] if params[:phone].present?
