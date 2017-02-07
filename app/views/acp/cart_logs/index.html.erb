@@ -39,13 +39,14 @@
                 <label for="check-all"></label>
               </div>
             </th>
-            <th style="width:20%">Người dùng</th>
+            <th style="width:15%">Người dùng</th>
             <th style="width:10%">Nhà mạng</th>
-            <th style="width:15%">Mã thẻ</th>
+            <th style="width:10%">Mã thẻ</th>
             <th style="width:15%">Số serial</th>
             <th style="width:10%">Mệnh giá</th>
             <th style="width:10%">Xu đã nạp</th>
             <th style="width:10%">Trạng Thái</th>
+            <th style="width:10%">Ngày Nạp</th>
             <th style="width:7%">Hành động</th>
           </tr>
           </thead>
@@ -78,6 +79,9 @@
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.status %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= item.created_at.strftime("%d-%m-%Y") %></p>
                 </td>
                 <td class="v-align-middle">
                   <div class="text-center text-nowrap">
