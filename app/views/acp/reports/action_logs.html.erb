@@ -1,0 +1,82 @@
+<div class="jumbotron" data-pages="parallax">
+  <div class="container-fluid sm-p-l-20 sm-p-r-20">
+    <div class="inner">
+      <!-- START BREADCRUMB -->
+      <ul class="breadcrumb">
+        <li><a href="/acp">Home</a></li>
+        <li><a href="#" class="active">Report - Action Logs</a></li>
+      </ul>
+      <!-- END BREADCRUMB -->
+    </div>
+  </div>
+</div>
+<div class="container-fluid bg-white">
+  <%= render 'shared/alert' %>
+  <!-- START PANEL -->
+  <div class="panel panel-transparent">
+    <div class="panel-heading">
+      <div class="row">
+        <form action="" method="get" id="form-search">
+          <input type="hidden" name="sort" value="<%= params[:sort] %>" id="sort">
+          <input type="hidden" name="field" value="<%= params[:field] %>" id="field">
+          <div class="col-md-2">
+            <select name="room_action_id" class="select2" style="width:100%">
+              <option value="0">--- Choose ---</option>
+              <% @actions.each do |action| %>
+              <option value="<%= action.id %>" <%= 'selected' if params[:room_action_id].to_i == action.id %>><%= action.name %></option>
+              <% end %>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <div class="input-daterange input-group">
+              <input type="text" class="form-control" name="start_date" value="<%= params[:start_date] %>" id="start_date" aria-invalid="false">
+              <span class="input-group-addon">to</span>
+              <input type="text" class="form-control" name="end_date" value="<%= params[:end_date] %>" id="end_date" aria-invalid="false">
+            </div>
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-info" type="submit">Search</button>
+          </div>
+          <div class="col-md-2">
+            
+          </div>
+          <!-- <div class="col-md-2">
+            <%= link_to(acp_reports_idol_receive_coins_path(format: "xlsx", params: params), class: 'btn btn-complete pull-right') do %><i class="fa fa-cloud-download"></i><% end %>
+          </div> -->
+        </form>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+      <form action="" method="post">
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <table class="table table-hover no-more-tables dataTable">
+          <thead>
+            <tr>
+              <th style="width:50%">Room</th>
+              <th style="width:50%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @logs.each do |log| %>
+            <tr id="row_page_<%= log.id %>">
+              <td class="v-align-middle">
+                <p><%= log.room.title %></p>
+              </td>
+              <td class="v-align-middle">
+                <p><%= log.total %></p>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </form>
+      <div class="row">
+        <div class="col-md-12">
+          <%= paginate @logs %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END PANEL -->
+</div>
