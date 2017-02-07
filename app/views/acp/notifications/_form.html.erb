@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-md-12">
+    <!-- START PANEL -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <%= form_for [:acp, @data], :html => {:class => "form_#{controller_name}"} do |f| %>
+            <input type="text" class="form-control hidden" name="data[admin_id]" value="<%= current_admin.id %>">
+            <% if @data.errors.any? %>
+                <div class="alert alert-danger" role="alert">
+                  <button class="close" data-dismiss="alert"></button>
+                  <p>Có <%= pluralize(@data.errors.count, '') %> lỗi xảy ra, Bạn không thể lưu:</p>
+                  <ul><% @data.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+                </div>
+            <% end %>
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group form-group-default required">
+                  <label>Tiêu Đề</label>
+                  <input type="text" class="form-control" name="data[title]" value="<%=@data.title%>" required>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="form-group form-group-default required">
+                <label>Idols</label>
+                <select class="form-control search-key"  data-url="/acp/rooms/search-room-complete" name="data[room_id]">
+                    <% @rooms.each do |room| %>
+                    <option value="<%= room.id %>"><%= room.title %></option>
+                    <% end %>
+                </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group form-group-default required">
+                  <label>Mô tả</label>
+                  <textarea class="form-control" rows="3" name="data[description]" required><%=@data.description%></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn-primary btn-cons from-left pull-right" type="submit" value="Push">
+                <span>Push</span>
+              </button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- END PANEL -->
+  </div>
+</div>

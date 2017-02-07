@@ -545,7 +545,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if checkCaptcha[:success]
         m_ws_url      = Settings.megacardWsUrl
         m_partnerId   = Settings.megacardPartnerId
-        m_cardSerial  = params[:serial]
+        m_cardSerial  = params[:serial].to_s.delete(' ')
         m_cardPin     = params[:pin].to_s.delete(' ')
         m_telcoCode   = params[:provider]
         m_password    = Settings.megacardPassword

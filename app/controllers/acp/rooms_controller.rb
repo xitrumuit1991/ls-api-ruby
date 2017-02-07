@@ -71,6 +71,10 @@ class Acp::RoomsController < Acp::ApplicationController
 		@idols = Broadcaster.where("fullname LIKE :query", query: "%#{params[:key]}%")
 	end
 
+	def room_autocomplete
+		@rooms = Room.where("title LIKE :query", query: "%#{params[:key]}%")
+	end
+
 	private
 		def init
 			@model = controller_name.classify.constantize

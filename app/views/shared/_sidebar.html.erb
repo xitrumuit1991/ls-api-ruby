@@ -670,8 +670,30 @@
       <% end %>
       <!--END Reports-->
 
+      <!--pust notification -->
+      <% if can? :read, :notification %>
+      <li class="<% if controller_name == 'notifications' %>active<% end %>">
+        <a href="#">
+          <span class="title">Notifications</span>
+          <span class=" arrow<% if controller_name == 'notifications' %> open<% end %>"></span>
+        </a>
+        <span class="icon-thumbnail"><i class="pg-grid"></i></span>
+        <ul class="sub-menu">
+          <li class="<% if controller_name == 'notifications' && action_name == 'index' %>active<% end %>">
+            <%= link_to(acp_notifications_path) do %><span class="title">List</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 fa fa-bars"></i></span>
+          </li>
+          <li class="<% if controller_name == 'notifications' && action_name == 'pushNotification' %>active<% end %>">
+            <%= link_to(new_acp_notification_path) do %><span class="title">Add New</span><% end %>
+            <span class="icon-thumbnail"><i class="fs-14 pg-plus"></i></span>
+          </li>
+        </ul>
+      </li>
+      <% end %>
+      <!--END pust notification -->
+
       <!--REDEEMS CODE -->
-      <% if can? :read, Resource %>
+      <% if can? :read, :redeem %>
       <li class="<% if controller_name == 'redeems' %>active<% end %>">
         <a href="#">
           <span class="title">Redeem</span>

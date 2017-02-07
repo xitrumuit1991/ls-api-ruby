@@ -62,7 +62,8 @@ Rails.application.routes.draw do
     end
 
     # Rooms
-    get 'rooms/search-complete'	=> 'rooms#idol_autocomplete'
+    get 'rooms/search-complete' => 'rooms#idol_autocomplete'
+    get 'rooms/search-room-complete'	=> 'rooms#room_autocomplete'
     resources :rooms
 
     # redeems
@@ -219,8 +220,11 @@ Rails.application.routes.draw do
     post '/caches/clear-vip' => 'caches#clearCacheVip'
     post '/caches/clear-black-list' => 'caches#clearCacheBlackList'
     post '/caches/clear-email-black-list' => 'caches#clearCacheEmailBlackList'
-		post '/caches/deactive-user' => 'caches#deactiveUserBlacklist'
+        post '/caches/deactive-user' => 'caches#deactiveUserBlacklist'
     resources :caches
+
+    resources :notifications
+    post '/notifications/destroy_m' => 'notifications#destroy_m'
 
   end
 

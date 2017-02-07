@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  room_id: 
+  admin_id: 
+  title: MyString
+  description: MyString
+
+two:
+  room_id: 
+  admin_id: 
+  title: MyString
+  description: MyString
