@@ -84,7 +84,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
         return head 500
       end
 
-      apple_receipt_verify_url = "https://sandbox.itunes.apple.com/verifyReceipt"
+      apple_receipt_verify_url = "https://buy.itunes.apple.com/verifyReceipt"
       url = URI.parse(apple_receipt_verify_url)
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true

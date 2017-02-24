@@ -545,7 +545,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if checkCaptcha[:success]
         m_ws_url      = Settings.megacardWsUrl
         m_partnerId   = Settings.megacardPartnerId
-        m_cardSerial  = params[:serial]
+        m_cardSerial  = params[:serial].to_s.delete(' ')
         m_cardPin     = params[:pin].to_s.delete(' ')
         m_telcoCode   = params[:provider]
         m_password    = Settings.megacardPassword
@@ -562,11 +562,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         if response.status == 200
           card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
           card_logs = CartLog::find_by_user_id(@user.id)
-          if card.price.to_i == 200000 && card_logs.nil?
-            coin = 3000
-          else
-            coin = card.coin
-          end
+          coin = card_logs.nil? ? card.coin + card.coin/100x50 : card.coin
           info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
           if card_logs(response, info)
             @user.increaseMoney(info[:coin])

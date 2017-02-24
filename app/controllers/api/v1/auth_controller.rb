@@ -531,6 +531,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           user = User.find_by_email(profile['email'])
           token = createToken(user)
           user.update(last_login: Time.now, token: token)
+          # Vip 1 one week
+          vip_package = VipPackage::find_by_code("VIP7")
+          UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
           logger.info("email: #{user.email} result: OK")
           render json: { token: token }, status: 200
         else
@@ -695,6 +698,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         user.actived        = true
         user.no_heart       = 0
         if user.save
+          vip_package = VipPackage::find_by_code("VIP7")
+          UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
           render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
         else
           render json: { error: "System error !" }, status: 500

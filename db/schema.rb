@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170102120232) do
+ActiveRecord::Schema.define(version: 20170117112114) do
 
   create_table "acls", force: :cascade do |t|
     t.integer  "role_id",     limit: 4
@@ -507,6 +507,19 @@ ActiveRecord::Schema.define(version: 20170102120232) do
   add_index "monthly_top_user_send_gifts", ["broadcaster_id"], name: "index_monthly_top_user_send_gifts_on_broadcaster_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["room_id"], name: "index_monthly_top_user_send_gifts_on_room_id", using: :btree
   add_index "monthly_top_user_send_gifts", ["user_id"], name: "index_monthly_top_user_send_gifts_on_user_id", using: :btree
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "room_id",     limit: 4
+    t.integer  "admin_id",    limit: 4
+    t.string   "title",       limit: 255
+    t.string   "description", limit: 255
+    t.boolean  "status",                  default: true
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  add_index "notifications", ["admin_id"], name: "index_notifications_on_admin_id", using: :btree
+  add_index "notifications", ["room_id"], name: "index_notifications_on_room_id", using: :btree
 
   create_table "otps", force: :cascade do |t|
     t.integer  "user_id",    limit: 4
@@ -1028,6 +1041,8 @@ ActiveRecord::Schema.define(version: 20170102120232) do
   add_foreign_key "monthly_top_user_send_gifts", "broadcasters"
   add_foreign_key "monthly_top_user_send_gifts", "rooms"
   add_foreign_key "monthly_top_user_send_gifts", "users"
+  add_foreign_key "notifications", "admins"
+  add_foreign_key "notifications", "rooms"
   add_foreign_key "otps", "users"
   add_foreign_key "redeem_logs", "redeems"
   add_foreign_key "redeem_logs", "users"
