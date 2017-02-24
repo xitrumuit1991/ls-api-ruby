@@ -562,7 +562,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         if response.status == 200
           card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
           card_logs = CartLog::find_by_user_id(@user.id)
-          coin = card_logs.nil? ? card.coin + card.coin/100x50 : card.coin
+          coin = card_logs.nil? ? card.coin + card.coin/100*50 : card.coin
           info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
           if card_logs(response, info)
             @user.increaseMoney(info[:coin])
