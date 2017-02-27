@@ -6,7 +6,7 @@ module Paygate
 		def _login
 			obj 		= Paygate::LoginResponse.new
 			rSAClass 	= Paygate::ClsCryptor.new
-			rSAClass.GetpublicKeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'Epay_Public_key.pem'))
+			rSAClass.GetpublicKeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'public_key.pem'))
 			begin
 				encrypedPass = rSAClass.encrypt(m_Pass);
 			end

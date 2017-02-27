@@ -581,10 +581,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
-  def payments
+  def cttCard
     if params[:key_payment].present?
-      # checkCaptcha = eval(checkCaptcha(params[:key_payment]))
-      if true
+      checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+      if checkCaptcha[:success]
         # nha mang cung cap
         m_UserName    = Settings.chargingUsername
         m_Pass        = Settings.chargingPassword
@@ -597,8 +597,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
         soapClient = Savon.client(wsdl: webservice)
         m_Target = @user.username
 
-        serial = params[:serial].to_s.delete('')
-        pin = params[:pin].to_s.delete('')
+        serial = params[:serial].to_s.delete(' ')
+        pin = params[:pin].to_s.delete(' ')
         cardCharging              = Paygate::CardCharging.new
         cardCharging.m_UserName   = m_UserName
         cardCharging.m_PartnerID  = m_PartnerID
@@ -614,7 +614,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
         cardChargingResponse = cardCharging.cardCharging
         if cardChargingResponse.status == 200
           card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
-          info = { pin: pin, provider: params[:provider], serial: serial, coin: card.coin.to_s }
+          card_logs = CartLog::find_by_user_id(@user.id)
+          coin = card_logs.nil? ? card.coin + card.coin/100*50 : card.coin
+          info = { pin: pin, provider: params[:provider], serial: serial, coin: coin }
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
             render plain: "Nạp tiền thành công.", status: 200
