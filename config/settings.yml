@@ -1,5 +1,13 @@
+# Security
 hmac_secret: 'fQ+KY11&l624Bu5'
-timeAddHeart: 60
+
+# Applications
+timeAddHeart: 60 
+secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke'
+url_notification: 'http://localhost:3001'
+url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='
+url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'
+
 # Charging
 chargingUsername: 'CTT_livestar'
 chargingPassword: 'ppakdrkso'
@@ -7,40 +15,29 @@ chargingMpin: 'culvskjun'
 chargingPartnerId: 'CTT_livestar'
 chargingPartnerCode: '00174'
 chargingWebservice: 'http://cttcorp.net/ChargingGW/services/Services?wsdl'
+
 # magebanks
 magebankWS: 'http://bank.megapay.net.vn:10001/service.asmx?wsdl'
 magebankMerchantid: '88000095'
 magebankIssuerID: 'Livestar'
 magebankSend_key: 'X9557IMmIMRKOPVs6twAqQOi'
 magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
-# SMS
-partnerid: '10184'
-partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
-#captcha
+
 #megacards
 'megacardWsUrl': 'http://gachthe.megapay.net.vn/chargingApi'
 'megacardPartnerId': '11394'
 'megacardPassword': 'e01081'
-# secret_key_captcha: '6LelixsTAAAAAKPyjiLOrIjiP71t4O-_Ypq1p7_6' #dev
-secret_key_captcha: '6LdVAxkTAAAAAHBO45vG52ZMogoakzo4wopvuLke' #live
-# secret_key_captcha: '6LckDSoTAAAAAO096VH9BgxK_nCIfvZr0cNWo4h8' #local
-# secret_key_captcha: '6LeKSgwUAAAAABPmL5T542eU80k34gEQ3qQeUniy' #livestar-local.vn
-# VAS
-vas_proxy: http://124.158.4.211:9387
-vas_wsdl: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
-# kraken
-kraken_key: '840f16f7b7b5519258f89b39b733c205'
-kraken_secret: '9cc25aabaf1aa0a90aa55ffce38d793204026f5c'
+
+# SMS
+partnerid: '10184'
+partnerpass: 'b1d12048be86cf96b767b8b739b2679e'
+
 # WAP
 wap_mbf_key: 'lMGiNUrKx3RyPXkQ'
 wap_register_url: 'http://dangky.mobifone.com.vn/wap/html/sp/confirm.jsp'
 wap_mbf_htt_key: 'UOBdWMNnkzsKV0bM'
 wap_mbf_htt_url: 'http://dangky.mobifone.com.vn/wap/html/sp_htt/confirm.jsp'
-# Url livestar-notifition
-url_notification: 'http://localhost:3001'
-# link recode stream
-url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='
-url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'
+
 # MBUY
 mbuy_wsdl: 'http://mbuy.mobifone.vn/sessionclient/services/ChargingApiImpl?wsdl'
 content_id: '0000040001'
@@ -48,3 +45,11 @@ service_name: 'livestar'
 cp_id: '000004'
 user_name: 'livestar'
 password: 'ls@@111'
+
+# VAS Connection
+vas_proxy: http://124.158.4.211:9387
+vas_wsdl: http://124.158.4.211:9387/VAS/VasApp.svc?wsdl
+
+# Kraken
+kraken_key: '840f16f7b7b5519258f89b39b733c205'
+kraken_secret: '9cc25aabaf1aa0a90aa55ffce38d793204026f5c'
