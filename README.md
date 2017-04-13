@@ -49,7 +49,7 @@ server {
 
 #### In file livestar-api/config/setting.yml
 ```
- Gitcode[https://github.com/kraken-io/kraken-ruby]
+ [Gitcode](https://github.com/kraken-io/kraken-ruby)
 
 
 ```
