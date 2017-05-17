@@ -1,6 +1,6 @@
  # Cấu hình dành cho Production
  # Không được tự ý thay đổi thông số này
-redis_host: "100.75.154.46"
+redis_host: "10.4.0.9"
 redis_port: 6379
 livestar_path: "http://livestar.vn"
 m_livestar_path: "http://m.livestar.vn"
