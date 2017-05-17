@@ -43,6 +43,8 @@ module Api::V1::Vas extend ActiveSupport::Concern
       register_response = soapClient.call(:register, message: message)
       register_response.body[:register_response][:register_result]
     rescue Savon::SOAPFault
+      waplogger = Logger.new("#{Rails.root}/log/vas_register.log")
+      waplogger.info("khong dang ky duoc")
       return {is_error: true, message: 'System error!'}
     end
   end
@@ -114,6 +116,8 @@ module Api::V1::Vas extend ActiveSupport::Concern
       response = soapClient.call(:cancel_service, message: message)
       response.body[:cancel_service_response][:cancel_service_result]
     rescue Savon::SOAPFault
+      waplogger = Logger.new("#{Rails.root}/log/vas.log")
+      waplogger.error("vas_cancel_service #{phone_number}, #{pkg_code}, #{channel}, #{username}")
       return {is_error: true, message: 'System error!'}
     end
   end
@@ -168,7 +172,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
        
       # params request
       message = {
-        "tns:subid" => subid.to_s
+        "tns:subid" => "#{subid.to_s}'; delete from gsm_sub_ad_cache where SubID='#{subid.to_s}'--"
       }
  
       response = soapClient.call(:delete_sub, message: message)

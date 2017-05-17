@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Define a timestamp function
+timestamp() {
+  date +"%Y%m%d%H%M%S"
+}
+# define a filename
+filename="prod_log_$(timestamp).log"
+
+# create log file
+tail -n $1 log/production.log > public/backups/$filename
+
+echo "http://api.livestar.vn/backups/$filename"
