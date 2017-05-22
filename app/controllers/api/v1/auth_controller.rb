@@ -224,6 +224,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def wap_mbf_register_request
     sp_id       = 140
+    circle      = 1
+    free_circle = 1
+    customer_care = "0463258447"
+    price_customer_care = 1000
     trans_id    = Time.now.to_i
     pkg         = "VIP"
     price       = 2000
@@ -233,7 +237,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # insert wap mbf logs
     WapMbfLog.create(sp_id: sp_id, trans_id: trans_id, pkg: pkg, price: price, information: information)
     # encrypt data
-    data = "#{trans_id}&#{pkg}&#{price}&#{back_url}&#{information}"
+    data = "#{trans_id}&#{pkg}&#{free_circle}&#{price}&#{circle}&#{customer_care}&#{price_customer_care}&#{back_url}"
 
     link = wap_mbf_encrypt data, Settings.wap_mbf_key
     url = "#{Settings.wap_register_url}?sp_id=#{sp_id}&link=#{link}"
