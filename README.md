@@ -44,3 +44,12 @@ server {
 }
 
 ```
+
+### Config Karken 
+
+#### In file livestar-api/config/setting.yml
+```
+ [Gitcode](https://github.com/kraken-io/kraken-ruby)
+
+
+```
