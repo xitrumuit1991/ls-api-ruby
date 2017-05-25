@@ -23,6 +23,13 @@
  daemonize :true
 }
 ```
+- Clone rbenv `git clone https://github.com/rbenv/rbenv.git ~/.rbenv`
+
+## Passgener config -> `sudo vi /etc/nginx/passenger.conf` change to
+```
+passenger_root /usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini;
+passenger_ruby /home/ubuntu/.rbenv/shims/ruby;
+```
 
 ## Nginx config
 ```
