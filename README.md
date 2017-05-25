@@ -61,3 +61,7 @@ server {
 
 
 ```
+
+### Run And Stop Application 
+bundle exec passenger start
+bundle exec passenger stop
