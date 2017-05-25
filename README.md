@@ -13,8 +13,16 @@
 - Update database config file `vim config/database.yml`
 - Update settings file `vim config/settings.yml`
 - Update enviroment setting `settings/production.yml`
-- Install dependencies `bundle install`
+- Install dependencies `bundle install --path vendor/bundle`
 - Migrate database `RAILS_ENV=production rake db:migrate`
+- Create Passenger config  `Touch Passengerfile.json`
+- Add config Passager 
+```
+{
+ environment:'production',
+ daemonize :true
+}
+```
 
 ## Nginx config
 ```
