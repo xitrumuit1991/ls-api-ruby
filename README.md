@@ -23,7 +23,17 @@
  daemonize :true
 }
 ```
-- Clone rbenv `git clone https://github.com/rbenv/rbenv.git ~/.rbenv`
+#Setup ruby with rbenv
+```
+https://gorails.com/deploy/ubuntu/14.04
+
+note : 
+
+rbenv install 2.3.1
+rbenv global 2.3.1
+
+
+```
 
 ## Passgener config -> `sudo vi /etc/nginx/passenger.conf` change to
 ```
