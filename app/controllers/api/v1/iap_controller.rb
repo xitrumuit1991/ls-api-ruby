@@ -37,7 +37,8 @@ class Api::V1::IapController < Api::V1::ApplicationController
       key = Google::APIClient::PKCS12.load_key("GooglePlayAndroidDeveloper-0eb23483636e.p12", 'notasecret')
 
       logger.info("---------key: #{key}")
-      client  = Google::APIClient.new(:application_name => 'livestar app', :application_version => '1.0')
+      client  = Google::APIClient.new
+      # client  = Google::APIClient.new(:application_name => 'livestar app', :application_version => '1.0')
       logger.info("---------client: #{client}")
       
       # config old of livestar
@@ -61,10 +62,12 @@ class Api::V1::IapController < Api::V1::ApplicationController
           :api_method => publisher.purchases.products.get,
           :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
         )
-        return render json: {  responseFromGG: result.to_s} , status: 200
-        
+        # return render json: {  responseFromGG: result.to_s} , status: 200
+        # return render json: {  responseFromGG: result.data.to_s} , status: 200
+        # return render json: {  responseFromGG: result.data.to_json} , status: 200
+
         begin
-          logger.info("---------Make the API call result: #{result}")
+          logger.info("---------Make the API call result: #{result.data.to_json}")
           resps = JSON.parse(result.data.to_json)
           if !resps['error'].present?
             if resps['purchaseState'].to_i == 0
@@ -74,7 +77,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
             end
             render json: { status_purchase: 1 }, status: 200
           else
-            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.to_s }, status: 400
+            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.data.to_s }, status: 400
             # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
           end
         rescue => errorParseJson
