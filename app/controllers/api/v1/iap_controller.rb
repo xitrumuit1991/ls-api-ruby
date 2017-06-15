@@ -35,38 +35,48 @@ class Api::V1::IapController < Api::V1::ApplicationController
       
       # config new of pateco; load file key google payment
       key = Google::APIClient::PKCS12.load_key("GooglePlayAndroidDeveloper-0eb23483636e.p12", 'notasecret')
-      client  = Google::APIClient.new
 
+      logger.info("---------key: #{key}")
+      client  = Google::APIClient.new(:application_name => 'livestar app', :application_version => '1.0')
+      logger.info("---------client: #{client}")
+      
       # config old of livestar
       #:issuer               => 'in-app-purchase@livestar-cf319.iam.gserviceaccount.com',
-
       client.authorization = Signet::OAuth2::Client.new(
         :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
         :audience             => 'https://accounts.google.com/o/oauth2/token',
         :scope                => 'https://www.googleapis.com/auth/androidpublisher',
         :issuer               => 'livestar@api-7360460321031135596-360146.iam.gserviceaccount.com',
         :signing_key          => key
-      ).tap { |auth| auth.fetch_access_token! }
-
-      publisher = client.discovered_api('androidpublisher', 'v2')
-
-      # Make the API call
-      result = client.execute(
-        :api_method => publisher.purchases.products.get,
-        :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
       )
-      resps = JSON.parse(result.data.to_json)
+      #.tap { |auth| auth.fetch_access_token! }
 
-      if !resps['error'].present?
-        if resps['purchaseState'].to_i == 0
-          money = @user.money + coin.quantity
-          @user.update(money: money)
-          @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
+
+      # Request a token for our service account
+      begin
+        client.authorization.fetch_access_token!
+        publisher = client.discovered_api('androidpublisher', 'v2')
+        # Make the API call
+        result = client.execute(
+          :api_method => publisher.purchases.products.get,
+          :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
+        )
+        resps = JSON.parse(result.data.to_json)
+
+        if !resps['error'].present?
+          if resps['purchaseState'].to_i == 0
+            money = @user.money + coin.quantity
+            @user.update(money: money)
+            @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
+          end
+          render json: { status_purchase: 1 }, status: 200
+        else
+          render json: { status_purchase: 0 }, status: 200
+          # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
         end
-        render json: { status_purchase: 1 }, status: 200
-      else
-        render json: { status_purchase: 0 }, status: 200
-        # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
+      rescue => error
+        logger.info("---------error: #{error}")
+        return render json: {  status_purchase: 1, error: error.to_s } , status: 400
       end
     else
       render json: { error: "Vui lòng nhập đầy đủ tham số !" }, status: 403
