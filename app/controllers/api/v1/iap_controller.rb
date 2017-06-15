@@ -77,7 +77,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
             end
             render json: { status_purchase: 1 }, status: 200
           else
-            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.data.to_s }, status: 400
+            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.data.to_json }, status: 400
             # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
           end
         rescue => errorParseJson
