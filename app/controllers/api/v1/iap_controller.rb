@@ -29,14 +29,22 @@ class Api::V1::IapController < Api::V1::ApplicationController
       # key = OpenSSL::PKey::RSA.new "#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret'
       # key = Google::APIClient::KeyUtils.load_from_pkcs12("#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret')
       # key = Google::APIClient::KeyUtils.load_from_pkcs12(Rails.root.join('config','Livestar-e785257ee406.p12').to_s, 'notasecret')
-      key = Google::APIClient::PKCS12.load_key("Livestar-e785257ee406.p12", 'notasecret')
+      
+      # config old of livestar
+      #key = Google::APIClient::PKCS12.load_key("Livestar-e785257ee406.p12", 'notasecret')
+      
+      # config new of pateco; load file key google payment
+      key = Google::APIClient::PKCS12.load_key("GooglePlayAndroidDeveloper-0eb23483636e.p12", 'notasecret')
       client  = Google::APIClient.new
+
+      # config old of livestar
+      #:issuer               => 'in-app-purchase@livestar-cf319.iam.gserviceaccount.com',
 
       client.authorization = Signet::OAuth2::Client.new(
         :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
         :audience             => 'https://accounts.google.com/o/oauth2/token',
         :scope                => 'https://www.googleapis.com/auth/androidpublisher',
-        :issuer               => 'in-app-purchase@livestar-cf319.iam.gserviceaccount.com',
+        :issuer               => 'livestar@api-7360460321031135596-360146.iam.gserviceaccount.com',
         :signing_key          => key
       ).tap { |auth| auth.fetch_access_token! }
 
