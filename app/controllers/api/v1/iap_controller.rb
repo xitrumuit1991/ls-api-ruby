@@ -61,25 +61,32 @@ class Api::V1::IapController < Api::V1::ApplicationController
           :api_method => publisher.purchases.products.get,
           :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
         )
-        resps = JSON.parse(result.data.to_json)
-
-        if !resps['error'].present?
-          if resps['purchaseState'].to_i == 0
-            money = @user.money + coin.quantity
-            @user.update(money: money)
-            @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
+        return render json: {  responseFromGG: result.to_s} , status: 200
+        
+        begin
+          logger.info("---------Make the API call result: #{result}")
+          resps = JSON.parse(result.data.to_json)
+          if !resps['error'].present?
+            if resps['purchaseState'].to_i == 0
+              money = @user.money + coin.quantity
+              @user.update(money: money)
+              @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
+            end
+            render json: { status_purchase: 1 }, status: 200
+          else
+            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.to_s }, status: 400
+            # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
           end
-          render json: { status_purchase: 1 }, status: 200
-        else
-          render json: { status_purchase: 0 }, status: 200
-          # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
+        rescue => errorParseJson
+          logger.info("---------errorParseJson: #{errorParseJson}")
+          return render json: {  status_purchase: 0, detail: errorParseJson.to_s, error: "can not parse JSON response from google "} , status: 400
         end
       rescue => error
         logger.info("---------error: #{error}")
-        return render json: {  status_purchase: 1, error: error.to_s } , status: 400
+        return render json: {  status_purchase: 0, detail: error.to_s, error: "Authorization fetch_access_token from our service account fail!" } , status: 400
       end
     else
-      render json: { error: "Vui lòng nhập đầy đủ tham số !" }, status: 403
+      render json: {status_purchase: 0, error: "Vui lòng nhập đầy đủ tham số !" }, status: 400
     end
   end
 
