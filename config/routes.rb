@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   root 'index#index'
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
+  # healthcheck
+  get   '/healthcheck' => 'index#healthcheck'
+
   # WAP
   get   '/chatvoihotgirl/:publisher/:pkg' => 'wap#mbf_publisher'
   get   '/chatvoihotgirl/:publisher'      => 'wap#mbf_publisher_directly'

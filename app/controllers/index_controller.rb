@@ -6,4 +6,9 @@ class IndexController < ApplicationController
   def index
     render plain: 'Livestar v1'
   end
+
+  def healthcheck
+    logger.info("---------api check healthcheck---------")
+    render plain: 'ok'
+  end
 end
