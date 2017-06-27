@@ -333,16 +333,18 @@
         bct_log = BctTimeLog.where(:room_id => @room.id, :end_room => nil, :flag => false).order("id desc").take
         endRoom = Time.now
         flag = true
-        bct_log.end_room = endRoom
-        bct_log.flag = flag
-        time_log = Time.now.to_i - bct_log.start_room.to_i
-        if time_log >= 1800
-          status = true 
-        else
-          status = false
+        if bct_log.present?
+          bct_log.end_room = Time.now
+          bct_log.flag = flag
+          time_log = Time.now.to_i - bct_log.start_room.to_i
+          if time_log >= 1800
+            status = true 
+          else
+            status = false
+          end
+          bct_log.status = status
+          bct_log.save
         end
-        bct_log.status = status
-        bct_log.save
       end
       return true
     end
@@ -357,7 +359,9 @@
     def is_subscribed
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
+        logger.info("room: #{@room.to_json}")
         get_users
+        logger.info("user_list: #{@user_list}")
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else

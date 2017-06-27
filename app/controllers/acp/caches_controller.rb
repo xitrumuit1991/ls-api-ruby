@@ -11,6 +11,10 @@ class Acp::CachesController < Acp::ApplicationController
 		Rails.cache.fetch("home_slider") do
 			Slide.all().order('weight asc').limit(3)
 		end
+		logger.info("---------clearCacheClider: ") 
+		logger.info("---------clearCacheClider: ") 
+		logger.info("---------clearCacheClider: ") 
+		logger.info(Rails.cache.fetch("home_slider").to_json) 
 		redirect_to({ action: 'index' }, notice: 'Clear Cache Clider successfully.')
 	end
 

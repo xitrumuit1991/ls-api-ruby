@@ -10,17 +10,19 @@ module RecordStreamHelper
   end
 
   def end_stream room
-    redis_stream = eval($redis.get("stream_room_id:#{room.id}"))
-    # stream_logger = Logger.new("#{Rails.root}/public/backups/StopStream.log")
-    # stream_logger.info("ANGCO DEBUG room: #{room} \n")
-    # stream_logger.info("ANGCO DEBUG room: #{redis_stream} \n")
-    linkRecode = "http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname=#{room.id.to_s}&outputFile=#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}_#{redis_stream[:min]}.mp4&option=overwrite&action=stopRecording"
-    linkVideo = "http://stream.livestar.vn:80/livestar-vod/mp4:#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}_#{redis_stream[:min]}.mp4/playlist.m3u8"
-    # stream_logger.info("ANGCO DEBUG StopLinkRecode: #{linkRecode} \n")
-    # stream_logger.info("ANGCO DEBUG room: #{linkVideo} \n")
-    stream_action linkRecode 
-    add_vod(linkVideo, room, redis_stream)
-    return true
+    if $redis.get("stream_room_id:#{room.id}")
+      redis_stream = eval($redis.get("stream_room_id:#{room.id}"))
+      # stream_logger = Logger.new("#{Rails.root}/public/backups/StopStream.log")
+      # stream_logger.info("ANGCO DEBUG room: #{room} \n")
+      # stream_logger.info("ANGCO DEBUG room: #{redis_stream} \n")
+      linkRecode = "http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname=#{room.id.to_s}&outputFile=#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}_#{redis_stream[:min]}.mp4&option=overwrite&action=stopRecording"
+      linkVideo = "http://stream.livestar.vn:80/livestar-vod/mp4:#{room.id.to_s}_#{redis_stream[:year]}_#{redis_stream[:month]}_#{redis_stream[:day]}_#{redis_stream[:hour]}_#{redis_stream[:min]}.mp4/playlist.m3u8"
+      # stream_logger.info("ANGCO DEBUG StopLinkRecode: #{linkRecode} \n")
+      # stream_logger.info("ANGCO DEBUG room: #{linkVideo} \n")
+      stream_action linkRecode 
+      add_vod(linkVideo, room, redis_stream)
+      return true
+    end
   end
 
   def recode link
@@ -49,6 +51,8 @@ module RecordStreamHelper
   end
 
   def add_vod(link, room, time)
-    BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: "http://stream.livestar.vn:8080/screenshots/#{room.id}_#{time[:year]}_#{time[:month]}_#{time[:day]}_#{time[:hour]}_#{time[:min]}")
+    if link.present? and room.present? and time.present?
+      BctVideo.create(broadcaster_id: room.broadcaster.id, title: "#{room.title} #{time[:hour]}h00 #{time[:day]}/#{time[:month]}/#{time[:year]}", video_type: 'vod', video: link, thumb: "http://stream.livestar.vn:8080/screenshots/#{room.id}_#{time[:year]}_#{time[:month]}_#{time[:day]}_#{time[:hour]}_#{time[:min]}")
+    end
   end
 end

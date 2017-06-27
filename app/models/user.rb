@@ -83,6 +83,12 @@ class User < ActiveRecord::Base
 
 	def avatar_path
 		avatar = {}
+		logger.info("---------avatar_path")
+		logger.info("---------avatar_path")
+		logger.info(Settings.base_url)
+		logger.info("---------self.avatar_crop.w60h60.url")
+		logger.info("---------self.avatar_crop.w60h60.url")
+		logger.info(self.avatar_crop.w60h60.url)
 		if !self.avatar_crop.url.nil?
 			avatar = {
 					avatar: 		"#{Settings.base_url}#{self.avatar_crop.url}", 
@@ -210,11 +216,11 @@ class User < ActiveRecord::Base
 				else
 					percent = 100
 				end
-				NotificationLevelUpJob.perform_later(self.email, self.user_level.level)
+				# NotificationLevelUpJob.perform_later(self.email, self.user_level.level)
 			end
 		end
 		self.save
-		NotificationChangeExpJob.perform_later(self.email, old_value, new_value, percent)
+		# NotificationChangeExpJob.perform_later(self.email, old_value, new_value, percent)
 	end
 
 	def percent
