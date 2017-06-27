@@ -10,7 +10,7 @@ module RecordStreamHelper
   end
 
   def end_stream room
-    if $redis.get("stream_room_id:#{room.id}")
+    if $redis.get("stream_room_id:#{room.id}").present?
       redis_stream = eval($redis.get("stream_room_id:#{room.id}"))
       # stream_logger = Logger.new("#{Rails.root}/public/backups/StopStream.log")
       # stream_logger.info("ANGCO DEBUG room: #{room} \n")

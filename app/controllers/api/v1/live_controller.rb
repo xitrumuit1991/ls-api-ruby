@@ -279,7 +279,12 @@
           $redis.del(key) if Time.now >= Time.at(expiry.to_i)
         end
         # remove virtual users in redis
-        $redis.del($redis.keys("VirtualUsers:#{@room.id}:*"))
+        logger.info("----------------------")
+        logger.info("----------------------")
+        logger.info("redis.keys(VirtualUsers:@room.id:*) key= VirtualUsers:#{@room.id}:*")
+        if $redis.keys("VirtualUsers:#{@room.id}:*").present?
+          $redis.del( $redis.keys("VirtualUsers:#{@room.id}:*") )
+        end
         return head 200
       else
         render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
@@ -359,8 +364,12 @@
     def is_subscribed
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
+        logger.info("----------------------")
+        logger.info("----------------------")
         logger.info("room: #{@room.to_json}")
         get_users
+        logger.info("----------------------")
+        logger.info("----------------------")
         logger.info("user_list: #{@user_list}")
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
