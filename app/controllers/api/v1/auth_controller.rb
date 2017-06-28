@@ -612,26 +612,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
 
-  # def verifyToken
-  #   user = User.find_by(email: params[:email], token: params[:token])
-  #   if user.present?
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue JWT::ExpiredSignature
-  #       return head 400
-  #     end
-  #   else
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue e
-  #       render json: {error: e.message}, status: 400
-  #     end
-  #   end
-  # end
-
-
   def verifyToken
     user = User.find_by(email: params[:email], token: params[:token])
     if user.present?
@@ -645,21 +625,41 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       begin
         JWT.decode params[:token], Settings.hmac_secret
         return head 200
-      rescue JWT::ExpiredSignature
-        render json: {error: 'The token has expired.' }, status: 400
-        return
-      rescue JWT::DecodeError
-        render json: {error: 'A token must be passed.'}, status: 400
-        return
-      rescue JWT::InvalidIssuerError
-        render json: {error: 'The token does not have a valid issuer.' }, status: 400
-        return
-      rescue JWT::InvalidIatError
-        render json: {error: 'The token does not have a valid "issued at" time.' }, status: 400
-        return
+      rescue e
+        render json: {error: e.message}, status: 400
       end
     end
   end
+
+
+  # def verifyToken
+  #   user = User.find_by(email: params[:email], token: params[:token])
+  #   if user.present?
+  #     begin
+  #       JWT.decode params[:token], Settings.hmac_secret
+  #       return head 200
+  #     rescue JWT::ExpiredSignature
+  #       return head 400
+  #     end
+  #   else
+  #     begin
+  #       JWT.decode params[:token], Settings.hmac_secret
+  #       return head 200
+  #     rescue JWT::ExpiredSignature
+  #       render json: {error: 'The token has expired.' }, status: 400
+  #       return
+  #     rescue JWT::DecodeError
+  #       render json: {error: 'A token must be passed.'}, status: 400
+  #       return
+  #     rescue JWT::InvalidIssuerError
+  #       render json: {error: 'The token does not have a valid issuer.' }, status: 400
+  #       return
+  #     rescue JWT::InvalidIatError
+  #       render json: {error: 'The token does not have a valid "issued at" time.' }, status: 400
+  #       return
+  #     end
+  #   end
+  # end
 
   # def verifyToken
   #   user = User.find_by(email: params[:email], token: params[:token])
