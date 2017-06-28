@@ -259,7 +259,8 @@
         DeviceNotificationJob.perform_later(@user)
         start_stream @room
         $emitter.of('/room').in(@room.id).emit('room on-air')
-        return head 200
+        render json: {message: 'Start room thành công'}, status: 200
+        return
       else
         render json: {error: 'Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
@@ -267,17 +268,23 @@
 
     def endRoom
       @room.on_air = false
-      if @room.save
+      if @room.present? and @room.save
         _bctTimeLog()
         $emitter.of('/room').in(@room.id).emit('room off')
         end_stream @room
 
         # remove expired banned user
         banned = $redis.keys("ban:#{@room.id}:*")
-        banned.each do |key|
-          expiry = $redis.get(key)
-          $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+        logger.info("----------------------")
+        logger.info("----------------------")
+        logger.info("endroom banned = #{banned}")
+        if banned.present?
+          banned.each do |key|
+            expiry = $redis.get(key)
+            $redis.del(key) if Time.now >= Time.at(expiry.to_i) and key
+          end
         end
+        
         # remove virtual users in redis
         logger.info("----------------------")
         logger.info("----------------------")
@@ -285,7 +292,8 @@
         if $redis.keys("VirtualUsers:#{@room.id}:*").present?
           $redis.del( $redis.keys("VirtualUsers:#{@room.id}:*") )
         end
-        return head 200
+        render json: {message: 'End room thành công'}, status: 200
+        return
       else
         render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
@@ -294,22 +302,26 @@
     def forceEnd
       @room = Room.find(params[:room_id])
       return head 200 if @room.on_air == false
-
       @room.on_air = false
-      if @room.save
+      if @room.present? and @room.save
         _bctTimeLog()
         $emitter.of('/room').in(@room.id).emit('room off')
         end_stream @room
 
         # remove expired banned user
         banned = $redis.keys("ban:#{@room.id}:*")
-        banned.each do |key|
-          expiry = $redis.get(key)
-          $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+        if banned and banned.present?
+          banned.each do |key|
+            expiry = $redis.get(key)
+            $redis.del(key) if Time.now >= Time.at(expiry.to_i)
+          end
         end
         # remove virtual users in redis
-        $redis.del($redis.keys("VirtualUsers:#{@room.id}:*"))
-        return head 200
+        if $redis.keys("VirtualUsers:#{@room.id}:*").present?
+          $redis.del( $redis.keys("VirtualUsers:#{@room.id}:*") )
+        end
+        render json: {message: 'Force End room thành công'}, status: 200
+        return
       else
         render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
@@ -366,11 +378,11 @@
         @room = Room.find(params[:room_id])
         logger.info("----------------------")
         logger.info("----------------------")
-        logger.info("room: #{@room.to_json}")
+        logger.info("----------------------room: #{@room.to_json}")
         get_users
         logger.info("----------------------")
         logger.info("----------------------")
-        logger.info("user_list: #{@user_list}")
+        logger.info("----------------------is_subscribed user_list: #{@user_list}")
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else
