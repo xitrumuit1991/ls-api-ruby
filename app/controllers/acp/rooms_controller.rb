@@ -5,7 +5,7 @@ class Acp::RoomsController < Acp::ApplicationController
 	include KrakenHelper
 	load_and_authorize_resource
 	before_filter :init
-  before_action :load_data, only: [:new, :create, :edit, :update]
+  	before_action :load_data, only: [:new, :create, :edit, :update]
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
 	def index
@@ -38,26 +38,62 @@ class Acp::RoomsController < Acp::ApplicationController
 	end
 
 	def update
-    prev_path = Rails.application.routes.recognize_path(request.referrer)
+    	prev_path = Rails.application.routes.recognize_path(request.referrer)
 		parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
 		parameters[:thumb_crop] = parameters[:thumb]
 		parameters[:thumb_poster] = parameters[:thumb_poster].nil? ? parameters[:thumb_poster] : optimizeKraken(parameters[:thumb_poster])
 		if @data.update(parameters)
 			if prev_path[:controller] == 'acp/rooms'
-        redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
-      else
-        redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
-      end
+        		redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
+      		else
+        		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
+      		end
 		else
 			if prev_path[:controller] == 'acp/rooms'
 				render :edit
 			else
-        redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
+        		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
 			end
 		end
 	end
 
 	def destroy
+		bct_gifts = BctGift.where(:room_id => @data.id)
+		logger.info("---------bct_gifts:")
+		logger.info("#{bct_gifts.to_json}")
+		if bct_gifts.present?
+			bct_gifts.each do |bct_gift|
+			  bct_gift.destroy
+			end
+		end
+
+		bct_actions = BctAction.where(:room_id => @data.id)
+		logger.info("---------bct_actions:")
+		logger.info("#{bct_actions.to_json}")
+		if bct_actions.present?
+			bct_actions.each do |bct_action|
+			  bct_action.destroy
+			end
+		end
+
+		user_logs = UserLog.where(:room_id => @data.id)
+		logger.info("---------user_logs:")
+		logger.info("#{user_logs.to_json}")
+		if user_logs.present?
+			user_logs.each do |user_log|
+			  user_log.destroy
+			end
+		end
+
+		heart_logs = HeartLog.where(:room_id => @data.id)
+		logger.info("---------heart_logs:")
+		logger.info("#{heart_logs.to_json}")
+		if heart_logs.present?
+			heart_logs.each do |heart_log|
+			  heart_log.destroy
+			end
+		end
+		
 		@data.destroy
 		redirect_to({ action: 'index' }, notice: 'Room was successfully destroyed.')
 	end
@@ -82,7 +118,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 		def load_data
 			@idols = Broadcaster.all.order('id desc').limit(1)
-      @room_types = RoomType.all.order('id desc')
+      		@room_types = RoomType.all.order('id desc')
 			@room_backgrounds = RoomBackground.all.order('id desc')
     end
 

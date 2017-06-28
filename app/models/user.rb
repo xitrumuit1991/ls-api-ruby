@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
 		$emitter.of("/room").in(room_id).emit("kick user", {email: self.email, name: self.name})
 	end
 
-	def is_banned room_id
+	def is_banned room_id=nil
 		ban = $redis.get("ban:#{room_id}:#{self.email}")
 		ban.nil? ? false : Time.now < Time.at(ban.to_i)
 	end
