@@ -617,14 +617,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def verifyToken
     user = User.find_by(email: params[:email], token: params[:token])
     logger.info("---------------")
-    logger.info("user: #{user.to_json} ")
+    logger.info("verifyToken user: #{user.to_json} ")
     if user.present?
       begin
         decoded_token = JWT.decode params[:token], Settings.hmac_secret
         logger.info("--------decoded_token-------")
-        logger.info("decoded_token: #{decoded_token}")
-        render json: {message: "validate token success", user: user.to_json, decoded_token: decoded_token.to_json }, status: 200
-        return 
+        logger.info("verifyToken decoded_token: #{decoded_token}")
+        if decoded_token and decoded_token[0] and decoded_token[0].email == params[:email]
+          # render json: {message: "success", user: user, decoded_token: decoded_token }, status: 200
+          render json: {message: "success", decoded_token: decoded_token}, status: 200
+          return 
+        render json: {error: 'Validate token fail. Token is not mismatch with email.' }, status: 403
+        return
       rescue JWT::ExpiredSignature
         render json: {error: 'The token has expired.' }, status: 403
         return
@@ -640,7 +644,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       end
     else
       logger.info("-----decoded_token FALSE----------")
-      render json: {error: "Token validate fail"}, status: 403
+      render json: {error: "User not found. Validate token fail. "}, status: 403
       return
       # begin
       #   decoded_token = JWT.decode params[:token], Settings.hmac_secret
@@ -657,6 +661,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       # end
     end
   end
+
 
   def updateForgotCode
     user = User.find_by_email(params[:email])
