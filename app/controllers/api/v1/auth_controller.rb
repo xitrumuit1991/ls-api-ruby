@@ -612,54 +612,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
 
-  # def verifyToken
-  #   user = User.find_by(email: params[:email], token: params[:token])
-  #   if user.present?
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue JWT::ExpiredSignature
-  #       return head 400
-  #     end
-  #   else
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue e
-  #       render json: {error: e.message}, status: 400
-  #     end
-  #   end
-  # end
 
-
-  # def verifyToken
-  #   user = User.find_by(email: params[:email], token: params[:token])
-  #   if user.present?
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue JWT::ExpiredSignature
-  #       return head 400
-  #     end
-  #   else
-  #     begin
-  #       JWT.decode params[:token], Settings.hmac_secret
-  #       return head 200
-  #     rescue JWT::ExpiredSignature
-  #       render json: {error: 'The token has expired.' }, status: 400
-  #       return
-  #     rescue JWT::DecodeError
-  #       render json: {error: 'A token must be passed.'}, status: 400
-  #       return
-  #     rescue JWT::InvalidIssuerError
-  #       render json: {error: 'The token does not have a valid issuer.' }, status: 400
-  #       return
-  #     rescue JWT::InvalidIatError
-  #       render json: {error: 'The token does not have a valid "issued at" time.' }, status: 400
-  #       return
-  #     end
-  #   end
-  # end
 
   def verifyToken
     user = User.find_by(email: params[:email], token: params[:token])
@@ -670,7 +623,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         decoded_token = JWT.decode params[:token], Settings.hmac_secret
         logger.info("--------decoded_token-------")
         logger.info("decoded_token: #{decoded_token}")
-        render json: {message: "validate token success" }, status: 200
+        render json: {message: "validate token success", user: user.to_json, decoded_token: decoded_token.to_json }, status: 200
         return 
       rescue JWT::ExpiredSignature
         render json: {error: 'The token has expired.' }, status: 403
@@ -686,22 +639,22 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         return
       end
     else
-      begin
-        decoded_token = JWT.decode params[:token], Settings.hmac_secret
-        logger.info("--------decoded_token-------")
-        logger.info("decoded_token: #{decoded_token}")
-        userEmail = User.find_by(email: params[:email] )
-        if userEmail.present? and decoded_token and decoded_token[0] and decoded_token[0].email == params[:email]
-          render json: {message: "validate token success" }, status: 200
-          return
-        end
-        render json: {error: "Token validate fail"}, status: 403
-        return
-      rescue 
-        logger.info("-----decoded_token FALSE----------")
-        render json: {error: "Token validate fail"}, status: 403
-        return
-      end
+      logger.info("-----decoded_token FALSE----------")
+      render json: {error: "Token validate fail"}, status: 403
+      return
+      # begin
+      #   decoded_token = JWT.decode params[:token], Settings.hmac_secret
+      #   userEmail = User.find_by(email: params[:email] )
+      #   if userEmail.present? and decoded_token and decoded_token[0] and decoded_token[0].email == params[:email]
+      #     render json: {message: "validate token success" }, status: 200
+      #     return
+      #   end
+      #   render json: {error: "Token validate fail"}, status: 403
+      #   return
+      # rescue 
+      #   render json: {error: "Token validate fail"}, status: 403
+      #   return
+      # end
     end
   end
 
