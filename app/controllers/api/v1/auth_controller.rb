@@ -555,16 +555,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           # Vip 1 one week
           vip_package = VipPackage::find_by_code("VIP7")
           UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
-          logger.info("email: #{user.email} result: OK")
+          logger.info("create user OK: #{user.to_json}")
           render json: { token: token }, status: 200
         else
-          logger.info("email: #{user.email} result: FALSE error: #{user.errors.messages}")
+          logger.info("result: FALSE error: #{user.errors.messages}")
           render json: { error: user.errors.messages }, status: 400
         end
       end
     rescue Koala::Facebook::APIError => exc
-      logger.info("email: #{user.email} result: FALSE error: #{exc}")
-      render json: exc, status: 400
+      logger.info(" result: FALSE error: #{exc}")
+      render json: {error: "Can not get profile facebook.", exc: exc.to_json}, status: 400
     end
   end
 
