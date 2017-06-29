@@ -46,14 +46,18 @@ module Api::V1::Authorize extend ActiveSupport::Concern
           @token_user = decoded_token[0]
           @user = User.find_by(token: token)
         rescue
-          return head 401
+          render json: {error: "authenticate_token validate fail."}, status: 401
+          # return head 401
+          return
         end
       end
     end
 
     def render_unauthorized
       self.headers['WWW-Authenticate'] = 'Token realm="Application"'
-      return head 401
+      render json: {error: "authenticate_token validate fail. render_unauthorized"}, status: 401
+      # return head 401
+      return
     end
 
     def scan_ip(ip)

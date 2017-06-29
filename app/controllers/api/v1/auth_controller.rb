@@ -505,10 +505,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def fbRegister
-    logger = Logger.new("#{Rails.root}/log/fbRegister.log")
+    # logger = Logger.new("#{Rails.root}/log/fbRegister.log")
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
+      if profile.blank?
+        render json: {code: 1, error: "Can not get profile facebook"}, status: 400
+        return
+      end
+      if profile['email'].blank?
+        render json: {code: 2, error: "Can not get email facebook"}, status: 400
+        return
+      end
       user = User.find_by_email(profile['email'])
       if user.present?
         if user.fb_id.blank?
@@ -516,16 +524,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           if user.save
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
-            logger.info("email: #{user.email} result: OK")
             render json: {token: token}, status: 200
           else
-            logger.info("email: #{user.email} result: FAILS error: #{user.errors.messages}")
-            render json: user.errors.messages, status: 400
+            logger.info("user.save FAILS error: #{user.errors.messages}")
+            render json: {code: 3, error: user.errors.messages}, status: 400
           end
         else
           token = createToken(user)
           user.update(last_login: Time.now, token: token)
-          logger.info("email: #{user.email} result: OK")
+          logger.info("-------------")
+          logger.info("-------------")
+          logger.info("user.errors.messages: #{user.errors.messages}")
           render json: {token: token}, status: 200
         end
       else
@@ -559,12 +568,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
           render json: { token: token }, status: 200
         else
           logger.info("result: FALSE error: #{user.errors.messages}")
-          render json: { error: user.errors.messages }, status: 400
+          render json: {code: 4, error: user.errors.messages, detail: "can not create new user" }, status: 400
         end
       end
     rescue Koala::Facebook::APIError => exc
-      logger.info(" result: FALSE error: #{exc}")
-      render json: {error: "Can not get profile facebook.", exc: exc.to_json}, status: 400
+      logger.info("result: FALSE error: #{exc}")
+      render json: {code: 5, error: "Can not get profile facebook.", exc: exc.to_json}, status: 400
     end
   end
 
