@@ -623,12 +623,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         decoded_token = JWT.decode params[:token], Settings.hmac_secret
         logger.info("--------decoded_token-------")
         logger.info("verifyToken decoded_token: #{decoded_token}")
-        if decoded_token and decoded_token[0] and decoded_token[0].email == params[:email]
-          # render json: {message: "success", user: user, decoded_token: decoded_token }, status: 200
-          render json: {message: "success", decoded_token: decoded_token}, status: 200
-          return 
-        render json: {error: 'Validate token fail. Token is not mismatch with email.' }, status: 403
-        return
+        # render json: {message: "success", user: user, decoded_token: decoded_token }, status: 200
+        render json: {message: "success", decoded_token: decoded_token }, status: 200
+        return 
       rescue JWT::ExpiredSignature
         render json: {error: 'The token has expired.' }, status: 403
         return
