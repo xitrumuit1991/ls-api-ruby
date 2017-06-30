@@ -4,14 +4,14 @@ class Slide < ActiveRecord::Base
 	mount_uploader :banner, SlideUploader
 
 	def banner_path
-		logger.info("---------model slide:")
-		logger.info("---------Settings.base_url:")
-		logger.info("---------Settings.base_url:")
-		logger.info(Settings.base_url) 
-		logger.info("---------model slide:")
-		logger.info("---------self.banner.url:")
-		logger.info("---------self.banner.url:")
-		logger.info(self.banner.url) 
+		# logger.info("---------model slide:")
+		# logger.info("---------Settings.base_url:")
+		# logger.info("---------Settings.base_url:")
+		# logger.info(Settings.base_url) 
+		# logger.info("---------model slide:")
+		# logger.info("---------self.banner.url:")
+		# logger.info("---------self.banner.url:")
+		# logger.info(self.banner.url) 
   		banner = {}
 		if !self.banner.url.nil?
 			banner = {
