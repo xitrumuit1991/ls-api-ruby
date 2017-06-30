@@ -442,6 +442,7 @@ Rails.application.routes.draw do
       scope 'posters' do
         get '/sliders' => 'posters#getSliders'
         get '/posters' => 'posters#getPosters'
+        get '/deleteCacheAll' => 'posters#deleteCacheAll'
       end
     end
   end
