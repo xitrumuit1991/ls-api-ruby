@@ -83,12 +83,12 @@ class User < ActiveRecord::Base
 
 	def avatar_path
 		avatar = {}
-		logger.info("---------avatar_path")
-		logger.info("---------avatar_path")
-		logger.info(Settings.base_url)
-		logger.info("---------self.avatar_crop.w60h60.url")
-		logger.info("---------self.avatar_crop.w60h60.url")
-		logger.info(self.avatar_crop.w60h60.url)
+		# logger.info("---------avatar_path")
+		# logger.info("---------avatar_path")
+		# logger.info(Settings.base_url)
+		# logger.info("---------self.avatar_crop.w60h60.url")
+		# logger.info("---------self.avatar_crop.w60h60.url")
+		# logger.info(self.avatar_crop.w60h60.url)
 		if !self.avatar_crop.url.nil?
 			avatar = {
 					avatar: 		"#{Settings.base_url}#{self.avatar_crop.url}", 

@@ -47,17 +47,86 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 		end
 	end
 
+
+
+	def clearCacheAll
+		Rails.cache.delete("top_broadcaster_revcived_heart_week")
+		Rails.cache.delete("top_broadcaster_revcived_heart_month")
+		Rails.cache.delete("top_broadcaster_revcived_heart_all")
+		render json: {success: 1, message: "clear cache all OK"}, status: 200
+		return
+	end
+
 	def topBroadcasterRevcivedHeart
 		if params[:range] == nil or params[:range] == "week"
-			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_week')
+			top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_week')
+			if top_heart.present?
+				logger.info("--------------has cache top_broadcaster_revcived_heart_week")
+				logger.info(top_heart.to_json)
+				@top_heart = top_heart
+			else
+				logger.info("--------------create cache top_broadcaster_revcived_heart_week")
+				WeeklyTopBctReceivedHeart.destroy_all
+				WeeklyTopBctReceivedHeart.connection.execute("ALTER TABLE top_bct_received_hearts AUTO_INCREMENT = 1")
+				hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: 1.week.ago.beginning_of_week..1.week.ago.end_of_week).group(:room_id).order('quantity DESC').limit(5)
+				hearts.each do |heart|
+					WeeklyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+				end
+				Rails.cache.delete("top_broadcaster_revcived_heart_week")
+				Rails.cache.fetch("top_broadcaster_revcived_heart_week") do
+					WeeklyTopBctReceivedHeart::all
+				end
+				@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_week')
+			end
+
 		elsif params[:range] == "all"
-			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_all')
+			top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_all')
+			if top_heart.present?
+				logger.info("--------------has cache top_broadcaster_revcived_heart_all")
+				logger.info(top_heart.to_json)
+				@top_heart = top_heart
+			else
+				logger.info("--------------create cache top_broadcaster_revcived_heart_all")
+				TopBctReceivedHeart.destroy_all
+				TopBctReceivedHeart.connection.execute("ALTER TABLE top_user_send_gifts AUTO_INCREMENT = 1")
+				hearts = HeartLog.select('room_id, sum(quantity) as quantity').group(:room_id).order('quantity DESC').limit(5)
+				hearts.each do |heart|
+					TopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+				end
+				Rails.cache.delete("top_broadcaster_revcived_heart_all")
+				Rails.cache.fetch("top_broadcaster_revcived_heart_all") do
+					TopBctReceivedHeart::all
+				end
+				@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_all')
+			end
+
 		elsif params[:range] == "month"
-			@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_month')
+			top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_month')
+			if top_heart.present?
+				logger.info("--------------has cache top_broadcaster_revcived_heart_month")
+				logger.info(top_heart.to_json)
+				@top_heart = top_heart
+			else
+				logger.info("--------------create cache top_broadcaster_revcived_heart_month")
+				MonthlyTopBctReceivedHeart.destroy_all
+				MonthlyTopBctReceivedHeart.connection.execute("ALTER TABLE monthly_top_bct_received_hearts AUTO_INCREMENT = 1")
+				hearts = HeartLog.select('room_id, sum(quantity) as quantity').where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).group(:room_id).order('quantity DESC').limit(5)
+				hearts.each do |heart|
+					MonthlyTopBctReceivedHeart.create(:broadcaster_id => heart.room.broadcaster.id, :quantity => heart.quantity)
+				end
+				Rails.cache.delete("top_broadcaster_revcived_heart_month")
+				Rails.cache.fetch("top_broadcaster_revcived_heart_month") do
+					MonthlyTopBctReceivedHeart::all
+				end
+				@top_heart = Rails.cache.fetch('top_broadcaster_revcived_heart_month')
+			end
 		else
 			render json: {error: 'Range error !'}, status: 400
 		end
 	end
+
+
+
 
 	def topBroadcasterRevcivedGift
 		if params[:range] == nil or params[:range] == "week"
