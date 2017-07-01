@@ -4,7 +4,7 @@
     include RecordStreamHelper
 
     before_action :authenticate, :is_subscribed, except: [:forceEnd]
-    before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser, :forceEnd]
+    before_action :is_started, except: [:sendMessage, :startRoom, :getUserList, :kickUser, :forceEnd, :addHeartInRoom]
     before_action :check_permission, only: [:startRoom, :endRoom, :doneAction, :kickUser]
 
     def getUserList
