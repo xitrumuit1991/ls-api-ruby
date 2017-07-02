@@ -93,6 +93,17 @@ class Acp::RoomsController < Acp::ApplicationController
 			  heart_log.destroy
 			end
 		end
+
+		bct_time_logs = BctTimeLog.where(:room_id => @data.id)
+		logger.info("---------bct_time_logs:")
+		logger.info("#{bct_time_logs.to_json}")
+		if bct_time_logs.present?
+			bct_time_logs.each do |bct_time_log|
+			  bct_time_log.destroy
+			end
+		end
+
+		
 		
 		@data.destroy
 		redirect_to({ action: 'index' }, notice: 'Room was successfully destroyed.')
