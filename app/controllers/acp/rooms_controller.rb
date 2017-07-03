@@ -5,7 +5,7 @@ class Acp::RoomsController < Acp::ApplicationController
 	include KrakenHelper
 	load_and_authorize_resource
 	before_filter :init
-  	before_action :load_data, only: [:new, :create, :edit, :update]
+	before_action :load_data, only: [:new, :create, :edit, :update]
 	before_action :set_data, only: [:show, :edit, :update, :destroy]
 
 	def index
@@ -38,21 +38,21 @@ class Acp::RoomsController < Acp::ApplicationController
 	end
 
 	def update
-    	prev_path = Rails.application.routes.recognize_path(request.referrer)
+  	prev_path = Rails.application.routes.recognize_path(request.referrer)
 		parameters[:thumb] = parameters[:thumb].nil? ? parameters[:thumb] : optimizeKraken(parameters[:thumb])
 		parameters[:thumb_crop] = parameters[:thumb]
 		parameters[:thumb_poster] = parameters[:thumb_poster].nil? ? parameters[:thumb_poster] : optimizeKraken(parameters[:thumb_poster])
 		if @data.update(parameters)
 			if prev_path[:controller] == 'acp/rooms'
-        		redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
-      		else
-        		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
-      		end
+    		redirect_to({ action: 'index' }, notice: "Thông tin phòng '#{@data.title}' được cập nhật thành công.")
+  		else
+    		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Thông tin phòng được cập nhật thành công.')
+  		end
 		else
 			if prev_path[:controller] == 'acp/rooms'
 				render :edit
 			else
-        		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
+    		redirect_to({ controller: 'broadcasters', action: 'room', broadcaster_id: @data.broadcaster.id, id: @data.id }, alert: @data.errors.full_messages)
 			end
 		end
 	end
@@ -175,7 +175,7 @@ class Acp::RoomsController < Acp::ApplicationController
 
 		def load_data
 			@idols = Broadcaster.all.order('id desc').limit(1)
-      		@room_types = RoomType.all.order('id desc')
+  		@room_types = RoomType.all.order('id desc')
 			@room_backgrounds = RoomBackground.all.order('id desc')
     end
 
