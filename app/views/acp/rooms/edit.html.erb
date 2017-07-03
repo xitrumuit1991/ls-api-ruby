@@ -176,6 +176,10 @@
                         <button class="btn" name="save_and_add_another">Lưu và thêm mới</button>
                         <button class="btn" name="save_and_edit">Lưu và chỉnh sửa</button>
                         <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Hủy</a>
+                        <a class="btn btn-xs btn-danger" data-confirm="Are you sure ?" rel="nofollow" data-method="delete" href="/acp/rooms/<%= @data.id %>">
+                          <i class="fa fa-trash-o"></i> XOÁ ROOM
+                        </a>
+                          <!-- <a href="/acp/<%= controller_name %>" class="btn"><i class="fs-14 pg-close"></i>Xoá room</a> -->
                     </div>
                   </div>
                 </div>

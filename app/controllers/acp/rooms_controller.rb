@@ -57,7 +57,23 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 	end
 
+
+
+
+
+
+
 	def destroy
+		screen_text_logs = ScreenTextLog.where(:room_id => @data.id)
+		logger.info("---------screen_text_logs:")
+		logger.info("#{screen_text_logs.to_json}")
+		if screen_text_logs.present?
+			screen_text_logs.each do |screen_text_log|
+			  screen_text_log.destroy
+			end
+		end
+
+		
 		bct_gifts = BctGift.where(:room_id => @data.id)
 		logger.info("---------bct_gifts:")
 		logger.info("#{bct_gifts.to_json}")
@@ -73,6 +89,15 @@ class Acp::RoomsController < Acp::ApplicationController
 		if bct_actions.present?
 			bct_actions.each do |bct_action|
 			  bct_action.destroy
+			end
+		end
+
+		action_logs = ActionLog.where(:room_id => @data.id)
+		logger.info("---------action_logs:")
+		logger.info("#{action_logs.to_json}")
+		if action_logs.present?
+			action_logs.each do |action_log|
+			  action_log.destroy
 			end
 		end
 
@@ -94,6 +119,24 @@ class Acp::RoomsController < Acp::ApplicationController
 			end
 		end
 
+		gift_logs = GiftLog.where(:room_id => @data.id)
+		logger.info("---------gift_logs:")
+		logger.info("#{gift_logs.to_json}")
+		if gift_logs.present?
+			gift_logs.each do |gift_log|
+			  gift_log.destroy
+			end
+		end
+
+		fb_share_logs = FbShareLog.where(:room_id => @data.id)
+		logger.info("---------fb_share_logs:")
+		logger.info("#{fb_share_logs.to_json}")
+		if fb_share_logs.present?
+			fb_share_logs.each do |fb_share_log|
+			  fb_share_log.destroy
+			end
+		end
+
 		bct_time_logs = BctTimeLog.where(:room_id => @data.id)
 		logger.info("---------bct_time_logs:")
 		logger.info("#{bct_time_logs.to_json}")
@@ -102,12 +145,15 @@ class Acp::RoomsController < Acp::ApplicationController
 			  bct_time_log.destroy
 			end
 		end
-
-		
 		
 		@data.destroy
 		redirect_to({ action: 'index' }, notice: 'Room was successfully destroyed.')
 	end
+
+
+
+
+
 
 	def destroy_m
 		@model.destroy(params[:item_id])

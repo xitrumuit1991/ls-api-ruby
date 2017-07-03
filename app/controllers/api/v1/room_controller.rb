@@ -20,7 +20,6 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def comingSoon
     @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 18
-
     if params[:category_id].nil?
       sql = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start IS NULL) ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc limit 18 offset #{offset}"
       @room_schedules = ActiveRecord::Base.connection.exec_query(sql)
@@ -32,9 +31,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       sql_total = "select * from (SELECT rooms.*, schedules.room_id, schedules.start FROM rooms LEFT JOIN schedules ON rooms.id = schedules.room_id LEFT JOIN broadcasters ON rooms.broadcaster_id = broadcasters.id WHERE broadcasters.deleted != true and rooms.is_privated = false and (schedules.start > '#{Time.now}' or schedules.start is null) and rooms.room_type_id = #{params[:category_id]} ORDER BY schedules.start ASC) as schedule GROUP BY id ORDER BY -start desc"
       total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     end
-
     @totalPage =  (Float(total_record)/18).ceil
   end
+
+  
 
   def addVirtualUsers
     if Room.find(params[:room_id]).on_air
@@ -72,6 +72,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @listUsers = VirtualUser.where("id IN (?)", list)
   end
 
+
   def listIdol
     @totalUser = []
     @user = check_authenticate
@@ -92,6 +93,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     total_record = ActiveRecord::Base.connection.exec_query(sql_total).length
     @totalPage =  (Float(total_record) / limit).ceil
   end
+
 
   def myIdol
     offset = params[:page].nil? ? 0 : params[:page].to_i * 9
