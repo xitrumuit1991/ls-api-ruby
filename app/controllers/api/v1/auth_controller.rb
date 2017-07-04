@@ -461,11 +461,26 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
   end
 
+
+
+  #register cho web, check captcha google
   def registerWeb
+    if params[:email].blank?
+      render json: {error: "Email không được để trống!" }, status: 400
+      return
+    end
+    if params[:password].blank?
+      render json: {error: "Password không được để trống!" }, status: 400
+      return
+    end
+    if params[:key_register].blank?
+      render json: {error: "Thiếu captcha google." }, status: 400
+      return
+    end
     if params[:email].present? &&  params[:password].present?
       checkCaptcha = eval(checkCaptcha(params[:key_register]))
-      if checkCaptcha[:success]
-        if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
+      if checkCaptcha.present? and checkCaptcha[:success].present?
+        if Rails.cache.fetch("email_black_list").blank? or !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
           _createUser params
         else
           render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
@@ -477,6 +492,11 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       render json: {error: "Email hoặc password không được để trống!" }, status: 400
     end
   end
+
+
+
+
+
 
   def loginFbBct
     begin
