@@ -58,7 +58,8 @@
           logger.info("---------message= #{message}");
           logger.info("---------sender= #{user}");
           logger.info("---------vip_data= #{vip_data}");
-          $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data});
+          $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: '/room'});
+          $emitter.of('room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: 'room'});
           # return head 201
           render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
           return
