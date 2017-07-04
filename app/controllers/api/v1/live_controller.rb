@@ -31,13 +31,13 @@
     
 
     def sendMessage
-      logger = Logger.new("#{Rails.root}/log/socket_production.log")
-      logger.info("-----------------------------------");
-      logger.info("---------socket emitter= #{$emitter}");
-      logger.info("---------params message= #{params[:message]}");
-      logger.info("---------params room_id= #{params[:room_id]}");
-      logger.info("---------Settings.redis_host= #{Settings.redis_host}");
-      logger.info("---------Settings.redis_port= #{Settings.redis_port}");
+      # logger = Logger.new("#{Rails.root}/log/socket_production.log")
+      # logger.info("-----------------------------------");
+      # logger.info("---------socket emitter= #{$emitter}");
+      # logger.info("---------params message= #{params[:message]}");
+      # logger.info("---------params room_id= #{params[:room_id]}");
+      # logger.info("---------Settings.redis_host= #{Settings.redis_host}");
+      # logger.info("---------Settings.redis_port= #{Settings.redis_port}");
       message = params[:message]
       room_id = params[:room_id]
       vip_weight = @token_user['vip']
@@ -55,12 +55,10 @@
         if message.length <= no_char
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = vip_weight ? {vip: vip_weight} : 0
-          logger.info("---------message= #{message}");
-          logger.info("---------sender= #{user}");
-          logger.info("---------vip_data= #{vip_data}");
+          # logger.info("---------message= #{message}");
+          # logger.info("---------sender= #{user}");
+          # logger.info("---------vip_data= #{vip_data}");
           $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: '/room'});
-          $emitter.of('room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: 'room'});
-          # return head 201
           render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
           return
         else
