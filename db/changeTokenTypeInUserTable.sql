@@ -1,1 +1,0 @@
-ALTER TABLE `livestar_production`.`users`  CHANGE COLUMN `token` `token` TEXT CHARACTER SET 'utf8' NULL DEFAULT NULL ;
