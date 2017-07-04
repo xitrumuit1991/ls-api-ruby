@@ -31,6 +31,7 @@
     
 
     def sendMessage
+      logger = Logger.new("#{Rails.root}/log/socket_production.log")
       logger.info("-----------------------------------");
       logger.info("---------socket emitter= #{$emitter}");
       logger.info("---------params message= #{params[:message]}");
