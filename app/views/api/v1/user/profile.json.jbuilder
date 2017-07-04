@@ -2,7 +2,7 @@ json.id			@user.id
 json.name		@user.name
 json.username	@user.username
 json.email		@user.email
-if @user.birthday
+if @user.present? and @user.birthday
   json.birthday	@user.birthday.strftime('%d-%m-%Y')
 else
   json.birthday	''
@@ -21,13 +21,13 @@ json.avatar_w300h300    @user.avatar_path[:avatar_w300h300]
 json.avatar_w400h400    @user.avatar_path[:avatar_w400h400]
 json.cover              @user.cover_path[:cover]
 json.cover_w940h200			@user.cover_path[:cover_w940h200]
-json.facebook		@user.facebook_link
-json.twitter		@user.twitter_link
-json.instagram		@user.instagram_link
-json.heart			@user.no_heart
-json.money			@user.money
-json.user_exp		@user.user_exp
-json.percent		@user.percent
+json.facebook		 @user.facebook_link
+json.twitter		 @user.twitter_link
+json.instagram	 @user.instagram_link
+json.heart			 @user.no_heart
+json.money			 @user.money
+json.user_exp		 @user.user_exp
+json.percent		  @user.percent
 json.user_level		@user.user_level.level
 json.max_heart		@user.user_level.heart_per_day
 json.active_code	@user.active_code
@@ -35,13 +35,17 @@ json.is_mbf       @user.mobifone_user.present?
 json.apple_payment true
 if !@vipInfo.nil?
   json.vip do
-    json.vip 			@vipInfo.weight
+    json.vip 			    @vipInfo.weight
     json.no_char 	    @vipInfo.no_char
     json.screen_time 	@vipInfo.screen_text_time
   end
 end
-if @user.is_broadcaster
+if @user.present? and @user.is_broadcaster
 	json.room do
-		json.slug 	@user.broadcaster.public_room.slug
+    if @user.broadcaster.present? and @user.broadcaster.public_room.present?
+      json.slug   @user.broadcaster.public_room.slug
+    else
+      json.slug   ''
+    end
 	end
 end
