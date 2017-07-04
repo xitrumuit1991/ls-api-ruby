@@ -78,7 +78,8 @@ gem "redis"
 gem "redis-lock"
 
 # SocketIO emitter
-gem 'socket.io-emitter'
+# gem 'socket.io-emitter'
+gem 'socket.io-emitter', '~> 0.2.0'
 
 # Delayed job
 gem 'delayed_job_active_record'
