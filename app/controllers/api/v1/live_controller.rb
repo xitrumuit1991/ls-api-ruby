@@ -28,19 +28,28 @@
     end
 
     def sendMessage
+      logger.info("-----------------------------------");
+      logger.info("---------socket emitter= #{$emitter}");
+      logger.info("---------params message= #{params[:message]}");
+      logger.info("---------params room_id= #{params[:room_id]}");
+      logger.info("---------Settings.redis_host= #{Settings.redis_host}");
+      logger.info("---------Settings.redis_port= #{Settings.redis_port}");
       message = params[:message]
       room_id = params[:room_id]
       vip_weight = @token_user['vip']
       vip = fetch_vip vip_weight
       no_char = vip ? vip['no_char'].to_i : 40
-
       if message.length > 0
         if message.length <= no_char
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = vip_weight ? {vip: vip_weight} : 0
+          logger.info("---------message= #{message}");
+          logger.info("---------sender= #{user}");
+          logger.info("---------vip_data= #{vip_data}");
           $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data});
-
-          return head 201
+          # return head 201
+          render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
+          return
         else
           render json: {error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
         end
@@ -383,20 +392,20 @@
         logger.info("----------------------")
         logger.info("----------------------")
         logger.info("----------------------is_subscribed user_list: #{@user_list}")
-        render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
-        render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
+        # render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
+        # render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else
         render json: {error: 'Thiếu tham số room_id'}, status: 404 and return
       end
     end
 
     def is_started
-        render json: {error: 'Phòng này đã tắt'}, status: 403  and return unless @room.on_air
+        # render json: {error: 'Phòng này đã tắt'}, status: 403  and return unless @room.on_air
     end
 
     def check_permission
       if @user.email != @room.broadcaster.user.email
-        render json: {error: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 403 and return
+        # render json: {error: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 403 and return
       end
     end
   end
