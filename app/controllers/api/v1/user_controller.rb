@@ -9,9 +9,29 @@ class Api::V1::UserController < Api::V1::ApplicationController
   helper YoutubeHelper
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms, :countShare]
 
+
   def profile
-    @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
+    vipInfo = nil
+    if @user.present?
+      if @user.user_has_vip_packages.present?
+        if @user.user_has_vip_packages.find_by_actived(true).present?
+          if @user.user_has_vip_packages.find_by_actived(true).vip_package.present?
+            vipInfo = @user.user_has_vip_packages.find_by_actived(true).vip_package.vip
+          else
+            @vipInfo = vipInfo
+          end
+        end
+        @vipInfo = vipInfo
+      else
+        @vipInfo = vipInfo
+      end
+    else
+      render json: {error: 'Không lấy được thông tin user '}, status: 400
+    end
+    # @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
+
+
 
   def publicProfile
     if params[:username].present?
