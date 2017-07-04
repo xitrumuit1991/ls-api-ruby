@@ -232,11 +232,13 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
     @user = check_authenticate
     @totalUser = []
     @featured = Rails.cache.fetch('room_featured')
-    @featured.each do |f|
-      if f.broadcaster.public_room.on_air
-        @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
-      end
-    end
+    if @featured.present?
+      @featured.each do |f|
+        if f.present? and f.broadcaster.present? and f.broadcaster.public_room.present? and f.broadcaster.public_room.on_air
+          @totalUser[f.broadcaster.public_room.id] = $redis.hgetall(f.broadcaster.public_room.id).length
+        end
+      end 
+    end 
   end
 
   def search
