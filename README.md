@@ -82,3 +82,13 @@ server {
 ### Run And Stop Application 
 bundle exec passenger start
 bundle exec passenger stop
+
+
+
+### Socket Emitter (danger)
+### Socket Emitter (danger)
+```
+	Only require socket.io-emitter version 0.2.0 in Gemfile: gem 'socket.io-emitter', '~> 0.2.0'
+
+
+```
