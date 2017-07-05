@@ -90,8 +90,8 @@
           # insert log
           @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
           UserLogJob.perform_later(@user, @room.id, cost)
-
-          return head 201
+          return render json: {message: 'send screen text OK' }, status: 201
+          # return head 201
         rescue => e
           render json: {error: e.message}, status: 400
         end
@@ -157,10 +157,28 @@
       end
     end
 
+
+
+
     def sendGifts
       gift_id = params[:gift_id].to_i
       quantity = params[:quantity].to_i
+      if @user.blank?
+        return render json: {error: 'Token is invalid' }, status: 400
+      end
+      if @room.blank?
+        return render json: {error: 'Phòng này không tồn tại hoặc đã bị xoá !' }, status: 400
+      end
+      if gift_id.blank?
+        return render json: {error: 'Thieu params gift_id' }, status: 400
+      end
+      if quantity.blank?
+        return render json: {error: 'Thieu params quantity' }, status: 400
+      end
       db_gift = fetch_gift gift_id
+      if db_gift.blank?
+        return render json: { message: 'Quà tặng không tồn tại!', detail: 'Khong get duoc db_gift by gift_id từ redis or từ database ! ' }, status: 400
+      end
       if db_gift
         if quantity >= 1
           total = db_gift['price'] * quantity
@@ -176,10 +194,13 @@
             # insert log
             GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
             UserLogJob.perform_later(@user, @room.id, total)
-
-            return head 201
+            return render json: {message: 'send gift thành công ' }, status: 201
+            # return head 201
           rescue => e
-            render json: {error: e.message}, status: 400
+            logger = Logger.new("#{Rails.root}/log/production.log");
+            logger.info("-------------------sendGifts----------------");
+            logger.info(e.message);
+            render json: {error: e.message, message: 'Tặng quà không thành công, vui lòng thử lại!'}, status: 400
           end
         else
           render json: {error: 'Số lượng phải lớn hơn 1'}, status: 400
@@ -188,6 +209,10 @@
         render json: {error: 'Quà tặng này không tồn tại'}, status: 404
       end
     end
+
+
+
+    
 
     def buyLounge
       cost = params[:cost].to_i
@@ -416,7 +441,7 @@
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else
-        render json: {error: 'Thiếu tham số room_id'}, status: 404 and return
+        render json: {error: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 404 and return
       end
     end
 
