@@ -8,13 +8,15 @@ json.rooms @room_schedules do |room|
     json.slug   room.slug
     json.slug   room.slug
     json.totalUser    @totalUser[room.id]
-    json.thumb              room.thumb_path[:thumb]
-    json.thumb_mb           room.thumb_path[:thumb_w720h405]
-    json.thumb_w160h190     room.thumb_path[:thumb_w160h190]
-    json.thumb_w240h135     room.thumb_path[:thumb_w240h135]
-    json.thumb_w320h180     room.thumb_path[:thumb_w320h180]
-    json.thumb_w720h405     room.thumb_path[:thumb_w720h405]
-    json.thumb_w960h540     room.thumb_path[:thumb_w960h540]
+
+    json.thumb              replaceThumbCrop(room.id, room.thumb_path[:thumb] )
+    json.thumb_mb           replaceThumbCrop(room.id, room.thumb_path[:thumb_w720h405] )
+    json.thumb_w160h190     replaceThumbCrop(room.id, room.thumb_path[:thumb_w160h190] ) 
+    json.thumb_w240h135     replaceThumbCrop(room.id, room.thumb_path[:thumb_w240h135] ) 
+    json.thumb_w320h180     replaceThumbCrop(room.id, room.thumb_path[:thumb_w320h180] ) 
+    json.thumb_w720h405     replaceThumbCrop(room.id, room.thumb_path[:thumb_w720h405] ) 
+    json.thumb_w960h540     replaceThumbCrop(room.id, room.thumb_path[:thumb_w960h540] ) 
+    
     json.thumb_poster       room.thumb_poster_path[:thumb]
     json.thumb_poster_w360h640      room.thumb_poster_path[:thumb_w360h640]
     json.thumb_poster_w720h1280     room.thumb_poster_path[:thumb_w720h1280]
@@ -50,13 +52,15 @@ json.rooms @room_schedules do |room|
     json.title		room.title
     json.slug		room.slug
     json.totalUser    @totalUser[room.id].nil? ? 0 : @totalUser[room.id]
-    json.thumb             room.thumb_path[:thumb]
-    json.thumb_mb          room.thumb_path[:thumb_w720h405]
-    json.thumb_w160h190    room.thumb_path[:thumb_w160h190]
-    json.thumb_w240h135    room.thumb_path[:thumb_w240h135]
-    json.thumb_w320h180    room.thumb_path[:thumb_w320h180]
-    json.thumb_w720h405    room.thumb_path[:thumb_w720h405]
-    json.thumb_w960h540    room.thumb_path[:thumb_w960h540]
+
+    json.thumb              replaceThumbCrop(room.id, room.thumb_path[:thumb] )
+    json.thumb_mb           replaceThumbCrop(room.id, room.thumb_path[:thumb_w720h405] )
+    json.thumb_w160h190     replaceThumbCrop(room.id, room.thumb_path[:thumb_w160h190] ) 
+    json.thumb_w240h135     replaceThumbCrop(room.id, room.thumb_path[:thumb_w240h135] ) 
+    json.thumb_w320h180     replaceThumbCrop(room.id, room.thumb_path[:thumb_w320h180] ) 
+    json.thumb_w720h405     replaceThumbCrop(room.id, room.thumb_path[:thumb_w720h405] ) 
+    json.thumb_w960h540     replaceThumbCrop(room.id, room.thumb_path[:thumb_w960h540] ) 
+
     json.thumb_poster       room.thumb_poster_path[:thumb]
     json.thumb_poster_w360h640      room.thumb_poster_path[:thumb_w360h640]
     json.thumb_poster_w720h1280     room.thumb_poster_path[:thumb_w720h1280]

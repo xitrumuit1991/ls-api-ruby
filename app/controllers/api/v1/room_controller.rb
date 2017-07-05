@@ -4,6 +4,22 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   before_action :authenticate, except: [:listIdol, :onair, :comingSoon, :roomType, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers, :leaveVirtualUsers]
   before_action :checkIsBroadcaster, except: [:listIdol, :roomType, :onair, :myIdol, :comingSoon, :detail, :detailBySlug, :getActions, :getGifts, :getLounges, :getThumb, :getThumbMb, :addVirtualUsers, :leaveVirtualUsers]
+  helper_method :replaceThumbCrop
+  
+  def replaceThumbCrop id, thumb
+    if id.present? and thumb.present?
+      if thumb.include?('Thumb_Crop_.jpg')
+        new_thumb = 'Thumb_Crop_'+id+'.jpg'
+        return thumb.gsub(/Thumb_Crop_.jpg/, new_thumb)
+      end
+      if thumb.include?('Thumb_Crop_.png')
+        new_thumb = 'Thumb_Crop_'+id+'.png'
+        return thumb.gsub(/Thumb_Crop_.png/, new_thumb)
+      end
+      return thumb
+    end
+    return thumb
+  end
 
   def onair
     @user = check_authenticate

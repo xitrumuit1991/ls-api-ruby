@@ -19,14 +19,16 @@ json.idols @data do |item|
     json.id               item.broadcaster.public_room.id
     json.title            item.broadcaster.public_room.title
     json.slug             item.broadcaster.public_room.slug
-    json.thumb            item.broadcaster.public_room.thumb_path[:thumb]
-    json.thumb_mb         item.broadcaster.public_room.thumb_path[:thumb_w720h405]
-    json.thumb_w160h190   item.broadcaster.public_room.thumb_path[:thumb_w160h190]
-    json.thumb_w240h135   item.broadcaster.public_room.thumb_path[:thumb_w240h135]
-    json.thumb_w320h180   item.broadcaster.public_room.thumb_path[:thumb_w320h180]
-    json.thumb_w720h405   item.broadcaster.public_room.thumb_path[:thumb_w720h405]
-    json.thumb_w768h432   item.broadcaster.public_room.thumb_path[:thumb_w768h432]
-    json.thumb_w960h540   item.broadcaster.public_room.thumb_path[:thumb_w960h540]
+    json.thumb                      replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb] ) 
+    json.thumb_mb                   replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_mb] ) 
+    json.thumb_w160h190             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w160h190] ) 
+    json.thumb_w240h135             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w240h135] ) 
+    json.thumb_w320h180             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w320h180] ) 
+    json.thumb_w720h405             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w720h405] ) 
+    json.thumb_w768h432             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w768h432] ) 
+    json.thumb_w960h540             replaceThumbCrop(item.broadcaster.public_room.id, item.broadcaster.public_room.thumb_path[:thumb_w960h540] ) 
+
+
     json.on_air           item.broadcaster.public_room.on_air
 
     json.schedule do

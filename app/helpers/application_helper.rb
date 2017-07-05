@@ -22,4 +22,5 @@ module ApplicationHelper
     # Return the resulting slug
     value
   end
+  
 end
