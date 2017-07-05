@@ -1,0 +1,3 @@
+ALTER TABLE `livestar_production`.`gifts` 
+CHANGE COLUMN `name` `name` VARCHAR(250) CHARACTER SET 'utf8' NULL DEFAULT NULL ,
+CHANGE COLUMN `image` `image` VARCHAR(250) CHARACTER SET 'utf8' NULL DEFAULT NULL ;

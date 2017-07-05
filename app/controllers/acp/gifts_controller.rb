@@ -20,14 +20,19 @@ class Acp::GiftsController < Acp::ApplicationController
 
   end
 
+
   def create
     parameters[:image] = parameters[:image].nil? ? parameters[:image] : optimizeKraken(parameters[:image])
     @data = @model.new(parameters)
-    if @data.save
-      clear_gift
-      redirect_to({ action: 'index' }, notice: 'Gift was successfully created.')
-    else
-      render :new
+    begin
+    	if @data.save
+    	  clear_gift
+    	  redirect_to({ action: 'index' }, notice: 'Gift was successfully created.')
+    	else
+    	  render :new
+    	end
+    rescue => e
+    	redirect_to({ action: 'index' }, notice: e)
     end
   end
 
