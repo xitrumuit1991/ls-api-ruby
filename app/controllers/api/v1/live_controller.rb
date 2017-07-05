@@ -38,8 +38,6 @@
       # logger = Logger.new("#{Rails.root}/log/socket_production.log")
       # logger.info("-----------------------------------");
       # logger.info("---------socket emitter= #{$emitter}");
-      # logger.info("---------params message= #{params[:message]}");
-      # logger.info("---------params room_id= #{params[:room_id]}");
       # logger.info("---------Settings.redis_host= #{Settings.redis_host}");
       # logger.info("---------Settings.redis_port= #{Settings.redis_port}");
       message = params[:message]
@@ -59,9 +57,6 @@
         if message.length <= no_char
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = vip_weight ? {vip: vip_weight} : 0
-          # logger.info("---------message= #{message}");
-          # logger.info("---------sender= #{user}");
-          # logger.info("---------vip_data= #{vip_data}");
           $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: '/room'});
           render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
           return
@@ -100,9 +95,17 @@
       end
     end
 
+
+
     def voteAction
+      if params[:action_id].blank?
+        return render json: {error: 'Thieu action_id'}, status: 400
+      end
       action_id = params[:action_id]
       db_action = fetch_action action_id
+      if db_action.blank?
+        return render json: {error: 'Khong get duoc actionDetail by action_id'}, status: 400
+      end
       if db_action
         redis_action = $redis.get("actions:#{@room.id}:#{action_id}").to_i
         $redis.lock_for_update("actions:#{@room.id}:#{action_id}") do
@@ -114,7 +117,9 @@
               $redis.incr("actions:#{@room.id}:#{action_id}")
 
               @user.increaseExp(db_action['price'])
-              @room.broadcaster.increaseExp(db_action['price'] * 10)
+              if @room.broadcaster.present?
+                @room.broadcaster.increaseExp(db_action['price'] * 10)
+              end
               user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
               if db_action['max_vote'] <= new_value
                 $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: new_value, percent: percent, sender: user})
@@ -125,24 +130,32 @@
               # insert log
               ActionLogJob.perform_later(@user, @room.id, action_id, db_action['price'])
               UserLogJob.perform_later(@user, @room.id, db_action['price'])
-
-              return head 201
+              return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 201
+              # return head 201
             rescue => e
-              render json: {error: e.message}, status: 400
+              render json: {message: e.message, error: 'Có lỗi xảy ra.'}, status: 400
             end
           else
             $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: redis_action, percent: 100, sender: {}})
-            render json: {error: 'Hành động này đã được vote đầy!'}, status: 403
+            render json: {error: 'Hành động này đã được vote đầy!'}, status: 400
           end
         end
       else
-        render json: {error: 'Hành động này không tồn tại!'}, status: 404
+        render json: {error: 'Hành động này không tồn tại!'}, status: 400
       end
     end
 
+
+
     def doneAction
+      if params[:action_id].blank?
+        return render json: {error: 'Thieu action_id'}, status: 400
+      end
       action_id = params[:action_id]
       db_action = fetch_action action_id
+      if db_action.blank?
+        return render json: {error: 'Khong get duoc actionDetail by action_id'}, status: 400
+      end
       if db_action
         redis_action = $redis.get("actions:#{@room.id}:#{action_id}").to_i
         if db_action['max_vote'] <= redis_action
@@ -212,7 +225,7 @@
 
 
 
-    
+
 
     def buyLounge
       cost = params[:cost].to_i
@@ -325,23 +338,15 @@
         _bctTimeLog()
         $emitter.of('/room').in(@room.id).emit('room off')
         end_stream @room
-
         # remove expired banned user
         banned = $redis.keys("ban:#{@room.id}:*")
-        logger.info("----------------------")
-        logger.info("----------------------")
-        logger.info("endroom banned = #{banned}")
         if banned.present?
           banned.each do |key|
             expiry = $redis.get(key)
             $redis.del(key) if Time.now >= Time.at(expiry.to_i) and key
           end
         end
-        
         # remove virtual users in redis
-        logger.info("----------------------")
-        logger.info("----------------------")
-        logger.info("redis.keys(VirtualUsers:@room.id:*) key= VirtualUsers:#{@room.id}:*")
         if $redis.keys("VirtualUsers:#{@room.id}:*").present?
           $redis.del( $redis.keys("VirtualUsers:#{@room.id}:*") )
         end
@@ -352,9 +357,13 @@
       end
     end
 
+
+
     def forceEnd
       @room = Room.find(params[:room_id])
-      return head 200 if @room.on_air == false
+      if @room.on_air == false
+        return head 200 
+      end
       @room.on_air = false
       if @room.present? and @room.save
         _bctTimeLog()
@@ -431,13 +440,7 @@
     def is_subscribed
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
-        # logger.info("----------------------")
-        # logger.info("----------------------")
-        # logger.info("----------------------room: #{@room.to_json}")
         get_users
-        # logger.info("----------------------")
-        # logger.info("----------------------")
-        # logger.info("----------------------is_subscribed user_list: #{@user_list}")
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else
