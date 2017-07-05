@@ -9,11 +9,11 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   def replaceThumbCrop id, thumb
     if id.present? and thumb.present?
       if thumb.include?('Thumb_Crop_.jpg')
-        new_thumb = 'Thumb_Crop_'+id+'.jpg'
+        new_thumb = 'Thumb_Crop_'+id.to_s+'.jpg'
         return thumb.gsub(/Thumb_Crop_.jpg/, new_thumb)
       end
       if thumb.include?('Thumb_Crop_.png')
-        new_thumb = 'Thumb_Crop_'+id+'.png'
+        new_thumb = 'Thumb_Crop_'+id.to_s+'.png'
         return thumb.gsub(/Thumb_Crop_.png/, new_thumb)
       end
       return thumb
