@@ -12,6 +12,10 @@
     end
 
     def addHeartInRoom
+      if @room.present? and !@room.on_air
+        render json: {error: 'Phòng này chưa on air!'}, status: 400
+        return
+      end
       user_heart = UserReceivedHeart.find_by_user_id(@user.id) || UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
       if (DateTime.now.to_i - user_heart.updated_at.to_i) >= Settings.timeAddHeart
         begin
@@ -356,9 +360,11 @@
         @user = User.find_by_id(params[:user_id])
         if @user.present? and !@user.is_broadcaster
           @user.ban @room.id
-          return head 200
+          return render json: {message: 'Kick user thanh cong'}, status: 200
+          # return head 200
         else
-          return head 404
+          return render json: {error: 'Kick user không thành công'}, status: 400
+          # return head 404
         end
       else
         render json: {error: 'Không đủ tham số'}, status: 400 and return
@@ -400,13 +406,13 @@
     def is_subscribed
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
-        logger.info("----------------------")
-        logger.info("----------------------")
-        logger.info("----------------------room: #{@room.to_json}")
+        # logger.info("----------------------")
+        # logger.info("----------------------")
+        # logger.info("----------------------room: #{@room.to_json}")
         get_users
-        logger.info("----------------------")
-        logger.info("----------------------")
-        logger.info("----------------------is_subscribed user_list: #{@user_list}")
+        # logger.info("----------------------")
+        # logger.info("----------------------")
+        # logger.info("----------------------is_subscribed user_list: #{@user_list}")
         render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
         render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
       else
