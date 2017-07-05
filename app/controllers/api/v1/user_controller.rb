@@ -558,10 +558,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
     @megabanks = Megabank::all
   end
 
+
+
   def megacards
+    logger = Logger.new("#{Rails.root}/log/card_production.log")
     # nha mang cung cap
+    if params[:key_payment].blank?
+      render json: {error: "Vui lòng kiểm tra Captcha", code: 1}, status: 400
+      return
+    end
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+      if checkCaptcha.blank?
+        render json: {error: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400
+        return
+      end
       if checkCaptcha[:success]
         m_ws_url      = Settings.megacardWsUrl
         m_partnerId   = Settings.megacardPartnerId
@@ -601,9 +612,34 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+
+
+
   def cttCard
+    logger = Logger.new("#{Rails.root}/log/card_production.log")
+    if params[:key_payment].blank?
+      return render json: {error: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400
+    end
+    if params[:provider].blank?
+      return render json: {error: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400
+    end
+    if params[:pin].blank?
+      return render json: {error: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400
+    end
+    if params[:serial].blank?
+      return render json: {error: "Thiếu serial card", code: 14, detail: 'Miss serial'}, status: 400
+    end
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+      logger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
+      logger.info("------------checkCaptcha= #{checkCaptcha}-----------------")
+      if checkCaptcha.blank?
+        return render json: {error: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400
+      end
+      if checkCaptcha[:success].blank?
+        return render json: {error: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400
+      end
+      logger.info("------------user/mega-card user#cttCard-----------------")
       if checkCaptcha[:success]
         # nha mang cung cap
         m_UserName    = Settings.chargingUsername
@@ -613,8 +649,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
         m_MPIN        = Settings.chargingMpin
 
         webservice   = Settings.chargingWebservice
+        logger.info("------------webservice=#{webservice}-----------------")
 
         soapClient = Savon.client(wsdl: webservice)
+        logger.info("------------soapClient=#{soapClient}-----------------")
         m_Target = @user.username
 
         serial = params[:serial].to_s.delete(' ')
@@ -632,21 +670,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
         cardChargingResponse = Paygate::CardChargingResponse.new
         cardChargingResponse = cardCharging.cardCharging
+        logger.info("------------cardChargingResponse=#{cardChargingResponse}-----------------")
         if cardChargingResponse.status == 200
           card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
           card_logs = CartLog::find_by_user_id(@user.id)
-          coin = card_logs.nil? ? card.coin + card.coin/100*50 : card.coin
+          coin = card_logs.nil? ? (card.coin + card.coin/100*50) : card.coin
           info = { pin: pin, provider: params[:provider], serial: serial, coin: coin }
+          logger.info("------------info log=#{info}-----------------")
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
             render plain: "Nạp tiền thành công.", status: 200
           else
-            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", status: 500
+            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", status: 400
           end
         elsif cardChargingResponse.status == 400
-          render plain: cardChargingResponse.message, status: 400
+          # render plain: cardChargingResponse.message, status: 400
+          render json: {error: 'Nạp thẻ không thành công. Vui lòng thử lại.', message: cardChargingResponse.message}, status: 400
         else
-          render plain: cardChargingResponse.message, status: 500
+          render json: {error: 'Nạp thẻ không thành công. Vui lòng thử lại.', message: cardChargingResponse.message}, status: 400
         end
       else
         render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
@@ -655,6 +696,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
       render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
     end
   end
+
+
+
 
   def getTradeHistory
     @trade = @user.user_has_vip_packages.order(created_at: :desc).limit(10)
@@ -774,10 +818,20 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	    MegabankLog.create()
 	  end
 
+
 	  def card_logs(obj, info)
-	    provider  = Provider::find_by_name info[:provider]
-	    CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
-	  end
+      logger = Logger.new("#{Rails.root}/log/card_production.log")
+      if obj.present? and info.present?
+  	    provider  = Provider::find_by_name info[:provider]
+        if provider.present?
+          logger.info("---------------insert log card----------");
+          logger.info("---------------provider=#{provider}----------");
+          CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
+        else
+          logger.info("---------------Can not insert log card; not found provider----------");
+        end
+      end
+    end
 
 	  def redeemLog(redeem_id)
 	    RedeemLog.create(user_id: @user.id, redeem_id: redeem_id)
