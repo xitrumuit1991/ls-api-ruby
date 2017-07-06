@@ -9,6 +9,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
   helper YoutubeHelper
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms, :countShare]
 
+  def getNoHeart
+    return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
+    if @user.present?
+      return render json: {message: 'get heat of user OK', no_heart: @user.no_heart}, status: 200
+    end
+    return render json: {message: 'Hệ thống đang bận. Vui lòng thử lại sau.'}, status: 400
+  end
+
 
   def profile
     vipInfo = nil
