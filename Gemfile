@@ -65,7 +65,7 @@ gem 'jwt'
 gem 'config'
 
 # Koala FB API
-gem "koala", "~> 2.2"
+gem "koala", "~> 3.0.0"
 
 # Rest Client
 gem 'rest-client'

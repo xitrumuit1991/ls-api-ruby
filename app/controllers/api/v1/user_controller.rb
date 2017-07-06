@@ -715,52 +715,57 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
   def shareFBReceivedCoin
-    if params[:accessToken].blank?
-      render plain: 'Thiếu accessToken từ facebook !!!', status: 400
-      return
-    end
-    if params[:room_id].blank?
-      render plain: 'Thiếu param room_id !!!', status: 400
-      return
-    end
-    if params[:post_id].blank?
-      render plain: 'Thiếu param post_id tu facebook !!!', status: 400
-      return
-    end
+    logger.info("--------------shareFBReceivedCoin----------------");
+    return render json: {message: 'Thiếu accessToken từ facebook.'} , status: 400 if params[:accessToken].blank?
+    return render json: {message: 'Thiếu param room_id.'}, status: 400 if params[:room_id].blank?
+    graph = nil
+    fb_id = nil
+    #FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
+    money = 20 
+    room = Room.find(params[:room_id])
+    return render json: {message: 'Không lấy được thông tin phòng.'}, status: 400 if room.blank?
+    # return render json: {message: 'Phòng hiện tại đang đóng. Vui lòng thử lại sau.'}, status: 400 if room.present? and room.on_air == false
     begin
       graph = Koala::Facebook::API.new(params[:accessToken])
-      info = graph.get_object(params[:post_id])
-      logger.info("-----------------shareFBReceivedCoin")
-      logger.info("-----------------info: #{info.to_json}")
-      fb_id = params[:post_id].split("_")[0]
-      logger.info("-----------------fb_id: #{fb_id}")
-      room = Room.find(params[:room_id])
-      logger.info("-----------------room: #{room.to_json}")
-      if room.on_air == true
-        money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
+      profile = graph.get_object("me?fields=id,name,email,birthday,gender")
+      fb_id = profile['id']
+      if params[:post_id].blank? and graph.present?
+        @user.increaseMoney(money) 
+        fb_logs(nil, money, fb_id, room.id, nil) 
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get post_id from facebook'}, status: 200
+        return
+      end
+      begin
+        info = graph.get_object(params[:post_id])
         if FbShareLog.where('fb_id = ? AND room_id = ? AND created_at > ?', fb_id, room.id, Time.now.beginning_of_day).count > 0
-          render plain: 'Bạn đã chia sẽ trước đó!!!', status: 200
+          render json: {message: 'Bạn đã chia sẽ trước đó !', info: info}, status: 200
           return
         elsif FbShareLog.where('user_id = ? AND room_id = ? AND created_at > ?', @user.id, room.id, Time.now.beginning_of_day).count < 1
           @user.increaseMoney(money)
           fb_logs(params[:post_id], money, fb_id, room.id, nil)
-          render plain: 'Đã cộng tiền thành công!!!', status: 200
+          render json: {message: 'Đã cộng tiền thành công!!!', info: info}, status: 200
           return
         else
-          render plain: 'Mỗi ngày chỉ được nhận xu một lần!!!', status: 400
+          render json: {message: 'Mỗi ngày chỉ được nhận xu một lần!!!', info: info}, status: 400
           return
         end
-      else
-        render plain: 'Phòng hiện tại đang đóng. Vui lòng thử lại sau !!!', status: 400
+      rescue Koala::Facebook::APIError => exc
+        logger.info("----------ERROR 1: Koala::Facebook::APIError= #{exc.to_json}")
+        @user.increaseMoney(money) 
+        fb_logs(nil, money, fb_id, room.id, nil) 
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get_object post_id', exc: exc}, status: 200
         return
       end
     rescue Koala::Facebook::APIError => exc
-      logger.info("ERROR: shareFBReceivedCoin: exc= #{exc}")
-      render plain: 'Bạn chưa chia sẽ lên tường nhà!!!', status: 400
+      logger.info("----------ERROR 2: Koala::Facebook::APIError= #{exc.to_json}")
+      if graph.present?
+        @user.increaseMoney(money) 
+        fb_logs(nil, money, fb_id, room.id, nil) 
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get post_id from facebook', exc: exc}, status: 200
+        return
+      end
+      render json: {message: 'Bạn chưa chia sẽ lên tường nhà.', detail: 'Koala::Facebook::APIError accessToken error', exc: exc}, status: 400
     end
-    # rescue Exception => e
-      # render plain: 'Bạn chưa chia sẽ livestar.vn lên tường nhà!!!', status: 400
-    # end
   end
 
 
@@ -845,6 +850,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	  end
 
 	  def fb_logs(post_id, coin, fb_id, room_id, device_id)
+      post_id = 'can_not_get_from_fb' if post_id.blank?
 	    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin, fb_id: fb_id, room_id: room_id, device_id: device_id)
 	  end
 

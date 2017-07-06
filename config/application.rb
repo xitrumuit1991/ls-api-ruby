@@ -25,7 +25,7 @@ module Livestar
     config.active_record.raise_in_transactional_callbacks = true
     config.active_record.default_timezone = :local
     config.active_record.time_zone_aware_attributes = false
-
+    # Koala.config.api_version = 'v2.5'
     config.middleware.insert_before 0, "Rack::Cors" do
         allow do
             origins '*'

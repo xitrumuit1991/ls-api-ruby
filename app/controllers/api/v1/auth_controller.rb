@@ -528,6 +528,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     # logger = Logger.new("#{Rails.root}/log/fbRegister.log")
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
+      logger.info("----------graph= #{graph.to_json}---")
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
       if profile.blank?
         render json: {code: 1, error: "Can not get profile facebook"}, status: 400
