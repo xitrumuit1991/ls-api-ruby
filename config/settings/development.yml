@@ -1,5 +1,5 @@
 redis_host: "localhost"
 redis_port: 6379
-livestar_path: "http://localhost:3000"
-m_livestar_path: "http://localhost:3000"
+livestar_path: "http://local.livestar.vn:5002"
+m_livestar_path: "http://m-local.livestar.vn:5002"
 base_url: 'http://localhost:3000'

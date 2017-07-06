@@ -1,7 +1,9 @@
 Sidekiq.configure_server do |config|
-  config.redis = { url: 'redis://db.livestar.vn:6379/12' }
+	url='redis://'+Settings.redis_host.to_s+':'+Settings.redis_port.to_s+'/12'
+  config.redis = { url: url }
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: 'redis://db.livestar.vn:6379/12' }
+	url='redis://'+Settings.redis_host.to_s+':'+Settings.redis_port.to_s+'/12'
+  config.redis = { url: url }
 end

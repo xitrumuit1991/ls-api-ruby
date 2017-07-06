@@ -176,24 +176,15 @@
 
 
     def sendGifts
+    	# logger = Logger.new("#{Rails.root}/log/production.log");
       gift_id = params[:gift_id].to_i
       quantity = params[:quantity].to_i
-      if @user.blank?
-        return render json: {error: 'Token is invalid' }, status: 400
-      end
-      if @room.blank?
-        return render json: {error: 'Phòng này không tồn tại hoặc đã bị xoá !' }, status: 400
-      end
-      if gift_id.blank?
-        return render json: {error: 'Thieu params gift_id' }, status: 400
-      end
-      if quantity.blank?
-        return render json: {error: 'Thieu params quantity' }, status: 400
-      end
+      return render json: {message: 'Không lấy được thông tin user' }, status: 400 if @user.blank?
+      return render json: {message: 'Phòng này không tồn tại hoặc đã bị xoá !' }, status: 400 if @room.blank?
+      return render json: {message: 'Thieu params gift_id' }, status: 400 if gift_id.blank?
+      return render json: {message: 'Thieu params quantity' }, status: 400 if quantity.blank?
       db_gift = fetch_gift gift_id
-      if db_gift.blank?
-        return render json: { message: 'Quà tặng không tồn tại!', detail: 'Khong get duoc db_gift by gift_id từ redis or từ database ! ' }, status: 400
-      end
+      return render json: { message: 'Quà tặng không tồn tại!', detail: 'Khong get duoc db_gift by gift_id từ redis or từ database ! ' }, status: 400 if db_gift.blank?
       if db_gift
         if quantity >= 1
           total = db_gift['price'] * quantity
@@ -204,24 +195,21 @@
             @room.broadcaster.increaseExp(exp_bct)
             user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
             vip_data = @token_user['vip'] ? {vip: @token_user['vip']} : 0
-            $emitter.of('/room').in(@room.id).emit('gifts recived', {gift: {id: gift_id, name: db_gift['name'], image: "#{request.base_url}#{db_gift['image']['square']['url']}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
-
+            $emitter.of('/room').in(@room.id).emit('gifts recived', { message: 'user gửi quà cho broadcaster' , gift: {id: gift_id, name: db_gift['name'], image: "#{request.base_url}#{db_gift['image']['square']['url']}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
             # insert log
             GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
             UserLogJob.perform_later(@user, @room.id, total)
-            return render json: {message: 'send gift thành công ' }, status: 201
-            # return head 201
+            return render json: {message: 'send gift thành công ' }, status: 200
           rescue => e
-            logger = Logger.new("#{Rails.root}/log/production.log");
             logger.info("-------------------sendGifts----------------");
             logger.info(e.message);
-            render json: {error: e.message, message: 'Tặng quà không thành công, vui lòng thử lại!'}, status: 400
+            return render json: {error: e.message, message: 'Tặng quà không thành công, vui lòng thử lại!'}, status: 400
           end
         else
-          render json: {error: 'Số lượng phải lớn hơn 1'}, status: 400
+          return render json: {message: 'Số lượng phải lớn hơn 1'}, status: 400
         end
       else
-        render json: {error: 'Quà tặng này không tồn tại'}, status: 404
+        return render json: {message: 'Quà tặng này không tồn tại'}, status: 400
       end
     end
 
