@@ -100,14 +100,10 @@
 
 
     def voteAction
-      if params[:action_id].blank?
-        return render json: {error: 'Thieu action_id'}, status: 400
-      end
+      return render json: {message: 'Thieu action_id'}, status: 400 if params[:action_id].blank?
       action_id = params[:action_id]
       db_action = fetch_action action_id
-      if db_action.blank?
-        return render json: {error: 'Khong get duoc actionDetail by action_id'}, status: 400
-      end
+      return render json: {message: 'Khong get duoc actionDetail by action_id'}, status: 400 if db_action.blank?
       if db_action
         redis_action = $redis.get("actions:#{@room.id}:#{action_id}").to_i
         $redis.lock_for_update("actions:#{@room.id}:#{action_id}") do
@@ -132,43 +128,39 @@
               # insert log
               ActionLogJob.perform_later(@user, @room.id, action_id, db_action['price'])
               UserLogJob.perform_later(@user, @room.id, db_action['price'])
-              return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 201
+              return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 200
               # return head 201
             rescue => e
-              render json: {message: e.message, error: 'Có lỗi xảy ra.'}, status: 400
+              render json: {message: 'Có lỗi xảy ra.', error: e.message }, status: 400
+              return
             end
           else
             $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: redis_action, percent: 100, sender: {}})
-            render json: {error: 'Hành động này đã được vote đầy!'}, status: 400
+            render json: {message: 'Hành động này đã được vote đầy!'}, status: 400
+            return
           end
         end
-      else
-        render json: {error: 'Hành động này không tồn tại!'}, status: 400
       end
     end
 
 
 
     def doneAction
-      if params[:action_id].blank?
-        return render json: {error: 'Thieu action_id'}, status: 400
-      end
+      return render json: {message: 'Thieu action_id'}, status: 400 if params[:action_id].blank?
       action_id = params[:action_id]
       db_action = fetch_action action_id
-      if db_action.blank?
-        return render json: {error: 'Khong get duoc actionDetail by action_id'}, status: 400
-      end
+      return render json: {message: 'Hành động này không tồn tại!'}, status: 400 if db_action.blank?
       if db_action
         redis_action = $redis.get("actions:#{@room.id}:#{action_id}").to_i
         if db_action['max_vote'] <= redis_action
           $redis.set("actions:#{@room.id}:#{action_id}", 0)
           $emitter.of('/room').in(@room.id).emit('action done', { id: db_action['id'] })
-          return head 200
+          return json: {message: 'Vote thành công '}, status: 200
         else
-          render json: {error: 'Hành động này phải được Vote đầy trước khi được duyệt'}, status: 400
+          render json: {message: 'Hành động này phải được Vote đầy trước khi được duyệt'}, status: 400
         end
       else
-        render json: {error: 'Hành động này không tồn tại!'}, status: 404
+        render json: {message: 'Hành động này không tồn tại!'}, status: 400
       end
     end
 
@@ -443,20 +435,20 @@
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
         get_users
-        render json: {message: 'Bạn không đăng kí phòng này'}, status: 400 and return if(!@user_list.has_key?(@user.email))
-        render json: {message: 'Bạn không được phép vào phòng này'}, status: 400 and return if @user.is_banned(@room.id)
+        return render json: {message: 'Bạn không đăng kí phòng này'}, status: 400 if(!@user_list.has_key?(@user.email))
+        return render json: {message: 'Bạn không được phép vào phòng này'}, status: 400 if @user.is_banned(@room.id)
       else
-        render json: {detail: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 400 and return
+        return render json: {detail: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 400
       end
     end
 
     def is_started
-        render json: {message: 'Phòng này chưa bắt đầu hoặc đã tắt.'}, status: 400  and return unless @room.on_air
+        return render json: {message: 'Phòng này chưa bắt đầu hoặc đã tắt.'}, status: 400 if @room.on_air == false
     end
 
     def check_permission
       if @user.email != @room.broadcaster.user.email
-        render json: {message: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 400 and return
+        return render json: {message: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 400
       end
     end
   end
