@@ -455,20 +455,20 @@
       if params.has_key?(:room_id)
         @room = Room.find(params[:room_id])
         get_users
-        render json: {error: 'Bạn không đăng kí phòng này'}, status: 403 and return if(!@user_list.has_key?(@user.email))
-        render json: {error: 'Bạn không được phép vào phòng này'}, status: 403 and return if @user.is_banned(@room.id)
+        render json: {message: 'Bạn không đăng kí phòng này'}, status: 400 and return if(!@user_list.has_key?(@user.email))
+        render json: {message: 'Bạn không được phép vào phòng này'}, status: 400 and return if @user.is_banned(@room.id)
       else
-        render json: {error: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 404 and return
+        render json: {detail: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 400 and return
       end
     end
 
     def is_started
-        render json: {error: 'Phòng này đã tắt'}, status: 403  and return unless @room.on_air
+        render json: {message: 'Phòng này chưa bắt đầu hoặc đã tắt.'}, status: 400  and return unless @room.on_air
     end
 
     def check_permission
       if @user.email != @room.broadcaster.user.email
-        render json: {error: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 403 and return
+        render json: {message: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 400 and return
       end
     end
   end
