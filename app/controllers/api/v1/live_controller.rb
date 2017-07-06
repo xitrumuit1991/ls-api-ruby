@@ -155,7 +155,8 @@
         if db_action['max_vote'] <= redis_action
           $redis.set("actions:#{@room.id}:#{action_id}", 0)
           $emitter.of('/room').in(@room.id).emit('action done', { id: db_action['id'] })
-          return json: {message: 'Vote thành công '}, status: 200
+          render json: {message: 'Vote thành công'}, status: 200
+          return 
         else
           render json: {message: 'Hành động này phải được Vote đầy trước khi được duyệt'}, status: 400
         end
