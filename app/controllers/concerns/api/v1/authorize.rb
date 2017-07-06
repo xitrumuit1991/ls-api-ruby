@@ -54,7 +54,7 @@ module Api::V1::Authorize extend ActiveSupport::Concern
 
     def render_unauthorized
       self.headers['WWW-Authenticate'] = 'Token realm="Token is invalid"'
-      return render json: {error: 'Token is invalid'}, status: 401
+      return render json: {message: 'Invalid token'}, status: 401
       # return head 401
     end
 

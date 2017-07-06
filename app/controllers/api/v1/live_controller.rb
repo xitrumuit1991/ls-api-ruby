@@ -23,14 +23,12 @@
           $emitter.of('/room').in(@room.id).emit('add hearts', {hearts: @user.no_heart, sender: user})
           render json: {message: 'add heart cho user trong room thanh cong' }, status: 200 
           return
-          # return head 200
         rescue => e
           render json: {message: e.message}, status: 400
           return
         end
       end
       return render json: {message: 'chưa đủ thời gian để add heart cho user' }, status: 200 
-      # return head 200
     end
 
 
@@ -63,10 +61,10 @@
           render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
           return
         else
-          render json: {error: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
+          render json: {message: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
         end
       else
-        render json: {error: 'Vui lòng nhập nội dung chat trước khi gởi !'}, status: 400
+        render json: {message: 'Vui lòng nhập nội dung chat trước khi gởi !'}, status: 400
       end
     end
 
@@ -90,10 +88,10 @@
           return render json: {message: 'send screen text OK' }, status: 201
           # return head 201
         rescue => e
-          render json: {error: e.message}, status: 400
+          render json: {message: 'có lỗi xảy ra', detail: e.message}, status: 400
         end
       else
-        render json: {error: 'Bạn không có đủ tiền'}, status: 403
+        render json: {message: 'Bạn không có đủ tiền'}, status: 403
       end
     end
 
@@ -196,7 +194,7 @@
           rescue => e
             logger.info("-------------------sendGifts----------------");
             logger.info(e.message);
-            return render json: {error: e.message, message: 'Tặng quà không thành công, vui lòng thử lại!'}, status: 400
+            return render json: {message: 'Tặng quà không thành công, vui lòng thử lại!', error: e.message }, status: 400
           end
         else
           return render json: {message: 'Số lượng phải lớn hơn 1'}, status: 400
@@ -211,6 +209,8 @@
 
 
     def buyLounge
+      return render json: {message: 'thieu param cost'},status: 400 if params[:cost].blank?
+      return render json: {message: 'thieu param lounge'},status: 400 if params[:lounge].blank?
       cost = params[:cost].to_i
       lounge = params[:lounge].to_i
       if lounge >= 0 && lounge <= 11
@@ -221,10 +221,9 @@
               if current_lounge.present?
                 current_lounge = eval(current_lounge)
                 if current_lounge[:cost].to_i >= cost
-                  render json: {error: 'Giá mua của bạn phải lớn hơn giá hiện tại'}, status: 400 and return
+                  render json: {message: 'Giá mua của bạn phải lớn hơn giá hiện tại'}, status: 400 and return
                 end
               end
-
               exp_bct = cost * 10
               @user.decreaseMoney(cost)
               @user.increaseExp(cost)
@@ -245,24 +244,25 @@
                 }
               vip_data = @token_user['vip'] ? {vip: @token_user['vip']} : 0
               $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost})
-              $emitter.of('/room').in(@room.id).emit('buy lounge', { lounge: lounge, user: user, cost: cost, vip: vip_data });
-
+              $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
               # insert log
               LoungeLogJob.perform_later(@user, lounge, cost)
               UserLogJob.perform_later(@user, @room.id, cost)
-
-              return head 201
+              render json: {message: 'Mua ghé vip thành công.'}, status: 200
+              return
             rescue => e
-              render json: {error: e.message}, status: 400
+              render json: {message: e.message}, status: 400
+              return
             end
           else
-            render json: {error: 'Giá mua phải lớn hơn 50'}, status: 400
+            render json: {message: 'Giá mua phải lớn hơn 50'}, status: 400
+            return
           end
         else
-          render json: {error: 'Bạn không có đủ tiền'}, status: 400
+          return render json: {message: 'Bạn không có đủ tiền'}, status: 400
         end
       else
-        render json: {error: 'Ghế này không tồn tại'}, status: 404
+        return render json: {message: 'Ghế này không tồn tại'}, status: 400
       end
     end
 
@@ -323,7 +323,7 @@
         render json: {message: 'Start room thành công'}, status: 200
         return
       else
-        render json: {error: 'Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ'}, status: 400
+        render json: {message: 'Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
     end
 
@@ -348,7 +348,7 @@
         render json: {message: 'End room thành công'}, status: 200
         return
       else
-        render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
+        render json: {message: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
     end
 
@@ -380,7 +380,7 @@
         render json: {message: 'Force End room thành công'}, status: 200
         return
       else
-        render json: {error: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
+        render json: {message: 'Phòng này không thể kết thúc, Vui lòng liên hệ người hỗ trợ'}, status: 400
       end
     end
 
@@ -392,7 +392,7 @@
           return render json: {message: 'Kick user thanh cong'}, status: 200
           # return head 200
         else
-          return render json: {error: 'Kick user không thành công'}, status: 400
+          return render json: {message: 'Kick user không thành công'}, status: 400
           # return head 404
         end
       else
@@ -439,12 +439,12 @@
         return render json: {message: 'Bạn không đăng kí phòng này'}, status: 400 if(!@user_list.has_key?(@user.email))
         return render json: {message: 'Bạn không được phép vào phòng này'}, status: 400 if @user.is_banned(@room.id)
       else
-        return render json: {detail: 'Thiếu tham số room_id', message: 'Phòng này không tồn tại hoặc đã bị xoá!'}, status: 400
+        return render json: {message: 'Phòng này không tồn tại hoặc đã bị xoá!', detail: 'Thiếu tham số room_id'}, status: 400
       end
     end
 
     def is_started
-        return render json: {message: 'Phòng này chưa bắt đầu hoặc đã tắt.'}, status: 400 if @room.on_air == false
+        return render json: {message: 'Phòng này chưa bắt đầu.'}, status: 400 if @room.on_air == false
     end
 
     def check_permission
