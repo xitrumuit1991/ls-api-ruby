@@ -731,29 +731,29 @@ class Api::V1::UserController < Api::V1::ApplicationController
       fb_id = profile['id']
       if params[:post_id].blank? and graph.present?
         @user.increaseMoney(money) 
-        fb_logs(nil, money, fb_id, room.id, nil) 
-        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get post_id from facebook'}, status: 200
+        fb_logs(nil, money, fb_id, room.id, nil)
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get post_id from facebook'}, status: 200
         return
       end
       begin
         info = graph.get_object(params[:post_id])
         if FbShareLog.where('fb_id = ? AND room_id = ? AND created_at > ?', fb_id, room.id, Time.now.beginning_of_day).count > 0
-          render json: {message: 'Bạn đã chia sẽ trước đó !', info: info}, status: 200
+          render json: {message: 'Bạn đã chia sẽ trước đó !', money: @user.money, info: info}, status: 200
           return
         elsif FbShareLog.where('user_id = ? AND room_id = ? AND created_at > ?', @user.id, room.id, Time.now.beginning_of_day).count < 1
           @user.increaseMoney(money)
           fb_logs(params[:post_id], money, fb_id, room.id, nil)
-          render json: {message: 'Đã cộng tiền thành công!!!', info: info}, status: 200
+          render json: {message: 'Đã cộng tiền thành công!!!', money: @user.money, info: info}, status: 200
           return
         else
-          render json: {message: 'Mỗi ngày chỉ được nhận xu một lần!!!', info: info}, status: 400
+          render json: {message: 'Mỗi ngày chỉ được nhận xu một lần!!!', money: @user.money, info: info}, status: 400
           return
         end
       rescue Koala::Facebook::APIError => exc
         logger.info("----------ERROR 1: Koala::Facebook::APIError= #{exc.to_json}")
         @user.increaseMoney(money) 
         fb_logs(nil, money, fb_id, room.id, nil) 
-        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get_object post_id', exc: exc}, status: 200
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get_object post_id', exc: exc}, status: 200
         return
       end
     rescue Koala::Facebook::APIError => exc
@@ -761,10 +761,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
       if graph.present?
         @user.increaseMoney(money) 
         fb_logs(nil, money, fb_id, room.id, nil) 
-        render json: {message: 'Chia sẽ lên tường nhà thành công.', detail: 'Koala::Facebook::APIError can not get post_id from facebook', exc: exc}, status: 200
+        render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get post_id from facebook', exc: exc}, status: 200
         return
       end
-      render json: {message: 'Bạn chưa chia sẽ lên tường nhà.', detail: 'Koala::Facebook::APIError accessToken error', exc: exc}, status: 400
+      render json: {message: 'Bạn chưa chia sẽ lên tường nhà.', money: @user.money, detail: 'Koala::Facebook::APIError accessToken error', exc: exc}, status: 400
     end
   end
 
