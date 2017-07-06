@@ -12,10 +12,8 @@
     end
 
     def addHeartInRoom
-      if @room.present? and !@room.on_air
-        render json: {error: 'Phòng này chưa on air!'}, status: 400
-        return
-      end
+      return render json: {message: 'Không lấy được thông tin phòng'}, status: 400 if @room.blank?
+      return render json: {message: 'Phòng này chưa bắt đầu!'}, status: 400 if @room.present? and @room.on_air == false
       user_heart = UserReceivedHeart.find_by_user_id(@user.id) || UserReceivedHeart.create(:user_id => @user.id,:hearts => 1)
       if (DateTime.now.to_i - user_heart.updated_at.to_i) >= Settings.timeAddHeart
         begin
@@ -23,12 +21,16 @@
           @user.update(:no_heart => @user.no_heart.to_i + 1)
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           $emitter.of('/room').in(@room.id).emit('add hearts', {hearts: @user.no_heart, sender: user})
-          return head 201
+          render json: {message: 'add heart cho user trong room thanh cong' }, status: 200 
+          return
+          # return head 200
         rescue => e
-          render json: {error: e.message}, status: 400
+          render json: {message: e.message}, status: 400
+          return
         end
       end
-      return head 204
+      return render json: {message: 'chưa đủ thời gian để add heart cho user' }, status: 200 
+      # return head 200
     end
 
 
@@ -283,7 +285,14 @@
       end
     end
 
+
+
+
     def sendHearts
+    	return render json: {message: 'thiếu param hearts'}, status: 400 if params[:hearts].blank?
+    	return render json: {message: 'Không lấy được thông tin phòng'}, status: 400 if @room.blank?
+    	return render json: {message: 'Không lấy được thông tin của chủ phòng'}, status: 400 if @room.broadcaster.blank?
+    	return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
       hearts = params[:hearts].to_i
       @user.with_lock do
         if hearts > 0 && @user.no_heart >= hearts
@@ -296,26 +305,31 @@
                 @room.broadcaster.increaseExp(hearts)
                 user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
                 vip = @token_user['vip'] ? {vip: @token_user['vip']} : 0
-                $emitter.of('/room').in(@room.id).emit('hearts recived', {bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
-
+                $emitter.of('/room').in(@room.id).emit('hearts recived', {message: 'user send heart cho broadcaster', bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
                 # insert log
                 HeartLogJob.perform_later(@user, @room.id, hearts)
-
-                return head 201
+                return render json: {message: 'Gửi tim thành công. Xin cảm ơn bạn.'},status: 200
               else
-                render json: {error: 'Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!'}, status: 400
+                render json: {message: 'Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!'}, status: 400
+              	return
               end
             else
-              render json: {error: 'Không thể gửi trái tim, Vui lòng thử lại lần nữa'}, status: 400
+              render json: {message: 'Không thể gửi trái tim, Vui lòng thử lại lần nữa', error: @user.errors.full_messages}, status: 400
+            	return
             end
           rescue => e
-            render json: {error: e.message}, status: 400
+            render json: {message: 'Không thể gửi tim cho chủ phòng. Vui lòng thử lại.', error: e.message}, status: 400
+            return
           end
         else
-          render json: {error: 'Bạn không có đủ số trái tim'}, status: 403
+          render json: {message: 'Bạn không có đủ số trái tim'}, status: 400
+          return
         end
       end
     end
+
+
+
 
 
     def startRoom
