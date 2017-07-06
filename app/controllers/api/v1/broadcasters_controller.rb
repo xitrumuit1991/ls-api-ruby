@@ -10,9 +10,15 @@ class Api::V1::BroadcastersController < Api::V1::ApplicationController
   end
 
   def profile
+    return render json: {message: 'thieu param id'}, status: 400 if params[:id].blank?
     @broadcaster = Broadcaster.find(params[:id])
+    return render json: {message: 'Không lấy được thông tin broadcaster'}, status: 400 if @broadcaster.blank?
     @user = @broadcaster.user
-    @fan = @broadcaster.public_room.heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
+    fan = nil
+    if @broadcaster.present? and @broadcaster.public_room.present?
+      fan = @broadcaster.public_room.heart_logs.select('*, sum(quantity) as total').group('user_id').order('total desc').limit(10)
+    end
+    @fan = fan
   end
 
   def defaultBackground
