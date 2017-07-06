@@ -643,9 +643,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         m_PartnerCode = Settings.chargingPartnerCode
         m_PartnerID   = Settings.chargingPartnerId
         m_MPIN        = Settings.chargingMpin
-
         webservice   = Settings.chargingWebservice
-        logger.info("------------webservice=#{webservice}-----------------")
 
         soapClient = Savon.client(wsdl: webservice)
         logger.info("------------soapClient=#{soapClient}-----------------")
@@ -677,19 +675,19 @@ class Api::V1::UserController < Api::V1::ApplicationController
             @user.increaseMoney(info[:coin])
             return render json: {message: "Nạp tiền thành công."}, status: 200
           else
-            return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn."}, status: 400
+            return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", code: 4}, status: 400
           end
         elsif cardChargingResponse.status == 400
           # render plain: cardChargingResponse.message, status: 400
-          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message}, status: 400
+          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse , code: 5}, status: 400
         else
-          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message}, status: 400
+          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse, code: 6}, status: 400
         end
       else
-        render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400
+        render json: {message: "Vui lòng kiểm tra Captcha", code: 7 }, status: 400
       end
     else
-      render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400
+      render json: {message: "Vui lòng kiểm tra Captcha", code: 8 }, status: 400
     end
   end
 

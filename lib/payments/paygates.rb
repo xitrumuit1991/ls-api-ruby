@@ -34,7 +34,7 @@ module Paygate
 			else
 				obj.m_SessionID = result.body[:multi_ref][:sessionid]
 			end
-			obj.message 	= "Đăng nhặp thành công SOAP."
+			obj.message 	= "Đăng nhập thành công SOAP."
 			obj.status 	= 200
 			return obj
 		end
@@ -124,10 +124,25 @@ module Paygate
 
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
+			# {
+			#   "m_Sessage": {
+			#     "@xsi:type": "soapenc:string"
+			#   },
+			#   "m_Status": "8",
+			#   "m_SessionID": {
+			#     "@xsi:type": "soapenc:string"
+			#   },
+			#   "message": "Đăng nhập thành công SOAP.",
+			#   "status": 200
+			# }
 			if loginresponse.status == 200
 				if loginresponse.m_Status == "1"
 					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
 				else
+					Rails.logger.info('---------class CardCharging--------');
+					Rails.logger.info(loginresponse);
+					Rails.logger.info(loginresponse.to_json);
+
 					ojb.status 		= 500
 					ojb.message 	= "Không thể đăng nhập vào SOAP service vì sai tài khoản vui lòng cập nhật lại tài khoản !!! Xin cảm ơn."
 					return ojb
@@ -146,14 +161,14 @@ module Paygate
 				mpin = byteToHex(strEncreped);
 				card_DATA = byteToHex(objTriptDes.encrypt(m_Card_DATA))
 			rescue Exception => e
-				ojb.message 	= "Có lổi khi mã hõa mã thẻ. Vui lòng thử lại lần nữa."
+				ojb.message 	= "Có lỗi khi mã hóa mã thẻ. Vui lòng thử lại lần nữa."
 				ojb.status 		= 500
 				return ojb
 			end
 			begin
 				result = soapClient.call(:card_charging,  message: { :m_TransID => m_TransID, :m_UserName => m_UserName, :m_PartnerID => m_PartnerID, :m_MPIN => mpin, :m_Target => m_Target, :m_Card_DATA => card_DATA, :SessionID => Digest::MD5.hexdigest(sessionID) })
 			rescue Exception => e
-				ojb.message 	= "Có lỏi khi thực hiện nạp thể. Vui lòng thử lại lần nữa."
+				ojb.message 	= "Có lỗi khi thực hiện nạp thẻ. Vui lòng thử lại lần nữa."
 				ojb.status 		= 500
 				return ojb
 			end
