@@ -34,7 +34,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         @vipInfo = vipInfo
       end
     else
-      render json: {error: 'Không lấy được thông tin user '}, status: 400
+      render json: {message: 'Không lấy được thông tin user '}, status: 400
     end
     # @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
@@ -45,10 +45,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if params[:username].present?
       @user = User.find_by_username(params[:username])
       if !@user.present?
-        render json: {error: 'User không tồn tại'}, status: 400
+        render json: {message: 'User không tồn tại'}, status: 400
       end
     else
-      render json: {error: 'Vui lòng nhập username'}, status: 400
+      render json: {message: 'Vui lòng nhập username'}, status: 400
     end
   end
 
@@ -61,16 +61,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
             user.update(active_date: Time.now, actived: true)
             return head 200
           else
-            render json: {error: 'Mã kích hoạt không hợp lệ !'} , status: 400
+            render json: {message: 'Mã kích hoạt không hợp lệ !'} , status: 400
           end
         else
-          render json: {error: 'Vui lòng nhập mã kích hoạt !'}, status: 400
+          render json: {message: 'Vui lòng nhập mã kích hoạt !'}, status: 400
         end
       else
-        render json: {error: 'Tài khoản này đã được kích hoạt !'}, status: 400
+        render json: {message: 'Tài khoản này đã được kích hoạt !'}, status: 400
       end
     else
-      render json: {error: 'Tài khoản này không tồn tại !'}, status: 404
+      render json: {message: 'Tài khoản này không tồn tại !'}, status: 404
     end
   end
 
@@ -91,7 +91,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         render json: user.errors.messages, status: 400
       end
     else
-      return head 404
+      return head 400
     end
   end
 
@@ -625,28 +625,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def cttCard
     logger = Logger.new("#{Rails.root}/log/card_production.log")
-    if params[:key_payment].blank?
-      return render json: {error: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400
-    end
-    if params[:provider].blank?
-      return render json: {error: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400
-    end
-    if params[:pin].blank?
-      return render json: {error: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400
-    end
-    if params[:serial].blank?
-      return render json: {error: "Thiếu serial card", code: 14, detail: 'Miss serial'}, status: 400
-    end
+    return render json: {message: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400 if params[:key_payment].blank?
+    return render json: {message: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400 if params[:provider].blank?
+    return render json: {message: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400 if params[:pin].blank?
+    return render json: {message: "Thiếu serial card", code: 14, detail: 'Miss serial'}, status: 400 if params[:serial].blank?
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]))
       logger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
       logger.info("------------checkCaptcha= #{checkCaptcha}-----------------")
-      if checkCaptcha.blank?
-        return render json: {error: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400
-      end
-      if checkCaptcha[:success].blank?
-        return render json: {error: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400
-      end
+      return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400 if checkCaptcha.blank?
+      return render json: {message: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400 if checkCaptcha[:success].blank?
       logger.info("------------user/mega-card user#cttCard-----------------")
       if checkCaptcha[:success]
         # nha mang cung cap
@@ -687,21 +675,21 @@ class Api::V1::UserController < Api::V1::ApplicationController
           logger.info("------------info log=#{info}-----------------")
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
-            render plain: "Nạp tiền thành công.", status: 200
+            return render json: {message: "Nạp tiền thành công."}, status: 200
           else
-            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", status: 400
+            return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn."}, status: 400
           end
         elsif cardChargingResponse.status == 400
           # render plain: cardChargingResponse.message, status: 400
-          render json: {error: 'Nạp thẻ không thành công. Vui lòng thử lại.', message: cardChargingResponse.message}, status: 400
+          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message}, status: 400
         else
-          render json: {error: 'Nạp thẻ không thành công. Vui lòng thử lại.', message: cardChargingResponse.message}, status: 400
+          render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message}, status: 400
         end
       else
-        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+        render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400
       end
     else
-      render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
+      render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400
     end
   end
 
@@ -716,7 +704,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if params[:room_id]
       render json: {number: FbShareLog.where('room_id = ?', params[:room_id]).count } , status: 200
     else
-      render plain: 'Vui lòng kiểm tra lại!!!', status: 400
+      render json: {message: 'Vui lòng kiểm tra lại!!!', detail: 'thieu param room_id'}, status: 400
     end
   end
 
@@ -796,13 +784,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
           end
         else
-          render json: {error: "Phong đang ở trạng thái đống !!!" } , status: 400
+          render json: {message: "Phòng đang ở trạng thái đống !!!" } , status: 400
         end
       else
-        render json: {error: "Bạn phải cài app trước khi share!!!" } , status: 400
+        render json: {message: "Bạn phải cài app trước khi share!!!" } , status: 400
       end
     rescue Exception => e
-      render json: {error: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+      render json: {message: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
     end
   end
 
@@ -816,13 +804,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
           redeemLog(redeem.id)
           render json: {message: "Đã cộng tiền thành công vào tài khoản của bạn!!!" } , status: 200
         else
-          render json: {error: "Mỗi thành viên chỉ được nhận một lần!!!" } , status: 400
+          render json: {message: "Mỗi thành viên chỉ được nhận một lần!!!" } , status: 400
         end
       else
-        render json: {error: "Mã chưa đúng hoặc sự kiện đã hết, vui lòng thử lại!!!" } , status: 400
+        render json: {message: "Mã chưa đúng hoặc sự kiện đã hết, vui lòng thử lại!!!" } , status: 400
       end
     rescue Exception => e
-      render json: {error: "Đã gặp vấn đề trong việc kiểm tra mã, vui lòng hử lại!!!" } , status: 400
+      render json: {message: "Đã gặp vấn đề trong việc kiểm tra mã, vui lòng hử lại!!!" } , status: 400
     end
   end
 

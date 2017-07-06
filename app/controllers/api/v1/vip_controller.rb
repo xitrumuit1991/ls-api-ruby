@@ -14,23 +14,26 @@ class Api::V1::VipController < Api::V1::ApplicationController
           @user.user_has_vip_packages.update_all(actived: false)
           UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + no_day.day)
           @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-          return head 200
+          # return head 200
+          return render json: {message: 'Mua VIP thành công'},status: 200
         elsif user_vip.vip.weight == vipPackage.vip.weight
           dateActive = @user.user_has_vip_packages.where(:actived => true).take.expiry_date
           @user.user_has_vip_packages.update_all(actived: false)
           UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: dateActive + no_day.day)
           @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-          return head 200
+          # return head 200
+          return render json: {message: 'Mua VIP thành công'},status: 200
         else
-          render json: {error: "Vui lòng mua VIP cao hơn hoặc bằng với VIP hiện tại!"}, status: 400
+          render json: {message: "Vui lòng mua VIP cao hơn hoặc bằng với VIP hiện tại!"}, status: 400
         end
       else
         UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + no_day.day)
         @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-        return head 200
+        # return head 200
+        return render json: {message: 'Mua VIP thành công'},status: 200
       end
     else
-      render json: {error: "Bạn không có đủ tiền"}, status: 400
+      render json: {message: "Bạn không có đủ tiền"}, status: 400
     end
   end
 
@@ -44,7 +47,7 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   def mbf_subscribe_vip_package
     # render json: { error: "Request not from Mobifone 3G" }, status: 400 and return if !check_mbf_auth
-    render json: { error: "Gói VIP này không tồn tại !" }, status: 400 and return if !["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"].include? params[:pkg_code]
+    return render json: { message: "Gói VIP này không tồn tại !" }, status: 400  if !["VIP", "VIP7", "VIP30", "VIP2", "VIP3", "VIP4"].include? params[:pkg_code]
 
     if @user.mobifone_user.present?
       vipPackage = VipPackage.find_by(code: params[:pkg_code])
@@ -53,24 +56,26 @@ class Api::V1::VipController < Api::V1::ApplicationController
         if user_has_vip_package.present?
           if user_has_vip_package.vip_package.vip.weight = vipPackage.vip.weight
             if user_has_vip_package.vip_package.no_day.to_i >= vipPackage.no_day.to_i
-              render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 and return
+              render json: {message: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 
+              return
             end
           elsif user_has_vip_package.vip_package.vip.weight > vipPackage.vip.weight
-            render json: {error: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 and return
+            render json: {message: "Vui lòng mua VIP cao hơn VIP hiện tại!"}, status: 400 
+            return
           end
         end
 
         result = create_vip_package vipPackage
         if result[:is_error]
-          render json: { error: "#{handle_vas_error result[:message]}" }, status: 400
+          render json: { message: "#{handle_vas_error result[:message]}" }, status: 400
         else
-          return head 201
+          return head 200
         end
       else
-        render json: {error: "Gói VIP này không tồn tại !"}, status: 400
+        render json: {message: "Gói VIP này không tồn tại !"}, status: 400
       end
     else
-      render json: {error: "Bạn chưa có tài khoản Mobifone !"}, status: 401
+      render json: {message: "Bạn chưa có tài khoản Mobifone !"}, status: 401
     end
   end
 

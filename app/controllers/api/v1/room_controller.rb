@@ -152,7 +152,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         @arrActionSelected << action.room_action_id
       end
     else
-      render json: {error: 'Bạn không phải Idol, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
+      render json: {message: 'Bạn không phải Idol, Hãy đăng ký để sử dụng chức năng này !'}, status: 400
     end
   end
 
@@ -163,13 +163,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if @user.nil?
         create_tmp_token
       else
-        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
+        render json: { message: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
       end
       if !@room.present?
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 404
       end
     else
-      render json: {error: 'Vui lòng chọn phòng!'}, status: 400
+      render json: {message: 'Vui lòng chọn phòng!'}, status: 400
     end
   end
 
@@ -180,13 +180,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if @user.nil?
         create_tmp_token
       else
-        render json: { error: 'Bạn không được phép truy cập vào phòng này' }, status: 403 and return if @user.is_banned(@room.id)
+        render json: { message: 'Bạn không được phép truy cập vào phòng này' }, status: 400 and return if @user.is_banned(@room.id)
       end
       if !@room.present?
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: 'Vui lòng nhập slug'}, status: 400
+      render json: {message: 'Vui lòng nhập slug'}, status: 400
     end
   end
 
@@ -198,10 +198,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         @user.broadcaster.update(description: params[:bct_desc])
         return head 200
       else
-        render json: {error: t('error'), bugs: room.errors.full_messages}, status: 400
+        render json: {message: t('error'), bugs: room.errors.full_messages}, status: 400
       end
     else
-      render json: {error: t('error_room_not_found')}, status: 404
+      render json: {message: t('error_room_not_found')}, status: 400
     end
   end
 
@@ -212,13 +212,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         if room.update(thumb: params[:thumb])
           render json: {thumb: "#{request.base_url}#{room.thumb.thumb}?timestamp=#{room.updated_at.to_i}"}, status: 200
         else
-          render json: {error: t('error')}, status: 400
+          render json: {message: t('error')}, status: 400
         end
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 404
       end
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -230,13 +230,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         if room.update(thumb_crop: params[:thumb_crop])
           render json: {thumb_crop: "#{request.base_url}#{room.thumb_crop}?timestamp=#{room.updated_at.to_i}"}, status: 200
         else
-          render json: {error: t('error')}, status: 400
+          render json: {message: t('error')}, status: 400
         end
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -246,7 +246,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       background = @user.broadcaster.broadcaster_backgrounds.create({image: params[:background]})
       render json: {id: background.id, image: "#{request.base_url}#{background.image.square}?timestamp=#{background.updated_at.to_i}"}, status: 201
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -255,10 +255,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if @user.broadcaster.broadcaster_backgrounds.where(:id => params[:background_id]).destroy_all
         return head 200
       else
-        render json: {error: t('error_system')}, status: 400
+        render json: {message: t('error_system')}, status: 400
       end
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -270,10 +270,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         room.update(broadcaster_background_id: params[:background_id])
         return head 200
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -286,10 +286,10 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
         return head 200
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: t('error_empty_image')}, status: 400
+      render json: {message: t('error_empty_image')}, status: 400
     end
   end
 
@@ -303,13 +303,13 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         if room.schedules.create(JSON.parse(params[:schedule].to_json))
           return head 201
         else
-          render json: {error: t('error_system')}, status: 400
+          render json: {message: t('error_system')}, status: 400
         end
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: 'Vui lòng nhập lịch diễn cho phòng'}, status: 400
+      render json: {message: 'Vui lòng nhập lịch diễn cho phòng'}, status: 400
     end
   end
 
@@ -320,15 +320,15 @@ class Api::V1::RoomController < Api::V1::ApplicationController
       if room.present?
         begin
           room.schedules.find(params[:schedule_id].to_i).destroy
-          return head 201
+          return head 200
         rescue ActiveRecord::RecordNotFound
-          render json: {error: 'Lịch diễn không tồn tại!, vui lòng thử lại nhé'}, status: 400
+          render json: {message: 'Lịch diễn không tồn tại!, vui lòng thử lại nhé'}, status: 400
         end
       else
-        render json: {error: t('error_room_not_found')}, status: 404
+        render json: {message: t('error_room_not_found')}, status: 400
       end
     else
-      render json: {error: 'Vui lòng chọn lịch diễn trước khi xóa nhé!'}, status: 400
+      render json: {message: 'Vui lòng chọn lịch diễn trước khi xóa nhé!'}, status: 400
     end
   end
 
@@ -401,7 +401,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   private
   def checkIsBroadcaster
     unless @user.is_broadcaster
-      render json: {error: t('error_not_bct')}, status: 400
+      render json: {message: t('error_not_bct')}, status: 400
     end
   end
 

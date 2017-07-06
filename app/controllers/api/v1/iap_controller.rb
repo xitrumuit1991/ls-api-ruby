@@ -14,13 +14,14 @@ class Api::V1::IapController < Api::V1::ApplicationController
     if params[:packageName].present? && params[:productId].present? && params[:purchaseToken].present?
       coin = Coin.find_by(code: params[:productId])
       unless coin.present?
-        return head 500
+        # return head 400
+        return render json: {message: 'Không tìm thấy coin.'}, status: 400
       end
 
       receipt = AndroidReceipt.find_by(orderId: params[:orderId])
       if receipt.present?
         if receipt.status
-          render json: { status_purchase: 1 }, status: 200 and return
+          render json: { status_purchase: 1, message: 'OK' }, status: 200 and return
         end
       else
         @user.android_receipts.create(orderId: params[:orderId], packageName: params[:packageName], productId: params[:productId], purchaseTime: params[:purchaseTime], purchaseState: params[:purchaseState], purchaseToken: params[:purchaseToken])
@@ -77,19 +78,19 @@ class Api::V1::IapController < Api::V1::ApplicationController
             end
             render json: { status_purchase: 1 }, status: 200
           else
-            render json: { status_purchase: 0, error: "Has error from response Google ", detail: result.data.to_json }, status: 400
+            render json: { status_purchase: 0, message: "Has error from response Google ", detail: result.data.to_json }, status: 400
             # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
           end
         rescue => errorParseJson
           logger.info("---------errorParseJson: #{errorParseJson}")
-          return render json: {  status_purchase: 0, detail: errorParseJson.to_s, error: "can not parse JSON response from google "} , status: 400
+          return render json: {  status_purchase: 0, detail: errorParseJson.to_json, message: "can not parse JSON response from google "} , status: 400
         end
       rescue => error
         logger.info("---------error: #{error}")
-        return render json: {  status_purchase: 0, detail: error.to_s, error: "Authorization fetch_access_token from our service account fail!" } , status: 400
+        return render json: {  status_purchase: 0, detail: error.to_json, message: "Authorization fetch_access_token from our service account fail!" } , status: 400
       end
     else
-      render json: {status_purchase: 0, error: "Vui lòng nhập đầy đủ tham số !" }, status: 400
+      render json: {status_purchase: 0, message: "Vui lòng nhập đầy đủ tham số !" }, status: 400
     end
   end
 
@@ -109,7 +110,8 @@ class Api::V1::IapController < Api::V1::ApplicationController
     if params[:receipt].present? && params[:product_id].present?
       coin = Coin.find_by(code: params[:product_id])
       unless coin.present?
-        return head 500
+        # return head 500
+        return render json: {message: 'Không tìm thấy coin.'}, status: 400
       end
 
       apple_receipt_verify_url = "https://buy.itunes.apple.com/verifyReceipt"
@@ -148,18 +150,19 @@ class Api::V1::IapController < Api::V1::ApplicationController
               money = @user.money + coin.quantity
               @user.update(money: money)
               return head 200
+              return render json: {message: 'OK'}, status: 200
             end
           else
-            render json: { error: "Transaction does not exist !" }, status: 400
+            render json: { message: "Transaction does not exist !" }, status: 400
           end
         else
-          render json: { error: "Status error #{json_resp['status']} !" }, status: 400
+          render json: { message: "Status error #{json_resp['status']} !" }, status: 400
         end
       else
-        render json: { error: "System error !" }, status: 400
+        render json: { message: "System error !" }, status: 400
       end
     else
-      render json: { error: "Vui lòng nhập đầy đủ tham số !" }, status: 400
+      render json: { message: "Vui lòng nhập đầy đủ tham số !" }, status: 400
     end
   end
 

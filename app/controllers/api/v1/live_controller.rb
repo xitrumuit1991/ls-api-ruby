@@ -91,7 +91,7 @@
           render json: {message: 'có lỗi xảy ra', detail: e.message}, status: 400
         end
       else
-        render json: {message: 'Bạn không có đủ tiền'}, status: 403
+        render json: {message: 'Bạn không có đủ tiền'}, status: 400
       end
     end
 

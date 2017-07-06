@@ -47,14 +47,14 @@ module Api::V1::Authorize extend ActiveSupport::Concern
           @user = User.find_by(token: token)
         rescue
           # return head 401
-          return render json: {message: 'Invalid token'}, status: 401
+          return render json: {message: 'Invalid token', detail: 'JWT.decode error'}, status: 403
         end
       end
     end
 
     def render_unauthorized
       self.headers['WWW-Authenticate'] = 'Token realm="Token is invalid"'
-      return render json: {message: 'Invalid token'}, status: 401
+      return render json: {message: 'Invalid token'}, status: 403
       # return head 401
     end
 
@@ -74,7 +74,4 @@ module Api::V1::Authorize extend ActiveSupport::Concern
         return false
       end
     end
-
-
-
 end
