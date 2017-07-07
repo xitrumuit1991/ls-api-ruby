@@ -24,7 +24,7 @@ module Paygate
 			Rails.logger.info('---------class Login; _login result--------');
 			Rails.logger.info(result);
 			hashData = Hash.from_xml(result.to_s);
-			Rails.logger.info('---------Hash xml; class Login; _login result =--------');
+			Rails.logger.info('---------hashData result =--------');
 			Rails.logger.info(hashData);
 			obj.m_Sessage = result.body[:multi_ref][:message]
 			obj.m_Status = result.body[:multi_ref][:status]
@@ -200,6 +200,9 @@ module Paygate
 			begin
 				result = soapClient.call(:card_charging,  message: { :m_TransID => m_TransID, :m_UserName => m_UserName, :m_PartnerID => m_PartnerID, :m_MPIN => mpin, :m_Target => m_Target, :m_Card_DATA => card_DATA, :SessionID => Digest::MD5.hexdigest(sessionID) })
 				Rails.logger.info("---------SUCCESS soapClient.call(:card_charging;...) result=#{result}----------");
+				hashData = Hash.from_xml(result.to_s);
+				Rails.logger.info('---------Hash DATA--------');
+				Rails.logger.info(hashData);
 			rescue Exception => e
 				Rails.logger.info("---------ERROR soapClient.call(:card_charging...); error=#{e}----------");
 				ojb.message 	= "Có lỗi khi thực hiện nạp thẻ. Vui lòng thử lại lần nữa."
@@ -207,6 +210,12 @@ module Paygate
 				return ojb
 			end
 			if result.body[:multi_ref][:status] == "1"
+				Rails.logger.info("---------SUCCESS charge----------");
+				Rails.logger.info("---------m_Message=#{result.body[:multi_ref][:message]}----------");
+				Rails.logger.info("---------m_AMOUNT=#{result.body[:multi_ref][:amount]}----------");
+				Rails.logger.info("---------m_TRANSID=#{result.body[:multi_ref][:transid]}----------");
+				Rails.logger.info("---------m_Status=#{result.body[:multi_ref][:status]}----------");
+				Rails.logger.info("---------m_RESPONSEAMOUNT=#{result.body[:multi_ref][:responseamount]}----------");
 				ojb.m_Message			= result.body[:multi_ref][:message]
 				ojb.m_AMOUNT 			= result.body[:multi_ref][:amount]
 				ojb.m_TRANSID 			= result.body[:multi_ref][:transid]
@@ -218,7 +227,7 @@ module Paygate
 					sessionID = nil
 				end
 			elsif result.body[:multi_ref][:status] == "50"
-				ojb.message 	= "thẻ đã được sử dụng hay không tồn tại."
+				ojb.message 	= "Thẻ đã được sử dụng hay không tồn tại."
 				ojb.status 		= 400
 			elsif result.body[:multi_ref][:status] == "51"
 				ojb.message 	= "Mã số thẻ không xác thực"
@@ -230,7 +239,7 @@ module Paygate
 				ojb.message 	= "Mã số thẻ và serial không đúng."
 				ojb.status 		= 400
 			elsif result.body[:multi_ref][:status] == "55"
-				ojb.message 	= "thẻ bị khóa trong 24 tiếng đồng hồ"
+				ojb.message 	= "Thẻ bị khóa trong 24 tiếng đồng hồ"
 				ojb.status 		= 400
 			elsif result.body[:multi_ref][:status] == "4"
 				ojb.message 	= "Mã thẻ không hợp lệ."

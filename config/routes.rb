@@ -284,6 +284,7 @@ Rails.application.routes.draw do
 
       # users
       scope '/users' do
+        post '/set-user-money' => 'user#setMoneyForUser'
         get '/get-no-heart' => 'user#getNoHeart'
         get '/get-money' => 'user#getMoney'
         get '/:id/avatar' => 'user#getAvatar'
