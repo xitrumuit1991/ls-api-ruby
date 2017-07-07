@@ -126,9 +126,10 @@ module Paygate
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
 			Rails.logger.info('---------loginresponse--------');
-			Rails.logger.info(loginresponse.to_json);
+			Rails.logger.info(loginresponse.to_s);
 			if loginresponse.status == 200
 				if loginresponse.m_Status == "8" #livestar cũ check = 1 nhưng giờ nó = 8
+					Rails.logger.info('-----------m_SessionID-----------');
 					Rails.logger.info(loginresponse.m_SessionID);
 					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
 				else
@@ -136,7 +137,7 @@ module Paygate
 					ojb.status 		= 500
 					ojb.message 	= "Không thể đăng nhập vào SOAP service vì sai tài khoản vui lòng cập nhật lại tài khoản !!! Xin cảm ơn."
 					Rails.logger.info('---------Paygate::CardChargingResponse.new ojb=--------');
-					Rails.logger.info(ojb.to_json);
+					Rails.logger.info(ojb.to_s);
 					return ojb
 				end
 			else
