@@ -787,13 +787,13 @@ class Api::V1::UserController < Api::V1::ApplicationController
         if room.on_air
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
-            render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
+            render json: {message: "Facebook đã chia sẽ trước đó!!!", user_money: @user.money } , status: 200
           elsif FbShareLog.where('user_id = ? AND device_id = ? AND room_id = ? AND created_at > ?', @user.id, params[:device_id], room.id, Time.now.beginning_of_day).count < 1
             @user.increaseMoney(money)
             fb_logs(nil, money, fb_id, room.id, params[:device_id])
-            render json: {message: "Đã cộng tiền thành công!!!" } , status: 200
+            render json: {message: "Đã cộng tiền thành công!!!", user_money: @user.money } , status: 200
           else
-            render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
+            render json: {message: "Facebook đã chia sẽ trước đó!!!", user_money: @user.money } , status: 200
           end
         end
       end
