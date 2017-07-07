@@ -39,9 +39,9 @@ if !@tmp_user.nil?
 end
 
 json.broadcaster do
-	json.broadcaster_id	@room.broadcaster.id
-	json.user_id		@room.broadcaster.user.id
-	json.avatar     	@room.broadcaster.user.avatar_path[:avatar]
+	json.broadcaster_id		@room.broadcaster.id
+	json.user_id			@room.broadcaster.user.id
+	json.avatar     		@room.broadcaster.user.avatar_path[:avatar]
 	json.avatar_w60h60      @room.broadcaster.user.avatar_path[:avatar_w60h60]
 	json.avatar_w100h100    @room.broadcaster.user.avatar_path[:avatar_w100h100]
 	json.avatar_w120h120    @room.broadcaster.user.avatar_path[:avatar_w120h120]
