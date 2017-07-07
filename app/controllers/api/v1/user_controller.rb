@@ -653,14 +653,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]));
       railsLogger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
-      
-      #trick not check captcha; not comment in production
-      # return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2, detail: 'Captcha google invalid'}, status: 400 if checkCaptcha.blank? or checkCaptcha[:success] == false
-      # return render json: {message: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400 if checkCaptcha[:success].blank?
-      # if checkCaptcha[:success] == true
-      #END
-
-      if checkCaptcha[:success] == false #remove line if run ENV production
+      return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2, detail: 'Captcha google invalid'}, status: 400 if checkCaptcha.blank? or checkCaptcha[:success].blank? or checkCaptcha[:success] == false
+      if checkCaptcha[:success] == true
         # nha mang cung cap
         webservice   = Settings.chargingWebservice #link wsdl login
 
@@ -690,9 +684,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
         cardChargingResponse = cardCharging.cardCharging #thuc hien login & charge
 
         railsLogger.info("---------result after call charge----------");
-        railsLogger.info("---------result after call charge----------");
-        railsLogger.info("---------result after call charge----------");
-        railsLogger.info("------------cardChargingResponse-----------------")
+        railsLogger.info("---------cardChargingResponse-----------------")
         railsLogger.info("---------status=#{cardChargingResponse.status}");
       	railsLogger.info("---------message=#{cardChargingResponse.message}");
       	railsLogger.info("---------m_Status=#{cardChargingResponse.m_Status}");
@@ -723,7 +715,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
             railsLogger.info("---------money after charge = #{@user.money}-----");
             return render json: {message: "Nạp tiền thành công."}, status: 200
           else
-          	railsLogger.info("Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.");
+          	railsLogger.info("Đã nạp card nhưng không lưu được logs. Vui lòng chụp màn hình và liên hệ quản trị viên để được tư vấn.");
           	railsLogger.info(@user.errors.full_messages);
             return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", code: 4, detail: @user.errors.full_messages}, status: 400
           end
@@ -900,7 +892,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	  def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
 	    @user_sms = User::find_by_active_code(subkeyword)
 	    coin  = SmsMobile::find_by_price(amount.to_i)
-
 	    if @user_sms.present?
 	      @user_sms.increaseMoney(coin.coin)
 	      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
