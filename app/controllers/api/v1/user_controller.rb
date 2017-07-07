@@ -624,7 +624,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
   def cttCard
-    logger = Logger.new("#{Rails.root}/log/card_production.log")
+    # logger = Logger.new("#{Rails.root}/log/card_production.log")
     return render json: {message: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400 if params[:key_payment].blank?
     return render json: {message: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400 if params[:provider].blank?
     return render json: {message: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400 if params[:pin].blank?
@@ -632,11 +632,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]))
       logger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
-      logger.info("------------checkCaptcha= #{checkCaptcha}-----------------")
       return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400 if checkCaptcha.blank?
-      return render json: {message: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400 if checkCaptcha[:success].blank?
-      logger.info("------------user/mega-card user#cttCard-----------------")
-      if checkCaptcha[:success]
+      
+      #trick not check captcha; not comment in production
+      # return render json: {message: "Vui lòng kiểm tra Captcha !", code: 3}, status: 400 if checkCaptcha[:success].blank?
+      # if checkCaptcha[:success]
+      #END
+
+      if checkCaptcha[:success] == false
         # nha mang cung cap
         m_UserName    = Settings.chargingUsername
         m_Pass        = Settings.chargingPassword
@@ -646,7 +649,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
         webservice   = Settings.chargingWebservice
 
         soapClient = Savon.client(wsdl: webservice)
-        logger.info("------------soapClient=#{soapClient}-----------------")
+        logger.info("------------soapClient=-----------------");
+        logger.info(soapClient);
         m_Target = @user.username
 
         serial = params[:serial].to_s.delete(' ')
@@ -661,16 +665,20 @@ class Api::V1::UserController < Api::V1::ApplicationController
         cardCharging.soapClient   = soapClient
         transid                   = m_PartnerCode + Time.now.strftime("%Y%m%d%I%M%S")
         cardCharging.m_TransID    = transid
+        logger.info("------------cardCharging=-----------------")
+        logger.info(cardCharging)
 
         cardChargingResponse = Paygate::CardChargingResponse.new
         cardChargingResponse = cardCharging.cardCharging
-        logger.info("------------cardChargingResponse=#{cardChargingResponse}-----------------")
+        logger.info("------------cardChargingResponse=-----------------")
+        logger.info(cardChargingResponse)
         if cardChargingResponse.status == 200
           card      = Card::find_by_price cardChargingResponse.m_RESPONSEAMOUNT.to_i
           card_logs = CartLog::find_by_user_id(@user.id)
           coin = card_logs.nil? ? (card.coin + card.coin/100*50) : card.coin
           info = { pin: pin, provider: params[:provider], serial: serial, coin: coin }
           logger.info("------------info log=#{info}-----------------")
+          logger.info(info)
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
             return render json: {message: "Nạp tiền thành công."}, status: 200
@@ -764,16 +772,22 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
   def appShareFBReceivedCoin
+    return render json: {message: 'thieu param device_id'}, status: 400 if params[:device_id].blank?
+    return render json: {message: 'thieu param room_id'}, status: 400 if params[:room_id].blank?
+    room = Room.find(params[:room_id])
+    return render json: {message: 'Không tìm thấy phòng này.'}, status: 400 if room.blank? 
+    return render json: {message: 'Không tìm thấy user đã share facebook.'}, status: 400 if @user.blank? 
+    return render json: {message: 'Phòng hiện đang đóng. '}, status: 400 if room.present? and room.on_air == false
+    # money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
+    money = 10
     begin
       dvToken = DeviceToken.find_by_device_id(params[:device_id])
+      return render json: {message: "Bạn phải cài app trước khi share!!!", detail: 'khong tim thay deviceToken trong db' } , status: 400 if dvToken.blank?
       if dvToken.present?
-        room = Room.find(params[:room_id])
         if room.on_air
-          money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
-
           elsif FbShareLog.where('user_id = ? AND device_id = ? AND room_id = ? AND created_at > ?', @user.id, params[:device_id], room.id, Time.now.beginning_of_day).count < 1
             @user.increaseMoney(money)
             fb_logs(nil, money, fb_id, room.id, params[:device_id])
@@ -781,14 +795,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
           else
             render json: {message: "Facebook đã chia sẽ trước đó!!!" } , status: 200
           end
-        else
-          render json: {message: "Phòng đang ở trạng thái đống !!!" } , status: 400
         end
-      else
-        render json: {message: "Bạn phải cài app trước khi share!!!" } , status: 400
       end
     rescue Exception => e
-      render json: {message: "Bạn chưa chia sẽ livestar.vn lên tường nhà!!!" } , status: 400
+      return render json: {message: "Bạn chưa chia sẽ lên tường nhà!!!", detail: e  } , status: 400
     end
   end
 

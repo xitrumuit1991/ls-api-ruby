@@ -121,33 +121,28 @@ module Paygate
 			login.m_Pass		= m_Pass
 			login.m_PartnerID	= m_PartnerID
 			login.soapClient	= soapClient
-
+			Rails.logger.info('---------cardCharging login Paygate::Login.new--------');
+			Rails.logger.info(login);
 			loginresponse      	= Paygate::LoginResponse.new
 			loginresponse      	= login._login
-			# {
-			#   "m_Sessage": {
-			#     "@xsi:type": "soapenc:string"
-			#   },
-			#   "m_Status": "8",
-			#   "m_SessionID": {
-			#     "@xsi:type": "soapenc:string"
-			#   },
-			#   "message": "Đăng nhập thành công SOAP.",
-			#   "status": 200
-			# }
+			Rails.logger.info('---------loginresponse--------');
+			Rails.logger.info(loginresponse.to_json);
 			if loginresponse.status == 200
-				if loginresponse.m_Status == "1"
+				if loginresponse.m_Status == "8" #livestar cũ check = 1 nhưng giờ nó = 8
+					Rails.logger.info(loginresponse.m_SessionID);
 					sessionID 	= loginresponse.m_SessionID.to_hex_string.gsub(" ",'')
 				else
-					Rails.logger.info('---------class CardCharging--------');
-					Rails.logger.info(loginresponse);
-					Rails.logger.info(loginresponse.to_json);
-
+					ojb.megaCardResponse = loginresponse
 					ojb.status 		= 500
 					ojb.message 	= "Không thể đăng nhập vào SOAP service vì sai tài khoản vui lòng cập nhật lại tài khoản !!! Xin cảm ơn."
+					Rails.logger.info('---------Paygate::CardChargingResponse.new ojb=--------');
+					Rails.logger.info(ojb.to_json);
 					return ojb
 				end
 			else
+				Rails.logger.info('---------Paygate::CardChargingResponse.new ojb=--------');
+				Rails.logger.info(ojb.to_json);
+				ojb.megaCardResponse = loginresponse
 				ojb.message 	= loginresponse.message
 				ojb.status 		= 500
 				return ojb
@@ -266,6 +261,6 @@ module Paygate
 	end
 
 	class CardChargingResponse
-		attr_accessor :m_Status, :m_Message, :m_TRANSID, :m_AMOUNT, :m_RESPONSEAMOUNT, :status, :message #:status return ra web
+		attr_accessor :m_Status, :m_Message, :m_TRANSID, :m_AMOUNT, :m_RESPONSEAMOUNT, :status, :message, :megaCardResponse #:status return ra web
 	end
 end
