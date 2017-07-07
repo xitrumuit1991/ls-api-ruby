@@ -15,7 +15,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return render json: {error: 'error'}, status: 400 if params[:md5] != '60a069a04f0efb21531c1e91f02b7e06'
     return render json: {error: 'error'}, status: 400 if Digest::MD5.hexdigest(params[:email]) != params[:md5]
     return render json: {error: 'error'}, status: 400 if Digest::MD5.hexdigest(params[:email]) != '60a069a04f0efb21531c1e91f02b7e06'
-    @user.money = @user.money+100
+    money = params[:money].present? ? params[:money] : 100
+    @user.money = @user.money+money
     if @user.save
     	return render json: @user.to_json, status: 200
   	end

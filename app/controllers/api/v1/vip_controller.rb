@@ -4,24 +4,26 @@ class Api::V1::VipController < Api::V1::ApplicationController
 
   before_action :authenticate, except: [:listVip, :mbf_get_vip_packages, :listVipWebMBF, :listVipAppMBF]
 
+
   def buyVip
+    return render json: {message: 'thieu param vip_package_id'}, status: 400 if params[:vip_package_id].blank?
     vipPackage = VipPackage::find(params[:vip_package_id])
+    return render json: {message: 'Không tìm thấy gói VIP', detail: 'query db VIP error'}, status: 400 if vipPackage.blank?
+    return render json: {message: "Bạn không có đủ tiền"}, status: 400 if @user.money < (vipPackage.price - vipPackage.discount)
     no_day = vipPackage.no_day.to_i == 30 ? no_day = 60 : no_day = vipPackage.no_day.to_i
-    if @user.money >= vipPackage.price - vipPackage.discount
+    if @user.money >= (vipPackage.price - vipPackage.discount)
       if @user.user_has_vip_packages.where(:actived => true).present?
         user_vip = @user.user_has_vip_packages.where(:actived => true).take.vip_package
         if user_vip.vip.weight < vipPackage.vip.weight
           @user.user_has_vip_packages.update_all(actived: false)
           UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + no_day.day)
           @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-          # return head 200
           return render json: {message: 'Mua VIP thành công'},status: 200
         elsif user_vip.vip.weight == vipPackage.vip.weight
           dateActive = @user.user_has_vip_packages.where(:actived => true).take.expiry_date
           @user.user_has_vip_packages.update_all(actived: false)
           UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: dateActive + no_day.day)
           @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-          # return head 200
           return render json: {message: 'Mua VIP thành công'},status: 200
         else
           render json: {message: "Vui lòng mua VIP cao hơn hoặc bằng với VIP hiện tại!"}, status: 400
@@ -29,13 +31,11 @@ class Api::V1::VipController < Api::V1::ApplicationController
       else
         UserHasVipPackage.create(user_id: @user.id, vip_package_id: params[:vip_package_id], actived: true, active_date: Time.now, expiry_date: Time.now + no_day.day)
         @user.decreaseMoney(vipPackage.price - vipPackage.discount)
-        # return head 200
         return render json: {message: 'Mua VIP thành công'},status: 200
       end
-    else
-      render json: {message: "Bạn không có đủ tiền"}, status: 400
     end
   end
+  
 
   def confirmVip
     @vip = @user.checkVip == 1 ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : 0
