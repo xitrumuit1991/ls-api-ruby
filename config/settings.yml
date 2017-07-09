@@ -14,7 +14,8 @@ chargingPassword: 'ppakdrkso'
 chargingMpin: 'culvskjun'
 chargingPartnerId: 'CTT_livestar'
 chargingPartnerCode: '00174'
-chargingWebservice: 'http://cttcorp.net/ChargingGW/services/Services?wsdl'
+# chargingWebservice: 'http://cttcorp.net/ChargingGW/services/Services?wsdl'
+chargingWebservice: 'http://partner-svc.livestar.vn:8001/ChargingGW/services/Services?wsdl'
 
 # magebanks
 magebankWS: 'http://bank.megapay.net.vn:10001/service.asmx?wsdl'
