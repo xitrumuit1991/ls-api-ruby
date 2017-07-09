@@ -590,70 +590,73 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
 
-  def megacards
-    logger = Logger.new("#{Rails.root}/log/card_production.log")
-    # nha mang cung cap
-    if params[:key_payment].blank?
-      render json: {error: "Vui lòng kiểm tra Captcha", code: 1}, status: 400
-      return
-    end
-    if params[:key_payment].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_payment]))
-      if checkCaptcha.blank?
-        render json: {error: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400
-        return
-      end
-      if checkCaptcha[:success]
-        m_ws_url      = Settings.megacardWsUrl
-        m_partnerId   = Settings.megacardPartnerId
-        m_cardSerial  = params[:serial].to_s.delete(' ')
-        m_cardPin     = params[:pin].to_s.delete(' ')
-        m_telcoCode   = params[:provider]
-        m_password    = Settings.megacardPassword
-        m_targetAcc   = @user.username
-        megaCardCharging  = Megacard::MegacardAPIServices.new
-        megaCardCharging.m_ws_url       = m_ws_url
-        megaCardCharging.m_partnerId    = m_partnerId
-        megaCardCharging.m_cardSerial   = m_cardSerial
-        megaCardCharging.m_cardPin      = m_cardPin
-        megaCardCharging.m_telcoCode    = m_telcoCode
-        megaCardCharging.m_targetAcc    = m_targetAcc
-        megaCardCharging.m_password     = m_password
-        response = megaCardCharging.charging
-        if response.status == 200
-          card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
-          card_logs = CartLog::find_by_user_id(@user.id)
-          coin = card_logs.nil? ? card.coin + card.coin/100*50 : card.coin
-          info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
-          if card_logs(response, info)
-            @user.increaseMoney(info[:coin])
-            render plain: response.message, status: 200
-          else
-            render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn(transId: #{response.transId})", status: 500
-          end
-        else
-          render plain: response.message, status: 400
-        end
-      else
-        render plain: "Vui lòng kiểm tra Captcha", status: 400
-      end
-    else
-      render plain: "Vui lòng kiểm tra Captcha", status: 400
-    end
-  end
+  # def megacards # thay bang function def cttCard
+  #   logger = Logger.new("#{Rails.root}/log/production.log")
+  #   # nha mang cung cap
+  #   if params[:key_payment].blank?
+  #     render json: {error: "Vui lòng kiểm tra Captcha", code: 1}, status: 400
+  #     return
+  #   end
+  #   if params[:key_payment].present?
+  #     checkCaptcha = eval(checkCaptcha(params[:key_payment]))
+  #     if checkCaptcha.blank?
+  #       render json: {error: "Vui lòng kiểm tra Captcha !", code: 2}, status: 400
+  #       return
+  #     end
+  #     if checkCaptcha[:success]
+  #       m_ws_url      = Settings.megacardWsUrl
+  #       m_partnerId   = Settings.megacardPartnerId
+  #       m_cardSerial  = params[:serial].to_s.delete(' ')
+  #       m_cardPin     = params[:pin].to_s.delete(' ')
+  #       m_telcoCode   = params[:provider]
+  #       m_password    = Settings.megacardPassword
+  #       m_targetAcc   = @user.username
+  #       megaCardCharging  = Megacard::MegacardAPIServices.new
+  #       megaCardCharging.m_ws_url       = m_ws_url
+  #       megaCardCharging.m_partnerId    = m_partnerId
+  #       megaCardCharging.m_cardSerial   = m_cardSerial
+  #       megaCardCharging.m_cardPin      = m_cardPin
+  #       megaCardCharging.m_telcoCode    = m_telcoCode
+  #       megaCardCharging.m_targetAcc    = m_targetAcc
+  #       megaCardCharging.m_password     = m_password
+  #       response = megaCardCharging.charging
+  #       if response.status == 200
+  #         card      = Card::find_by_price response.m_RESPONSEAMOUNT.to_i
+  #         card_logs = CartLog::find_by_user_id(@user.id)
+  #         coin = card_logs.nil? ? card.coin + card.coin/100*50 : card.coin
+  #         info = { pin: m_cardPin, provider: m_telcoCode, serial: m_cardSerial, coin: coin }
+  #         if card_logs(response, info)
+  #           @user.increaseMoney(info[:coin])
+  #           render plain: response.message, status: 200
+  #         else
+  #           render plain: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn(transId: #{response.transId})", status: 500
+  #         end
+  #       else
+  #         render plain: response.message, status: 400
+  #       end
+  #     else
+  #       render plain: "Vui lòng kiểm tra Captcha", status: 400
+  #     end
+  #   else
+  #     render plain: "Vui lòng kiểm tra Captcha", status: 400
+  #   end
+  # end
 
 
 
 
   def cttCard
-  	railsLogger = Logger.new("#{Rails.root}/log/card_production.log");
+  	# railsLogger = Logger.new("#{Rails.root}/log/production.log");
+    Rails.logger.info("+++++++++++++++++++++++++++++++++++++++++");
+    Rails.logger.info("+++++++++++++++++++++++++++++++++++++++++");
+    Rails.logger.info("+++++++++++api/v1/users/mega-card++++++++");
     return render json: {message: "Vui lòng kiểm tra Captcha", code: 11, detail: 'Miss key_payment'}, status: 400 if params[:key_payment].blank?
     return render json: {message: "Thiếu provider card", code: 12, detail: 'Miss provider'}, status: 400 if params[:provider].blank?
     return render json: {message: "Thiếu pin card", code: 13, detail: 'Miss pin'}, status: 400 if params[:pin].blank?
     return render json: {message: "Thiếu serial card", code: 14, detail: 'Miss serial'}, status: 400 if params[:serial].blank?
     if params[:key_payment].present?
       checkCaptcha = eval(checkCaptcha(params[:key_payment]));
-      railsLogger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
+      Rails.logger.info("------------checkCaptcha= #{checkCaptcha.to_json}-----------------")
       return render json: {message: "Vui lòng kiểm tra Captcha !", code: 2, detail: 'Captcha google invalid'}, status: 400 if checkCaptcha.blank? or checkCaptcha[:success].blank? or checkCaptcha[:success] == false
       if checkCaptcha[:success] == true
         # nha mang cung cap
@@ -684,22 +687,22 @@ class Api::V1::UserController < Api::V1::ApplicationController
         cardChargingResponse = Paygate::CardChargingResponse.new
         cardChargingResponse = cardCharging.cardCharging #thuc hien login & charge
 
-        railsLogger.info("---------result after call charge----------");
-        railsLogger.info("---------cardChargingResponse-----------------")
-        railsLogger.info("---------status=#{cardChargingResponse.status}");
-      	railsLogger.info("---------message=#{cardChargingResponse.message}");
-      	railsLogger.info("---------m_Status=#{cardChargingResponse.m_Status}");
-      	railsLogger.info("---------m_Message=#{cardChargingResponse.m_Message}");
-      	railsLogger.info("---------m_TRANSID=#{cardChargingResponse.m_TRANSID}");
-      	railsLogger.info("---------m_AMOUNT=#{cardChargingResponse.m_AMOUNT}");
-      	railsLogger.info("---------m_RESPONSEAMOUNT=#{cardChargingResponse.m_RESPONSEAMOUNT}");
+        Rails.logger.info("---------result after call charge----------");
+        Rails.logger.info("---------cardChargingResponse-----------------")
+        Rails.logger.info("---------status=#{cardChargingResponse.status}");
+      	Rails.logger.info("---------message=#{cardChargingResponse.message}");
+      	Rails.logger.info("---------m_Status=#{cardChargingResponse.m_Status}");
+      	Rails.logger.info("---------m_Message=#{cardChargingResponse.m_Message}");
+      	Rails.logger.info("---------m_TRANSID=#{cardChargingResponse.m_TRANSID}");
+      	Rails.logger.info("---------m_AMOUNT=#{cardChargingResponse.m_AMOUNT}");
+      	Rails.logger.info("---------m_RESPONSEAMOUNT=#{cardChargingResponse.m_RESPONSEAMOUNT}");
 
         if cardChargingResponse.present? and cardChargingResponse.status == 400
-        	railsLogger.info("---------ERROR cardChargingResponse----------status == 400");
+        	Rails.logger.info("---------ERROR cardChargingResponse----------status == 400");
           return render json: {message: cardChargingResponse.message, detail: 'Nạp thẻ không thành công. Vui lòng thử lại.',  code: 5}, status: 400
         end
         if cardChargingResponse.present? and cardChargingResponse.status != 200
-        	railsLogger.info("---------ERROR cardChargingResponse----------status!=200");
+        	Rails.logger.info("---------ERROR cardChargingResponse----------status!=200");
           return render json: {message: cardChargingResponse.message, detail:  'Nạp thẻ không thành công. Vui lòng thử lại.' ,  code: 6}, status: 400
         end
 
@@ -708,16 +711,16 @@ class Api::V1::UserController < Api::V1::ApplicationController
           card_logs_db = CartLog::find_by_user_id(@user.id)
           coin = card_logs_db.nil? ? (card.coin + card.coin/100*50) : card.coin
           info = { pin: pin, provider: params[:provider], serial: serial, coin: coin }
-          logger.info("------------Obj card insert db =#{info}-----------------")
-          logger.info(info)
-          railsLogger.info("---------money before charge = #{@user.money}-----");
+          Rails.logger.info("------------Obj card insert db =#{info}-----------------")
+          Rails.logger.info(info)
+          Rails.logger.info("---------money before charge = #{@user.money}-----");
           if card_logs(cardChargingResponse, info)
             @user.increaseMoney(info[:coin])
-            railsLogger.info("---------money after charge = #{@user.money}-----");
+            Rails.logger.info("---------money after charge = #{@user.money}-----");
             return render json: {message: "Nạp tiền thành công."}, status: 200
           else
-          	railsLogger.info("Đã nạp card nhưng không lưu được logs. Vui lòng chụp màn hình và liên hệ quản trị viên để được tư vấn.");
-          	railsLogger.info(@user.errors.full_messages);
+          	Rails.logger.info("Đã nạp card nhưng không lưu được logs. Vui lòng chụp màn hình và liên hệ quản trị viên để được tư vấn.");
+          	Rails.logger.info(@user.errors.full_messages);
             return render json: {message: "Đã nạp card nhưng không lưu được logs. Vui lòng chụp màng hình và liên hệ quản trị viên để được tư vấn.", code: 4, detail: @user.errors.full_messages}, status: 400
           end
         end
@@ -861,15 +864,14 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
 	  def card_logs(obj, info)
-      logger = Logger.new("#{Rails.root}/log/card_production.log")
       if obj.present? and info.present?
   	    provider  = Provider::find_by_name info[:provider]
         if provider.present?
-          logger.info("---------------insert log card----------");
-          logger.info("---------------provider=#{provider}----------");
+          Rails.logger.info("---------------insert log card----------");
+          Rails.logger.info("---------------provider=#{provider}----------");
           CartLog.create(user_id: @user.id, provider_id: provider.id, pin: info[:pin], serial: info[:serial], price: obj.m_RESPONSEAMOUNT.to_i, coin: info[:coin].to_i, status: obj.status)
         else
-          logger.info("---------------Can not insert log card; not found provider----------");
+          Rails.logger.info("---------------Can not insert log card; not found provider from db----------");
         end
       end
     end

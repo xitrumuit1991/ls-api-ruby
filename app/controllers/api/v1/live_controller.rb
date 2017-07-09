@@ -35,11 +35,8 @@
     
 
     def sendMessage
-      # logger = Logger.new("#{Rails.root}/log/socket_production.log")
-      # logger.info("-----------------------------------");
-      # logger.info("---------socket emitter= #{$emitter}");
-      # logger.info("---------Settings.redis_host= #{Settings.redis_host}");
-      # logger.info("---------Settings.redis_port= #{Settings.redis_port}");
+      return render json: {message: "thieu params message"}, status: 400 if params[:message].blank?
+      return render json: {message: "thieu params room_id"}, status: 400 if params[:room_id].blank?
       message = params[:message]
       room_id = params[:room_id]
       vip_weight = @token_user['vip']
