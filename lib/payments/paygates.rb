@@ -29,7 +29,11 @@ module Paygate
 			obj.m_Sessage = result.body[:multi_ref][:message]
 			obj.m_Status = result.body[:multi_ref][:status]
 			obj.m_TransID = result.body[:multi_ref][:transid]
-			Rails.logger.info("---result.body[:multi_ref][:sessionid]=#{result.body[:multi_ref][:sessionid]}");
+
+			Rails.logger.info("---login; result.body[:multi_ref][:sessionid]=#{result.body[:multi_ref][:sessionid]}");
+			Rails.logger.info("---login; result.body[:multi_ref][:message]=#{result.body[:multi_ref][:message]}");
+			Rails.logger.info("---login; result.body[:multi_ref][:status]=#{result.body[:multi_ref][:status]}");
+			Rails.logger.info("---login; result.body[:multi_ref][:transid]=#{result.body[:multi_ref][:transid]}");
 			if result.body[:multi_ref][:status] == "1"
 				rSAClass.GetPrivatekeyFrompemFile(File.join(Rails.root, 'lib', 'payments', 'key', 'private_key.pem'))
 				begin

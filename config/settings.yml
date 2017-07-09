@@ -9,13 +9,12 @@ url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&s
 url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'
 
 # Charging
-chargingUsername: 'CTT_livestar'
-chargingPassword: 'ppakdrkso'
-chargingMpin: 'culvskjun'
-chargingPartnerId: 'CTT_livestar'
-chargingPartnerCode: '00174'
-# chargingWebservice: 'http://cttcorp.net/ChargingGW/services/Services?wsdl'
-chargingWebservice: 'http://partner-svc.livestar.vn:8001/ChargingGW/services/Services?wsdl'
+chargingUsername:     'CTT_livestar'
+chargingPassword:     'ppakdrkso'
+chargingMpin:         'culvskjun'
+chargingPartnerId:    'CTT_livestar'
+chargingPartnerCode:  '00174'
+chargingWebservice:   'http://cttcorp.net/ChargingGW/services/Services?wsdl'
 
 # magebanks
 magebankWS: 'http://bank.megapay.net.vn:10001/service.asmx?wsdl'
