@@ -24,12 +24,13 @@ module Api::V1::Authorize extend ActiveSupport::Concern
 
   def check_mbf_auth
     msisdn = nil
+    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+    Rails.logger.info("request.headers['HTTP_MSISDN']=#{request.headers['HTTP_MSISDN']}")
     if request.headers
       msisdn = request.headers['HTTP_MSISDN']
-      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
-      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
-      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
-      Rails.logger.info('---  msisdn=#{msisdn}')
+      Rails.logger.info("msisdn=#{msisdn}")
     end
     return false if msisdn.blank?
     if msisdn.present?
@@ -37,11 +38,11 @@ module Api::V1::Authorize extend ActiveSupport::Concern
         @msisdn = msisdn
         if MobifoneUser.where(sub_id: @msisdn).exists?
           @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
-          Rails.logger.info('---  @mbf_user=#{@mbf_user.to_json}')
+          Rails.logger.info("---  @mbf_user=#{@mbf_user.to_json}")
           @user = @mbf_user.user
-          Rails.logger.info('---  @user=#{@user.to_json}')
+          Rails.logger.info("---  @user=#{@user.to_json}")
         end
-        Rails.logger.info('----  is MBF 3g   ----')
+        Rails.logger.info("----  is MBF 3g   ----")
         return true
       rescue
         return false
