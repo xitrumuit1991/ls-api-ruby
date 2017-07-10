@@ -19,15 +19,16 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def mbf_detection
-    logger = Logger.new("#{Rails.root}/log/mbf_detection.log")
     if @user.present?
       token = createToken(@user)
       @user.update(last_login: Time.now, token: token)
-      render json: { token: token }, status: 200
+      render json: { token: token, phone: @user.phone, last_login: @user.last_login, message: 'OK' }, status: 200
       logger.info("phone: #{@user.phone} last_login: #{@user.last_login} result: OK")
+      return
     else
       render json: { token: nil, msisdn: @msisdn }, status: 200
       logger.info("result: USER_NOT_FOUND")
+      return
     end
   end
 
@@ -755,7 +756,9 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   private
     def mbf_auth
-      render json: { error: "Request not from Mobifone 3G" }, status: 403 and return if !check_mbf_auth
+      if check_mbf_auth == false
+        return render json: { message: "Request not from Mobifone 3G", detail: ((request.headers and request.headers['HTTP_MSISDN']) ? request.headers['HTTP_MSISDN'] : 'not HTTP_MSISDN') }, status: 400
+      end
     end
 
     def createToken(user)

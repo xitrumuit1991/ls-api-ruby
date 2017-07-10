@@ -503,15 +503,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+
+
+
   def sms
-    Rails.logger.info "ANGCO DEBUG moid: #{defined? params[:moid]}"
+    Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
+    Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
+    Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
+    Rails.logger.info "params moid = #{defined? params[:moid]}"
+    params.each do |key,value|
+      Rails.logger.info "Param #{key}: #{value}"
+    end
     if !params[:moid]
-      Rails.logger.info "ANGCO DEBUG SMS: mang viettel"
+      Rails.logger.info "SMS: mang viettel"
       activecode = params[:content].split(' ')[2]
-      Rails.logger.info "ANGCO DEBUG content: #{params[:content]}"
-      Rails.logger.info "ANGCO DEBUG activecode: #{activecode}"
-      Rails.logger.info "ANGCO DEBUG _checkuser: #{_checkuser(activecode)}"
-      Rails.logger.info "ANGCO DEBUG amount: #{params[:amount].match(/[^0-9]/).nil?}"
+      Rails.logger.info "content: #{params[:content]}"
+      Rails.logger.info "activecode: #{activecode}"
+      Rails.logger.info "_checkuser: #{_checkuser(activecode)}"
+      Rails.logger.info "amount: #{params[:amount].match(/[^0-9]/).nil?}"
       if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
         render plain: "1| noi dung hop le", status: 200
       else
@@ -520,7 +529,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] and params[:subkeyword]
       Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
       partnerid                 = Settings.partnerid
-      data = Ebaysms::Sms.new
+      data                      = Ebaysms::Sms.new
       data.partnerid            = params[:partnerid]
       data.moid                 = params[:moid]
       data.userid               = params[:userid]
@@ -532,7 +541,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       data.amount               = params[:amount]
       data.smspPartnerPassword  = params[:smspPartnerPassword]
       data.partnerpass          = Settings.partnerpass
-      checksum = data._checksum
+      checksum                  = data._checksum
       Rails.logger.info "ANGCO DEBUG checksum: #{checksum}"
       Rails.logger.info "ANGCO DEBUG partnerid: #{partnerid}"
       if params[:partnerid].to_s == partnerid and checksum 
@@ -563,6 +572,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
       render plain: 'requeststatus=400', status: 400
     end
   end
+
+
+
 
   def _checkuser(active_code)
     return !User::find_by_active_code(active_code).nil?

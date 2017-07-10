@@ -285,18 +285,18 @@ Rails.application.routes.draw do
       # users
       scope '/users' do
         post '/set-user-money' => 'user#setMoneyForUser'
-        get '/get-no-heart' => 'user#getNoHeart'
-        get '/get-money' => 'user#getMoney'
-        get '/:id/avatar' => 'user#getAvatar'
+        get '/get-no-heart' => 'user#getNoHeart' 	#get number heart of user
+        get '/get-money' => 'user#getMoney'				#get current money of user
+        get '/:id/avatar' => 'user#getAvatar'		
         get '/:id/real-avatar' => 'user#real_avatar'
         get '/:id/cover' => 'user#getBanner'
-        get '/trades' => 'user#getTradeHistory' #
+        get '/trades' => 'user#getTradeHistory' #history nap card cua user
         post '/active' => 'user#active' #
         post '/active-fb-gp' => 'user#activeFBGP'
         get '/sms' => 'user#sms'
-        get '/room' => 'room#getPublicRoom'
+        get '/room' => 'room#getPublicRoom'			#get room of user if user is bct
         get '/' => 'user#profile' #
-        get '/expense-records' => 'user#expenseRecords' #
+        get '/expense-records' => 'user#expenseRecords' #get all list item user buy
         get '/get-providers' => 'user#getProviders'
         get '/get-sms' => 'user#getSms' # de sau, chua doi
         get '/get-banks' => 'user#getBanks'
@@ -304,8 +304,8 @@ Rails.application.routes.draw do
         get '/count-share' => 'user#countShare' #
         get '/:username' => 'user#publicProfile' #
         put '/' => 'user#update' #
-        post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #
-        post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #
+        post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #share fb tren web
+        post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #share fb tren app
         post '/update-password' => 'user#updatePassword'
         post '/avatar' => 'user#uploadAvatar' #
         post '/redeem' => 'user#userRevcivedCoin' #
@@ -314,7 +314,7 @@ Rails.application.routes.draw do
         post '/avatar-crop' => 'user#avatarCrop'
         post '/payments' => 'user#payments' # Để sau, chưa đổi
         post '/internet-banking' => 'user#internetBank' # Để sau, chưa đổi
-        post '/mega-card' => 'user#cttCard' # Để sau, chưa đổi
+        post '/mega-card' => 'user#cttCard' # nap card Viettel, mobifone, vinafone,...
         post '/confirm' => 'user#confirmEbay' # Để sau, chưa đổi
       end
 
@@ -427,8 +427,8 @@ Rails.application.routes.draw do
       scope 'vips' do
         get   '/:day/list-vip'         => 'vip#listVip'
         get   '/list-vip-web-mbf'      => 'vip#listVipWebMBF'
-        get     '/confirm-vip'         => 'vip#confirmVip'
-        post    '/buy-vip'             => 'vip#buyVip'
+        get   '/confirm-vip'         => 'vip#confirmVip'
+        post  '/buy-vip'             => 'vip#buyVip'
         # For Mobifone
         get   '/list-vip-app-mbf'       => 'vip#listVipAppMBF'
         get 	'/mobifone' => 'vip#mbf_get_vip_packages'

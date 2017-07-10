@@ -8,7 +8,7 @@ url_notification: 'http://localhost:3001'
 url_stream: 'http://stream.livestar.vn:8086/livestreamrecord?app=livestar-open&streamname='
 url_video_stream: 'http://stream.livestar.vn:80/livestar-vod/mp4:'
 
-# Charging
+# Charging CttCard
 chargingUsername:     'CTT_livestar'
 chargingPassword:     'ppakdrkso'
 chargingMpin:         'culvskjun'
@@ -24,9 +24,9 @@ magebankSend_key: 'X9557IMmIMRKOPVs6twAqQOi'
 magebankReceived_key: 'Qqy0GKhecgDuStT6h6zyKkzU'
 
 #megacards
-'megacardWsUrl': 'http://gachthe.megapay.net.vn/chargingApi'
-'megacardPartnerId': '11394'
-'megacardPassword': 'e01081'
+megacardWsUrl       : 'http://gachthe.megapay.net.vn/chargingApi'
+megacardPartnerId   : '11394'
+megacardPassword    : 'e01081'
 
 # SMS
 partnerid: '10184'

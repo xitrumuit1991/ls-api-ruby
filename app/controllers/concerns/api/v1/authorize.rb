@@ -23,19 +23,29 @@ module Api::V1::Authorize extend ActiveSupport::Concern
   end
 
   def check_mbf_auth
-    if request.headers['HTTP_MSISDN'].present?
+    msisdn = nil
+    if request.headers
+      msisdn = request.headers['HTTP_MSISDN']
+      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+      Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+      Rails.logger.info('msisdn=',msisdn)
+    end
+    return false if msisdn.blank?
+    if msisdn.present?
       begin
-        @msisdn = request.headers['HTTP_MSISDN']
+        @msisdn = msisdn
         if MobifoneUser.where(sub_id: @msisdn).exists?
           @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
+          Rails.logger.info('@mbf_user=#{@mbf_user.to_json}')
           @user = @mbf_user.user
+          Rails.logger.info('@user=#{@user.to_json}')
         end
         return true
       rescue
         return false
       end
     end
-    return false
   end
 
   private
