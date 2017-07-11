@@ -756,8 +756,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   private
     def mbf_auth
+      tmpHeader ||= []
+      request.headers.each do |key,value|
+        # Rails.logger.info "#{key}:#{value}"
+        tmpHeader.push( key.to_s+':'+value.to_s )
+      end
       if check_mbf_auth == false
-        return render json: { message: "Request not from Mobifone 3G", detail: ((request.headers and request.headers['HTTP_MSISDN']) ? request.headers['HTTP_MSISDN'] : 'not have key HTTP_MSISDN in hearders'), HTTP_MSISDN: request.headers['HTTP_MSISDN']  }, status: 400
+        return render json: { 
+          message: "Request not from Mobifone 3G", 
+          detail: ((request.headers and request.headers['HTTP_MSISDN']) ? request.headers['HTTP_MSISDN'] : 'not have key HTTP_MSISDN in hearders'), 
+          HTTP_MSISDN: request.headers['HTTP_MSISDN'],
+          fullheaders: tmpHeader
+          }, status: 400
       end
     end
 

@@ -515,38 +515,44 @@ class Api::V1::UserController < Api::V1::ApplicationController
       Rails.logger.info "Param #{key}: #{value}"
     end
     if !params[:moid]
+      #MO lan 1 co: partnerid, userid(sdt), shortcode(dau so dich vu),keyword, content, amount, checksum
+      #vidu http://sms.vn/receiverMO?partnerid=10001&userid=84979898989&shortcode=9029&keyword=TEST&content=TEST+NAP+username&amount=1000&checksum=a363146024efe6692080e402dfdf3f24
+      Rails.logger.info "MO lan 1 (k co moid, MO lan 2 moi co moid -  mang viettel)"
       Rails.logger.info "SMS: mang viettel"
       activecode = params[:content].split(' ')[2]
       Rails.logger.info "content: #{params[:content]}"
       Rails.logger.info "activecode: #{activecode}"
-      Rails.logger.info "_checkuser: #{_checkuser(activecode)}"
+      checkUserHaveActiveCode = User::find_by_active_code(active_code)
+      Rails.logger.info("checkUserHaveActiveCode=#{checkUserHaveActiveCode.to_json}")
       Rails.logger.info "amount: #{params[:amount].match(/[^0-9]/).nil?}"
-      if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
-        render plain: "1|noi dung hop le", status: 200
-      else
-        render plain: "0|noi dung khong hop le", status: 200
+      if checkUserHaveActiveCode.present? and params[:amount].match(/[^0-9]/).nil?
+        Rails.logger.info("khong tim thay user co active_code=#{activecode}")
+        return render plain: "1|noi dung hop le", status: 200 
       end
-      #remove and params[:subkeyword] by nguyentvk
-    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] 
-      Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
+      return render plain: "0|noi dung khong hop le", status: 200
+      
+      #remove params[:subkeyword] by nguyentvk
+    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:telcocode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] 
+      #MO chinh 10 key: partnerid, moid, userid, shortcode, telcocode, keyword, content, transdate, checksum, amount
+      Rails.logger.info "MO (co moid): mang vina - mobi"
       partnerid                 = Settings.partnerid
       data                      = Ebaysms::Sms.new
       data.partnerid            = params[:partnerid]
       data.moid                 = params[:moid]
       data.userid               = params[:userid]
       data.shortcode            = params[:shortcode]
+      data.telcocode            = params[:telcocode]
       data.keyword              = params[:keyword]
       data.content              = params[:content]
       data.transdate            = params[:transdate]
       data.checksum             = params[:checksum]
       data.amount               = params[:amount]
-      data.smspPartnerPassword  = params[:smspPartnerPassword]
       data.partnerpass          = Settings.partnerpass
       checksum                  = data._checksum
-      Rails.logger.info "ANGCO DEBUG checksum: #{checksum}"
-      Rails.logger.info "ANGCO DEBUG partnerid: #{partnerid}"
+      Rails.logger.info "-------MO checksum: #{checksum}"
+      Rails.logger.info "-------MO partnerid: #{partnerid}"
       if params[:partnerid].to_s == partnerid and checksum 
-        Rails.logger.info "ANGCO DEBUG checkmoid: #{_checkmoid(params[:moid])}"
+        Rails.logger.info "checkmoid: #{_checkmoid(params[:moid])}"
         if _checkmoid(params[:moid])
           render plain: 'requeststatus=2', status: 200
         else
