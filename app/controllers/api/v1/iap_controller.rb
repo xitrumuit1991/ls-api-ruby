@@ -10,40 +10,36 @@ class Api::V1::IapController < Api::V1::ApplicationController
     @coins = Coin.all
   end
 
+
+
+
+
   def android
+    Rails.logger.info('+++++++++++++++IAP android++++++++++++++++')
+    Rails.logger.info('+++++++++++++++IAP android++++++++++++++++')
+    Rails.logger.info('+++++++++++++++IAP android++++++++++++++++')
+    Rails.logger.info("+++++++++++++++packageName   =#{params[:packageName]}")
+    Rails.logger.info("+++++++++++++++productId     =#{params[:productId]}")
+    Rails.logger.info("+++++++++++++++purchaseToken =#{params[:purchaseToken]}")
+    return render json: {message: 'Khong co param packageName',    status_purchase: 0 }, status: 400 if params[:packageName].blank?
+    return render json: {message: 'Khong co param productId',      status_purchase: 0 }, status: 400 if params[:productId].blank?
+    return render json: {message: 'Khong co param purchaseToken' , status_purchase: 0 }, status: 400 if params[:purchaseToken].blank?
     if params[:packageName].present? && params[:productId].present? && params[:purchaseToken].present?
       coin = Coin.find_by(code: params[:productId])
-      unless coin.present?
-        # return head 400
-        return render json: {message: 'Không tìm thấy coin.'}, status: 400
-      end
-
+      return render json: {message: 'Không tìm thấy coin.', detail: "can not find coin from database"}, status: 400 if coin.blank?
       receipt = AndroidReceipt.find_by(orderId: params[:orderId])
       if receipt.present?
-        if receipt.status
-          render json: { status_purchase: 1, message: 'OK' }, status: 200 and return
-        end
+        Rails.logger.info("da co receipt; receipt=#{receipt.to_json}")
+        return render json: { status_purchase: 1, message: 'da co receipt roi', detail: receipt.to_json }, status: 200 if receipt.status
       else
+        Rails.logger.info("create receipt")
         @user.android_receipts.create(orderId: params[:orderId], packageName: params[:packageName], productId: params[:productId], purchaseTime: params[:purchaseTime], purchaseState: params[:purchaseState], purchaseToken: params[:purchaseToken])
       end
-
-      # key = OpenSSL::PKey::RSA.new "#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret'
-      # key = Google::APIClient::KeyUtils.load_from_pkcs12("#{Rails.root}/config/Livestar-e785257ee406.p12", 'notasecret')
-      # key = Google::APIClient::KeyUtils.load_from_pkcs12(Rails.root.join('config','Livestar-e785257ee406.p12').to_s, 'notasecret')
-      
-      # config old of livestar
-      #key = Google::APIClient::PKCS12.load_key("Livestar-e785257ee406.p12", 'notasecret')
-      
-      # config new of pateco; load file key google payment
-      key = Google::APIClient::PKCS12.load_key("GooglePlayAndroidDeveloper-0eb23483636e.p12", 'notasecret')
-
-      logger.info("---------key: #{key}")
-      client  = Google::APIClient.new
-      # client  = Google::APIClient.new(:application_name => 'livestar app', :application_version => '1.0')
-      logger.info("---------client: #{client}")
-      
-      # config old of livestar
-      #:issuer               => 'in-app-purchase@livestar-cf319.iam.gserviceaccount.com',
+      #load file key sign api google
+      # key = Google::APIClient::PKCS12.load_key("Livestar-9871dcca72c2.p12", 'notasecret')
+      key = Google::APIClient::KeyUtils.load_from_pkcs12("Livestar-9871dcca72c2.p12", 'notasecret')
+      Rails.logger.info("load key tu file.p12; key=#{key}")
+      client = Google::APIClient.new(application_name: 'livestar app', application_version: '1.0.0')
       client.authorization = Signet::OAuth2::Client.new(
         :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
         :audience             => 'https://accounts.google.com/o/oauth2/token',
@@ -51,48 +47,65 @@ class Api::V1::IapController < Api::V1::ApplicationController
         :issuer               => 'livestar@api-7360460321031135596-360146.iam.gserviceaccount.com',
         :signing_key          => key
       )
-      #.tap { |auth| auth.fetch_access_token! }
-
-
-      # Request a token for our service account
       begin
         client.authorization.fetch_access_token!
         publisher = client.discovered_api('androidpublisher', 'v2')
-        # Make the API call
+        Rails.logger.info("CALL API gg to get purchases.products ")
         result = client.execute(
           :api_method => publisher.purchases.products.get,
           :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
         )
-        # return render json: {  responseFromGG: result.to_s} , status: 200
-        # return render json: {  responseFromGG: result.data.to_s} , status: 200
-        # return render json: {  responseFromGG: result.data.to_json} , status: 200
-
+        Rails.logger.info("responseFromGG; result=#{result}")
+        Rails.logger.info("responseFromGG; result.status=#{result.status}")
+        Rails.logger.info("responseFromGG; result.to_json=#{result.to_json}")
+        Rails.logger.info("responseFromGG; result.data=#{result.data}")
+        Rails.logger.info("responseFromGG; result.data.to_json=#{result.data.to_json}")
         begin
-          logger.info("---------Make the API call result: #{result.data.to_json}")
-          resps = JSON.parse(result.data.to_json)
-          if !resps['error'].present?
+          resps = JSON.parse(result.data)
+          Rails.logger.info("responseFromGG after parse json; resps=#{resps}")
+          if resps['error'].blank?
             if resps['purchaseState'].to_i == 0
-              money = @user.money + coin.quantity
+              money = @user.money.to_i + coin.quantity.to_i
               @user.update(money: money)
               @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
             end
-            render json: { status_purchase: 1 }, status: 200
+            return render json: { 
+              status_purchase: 1, 
+              money: @user.money, 
+              respsOfGG: resps 
+              }, status: 200
           else
-            render json: { status_purchase: 0, message: "Has error from response Google ", detail: result.data.to_json }, status: 400
-            # render json: { error: resps['error']['message'] }, status: resps['error']['code'].to_i
+            return render json: { 
+              status_purchase: 0, 
+              message: "Has error from response Google", 
+              respsOfGG: resps, 
+              errorOfGG: resps['error']['message'], 
+              statusOfGG: resps['error']['code'].to_i 
+              }, status: 400
           end
         rescue => errorParseJson
-          logger.info("---------errorParseJson: #{errorParseJson}")
-          return render json: {  status_purchase: 0, detail: errorParseJson.to_json, message: "can not parse JSON response from google "} , status: 400
+          Rails.logger.info("---------errorParseJson: #{errorParseJson}")
+          return render json: {  
+            status_purchase: 0, 
+            exception: errorParseJson, 
+            message: "can not parse JSON response from google "
+            } , status: 400
         end
       rescue => error
-        logger.info("---------error: #{error}")
-        return render json: {  status_purchase: 0, detail: error.to_json, message: "Authorization fetch_access_token from our service account fail!" } , status: 400
+        Rails.logger.info("---------Authorization fetch_access_token from our service account fail!")
+        Rails.logger.info("---------error: #{error}")
+        return render json: {   
+          status_purchase: 0,  
+          exception: error.to_s,  
+          message: "Authorization fetch_access_token from our service account fail!"  
+          } , status: 400
       end
-    else
-      render json: {status_purchase: 0, message: "Vui lòng nhập đầy đủ tham số !" }, status: 400
     end
   end
+
+
+
+
 
   def ios
     # receipt = Venice::Receipt.verify(params[:receipt])
