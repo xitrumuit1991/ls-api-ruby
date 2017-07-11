@@ -210,53 +210,45 @@
       return render json: {message: 'thieu param lounge'},status: 400 if params[:lounge].blank?
       cost = params[:cost].to_i
       lounge = params[:lounge].to_i
+      return render json: {message: 'Bạn không có đủ tiền'}, status: 400 if @user.money < cost
       if lounge >= 0 && lounge <= 11
         if @user.money >= cost
-          if cost > 50
-            begin
-              current_lounge = $redis.get("lounges:#{@room.id}:#{lounge}")
-              if current_lounge.present?
-                current_lounge = eval(current_lounge)
-                if current_lounge[:cost].to_i >= cost
-                  render json: {message: 'Giá mua của bạn phải lớn hơn giá hiện tại'}, status: 400 and return
-                end
-              end
-              exp_bct = cost * 10
-              @user.decreaseMoney(cost)
-              @user.increaseExp(cost)
-              @room.broadcaster.increaseExp(exp_bct)
-              user = {
-                  id: @user.id,
-                  email: @user.email,
-                  name: @user.name,
-                  username: @user.username,
-                  avatar: @user.avatar_path[:avatar],
-                  avatar_w60h60: @user.avatar_path[:avatar_w60h60],
-                  avatar_w100h100: @user.avatar_path[:avatar_w100h100],
-                  avatar_w120h120: @user.avatar_path[:avatar_w120h120],
-                  avatar_w200h200: @user.avatar_path[:avatar_w200h200],
-                  avatar_w240h240: @user.avatar_path[:avatar_w240h240],
-                  avatar_w300h300: @user.avatar_path[:avatar_w300h300],
-                  avatar_w400h400: @user.avatar_path[:avatar_w400h400]
-                }
-              vip_data = @token_user['vip'] ? {vip: @token_user['vip']} : 0
-              $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost})
-              $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
-              # insert log
-              LoungeLogJob.perform_later(@user, lounge, cost)
-              UserLogJob.perform_later(@user, @room.id, cost)
-              render json: {message: 'Mua ghé vip thành công.'}, status: 200
-              return
-            rescue => e
-              render json: {message: e.message}, status: 400
-              return
+          begin
+            current_lounge = $redis.get("lounges:#{@room.id}:#{lounge}")
+            if current_lounge.present?
+              current_lounge = eval(current_lounge)
+              return render json: {message: 'Giá mua của bạn phải lớn hơn giá hiện tại'}, status: 400 if current_lounge[:cost].to_i > cost
             end
-          else
-            render json: {message: 'Giá mua phải lớn hơn 50'}, status: 400
+            exp_bct = cost * 10
+            @user.decreaseMoney(cost) if @user.present?
+            @user.increaseExp(cost) if @user.present?
+            @room.broadcaster.increaseExp(exp_bct) if if @room.present? and @room.broadcaster
+            user = {
+                id: @user.id,
+                email: @user.email,
+                name: @user.name,
+                username: @user.username,
+                avatar: @user.avatar_path[:avatar],
+                avatar_w60h60: @user.avatar_path[:avatar_w60h60],
+                avatar_w100h100: @user.avatar_path[:avatar_w100h100],
+                avatar_w120h120: @user.avatar_path[:avatar_w120h120],
+                avatar_w200h200: @user.avatar_path[:avatar_w200h200],
+                avatar_w240h240: @user.avatar_path[:avatar_w240h240],
+                avatar_w300h300: @user.avatar_path[:avatar_w300h300],
+                avatar_w400h400: @user.avatar_path[:avatar_w400h400]
+              }
+            vip_data = @token_user['vip'] ? {vip: @token_user['vip']} : 0
+            $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost})
+            $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
+            # insert log
+            LoungeLogJob.perform_later(@user, lounge, cost)
+            UserLogJob.perform_later(@user, @room.id, cost)
+            render json: {message: 'Mua ghé vip thành công.'}, status: 200
+            return
+          rescue => e
+            render json: {message: e.message}, status: 400
             return
           end
-        else
-          return render json: {message: 'Bạn không có đủ tiền'}, status: 400
         end
       else
         return render json: {message: 'Ghế này không tồn tại'}, status: 400
