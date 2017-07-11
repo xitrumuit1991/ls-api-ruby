@@ -38,7 +38,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
       #load file key sign api google
       # key = Google::APIClient::PKCS12.load_key("Livestar-9871dcca72c2.p12", 'notasecret')
       key = Google::APIClient::KeyUtils.load_from_pkcs12("Livestar-9871dcca72c2.p12", 'notasecret')
-      Rails.logger.info("load key tu file.p12; key=#{key}")
+      Rails.logger.info("----------load key tu file.p12; key=#{key}")
       client = Google::APIClient.new(application_name: 'livestar app', application_version: '1.0.0')
       client.authorization = Signet::OAuth2::Client.new(
         :token_credential_uri => 'https://accounts.google.com/o/oauth2/token',
@@ -55,11 +55,14 @@ class Api::V1::IapController < Api::V1::ApplicationController
           :api_method => publisher.purchases.products.get,
           :parameters => {'packageName' => params[:packageName], 'productId' => params[:productId], 'token' => params[:purchaseToken]}
         )
-        Rails.logger.info("responseFromGG; result=#{result}")
+        Rails.logger.info("responseFromGG; result=")
+        Rails.logger.info(result)
         Rails.logger.info("responseFromGG; result.status=#{result.status}")
-        Rails.logger.info("responseFromGG; result.to_json=#{result.to_json}")
+        Rails.logger.info("responseFromGG; result.to_json=#{result.to_s}")
         Rails.logger.info("responseFromGG; result.data=#{result.data}")
-        Rails.logger.info("responseFromGG; result.data.to_json=#{result.data.to_json}")
+        Rails.logger.info(result.data)
+        Rails.logger.info("responseFromGG; result.data.to_s=")
+        Rails.logger.info(result.data.to_s)
         begin
           resps = JSON.parse(result.data)
           Rails.logger.info("responseFromGG after parse json; resps=#{resps}")
@@ -71,7 +74,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
             end
             return render json: { 
               status_purchase: 1, 
-              money: @user.money, 
+              money: @user.money.to_i, 
               respsOfGG: resps 
               }, status: 200
           else
@@ -87,7 +90,7 @@ class Api::V1::IapController < Api::V1::ApplicationController
           Rails.logger.info("---------errorParseJson: #{errorParseJson}")
           return render json: {  
             status_purchase: 0, 
-            exception: errorParseJson, 
+            exception: errorParseJson.to_s, 
             message: "can not parse JSON response from google "
             } , status: 400
         end
