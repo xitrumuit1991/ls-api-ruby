@@ -60,22 +60,21 @@ class Api::V1::IapController < Api::V1::ApplicationController
         Rails.logger.info("result.status=#{result.status}")
         Rails.logger.info("result.body=#{result.body}")
         begin
-          Rails.logger.info("result.body.purchaseState=#{result.body.purchaseState}")
-          Rails.logger.info("result.body.developerPayload=#{result.body.developerPayload}")
+          #result.body is a string, so need parse JSON
           resps = JSON.parse(result.body)
-          Rails.logger.info("responseFromGG after parse json; resps=#{resps}")
+          Rails.logger.info("result.body after parse json; result.body=#{resps}")
           if result.status and result.status.to_i == 200 and resps['error'].blank?
             if resps['purchaseState'].to_i == 0
               money = @user.money.to_i + coin.quantity.to_i
               @user.update(money: money)
               @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
             end
-            return render json: {  status_purchase: 1,  money: @user.money,  dataOfGG:  {statusHttp: result.status, data: result.body }  }, status: 200
+            return render json: {  status_purchase: 1,  money: @user.money,  dataOfGG:  {statusHttp: result.status, data: resps }  }, status: 200
           end
           return render json: { 
             status_purchase: 0, 
             message: "Has error from response Google", 
-            dataOfGG:  {statusHttp: result.status, data: result.body }, 
+            dataOfGG:  {statusHttp: result.status, data: resps }, 
             errorMessageGG: resps['error']['message'], 
             statusErrorGG: resps['error']['code'].to_i
             }, status: 400
