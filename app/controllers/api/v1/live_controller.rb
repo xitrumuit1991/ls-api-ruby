@@ -210,7 +210,7 @@
       return render json: {message: 'thieu param lounge'},status: 400 if params[:lounge].blank?
       cost = params[:cost].to_i
       lounge = params[:lounge].to_i
-      return render json: {message: 'Bạn không có đủ tiền'}, status: 400 if @user.money < cost
+      return render json: {message: 'Bạn không có đủ tiền'}, status: 400 if @user.present? and @user.money < cost
       if lounge >= 0 && lounge <= 11
         if @user.money >= cost
           begin
@@ -222,7 +222,7 @@
             exp_bct = cost * 10
             @user.decreaseMoney(cost) if @user.present?
             @user.increaseExp(cost) if @user.present?
-            @room.broadcaster.increaseExp(exp_bct) if if @room.present? and @room.broadcaster
+            @room.broadcaster.increaseExp(exp_bct) if @room.present? and @room.broadcaster.present? 
             user = {
                 id: @user.id,
                 email: @user.email,
@@ -243,11 +243,9 @@
             # insert log
             LoungeLogJob.perform_later(@user, lounge, cost)
             UserLogJob.perform_later(@user, @room.id, cost)
-            render json: {message: 'Mua ghé vip thành công.'}, status: 200
-            return
+            return render json: {message: 'Mua ghé vip thành công.'}, status: 200
           rescue => e
-            render json: {message: e.message}, status: 400
-            return
+            return render json: {message: e.message}, status: 400
           end
         end
       else
