@@ -574,6 +574,32 @@ class Api::V1::UserController < Api::V1::ApplicationController
           else
             Rails.logger.info "response MT tu Epaysms= #{str}"
             Rails.logger.info "gui MT confirm qua Epaysms that bai, k + money, k +logs SMS "
+            case str.to_s
+            when "requeststatus=01"
+              Rails.logger.info "01: Ghi nhận request thất bại, yêu cầu gửi lại."
+            when "requeststatus=02"
+              Rails.logger.info "02: Trùng mtId"
+            when "requeststatus=03"
+              Rails.logger.info "03: IP của đối tác không hợp lệ hoặc chưa được cấu hình trong hệ thống."
+            when "requeststatus=04"
+              Rails.logger.info "04: Không tìm thấy thông tin command code trên hệ thống."
+            when "requeststatus=05"
+              Rails.logger.info "05: Không tìm thấy service number trên hệ thống"
+            when "requeststatus=06"
+              Rails.logger.info "06: Hệ thống tạm thời gặp lỗi."
+            when "requeststatus=07"
+              Rails.logger.info "07: content của MT vượt quá 160 char."
+            when "requeststatus=14"
+              Rails.logger.info "14: Có tham số bị rỗng hoặc thiếu."
+            when "requeststatus=17"
+              Rails.logger.info "17: sai check sum"
+            when "requeststatus=18"
+              Rails.logger.info "18: sai định dạng MTID."
+            when "requeststatus=19"
+              Rails.logger.info "19: method không được hỗ trợ."
+            when "requeststatus=20"
+              Rails.logger.info "20: không tim thấy MO của MT này(trong trường hợp xử dụng method= mtReceiver)"
+            end
             render plain: str, status: 200
           end
         end
