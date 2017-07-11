@@ -313,11 +313,15 @@
     def startRoom
       @room.on_air = true
       if @room.save
+        Rails.logger.info("++++++++++++START ROOM+++++++++++++")
+        Rails.logger.info("++++++++++++START ROOM+++++++++++++")
+        Rails.logger.info("++++++++++++START ROOM+++++++++++++")
+        Rails.logger.info(@room.to_json)
         _bctTimeLog()
         DeviceNotificationJob.perform_later(@user)
         start_stream @room
         $emitter.of('/room').in(@room.id).emit('room on-air')
-        render json: {message: 'Start room thành công'}, status: 200
+        render json: {message: 'Start room thành công', room: @room.to_json}, status: 200
         return
       else
         render json: {message: 'Phòng này không thể bắt đầu, Vui lòng liên hệ người hỗ trợ'}, status: 400

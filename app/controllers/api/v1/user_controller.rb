@@ -522,11 +522,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
       Rails.logger.info "_checkuser: #{_checkuser(activecode)}"
       Rails.logger.info "amount: #{params[:amount].match(/[^0-9]/).nil?}"
       if _checkuser(activecode) and params[:amount].match(/[^0-9]/).nil?
-        render plain: "1| noi dung hop le", status: 200
+        render plain: "1|noi dung hop le", status: 200
       else
-        render plain: "0| noi dung khong hop le", status: 200
+        render plain: "0|noi dung khong hop le", status: 200
       end
-    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] and params[:subkeyword]
+      #remove and params[:subkeyword] by nguyentvk
+    elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] 
       Rails.logger.info "ANGCO DEBUG SMS: mang vina - mobi"
       partnerid                 = Settings.partnerid
       data                      = Ebaysms::Sms.new

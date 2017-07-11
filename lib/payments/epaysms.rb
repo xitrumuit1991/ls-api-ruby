@@ -3,7 +3,7 @@ module Ebaysms
 		attr_accessor :partnerid, :moid, :userid, :shortcode, :keyword, :content, :transdate, :checksum, :amount, :smspPartnerPassword, :partnerpass
 
 		def getMOChecksum
-			return Digest::MD5.hexdigest (moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
+			return Digest::MD5.hexdigest(moid + shortcode + keyword + content.tr_s(' ', '+') + transdate + partnerpass)
 		end
 
 		def _checksum
