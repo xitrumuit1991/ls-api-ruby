@@ -510,7 +510,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
     Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
     Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
     Rails.logger.info "+++++++++++++++++SMS++++++++++++++++++++++"
-    Rails.logger.info "params moid = #{defined? params[:moid]}"
     params.each do |key,value|
       Rails.logger.info "Param #{key}: #{value}"
     end
@@ -557,12 +556,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
           render plain: 'requeststatus=2', status: 200
         else
           str = data.confirm
-          Rails.logger.info "MT confirm: #{str}"
-          if str == "requeststatus=200"
+          Rails.logger.info "user_controller; MT confirm: #{str}"
+          if str.to_s == 'requeststatus=200'
             activecode = params[:content].split(' ')[2]
+            Rails.logger.info "user of insert money; activecode=#{activecode}"
             if update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+              Rails.logger.info "insert log mbf OK"
               render plain: str, status: 200
             else
+              Rails.logger.info "insert log mbf FAIL"
               update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               #tai khoan khong ton tai hoac loi xay ra khi ghi log 
               # thay doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
@@ -570,14 +572,18 @@ class Api::V1::UserController < Api::V1::ApplicationController
               render plain: str, status: 200
             end
           else
+            Rails.logger.info "response MT tu Epaysms= #{str}"
+            Rails.logger.info "gui MT confirm qua Epaysms that bai, k + money, k +logs SMS "
             render plain: str, status: 200
           end
         end
       else
         #loi checksum
+        Rails.logger.info(" Error checksum MO; checkSum = MD5(moid + shortcode + keyword + UrlEncode(content) + transdate + partnerpass(da md5 roi) )")
         render plain: 'requeststatus=17', status: 200
       end
     else
+      Rails.logger.info("thieu 1 trong 10 key nay; [ partnerid, moid, userid, shortcode, telcocode, keyword, content, transdate, checksum, amount ]")
       render plain: 'requeststatus=400', status: 400
     end
   end
@@ -901,10 +907,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	    RedeemLog.create(user_id: @user.id, redeem_id: redeem_id)
 	  end
 
-	  def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
-	    @user_sms = User::find_by_active_code(subkeyword)
+	  def _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, activecode)
+	    @user_sms = User::find_by_active_code(activecode)
 	    if @user_sms.present?
-	      SmsLog.create(active_code: subkeyword, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
+	      SmsLog.create(active_code: activecode, moid: moid, phone: userid, shortcode: shortcode, keyword: keyword, content: content, trans_date: transdate, checksum: checksum, amount: amount)
 	    end
 	  end
 
@@ -915,18 +921,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 	  def update_coin_sms(activecode, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
 	    @user_sms = User::find_by_active_code(activecode)
+      if @user_sms.blank?
+        Rails.logger.info("khong tim thay user by activecode de insert log SMS")
+        return false
+      end
 	    coin  = SmsMobile::find_by_price(amount.to_i)
-	    if @user_sms.present?
+      if coin.blank?
+        Rails.logger.info("khong tim thay coin by amount de insert log SMS")
+        return false
+      end
+	    if @user_sms.present? and coin.present?
 	      @user_sms.increaseMoney(coin.coin)
 	      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, activecode)
-	        return true
+	        Rails.logger.info("ghi log SMS thanh cong")
+          return true
 	      else
-	        # loi xay ra khi ghi log
+          Rails.logger.info("loi xay ra khi ghi log SMS")
 	        return false
 	      end
-	    else
-	      # tai khoan khong ton tai
-	      return false
 	    end
 	  end
 

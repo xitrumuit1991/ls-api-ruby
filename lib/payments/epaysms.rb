@@ -37,14 +37,15 @@ module Ebaysms
 			# url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
 			url         += '&checksum=' + Digest::MD5.hexdigest(moid + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
 			url         += '&amount=' + amount
-			Rails.logger.info "MT URL: #{url}"
+			Rails.logger.info "Ebaysms; MT URL: #{url}"
 			return url
 		end
 
 		def confirm
 			url = getUrl
 			str = Curl::Easy.perform(url)
-			Rails.logger.info "MT confirm_str: #{str}"
+			Rails.logger.info "Ebaysms; MT confirm_str: #{str}"
+			Rails.logger.info "Ebaysms; MT confirm_str body_str: #{str.body_str}"
 			return str.body_str
 		end
 	end
