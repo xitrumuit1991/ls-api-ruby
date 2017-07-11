@@ -557,13 +557,15 @@ class Api::V1::UserController < Api::V1::ApplicationController
           render plain: 'requeststatus=2', status: 200
         else
           str = data.confirm
-          Rails.logger.info "ANGCO DEBUG confirm: #{str}"
+          Rails.logger.info "MT confirm: #{str}"
           if str == "requeststatus=200"
-            if update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+            activecode = params[:content].split(' ')[2]
+            if update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               render plain: str, status: 200
             else
-              update_coin_sms(params[:subkeyword], params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
-              #tai khoan khong ton tai hoac loi xay ra khi ghi log # thai doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
+              update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
+              #tai khoan khong ton tai hoac loi xay ra khi ghi log 
+              # thay doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
               #cung van tra ve status 200 nhung phai thay doi tin nhan lai cho khach hang de khach hang lien he admin ben livestar
               render plain: str, status: 200
             end
@@ -911,12 +913,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	    FbShareLog.create(post_id: post_id, user_id: @user.id, coin: coin, fb_id: fb_id, room_id: room_id, device_id: device_id)
 	  end
 
-	  def update_coin_sms(subkeyword, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
-	    @user_sms = User::find_by_active_code(subkeyword)
+	  def update_coin_sms(activecode, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
+	    @user_sms = User::find_by_active_code(activecode)
 	    coin  = SmsMobile::find_by_price(amount.to_i)
 	    if @user_sms.present?
 	      @user_sms.increaseMoney(coin.coin)
-	      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, subkeyword)
+	      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, activecode)
 	        return true
 	      else
 	        # loi xay ra khi ghi log
