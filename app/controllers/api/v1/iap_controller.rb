@@ -59,30 +59,27 @@ class Api::V1::IapController < Api::V1::ApplicationController
         Rails.logger.info(result)
         Rails.logger.info("result.status=#{result.status}")
         Rails.logger.info("result.body=#{result.body}")
-        Rails.logger.info("result.data=#{result.data}")
         begin
-          resps = JSON.parse(result.data)
+          Rails.logger.info("result.body.purchaseState=#{result.body.purchaseState}")
+          Rails.logger.info("result.body.developerPayload=#{result.body.developerPayload}")
+          resps = JSON.parse(result.body)
           Rails.logger.info("responseFromGG after parse json; resps=#{resps}")
-          if resps['error'].blank?
+          if result.status and result.status.to_i == 200 and resps['error'].blank?
             if resps['purchaseState'].to_i == 0
               money = @user.money.to_i + coin.quantity.to_i
               @user.update(money: money)
               @user.android_receipts.find_by(orderId: params[:orderId]).update(status: true)
             end
-            return render json: { 
-              status_purchase: 1, 
-              money: @user.money.to_i, 
-              respsOfGG: resps 
-              }, status: 200
-          else
-            return render json: { 
-              status_purchase: 0, 
-              message: "Has error from response Google", 
-              respsOfGG: resps, 
-              errorOfGG: resps['error']['message'], 
-              statusOfGG: resps['error']['code'].to_i 
-              }, status: 400
+            return render json: {  status_purchase: 1,  money: @user.money,  dataOfGG:  {statusHttp: result.status, data: result.body }  }, status: 200
           end
+          return render json: { 
+            status_purchase: 0, 
+            message: "Has error from response Google", 
+            dataOfGG:  {statusHttp: result.status, data: result.body }, 
+            errorMessageGG: resps['error']['message'], 
+            statusErrorGG: resps['error']['code'].to_i
+            }, status: 400
+
         rescue => errorParseJson
           Rails.logger.info("---------errorParseJson: #{errorParseJson}")
           return render json: {  
