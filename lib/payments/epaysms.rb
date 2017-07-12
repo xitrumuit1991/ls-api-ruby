@@ -22,7 +22,7 @@ module Ebaysms
 			url         ='http://partner-svc.livestar.vn:9099/smsApi?' 
 			url         += 'partnerid=' + partnerid
 			url         += '&moid=' + moid
-			mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%I%M") + rand(0..99999).to_s;
+			mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%H%M%S") + rand(0..99999).to_s;
 			url         += '&mtid=' + mtid
 			url         += '&userid=' + userid
 			# url         += '&receivernumber=' + userid
@@ -35,10 +35,9 @@ module Ebaysms
 			# url         += '&messageindex=1'
 			# url         += '&ismore=0'
 			# url         += '&contenttype=0'
-			mt_transdate= DateTime.now.strftime('%Y%m%d%I%M%S')
+			mt_transdate= DateTime.now.strftime('%Y%m%d%H%M%S')
 			url         += '&transdate=' + mt_transdate
-			# url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
-			url         += '&checksum=' + Digest::MD5.hexdigest(moid + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
+			url         += '&checksum=' + Digest::MD5.hexdigest(mtid + moid  + shortcode + keyword + mt_content  + mt_transdate + partnerpass)
 			url         += '&amount=' + amount
 			Rails.logger.info "Ebaysms; MT URL: #{url}"
 			return url
