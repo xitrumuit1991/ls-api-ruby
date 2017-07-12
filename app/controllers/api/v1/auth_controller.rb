@@ -697,42 +697,50 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def updateForgotCode
     user = User.find_by_email(params[:email])
     return render json: {message: 'Email không tồn tại, vui lòng nhập lại nhé!', detail: 'Không tìm thấy user này!'}, status: 400 if user.blank?
-    forgot_code = SecureRandom.hex(4)
     if user.present?
-      if user.update(forgot_code: forgot_code)
-        UserMailer.confirm_forgot_password(user,forgot_code).deliver_now
-        return render json: {message: "OK", detail: "update field forgot_code success", forgot_code: forgot_code},status: 200
-      else
-        return render json: {message: "Có lỗi xảy ra. Vui lòng thử lại! ", detail: "update field forgot_code fail", bugs: user.errors.full_messages, forgot_code: forgot_code}, status: 400
-      end
+  		new_password = SecureRandom.hex(4)
+  		if user.update(password: new_password, token: '', forgot_code: SecureRandom.hex(4) )
+  			UserMailer.reset_password(user, new_password).deliver_now
+			  user.actived = 1 if !user.actived
+  			if user.save
+  				return render json: {message: "Mật khẩu mới đã được gửi về email của bạn."}, status: 200
+				else
+					return render json: {message: "Có lỗi xảy ra. Vui lòng thử lại! ", detail: user.errors.full_messages}, status: 400
+				end
+			else
+				return render json: {message: "Có lỗi xảy ra. Vui lòng thử lại! ", detail: user.errors.full_messages}, status: 400
+    	end
     end
   end
 
-  
+
 
   def setNewPassword
-      user = User.find_by_forgot_code(params[:forgot_code])
-      if user.present?
-        new_password = SecureRandom.hex(4)
-        if user.update(password: new_password, token: '')
-          if UserMailer.reset_password(user, new_password).deliver_now
-            if !user.actived
-              user.actived = 1
-            end
-            user.forgot_code = SecureRandom.hex(4)
-            if user.save
-              return head 200
-            else
-              render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
-            end
+    user = User.find_by_forgot_code(params[:forgot_code])
+    if user.present?
+      new_password = SecureRandom.hex(4)
+      if user.update(password: new_password, token: '')
+        if UserMailer.reset_password(user, new_password).deliver_now
+          if !user.actived
+            user.actived = 1
           end
-        else
-          render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
+          user.forgot_code = SecureRandom.hex(4)
+          if user.save
+            return head 200
+          else
+            render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
+          end
         end
       else
-        render json: {error: 'Mã code không tồn tại, vui lòng nhập lại nhé!'}, status: 404
+        render json: {error: t('error'), bugs: user.errors.full_messages}, status: 400
       end
+    else
+      render json: {error: 'Mã code không tồn tại, vui lòng nhập lại nhé!'}, status: 404
+    end
   end
+
+
+
 
   def changePassword
     user = User.find_by(email: @user[:email]).try(:authenticate, params[:old_password])
