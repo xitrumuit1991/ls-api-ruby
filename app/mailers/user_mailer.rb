@@ -14,9 +14,11 @@ class UserMailer < ApplicationMailer
   end
 
   def confirm_forgot_password(user,forgot_code)
-    @user= user
+    @user = user
     @forgot_code = forgot_code
-    mail(to: @user.email, subject: 'Xác nhận quên mật khẩu')
+    if @user and @forgot_code
+      mail(to: @user.email, subject: 'Xác nhận quên mật khẩu')
+    end
   end
 
 end
