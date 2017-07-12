@@ -16,7 +16,10 @@ module Ebaysms
 		end
 
 		def getUrl
-			url         ='http://sms.megapayment.net.vn:9099/smsApi?'
+			# url         ='http://sms.megapayment.net.vn:9099/smsApi?'
+			
+			#Chiều gọi từ MT thay bằng link: http://partner-svc.livestar.vn:9099/smsApi
+			url         ='http://partner-svc.livestar.vn:9099/smsApi?' 
 			url         += 'partnerid=' + partnerid
 			url         += '&moid=' + moid
 			mtid        = partnerid +  DateTime.now.strftime("%Y%m%d%I%M") + rand(0..99999).to_s;
