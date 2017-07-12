@@ -256,6 +256,7 @@ Rails.application.routes.draw do
         post '/login-broadcaster' => 'auth#loginBct'
         post '/register' => 'auth#register'
         post '/register-web' => 'auth#registerWeb'
+        get  '/active-account' => 'auth#activeAccountWeb'
         post '/fb-register' => 'auth#fbRegister'
         post '/gp-register' => 'auth#gpRegister'
         post '/verify-token' => 'auth#verifyToken'

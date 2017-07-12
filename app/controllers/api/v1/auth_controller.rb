@@ -7,7 +7,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   include CaptchaHelper
   include KrakenHelper
 
-  before_action :authenticate, except: [:loginFbBct, :login, :loginBct, :fbRegister, :gpRegister, :register, :registerWeb, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher, :wap_mbf_publisher_directly, :wap_mbf_htt_back]
+  before_action :authenticate, except: [:loginFbBct, :login, :loginBct, :fbRegister, :gpRegister, :register, :registerWeb, :forgotPassword, :verifyToken, :updateForgotCode, :setNewPassword, :check_forgotCode, :mbf_login, :mbf_detection, :mbf_register, :mbf_verify, :mbf_sync, :mbf_register_other, :check_user_mbf, :wap_mbf_register_request, :wap_mbf_register_response, :wap_mbf_publisher, :wap_mbf_publisher_directly, :wap_mbf_htt_back, :activeAccountWeb]
   before_action :mbf_auth, only: [:mbf_login, :mbf_detection]
 
   def mbf_login
@@ -310,7 +310,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       if !@user.present?
         # call api vas register
         register_result = vas_register msisdn, "VIP", "WAP", params[:publisher], msisdn, SecureRandom.hex(3)
-	waplogger.info("register_result #{register_result[:is_error]}")
+				waplogger.info("register_result #{register_result[:is_error]}")
         if !register_result[:is_error]
           # create user mbf
           mbf_create_user msisdn
@@ -370,7 +370,6 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
     if @user_attempt.present?
         if @user_attempt.is_locking
-          # logger.info("user: #{params[:email]} result: CLOCKING")
           render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
         end
     end
@@ -466,34 +465,73 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
 
+  #active account after register web
+  def activeAccountWeb
+  	return render json: {message: "Email không được để trống!" }, status: 400 if params[:email].blank?
+  	return render json: {message: "Active code không được để trống!" }, status: 400 if params[:active_code].blank?
+  	return render json: {message: "Check signal không được để trống!" }, status: 400 if params[:check_signal].blank?
+  	return render json: {message: "Active code không đúng " }, status: 400 if params[:active_code].to_s != Digest::MD5.hexdigest('active')
+  	return render json: {message: "Check signal không đúng " }, status: 400 if params[:check_signal].to_s != Digest::MD5.hexdigest(params[:email])
+  	@user = User.find_by_email(params[:email])
+  	return render json: {message: "Tài khoản đã được kích hoạt rồi" }, status: 400 if @user.present? and @user.actived == true
+  	if @user.present?
+  		@user.actived = true
+  		if @user.update(actived: true)
+  			token = createToken(@user)
+  			@user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
+  			return render json: {message: "Kích hoạt tài khoản thành công", token: token }, status: 200
+			else
+				return render json: {message: "Kích hoạt tài khoản không thành công", detail: 'user.update(actived: true) ERROR' }, status: 400
+			end
+		else
+			return render json: {message: "Kích hoạt tài khoản không thành công", detail: 'khong tim thay user'}, status: 400
+		end
+  end
+
 
   #register cho web, check captcha google
   def registerWeb
-    if params[:email].blank?
-      render json: {error: "Email không được để trống!" }, status: 400
-      return
-    end
-    if params[:password].blank?
-      render json: {error: "Password không được để trống!" }, status: 400
-      return
-    end
-    if params[:key_register].blank?
-      render json: {error: "Thiếu captcha google." }, status: 400
-      return
-    end
+    return render json: {message: "Email không được để trống!" }, status: 400 if params[:email].blank?
+    return render json: {message: "Password không được để trống!" }, status: 400 if params[:password].blank?
+    return render json: {message: "Thiếu captcha google." }, status: 400 if params[:key_register].blank?
+    if Rails.cache.fetch("email_black_list").present? and Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
+    	return render json: {message: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+  	end
     if params[:email].present? &&  params[:password].present?
       checkCaptcha = eval(checkCaptcha(params[:key_register]))
+      return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.blank?
+      return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.present? and checkCaptcha[:success].blank?
       if checkCaptcha.present? and checkCaptcha[:success].present?
         if Rails.cache.fetch("email_black_list").blank? or !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
-          _createUser params
-        else
-          render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+          activeCode = SecureRandom.hex(3).upcase
+          user = User.new
+          user.email        = params[:email]
+          user.password     = params[:password].to_s
+          user.active_code  = activeCode
+          user.name         = params[:email].split("@")[0].length >= 6 ? params[:email].split("@")[0] : params[:email].split("@")[0] + SecureRandom.hex(3)
+          user.username     = params[:email].split("@")[0] + SecureRandom.hex(3).upcase
+          if user.valid?
+            user.birthday       = '2000-01-01'
+            user.user_level_id  = UserLevel.first().id
+            user.money          = 8
+            user.user_exp       = 0
+            user.actived        = false #true
+            user.no_heart       = 0
+            if user.save
+            	UserMailer.active_account_register_web(user).deliver_now
+              vip_package = VipPackage::find_by_code("VIP7")
+              UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
+              render json: { message: "Đăng ký thành công vui lòng kiểm tra email để kích hoạt tài khoản!" }, status: 200
+            else
+              render json: { message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: "can not insert user into database" }, status: 400
+            end
+          else
+            render json: {message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: user.errors.full_messages}, status: 400
+          end
         end
-      else
-        render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
       end
     else
-      render json: {error: "Email hoặc password không được để trống!" }, status: 400
+      render json: {message: "Email hoặc password không được để trống!" }, status: 400
     end
   end
 
@@ -527,6 +565,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       render json: exc, status: 400
     end
   end
+
+
 
   def fbRegister
     # logger = Logger.new("#{Rails.root}/log/fbRegister.log")
@@ -650,46 +690,21 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def verifyToken
     user = User.find_by(email: params[:email], token: params[:token])
-    logger.info("---------------")
-    logger.info("verifyToken user: #{user.to_json} ")
     if user.present?
       begin
         decoded_token = JWT.decode params[:token], Settings.hmac_secret
-        logger.info("--------decoded_token-------")
-        logger.info("verifyToken decoded_token: #{decoded_token}")
-        # render json: {message: "success", user: user, decoded_token: decoded_token }, status: 200
-        render json: {message: "success", decoded_token: decoded_token }, status: 200
-        return 
+        return render json: {message: "success", decoded_token: decoded_token }, status: 200
       rescue JWT::ExpiredSignature
-        render json: {error: 'The token has expired.' }, status: 403
-        return
+        return render json: {error: 'The token has expired.' }, status: 403
       rescue JWT::DecodeError
-        render json: {error: 'A token must be passed.'}, status: 403
-        return
+        return render json: {error: 'A token must be passed.'}, status: 403
       rescue JWT::InvalidIssuerError
-        render json: {error: 'The token does not have a valid issuer.' }, status: 403
-        return
+        return render json: {error: 'The token does not have a valid issuer.' }, status: 403
       rescue JWT::InvalidIatError
-        render json: {error: 'The token does not have a valid "issued at" time.' }, status: 403
-        return
+        return render json: {error: 'The token does not have a valid "issued at" time.' }, status: 403
       end
     else
-      logger.info("-----decoded_token FALSE----------")
-      render json: {error: "User not found. Validate token fail. "}, status: 403
-      return
-      # begin
-      #   decoded_token = JWT.decode params[:token], Settings.hmac_secret
-      #   userEmail = User.find_by(email: params[:email] )
-      #   if userEmail.present? and decoded_token and decoded_token[0] and decoded_token[0].email == params[:email]
-      #     render json: {message: "validate token success" }, status: 200
-      #     return
-      #   end
-      #   render json: {error: "Token validate fail"}, status: 403
-      #   return
-      # rescue 
-      #   render json: {error: "Token validate fail"}, status: 403
-      #   return
-      # end
+      return render json: {error: "User not found. Validate token fail. "}, status: 403
     end
   end
 
