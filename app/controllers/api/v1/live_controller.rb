@@ -114,9 +114,9 @@
               end
               user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
               if db_action['max_vote'] <= new_value
-                $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: new_value, percent: percent, sender: user})
+                $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: new_value, percent: percent, sender: user, name: db_action['name'] })
               else
-                $emitter.of('/room').in(@room.id).emit('action recived', {id: action_id, price: db_action['price'], voted: new_value, percent: percent, sender: user})
+                $emitter.of('/room').in(@room.id).emit('action recived', {id: action_id, price: db_action['price'], voted: new_value, percent: percent, sender: user, name: db_action['name'] })
               end
 
               # insert log
@@ -128,7 +128,7 @@
               return
             end
           else
-            $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: redis_action, percent: 100, sender: {}})
+            $emitter.of('/room').in(@room.id).emit('action full', {id: action_id, price: db_action['price'], voted: redis_action, percent: 100, sender: {}, name: db_action['name'] })
             render json: {message: 'Hành động này đã được vote đầy!'}, status: 400
             return
           end
