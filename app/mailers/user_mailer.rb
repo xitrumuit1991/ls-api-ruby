@@ -24,7 +24,7 @@ class UserMailer < ApplicationMailer
   def active_account_register_web(user)
     @user = user
     active_code = Digest::MD5.hexdigest('active') #active_code=c76a5e84e4bdee527e274ea30c680d79 = md5('active')
-    check_signal = Digest::MD5.hexdigest(@user.email)
+    check_signal = Digest::MD5.hexdigest(@user.email.to_s+'nguyentvk')
     @url = 'http://livestar.vn/active_account?email='+@user.email.to_s+'&active_code='+active_code.to_s+'&check_signal='+check_signal.to_s
     if @user
       mail(to: @user.email, subject: 'Kích hoạt tài khoản')

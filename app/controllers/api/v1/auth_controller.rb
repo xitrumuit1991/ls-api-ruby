@@ -471,7 +471,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   	return render json: {message: "Active code không được để trống!" }, status: 400 if params[:active_code].blank?
   	return render json: {message: "Check signal không được để trống!" }, status: 400 if params[:check_signal].blank?
   	return render json: {message: "Active code không đúng " }, status: 400 if params[:active_code].to_s != Digest::MD5.hexdigest('active')
-  	return render json: {message: "Check signal không đúng " }, status: 400 if params[:check_signal].to_s != Digest::MD5.hexdigest(params[:email])
+  	return render json: {message: "Check signal không đúng " }, status: 400 if params[:check_signal].to_s != Digest::MD5.hexdigest(params[:email].to_s+'nguyentvk')
   	@user = User.find_by_email(params[:email])
   	return render json: {message: "Tài khoản đã được kích hoạt rồi" }, status: 400 if @user.present? and @user.actived == true
   	if @user.present?
