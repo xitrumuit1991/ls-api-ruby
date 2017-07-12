@@ -55,7 +55,7 @@
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = vip_weight ? {vip: vip_weight} : 0
           $emitter.of('/room').in(room_id).emit('message', {message: message, sender: user, vip: vip_data, namespace: '/room'});
-          render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 201
+          render json: {message: "Send message thành công !", sender: user, messageData: message}, status: 200
           return
         else
           render json: {message: "Nội dung chat không được vượt quá #{no_char} kí tự !"}, status: 400
@@ -82,8 +82,7 @@
           # insert log
           @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
           UserLogJob.perform_later(@user, @room.id, cost)
-          return render json: {message: 'send screen text OK' }, status: 201
-          # return head 201
+          return render json: {message: 'send screen text OK' }, status: 200
         rescue => e
           render json: {message: 'có lỗi xảy ra', detail: e.message}, status: 400
         end
@@ -124,7 +123,6 @@
               ActionLogJob.perform_later(@user, @room.id, action_id, db_action['price'])
               UserLogJob.perform_later(@user, @room.id, db_action['price'])
               return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 200
-              # return head 201
             rescue => e
               render json: {message: 'Có lỗi xảy ra.', error: e.message }, status: 400
               return
