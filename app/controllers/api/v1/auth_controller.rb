@@ -497,6 +497,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     if Rails.cache.fetch("email_black_list").present? and Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
     	return render json: {message: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
   	end
+    checkUser = User.find_by_email(params[:email])
+    return render json: {message: 'Email đã tồn tại trong hệ thống.'}, status: 400 if checkUser.present?
     if params[:email].present? &&  params[:password].present?
       checkCaptcha = eval(checkCaptcha(params[:key_register]))
       return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.blank?
@@ -523,15 +525,13 @@ class Api::V1::AuthController < Api::V1::ApplicationController
               UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
               render json: { message: "Đăng ký thành công vui lòng kiểm tra email để kích hoạt tài khoản!" }, status: 200
             else
-              render json: { message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: "can not insert user into database" }, status: 400
+              render json: { message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: user.errors.full_messages }, status: 400
             end
           else
             render json: {message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: user.errors.full_messages}, status: 400
           end
         end
       end
-    else
-      render json: {message: "Email hoặc password không được để trống!" }, status: 400
     end
   end
 
