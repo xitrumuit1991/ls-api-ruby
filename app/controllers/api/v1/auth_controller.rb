@@ -451,14 +451,17 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   end
 
   def register
+    return render json: {message: 'Email hoặc password không được để trống!'}, status: 400 if params[:email].blank?
+    return render json: {message: 'Email hoặc password không được để trống!'}, status: 400 if params[:password].blank?
     if params[:email].present? &&  params[:password].present?
-      if !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
-        _createUser params
-      else
-        render json: {error: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+      if Rails.cache.fetch("email_black_list")
+        if Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
+          return render json: {message: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
+        end
       end
+      _createUser params
     else
-      render json: {error: "Email hoặc password không được để trống!" }, status: 400
+      render json: {message: "Email hoặc password không được để trống!" }, status: 400
     end
   end
 
@@ -794,12 +797,12 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         if user.save
           vip_package = VipPackage::find_by_code("VIP7")
           UserHasVipPackage.create(user_id: user.id, vip_package_id: vip_package.id, actived: true, active_date: Time.now, expiry_date: Time.now + 7.day)
-          render json: { success: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 201
+          render json: { message: "Đăng ký thành công vui lòng đăng nhập để chơi với Idol" }, status: 200
         else
-          render json: { error: "System error !" }, status: 500
+          render json: { message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: "can not insert user into database" }, status: 400
         end
       else
-        render json: {error: user.errors.full_messages[0] , bugs: user.errors.full_messages}, status: 400
+        render json: {message: "Có lỗi xảy ra. Vui lòng thử lại!", detail: user.errors.full_messages}, status: 400
       end
     end
 
