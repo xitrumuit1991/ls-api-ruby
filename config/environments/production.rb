@@ -83,8 +83,8 @@ Rails.application.configure do
     :address        => "smtp.sendgrid.net",
     :port           => 465,
     :authentication => :login,
-    :user_name      => "user_name",
-    :password       => "password",
+    :user_name      => "",
+    :password       => "",
     :ssl            => true,
     :tls            => true
   }
