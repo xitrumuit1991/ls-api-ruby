@@ -146,3 +146,7 @@ gem 'axlsx', '2.1.0.pre'
 gem 'axlsx_rails'
 
 gem 'net-http-digest_auth'
+
+#sendgird
+gem 'sendgrid-ruby'
+

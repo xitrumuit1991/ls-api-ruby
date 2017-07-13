@@ -43,6 +43,7 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
+  config.action_mailer.default :charset => "utf-8"
   config.action_mailer.smtp_settings = {
     :enable_starttls_auto => true,
     :address        => "smtp.gmail.com",
@@ -51,4 +52,6 @@ Rails.application.configure do
     :user_name      => "nguyendemo1234@gmail.com",
     :password       => "delldell123"
   }
+
+  config.sendgird_api = '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'
 end

@@ -493,17 +493,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
   def registerWeb
     return render json: {message: "Email không được để trống!" }, status: 400 if params[:email].blank?
     return render json: {message: "Password không được để trống!" }, status: 400 if params[:password].blank?
-    return render json: {message: "Thiếu captcha google." }, status: 400 if params[:key_register].blank?
+    # return render json: {message: "Thiếu captcha google." }, status: 400 if params[:key_register].blank?
     if Rails.cache.fetch("email_black_list").present? and Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
     	return render json: {message: "Hệ thống không cho phép đăng ký bằng mail #{params[:email].split("@")[1]}, vui lòng sử dụng mail khác để đăng ký." }, status: 400
   	end
     checkUser = User.find_by_email(params[:email])
     return render json: {message: 'Email đã tồn tại trong hệ thống.'}, status: 400 if checkUser.present?
     if params[:email].present? &&  params[:password].present?
-      checkCaptcha = eval(checkCaptcha(params[:key_register]))
-      return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.blank?
-      return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.present? and checkCaptcha[:success].blank?
-      if checkCaptcha.present? and checkCaptcha[:success].present?
+      # checkCaptcha = eval(checkCaptcha(params[:key_register]))
+      # return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.blank?
+      # return render json: {message: "Vui lòng kiểm tra Captcha" }, status: 400 if checkCaptcha.present? and checkCaptcha[:success].blank?
+      # if checkCaptcha.present? and checkCaptcha[:success].present?
+      if true
         if Rails.cache.fetch("email_black_list").blank? or !Rails.cache.fetch("email_black_list").include?(params[:email].split("@")[1])
           activeCode = SecureRandom.hex(3).upcase
           user = User.new

@@ -1,4 +1,7 @@
+require 'sendgrid-ruby'
+require 'erb'
 class UserMailer < ApplicationMailer
+  include SendGrid
   default from: "Hỗ trợ livestar <support@livestar.com>"
 
   def reset_password(user, password)
@@ -31,4 +34,25 @@ class UserMailer < ApplicationMailer
     end
   end
 
+  # def active_account_register_web(user)
+  #   @user = user
+  #   templates_file = "#{Rails.root}/app/views/user_mailer/active_account_register_web.html.erb"
+  #   dataTemplate = ERB.new(File.read(templates_file)).result(binding)
+  #   data = {}
+  #   data = JSON.parse('{
+  #     "personalizations": [
+  #       {
+  #         "to": [ { "email": "'+user.email+'" } ],
+  #         "subject": "Kích hoạt tài khoản"
+  #       }
+  #     ],
+  #     "from": { "email": "support@livestar.com" },
+  #     "content": [
+  #       { "type": "text/html", "value": "" }
+  #     ]
+  #   }')
+  #   data[:content] = [{ type: "text/html", value: dataTemplate.to_s}] 
+  #   sg = SendGrid::API.new(api_key: Rails.application.config.sendgird_api)
+  #   response = sg.client.mail._("send").post(request_body: data)
+  # end
 end
