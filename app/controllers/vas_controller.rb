@@ -1,5 +1,8 @@
 class VasController < ApplicationController
   before_filter :filter_ip
+  protect_from_forgery with: :null_session
+  # protect_from_forgery with: :null_session, :if => Proc.new { |c| c.request.format == 'application/json' }
+  # skip_before_action :verify_authenticity_token
 
   soap_service namespace: 'urn:livestar'
 
@@ -194,6 +197,7 @@ class VasController < ApplicationController
     return: { error: :integer, message: :string, errors: [:string], successes: [:string]}
 
   def mcharge
+  	return render soap: { error: 1, message: 'Vui long nhap day du tham so' }, status: 200 if params[:data].blank?
     if params[:data].present?
       successes = []
       errors = []
@@ -355,6 +359,7 @@ class VasController < ApplicationController
     end
 
     def filter_ip
+      puts "request.remote_ip="
       puts request.remote_ip
     end
 end
