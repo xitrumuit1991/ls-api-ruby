@@ -1,8 +1,7 @@
 class VasController < ApplicationController
+	skip_before_action :verify_authenticity_token, only: [:mcharge, :charge, :add_money, :reset_password, :subscribe, :unsubscribe, :check_username, :send_money]
   before_filter :filter_ip
   protect_from_forgery with: :null_session
-  # protect_from_forgery with: :null_session, :if => Proc.new { |c| c.request.format == 'application/json' }
-  # skip_before_action :verify_authenticity_token
 
   soap_service namespace: 'urn:livestar'
 
