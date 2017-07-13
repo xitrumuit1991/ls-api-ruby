@@ -1,7 +1,7 @@
-class VasController < ApplicationController
-	skip_before_action :verify_authenticity_token, only: [:mcharge, :charge, :add_money, :reset_password, :subscribe, :unsubscribe, :check_username, :send_money]
+class VasController < ActionController::Base
+	protect_from_forgery with: :null_session
+	skip_before_action :verify_authenticity_token
   before_filter :filter_ip
-  protect_from_forgery with: :null_session
 
   soap_service namespace: 'urn:livestar'
 
