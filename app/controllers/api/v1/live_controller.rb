@@ -124,7 +124,7 @@
               UserLogJob.perform_later(@user, @room.id, db_action['price'])
               return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 200
             rescue => e
-              render json: {message: 'Có lỗi xảy ra.', error: e.message }, status: 400
+              render json: {message: e.message, detail: 'Không trừ tiền của user được.' }, status: 400
               return
             end
           else
