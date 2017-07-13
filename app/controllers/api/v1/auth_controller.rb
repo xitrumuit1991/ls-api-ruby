@@ -413,7 +413,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     end
     if @user_attempt.present?
         if @user_attempt.is_locking
-          render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 401 and return
+          return render json: { error: "Tài khoản này đã bị khoá do đăng nhập sai quá 4 lần, xin vui lòng thử lại sau 10 phút" }, status: 400
         end
     end
 
@@ -428,13 +428,18 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
           # update token
           @user.update(failed_attempts: 0, locked_at: nil,last_login: Time.now, token: token)
-
-          render json: { token: token , room_id: @user.broadcaster.public_room.id, on_air:@user.broadcaster.public_room.on_air, id: @user.id, email: @user.email, name: @user.name, avatar: @user.avatar_path[:avatar_w60h60]}, status: 200
+          room_id = nil
+          on_air = false
+          if @user.broadcaster and @user.broadcaster.public_room
+            room_id = @user.broadcaster.public_room.id
+            on_air = @user.broadcaster.public_room.on_air
+          end
+          render json: { token: token , room_id: @user.broadcaster.public_room.id, on_air: @user.broadcaster.public_room.on_air, id: @user.id, email: @user.email, name: @user.name, avatar: @user.avatar_path[:avatar_w60h60]}, status: 200
         else
-          render json: { error: "Bạn không phải là Idol !" }, status: 403
+          render json: { error: "Bạn không phải là Idol !" }, status: 400
         end
       else
-        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
+        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 400
       end
     else
       if @user_attempt.present?
