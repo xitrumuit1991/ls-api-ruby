@@ -434,7 +434,7 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             room_id = @user.broadcaster.public_room.id
             on_air = @user.broadcaster.public_room.on_air
           end
-          render json: { token: token , room_id: @user.broadcaster.public_room.id, on_air: @user.broadcaster.public_room.on_air, id: @user.id, email: @user.email, name: @user.name, avatar: @user.avatar_path[:avatar_w60h60]}, status: 200
+          render json: { token: token , room_id: room_id, on_air: on_air, id: @user.id, email: @user.email, name: @user.name, avatar: @user.avatar_path[:avatar_w60h60]}, status: 200
         else
           render json: { error: "Bạn không phải là Idol !" }, status: 400
         end
