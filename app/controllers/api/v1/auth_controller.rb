@@ -362,6 +362,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     if params[:email] =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
       @user = User.find_by(email: params[:email]).try(:authenticate, params[:password])
       @user_attempt = User.find_by(email: params[:email])
+      Rails.logger.info("@user.to_json=#{@user.to_json}")
+      Rails.logger.info(@user_attempt.to_json)
     else
       phone = "84#{params[:email][1..-1]}"
       @user = User.find_by(phone: phone).try(:authenticate, params[:password])
@@ -387,14 +389,14 @@ class Api::V1::AuthController < Api::V1::ApplicationController
         # logger.info("email: #{params[:email]} result: OK")
         render json: { token: token }, status: 200
       else
-        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 401
+        render json: { error: "Tài khoản này chưa được kích hoạt !" }, status: 400
       end
     else
       if @user_attempt.present?
         @user_attempt.login_fail
-        render json: { error: "Đăng nhập không thành công lần thứ #{@user_attempt.failed_attempts}/5 xin hãy thử lại !" }, status: 401
+        render json: { error: "Đăng nhập không thành công lần thứ #{@user_attempt.failed_attempts}/5 xin hãy thử lại !" }, status: 400
       else
-        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
+        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 400
       end
       # logger.info("email: #{params[:email]} result: FAILS")
     end
@@ -715,11 +717,10 @@ class Api::V1::AuthController < Api::V1::ApplicationController
     return render json: {message: 'Email không tồn tại, vui lòng nhập lại nhé!', detail: 'Không tìm thấy user này!'}, status: 400 if user.blank?
     if user.present?
   		new_password = SecureRandom.hex(4)
-  		if user.update(password: new_password, token: '', forgot_code: SecureRandom.hex(4) )
-  			UserMailer.reset_password(user, new_password).deliver_now
-			  user.actived = 1 if !user.actived
-  			if user.save
-  				return render json: {message: "Mật khẩu mới đã được gửi về email của bạn."}, status: 200
+      if user.update(password: new_password, token: '', actived: 1, forgot_code: SecureRandom.hex(4))
+        UserMailer.reset_password(user, new_password).deliver_now
+        if user.save
+  				return render json: {message: "Mật khẩu mới đã được gửi về email của bạn.", detail: new_password }, status: 200
 				else
 					return render json: {message: "Có lỗi xảy ra. Vui lòng thử lại! ", detail: user.errors.full_messages}, status: 400
 				end
