@@ -544,28 +544,34 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
 
   def loginFbBct
+    return render json: {message: 'missing param access_token'}, status: 400 if params[:access_token].blank?
     begin
       graph = Koala::Facebook::API.new(params[:access_token])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
+      return render json: {message: 'Không lấy được profile facebook.'}, status: 400 if profile.blank?
       user = User.find_by_email(profile['email'])
+      return render json: { message: "Đăng nhập không thành công xin hãy thử lại !", detail: 'khong tim thay user trong db' }, status: 400 if user.blank?
       if user.present?
+        return render json: { message: "Bạn không phải Idol!" }, status: 400 if user.is_broadcaster == false
         if user.is_broadcaster
           user.fb_id  = profile['id']
           if user.save
             token = createToken(user)
             user.update(last_login: Time.now, token: token)
-            render json: {token: token, room_id: user.broadcaster.public_room.id, on_air: user.broadcaster.public_room.on_air}, status: 200
+            room_id = nil
+            on_air = false
+            if user.broadcaster and user.broadcaster.public_room
+              room_id = user.broadcaster.public_room.id
+              on_air = user.broadcaster.public_room.on_air
+            end
+            render json: {token: token, room_id: room_id, on_air: on_air}, status: 200
           else
             render json: user.errors.messages, status: 400
           end
-        else
-          render json: { error: "Bạn không phải Idol!" }, status: 403
         end
-      else
-        render json: { error: "Đăng nhập không thành công xin hãy thử lại !" }, status: 401
       end
     rescue Koala::Facebook::APIError => exc
-      render json: exc, status: 400
+      render json: {message: "Không lấy được profile facebook.", detail: exc }, status: 400
     end
   end
 

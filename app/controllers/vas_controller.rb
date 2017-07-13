@@ -358,7 +358,7 @@ class VasController < ActionController::Base
     end
 
     def filter_ip
-      puts "request.remote_ip="
-      puts request.remote_ip
+      # puts "request.remote_ip="
+      # puts request.remote_ip
     end
 end
