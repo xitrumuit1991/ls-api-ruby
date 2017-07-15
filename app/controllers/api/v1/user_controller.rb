@@ -517,11 +517,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
       #MO lan 1 co: partnerid, userid(sdt), shortcode(dau so dich vu),keyword, content, amount, checksum
       #vidu http://sms.vn/receiverMO?partnerid=10001&userid=84979898989&shortcode=9029&keyword=TEST&content=TEST+NAP+username&amount=1000&checksum=a363146024efe6692080e402dfdf3f24
       Rails.logger.info "MO lan 1 (k co moid, MO lan 2 moi co moid -  mang viettel)"
-      Rails.logger.info "SMS: mang viettel"
+      Rails.logger.info "SMS: tin nhan tu mang viettel"
       activecode = params[:content].split(' ')[2]
       Rails.logger.info "content: #{params[:content]}"
       Rails.logger.info "activecode: #{activecode}"
-      checkUserHaveActiveCode = User::find_by_active_code(active_code)
+      checkUserHaveActiveCode = User::find_by_active_code(activecode)
       Rails.logger.info("checkUserHaveActiveCode=#{checkUserHaveActiveCode.to_json}")
       Rails.logger.info "amount: #{params[:amount].match(/[^0-9]/).nil?}"
       if checkUserHaveActiveCode.present? and params[:amount].match(/[^0-9]/).nil?
