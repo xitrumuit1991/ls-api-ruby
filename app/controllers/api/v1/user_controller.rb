@@ -533,7 +533,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
       #remove params[:subkeyword] by nguyentvk
     elsif params[:partnerid] and params[:moid] and params[:userid] and params[:shortcode] and params[:telcocode] and params[:keyword] and params[:content] and params[:transdate] and params[:checksum] and params[:amount] 
       #MO chinh 10 key: partnerid, moid, userid, shortcode, telcocode, keyword, content, transdate, checksum, amount
-      Rails.logger.info "MO (co moid): mang vina - mobi"
+      Rails.logger.info "MO (co moid): tin nhan tu mang vina - mobi"
       partnerid                 = Settings.partnerid
       data                      = Ebaysms::Sms.new
       data.partnerid            = params[:partnerid]
@@ -561,10 +561,10 @@ class Api::V1::UserController < Api::V1::ApplicationController
             activecode = params[:content].split(' ')[2]
             Rails.logger.info "user of insert money; activecode=#{activecode}"
             if update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
-              Rails.logger.info "insert log mbf OK"
+              Rails.logger.info "SUCCESS insert log mbf OK"
               render plain: str, status: 200
             else
-              Rails.logger.info "insert log mbf FAIL"
+              Rails.logger.info "ERROR insert log mbf FAIL"
               update_coin_sms(activecode, params[:moid], params[:userid], params[:shortcode], params[:keyword], params[:content], params[:transdate], params[:checksum], params[:amount])
               #tai khoan khong ton tai hoac loi xay ra khi ghi log 
               # thay doi bang logs de ghi lai nhung tai khoan nap tien bi loi luon,
@@ -576,29 +576,29 @@ class Api::V1::UserController < Api::V1::ApplicationController
             Rails.logger.info "gui MT confirm qua Epaysms that bai, k + money, k +logs SMS "
             case str.to_s
             when "requeststatus=01"
-              Rails.logger.info "01: Ghi nhận request thất bại, yêu cầu gửi lại."
+              Rails.logger.info "-----01: Ghi nhận request thất bại, yêu cầu gửi lại."
             when "requeststatus=02"
-              Rails.logger.info "02: Trùng mtId"
+              Rails.logger.info "-----02: Trùng mtId"
             when "requeststatus=03"
-              Rails.logger.info "03: IP của đối tác không hợp lệ hoặc chưa được cấu hình trong hệ thống."
+              Rails.logger.info "-----03: IP của đối tác không hợp lệ hoặc chưa được cấu hình trong hệ thống."
             when "requeststatus=04"
-              Rails.logger.info "04: Không tìm thấy thông tin command code trên hệ thống."
+              Rails.logger.info "-----04: Không tìm thấy thông tin command code trên hệ thống."
             when "requeststatus=05"
-              Rails.logger.info "05: Không tìm thấy service number trên hệ thống"
+              Rails.logger.info "-----05: Không tìm thấy service number trên hệ thống"
             when "requeststatus=06"
-              Rails.logger.info "06: Hệ thống tạm thời gặp lỗi."
+              Rails.logger.info "-----06: Hệ thống tạm thời gặp lỗi."
             when "requeststatus=07"
-              Rails.logger.info "07: content của MT vượt quá 160 char."
+              Rails.logger.info "-----07: content của MT vượt quá 160 char."
             when "requeststatus=14"
-              Rails.logger.info "14: Có tham số bị rỗng hoặc thiếu."
+              Rails.logger.info "-----14: Có tham số bị rỗng hoặc thiếu."
             when "requeststatus=17"
-              Rails.logger.info "17: sai check sum"
+              Rails.logger.info "-----17: sai check sum"
             when "requeststatus=18"
-              Rails.logger.info "18: sai định dạng MTID."
+              Rails.logger.info "-----18: sai định dạng MTID."
             when "requeststatus=19"
-              Rails.logger.info "19: method không được hỗ trợ."
+              Rails.logger.info "-----19: method không được hỗ trợ."
             when "requeststatus=20"
-              Rails.logger.info "20: không tim thấy MO của MT này(trong trường hợp xử dụng method= mtReceiver)"
+              Rails.logger.info "-----20: không tim thấy MO của MT này(trong trường hợp xử dụng method= mtReceiver)"
             end
             render plain: str, status: 200
           end
