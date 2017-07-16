@@ -25,7 +25,8 @@ class User < ActiveRecord::Base
 	has_many :ios_receipts
 
 	validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
-	validates :username, presence: true, uniqueness: true, on: :update
+	# validates :username, presence: true, uniqueness: true, on: :update
+	validates :username, presence: true
 	validates :name, presence: true, length: {minimum: 6, maximum: 150}
 	# validates :password, presence: true, length: {minimum: 8, maximum: 50}
 	validates :phone, uniqueness: true, :allow_nil => true
