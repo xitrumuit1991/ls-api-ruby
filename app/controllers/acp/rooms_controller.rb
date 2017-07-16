@@ -120,8 +120,8 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		gift_logs = GiftLog.where(:room_id => @data.id)
-		logger.info("---------gift_logs:")
-		logger.info("#{gift_logs.to_json}")
+		# logger.info("---------gift_logs:")
+		# logger.info("#{gift_logs.to_json}")
 		if gift_logs.present?
 			gift_logs.each do |gift_log|
 			  gift_log.destroy
@@ -129,8 +129,8 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		fb_share_logs = FbShareLog.where(:room_id => @data.id)
-		logger.info("---------fb_share_logs:")
-		logger.info("#{fb_share_logs.to_json}")
+		# logger.info("---------fb_share_logs:")
+		# logger.info("#{fb_share_logs.to_json}")
 		if fb_share_logs.present?
 			fb_share_logs.each do |fb_share_log|
 			  fb_share_log.destroy
@@ -138,11 +138,18 @@ class Acp::RoomsController < Acp::ApplicationController
 		end
 
 		bct_time_logs = BctTimeLog.where(:room_id => @data.id)
-		logger.info("---------bct_time_logs:")
-		logger.info("#{bct_time_logs.to_json}")
+		# logger.info("---------bct_time_logs:")
+		# logger.info("#{bct_time_logs.to_json}")
 		if bct_time_logs.present?
 			bct_time_logs.each do |bct_time_log|
 			  bct_time_log.destroy
+			end
+		end
+
+		schedules = Schedule.where(:room_id => @data.id)
+		if schedules.present?
+			schedules.each do |schedule|
+			  schedule.destroy
 			end
 		end
 		
