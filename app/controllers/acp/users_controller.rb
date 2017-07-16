@@ -69,7 +69,8 @@ class Acp::UsersController < Acp::ApplicationController
       if prev_path[:controller] == 'acp/users'
         redirect_to({ action: 'edit', id: @data.id }, notice: "Đổi mật khẩu thành công.")
       else
-        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Đổi mật khẩu thành công.')
+        # redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: @data.broadcaster.id, id: @data.id }, notice: 'Đổi mật khẩu thành công.')
+        redirect_to({ controller: 'broadcasters', action: 'basic', broadcaster_id: (@data.broadcaster ? @data.broadcaster.id : "") }, notice: 'Đổi mật khẩu thành công.')
       end
     else
       flash[:change_password_alert] =  @data.errors.full_messages
