@@ -948,21 +948,23 @@ class Api::V1::UserController < Api::V1::ApplicationController
 	  def update_coin_sms(activecode, moid, userid, shortcode, keyword, content, transdate, checksum, amount)
 	    @user_sms = User::find_by_active_code(activecode)
       if @user_sms.blank?
-        Rails.logger.info("khong tim thay user by activecode de insert log SMS")
+        Rails.logger.info("ERROR khong tim thay user by(activecode) de insert log SMS")
         return false
       end
 	    coin  = SmsMobile::find_by_price(amount.to_i)
       if coin.blank?
-        Rails.logger.info("khong tim thay coin by amount de insert log SMS")
+        Rails.logger.info("ERROR khong tim thay coin by amount de insert log SMS")
         return false
       end
 	    if @user_sms.present? and coin.present?
+        Rails.logger.info("SUCCESS before @user_sms=#{@user_sms.to_json}")
 	      @user_sms.increaseMoney(coin.coin)
 	      if _smslog(moid, userid, shortcode, keyword, content, transdate, checksum, amount, activecode)
-	        Rails.logger.info("ghi log SMS thanh cong")
+          Rails.logger.info("SUCCESS coin=#{coin.to_json}")
+	        Rails.logger.info("SUCCESS ghi log SMS thanh cong @user_sms=#{@user_sms.to_json}")
           return true
 	      else
-          Rails.logger.info("loi xay ra khi ghi log SMS")
+          Rails.logger.info("ERROR loi xay ra khi ghi log SMS")
 	        return false
 	      end
 	    end

@@ -67,7 +67,7 @@
                   <%= link_to(edit_acp_room_path(item)) do %><p><%= item.title %></p><% end %>
                 </td>
                 <td class="v-align-middle">
-                  <p><%= item.broadcaster.fullname %></p>
+                  <p><%= ((item && item.broadcaster) ? item.broadcaster.fullname : "") %></p>
                 </td>
                 <td class="v-align-middle">
                   <p><%= item.on_air ? 'On Air' : 'Offline' %></p>
