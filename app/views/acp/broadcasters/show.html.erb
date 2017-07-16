@@ -63,8 +63,10 @@
                     <label class="col-sm-12">Level</label>
                     <div class="col-sm-2">
                         <select class="form-control" name="data[broadcaster_level_id]">
-                            <% @levels.each do |level| %>
-                            <option value="<%= level.id %>" <% if level.id == @data.broadcaster_level_id %>selected<% end %>><%= level.level %></option>
+                            <% if @levels? %>
+                                <% @levels.each do |level| %>
+                                    <option value="<%= level.id %>" <% if level.id == @data.broadcaster_level_id %>selected<% end %>><%= level.level %></option>
+                                <% end %>
                             <% end %>
                         </select>
                     </div>
