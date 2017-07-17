@@ -154,7 +154,18 @@ class Acp::ReportsController < Acp::ApplicationController
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "total desc"
 
     @idols = Broadcaster.where(deleted: 0)
-    @rooms = params[:format].present? ? Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id) : Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id).page(params[:page])
+    if params[:format].present?
+      @rooms = Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id)
+    end
+
+    if params[:format].blank?
+      if params[:page].blank?
+        params[:page] = 0
+      end
+      @rooms = Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id).page(params[:page])
+    end
+    Rails.logger.info("-----idol_receive_coins----")
+    Rails.logger.info("@rooms = #{@rooms.to_json}")
     @roomsxlsx = Room.joins(:user_logs, broadcaster: :user).select("rooms.broadcaster_id, users.name, users.email, sum(user_logs.money) as total").where(where).order(order).group(:broadcaster_id)
     respond_to do |format|
       format.html
