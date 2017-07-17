@@ -81,7 +81,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
         # insert log
         @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
-        UserLogJob.perform_later(@user, @room.id, cost)
+        UserLog.create(user_id: @user.id, room_id: @room.id, money: cost)
         return render json: {message: 'send screen text OK' }, status: 200
       rescue => e
         render json: {message: 'có lỗi xảy ra', detail: e.message}, status: 400
@@ -121,7 +121,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
             # insert log
             ActionLogJob.perform_later(@user, @room.id, action_id, db_action['price'])
-            UserLogJob.perform_later(@user, @room.id, db_action['price'])
+            UserLog.create(user_id: @user.id, room_id: @room.id, money: db_action['price'])
             return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 200
           rescue => e
             render json: {message: e.message, detail: 'Không trừ tiền của user được.' }, status: 400
@@ -182,9 +182,9 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           user = {id: @user.id, email: @user.email, name: @user.name, username: @user.username}
           vip_data = @token_user['vip'] ? {vip: @token_user['vip']} : 0
           $emitter.of('/room').in(@room.id).emit('gifts recived', { message: 'user gửi quà cho broadcaster' , gift: {id: gift_id, name: db_gift['name'], image: "#{request.base_url}#{db_gift['image']['square']['url']}"}, quantity:quantity, total: total, sender: user, vip: vip_data})
-          # insert log
-          GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
-          UserLogJob.perform_later(@user, @room.id, total)
+          # insert log (job bi loi)
+          GiftLog.create(user_id: @user.id, room_id: @room.id, gift_id: gift_id, quantity: quantity, cost: total)
+          UserLog.create(user_id: @user.id, room_id: @room.id, money: total)
           Rails.logger.info("send gift thành công, insert user_logs")
           return render json: {message: 'send gift thành công ' }, status: 200
         rescue => e
@@ -241,7 +241,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
           # insert log
           LoungeLogJob.perform_later(@user, lounge, cost)
-          UserLogJob.perform_later(@user, @room.id, cost)
+          UserLog.create(user_id: @user.id, room_id: @room.id, money: cost)
           return render json: {message: 'Mua ghé vip thành công.'}, status: 200
         rescue => e
           return render json: {message: e.message}, status: 400
@@ -433,12 +433,10 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
 
     def is_started
-        return render json: {message: 'Phòng này chưa bắt đầu.'}, status: 400 if @room.on_air == false
+    	return render json: {message: 'Phòng này chưa bắt đầu.'}, status: 400 if @room.on_air == false
     end
 
     def check_permission
-      if @user.email != @room.broadcaster.user.email
-        return render json: {message: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 400
-      end
+      return render json: {message: 'Bạn không đủ quyền để sử dụng chức năng này'}, status: 400 if @user.email != @room.broadcaster.user.email
     end
 end
