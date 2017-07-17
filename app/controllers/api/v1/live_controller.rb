@@ -120,7 +120,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
             end
 
             # insert log
-            ActionLogJob.perform_later(@user, @room.id, action_id, db_action['price'])
+            ActionLog.create(user_id: @user.id, room_id: @room.id, room_action_id: action_id, cost: db_action['price'])
             UserLog.create(user_id: @user.id, room_id: @room.id, money: db_action['price'])
             return render json: {message: 'Vote thành công', error: 'Vote thành công.'}, status: 200
           rescue => e
@@ -240,7 +240,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost})
           $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
           # insert log
-          LoungeLogJob.perform_later(@user, lounge, cost)
+          LoungeLog.create(user_id: @user.id, lounge: lounge, cost: cost)
           UserLog.create(user_id: @user.id, room_id: @room.id, money: cost)
           return render json: {message: 'Mua ghé vip thành công.'}, status: 200
         rescue => e
@@ -274,7 +274,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
               vip = @token_user['vip'] ? {vip: @token_user['vip']} : 0
               $emitter.of('/room').in(@room.id).emit('hearts recived', {message: 'user send heart cho broadcaster', bct_hearts: hearts,user_heart: @user.no_heart, sender: user, vip: vip})
               # insert log
-              HeartLogJob.perform_later(@user, @room.id, hearts)
+              HeartLog.create(user_id: @user.id, room_id: @room.id, quantity: hearts)
               return render json: {message: 'Gửi tim thành công. Xin cảm ơn bạn.'},status: 200
             else
               render json: {message: 'Trái tim đã được gửi rồi, nhưng broadcaster không nhận được, vui lòng liên hệ người hỗ trợ!'}, status: 400
