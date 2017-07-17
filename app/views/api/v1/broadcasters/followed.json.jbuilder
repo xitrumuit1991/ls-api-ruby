@@ -29,10 +29,14 @@ if @users_followed.present?
 			json.thumb_w768h432    (followed && followed.public_room) ? followed.public_room.thumb_path[:thumb_w768h432] : nil
 			json.thumb_w960h540    (followed && followed.public_room) ? followed.public_room.thumb_path[:thumb_w960h540] : nil
 		end
-		if !followed.public_room.on_air and followed.public_room.schedules.length > 0
-			json.schedule do
-				json.date followed.public_room.schedules.last.start.strftime('%d/%m')
-				json.start followed.public_room.schedules.last.start.strftime('%H:%M')
+		if followed && followed.public_room
+			if !followed.public_room.on_air and followed.public_room.schedules.length > 0
+				json.schedule do
+					json.date followed.public_room.schedules.last.start.strftime('%d/%m')
+					json.start followed.public_room.schedules.last.start.strftime('%H:%M')
+				end
+			else
+				json.schedule nil
 			end
 		else
 			json.schedule nil
