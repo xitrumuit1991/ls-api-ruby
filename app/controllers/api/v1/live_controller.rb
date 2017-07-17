@@ -185,6 +185,7 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           # insert log
           GiftLogJob.perform_later(@user, @room.id, gift_id, quantity, total)
           UserLogJob.perform_later(@user, @room.id, total)
+          Rails.logger.info("send gift thành công, insert user_logs")
           return render json: {message: 'send gift thành công ' }, status: 200
         rescue => e
           logger.info("-------------------sendGifts----------------");
