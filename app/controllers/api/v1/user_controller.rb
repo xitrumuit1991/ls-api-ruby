@@ -23,6 +23,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
   	return render json: {error: 'error'}, status: 400
   end
 
+
+
   def getNoHeart
     return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
     if @user.present?
@@ -31,6 +33,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return render json: {message: 'Hệ thống đang bận. Vui lòng thử lại sau.'}, status: 400
   end
 
+
+
   def getMoney
     return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
     if @user.present?
@@ -38,6 +42,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
     return render json: {message: 'Hệ thống đang bận. Vui lòng thử lại sau.'}, status: 400
   end
+
 
 
   def profile
@@ -74,6 +79,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+
+
   def active
     user = User.find_by_email(params[:email])
     if user.present?
@@ -96,6 +103,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+
+
+
   def activeFBGP
     user = User.find_by_email(params[:email])
     if user.present?
@@ -116,6 +126,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
       return head 400
     end
   end
+
+
 
   def update
     @user.name              = params[:name]
@@ -309,6 +321,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
     end
   end
 
+
+
   def getAvatar
     begin
       @u = User.find(params[:id])
@@ -317,6 +331,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
       send_file 'public/default/w60h60_no-avatar.png', type: 'image/png', disposition: 'inline'
     end
   end
+
+
 
   def real_avatar
     if params[:id].present?
@@ -804,11 +820,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return render json: {message: 'Thiếu param room_id.'}, status: 400 if params[:room_id].blank?
     graph = nil
     fb_id = nil
-    #FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
-    money = 20 
+    # money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 5 : 0
+    money = 5
     room = Room.find(params[:room_id])
     return render json: {message: 'Không lấy được thông tin phòng.'}, status: 400 if room.blank?
-    # return render json: {message: 'Phòng hiện tại đang đóng. Vui lòng thử lại sau.'}, status: 400 if room.present? and room.on_air == false
+    return render json: {message: 'Phòng hiện tại đang đóng. Vui lòng thử lại sau.'}, status: 400 if room.present? and room.on_air == false
     begin
       graph = Koala::Facebook::API.new(params[:accessToken])
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
@@ -853,6 +869,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
 
+
+
   def appShareFBReceivedCoin
     return render json: {message: 'thieu param device_id'}, status: 400 if params[:device_id].blank?
     return render json: {message: 'thieu param room_id'}, status: 400 if params[:room_id].blank?
@@ -861,7 +879,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return render json: {message: 'Không tìm thấy user đã share facebook.'}, status: 400 if @user.blank? 
     return render json: {message: 'Phòng hiện đang đóng. '}, status: 400 if room.present? and room.on_air == false
     # money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
-    money = 10
+    money = 5
     begin
       dvToken = DeviceToken.find_by_device_id(params[:device_id])
       return render json: {message: "Bạn phải cài app trước khi share!!!", detail: 'khong tim thay deviceToken trong db' } , status: 400 if dvToken.blank?
@@ -889,6 +907,9 @@ class Api::V1::UserController < Api::V1::ApplicationController
       return render json: {message: "Bạn chưa chia sẽ lên tường nhà!!!", detail: e  } , status: 400
     end
   end
+
+
+
 
   def userRevcivedCoin
     begin
