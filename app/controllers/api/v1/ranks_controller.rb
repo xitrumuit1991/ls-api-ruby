@@ -129,12 +129,12 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 
 
 
-
 	def topBroadcasterRevcivedGift
 		if params[:range] == nil or params[:range] == "week"
 			dataWeek =  Rails.cache.fetch("top_user_send_gift_week")
 			return @top_users = dataWeek if dataWeek and dataWeek.present? and dataWeek.length > 0
 			if dataWeek.blank? or dataWeek.length <= 0
+				WeeklyTopUserSendGift.destroy_all
 				WeeklyTopUserSendGift.connection.execute("ALTER TABLE weekly_top_user_send_gifts AUTO_INCREMENT = 1")
 				weekly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: 1.week.ago.beginning_of_week..1.week.ago.end_of_week).group(:user_id).order('money DESC').limit(5)
 				weekly_user_logs.each do |weekly_user_log|
@@ -154,6 +154,7 @@ class Api::V1::RanksController < Api::V1::ApplicationController
 			dataMonth =  Rails.cache.fetch("top_user_send_gift_month")
 			return @top_users = dataMonth if dataMonth and dataMonth.present? and dataMonth.length > 0
 			if dataMonth.blank? or dataMonth.length <= 0
+				MonthlyTopUserSendGift.destroy_all
 				MonthlyTopUserSendGift.connection.execute("ALTER TABLE monthly_top_user_send_gifts AUTO_INCREMENT = 1")
 				monthly_user_logs = UserLog.select('user_id, sum(money) as money').where(created_at: 1.month.ago.beginning_of_month..1.month.ago.end_of_month).group(:user_id).order('money DESC').limit(5)
 				monthly_user_logs.each do |monthly_user_log|
