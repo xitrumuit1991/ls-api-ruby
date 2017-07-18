@@ -23,7 +23,7 @@
             <select name="room_id" class="select2" style="width:100%">
               <option value="0">--- Choose ---</option>
               <% @rooms.each do |room| %>
-              <option value="<%= room.id %>" <%= 'selected' if params[:room_id].to_i == room.id %>><%= room.broadcaster.fullname %></option>
+              <option value="<%= room.id %>" <%= 'selected' if params[:room_id].to_i == room.id %>><%= ((room && room.broadcaster) ? room.broadcaster.fullname : 'no name') %></option>
               <% end %>
             </select>
           </div>
