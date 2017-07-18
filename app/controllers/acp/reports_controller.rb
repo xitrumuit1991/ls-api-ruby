@@ -192,27 +192,38 @@ class Acp::ReportsController < Acp::ApplicationController
     end
   end
 
+
   def idol_gift_logs
     where = Hash.new
-    where[:room_id] = params[:room_id].present? ? params[:room_id] : 0
-    where[:gift_id] = params[:gift_id].present? ? params[:gift_id] : 0
+    # if params[:room_id].blank? or params[:room_id].to_s == '0'
+      # return redirect_to({ action: 'idol_gift_logs' }, alert: 'Vui lòng chọn idol !')
+    # end
+    where[:room_id] = params[:room_id] if  params[:room_id].present? and params[:room_id].to_s != '0'
+    where[:gift_id] = params[:gift_id] if  params[:gift_id].present? and params[:gift_id].to_s != '0' 
 
     if params[:start_date].present? && params[:end_date].present?
       where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
     elsif params[:start_date].present? && !params[:end_date].present? or !params[:start_date].present? && params[:end_date].present?
       redirect_to({ action: 'idol_gift_logs' }, alert: 'Vui lòng chọn ngày bắt đầu và ngày kết thúc !') and return
     end
-
     order = params[:sort].present? ? "#{params[:field]} #{params[:sort]}" : "created_at asc"
-
     @rooms = Room.where(is_privated: false)
     @gifts = Gift.all
-    @all = GiftLog.where(where)
-    @logs = @all.order(order).page(params[:page])
-    @quantity = @all.to_a.sum(&:quantity)
-    @total = @all.to_a.sum(&:cost)
-    @total_page = @logs.to_a.sum(&:cost)
+    if where[:room_id].present?
+      @all = GiftLog.where(where)
+      @logs = @all.order(order).page(params[:page])
+      @quantity = @all.to_a.sum(&:quantity)
+      @total = @all.to_a.sum(&:cost)
+      @total_page = @logs.to_a.sum(&:cost)
+    else
+      @all = nil
+      @logs = nil
+      @quantity = 0
+      @total = 0
+      @total_page = 0
+    end
   end
+
 
   def idol_action_logs
     where = Hash.new

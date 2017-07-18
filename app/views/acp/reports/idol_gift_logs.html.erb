@@ -23,7 +23,9 @@
             <select name="room_id" class="select2" style="width:100%">
               <option value="0">--- Choose ---</option>
               <% @rooms.each do |room| %>
-              <option value="<%= room.id %>" <%= 'selected' if params[:room_id].to_i == room.id %>><%= ((room && room.broadcaster) ? room.broadcaster.fullname : 'no name') %></option>
+                <% if (room && room.broadcaster) %>
+                  <option value="<%= room.id %>" <%= 'selected' if params[:room_id].to_i == room.id %>><%= ((room && room.broadcaster) ? room.broadcaster.fullname : 'no name') %></option>
+                <% end %>
               <% end %>
             </select>
           </div>
@@ -70,34 +72,38 @@
             </tr>
           </thead>
           <tbody>
-          <% @logs.each do |log| %>
-            <tr id="row_page_<%= log.id %>">
-              <td class="v-align-middle">
-                <p><%= log.id %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.created_at.strftime('%d/%m/%Y') %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.gift.name %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.gift.price %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.quantity %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.cost %></p>
-              </td>
-            </tr>
+          <% if @logs %>
+            <% @logs.each do |log| %>
+              <tr id="row_page_<%= log.id %>">
+                <td class="v-align-middle">
+                  <p><%= log.id %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= log.created_at.strftime('%d/%m/%Y') %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= log.gift.name %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= log.gift.price %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= log.quantity %></p>
+                </td>
+                <td class="v-align-middle">
+                  <p><%= log.cost %></p>
+                </td>
+              </tr>
+            <% end %>
           <% end %>
           </tbody>
         </table>
       </form>
       <div class="row">
         <div class="col-md-12">
+        <% if @logs %>
           <%= paginate @logs %>
+        <% end %>
         </div>
       </div>
     </div>
