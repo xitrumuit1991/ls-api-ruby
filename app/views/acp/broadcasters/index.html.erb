@@ -74,13 +74,17 @@
                       <label for="checkbox-<%= item.id %>"></label>
                   </div>
                 </td>
+
                 <td class="v-align-middle">
-                  <% if item.user.avatar? %>
+                  <% if item and item.public_room.present? %>
+                    <img src="<%=replaceThumbCrop(item.public_room.id, item.public_room.thumb_path[:thumb]) %>" class="img-thumbnail">
+                  <% elsif item.user.avatar? %>
                     <img src="<%=item.user.avatar.minisquare.url%>" class="img-thumbnail">
                   <% else %>
                     <p>No Image</p>
                   <% end %>
                 </td>
+
                 <td class="v-align-middle ">
                   <%= link_to(edit_acp_broadcaster_path(item)) do %><p><%= item.fullname %></p><% end %>
                 </td>

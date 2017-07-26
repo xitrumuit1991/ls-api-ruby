@@ -43,7 +43,8 @@
                   <div class="row">
                     <label class="col-sm-12">Poster(9x16)</label>
                     <div class="col-sm-5">
-                      <img src="<%= @room.thumb_poster_url %>" class="img-thumbnail" >
+                      <!-- <img src="<%= @room.thumb_poster_url %>" class="img-thumbnail" > -->
+                      <img src="<%= replaceThumbCrop(@room.id, @room.thumb_poster_url) %>" class="img-thumbnail" >
                       <div class="cleafix">
                         <label class="btn btn-success">
                           <input type="file" name="room[thumb_poster]" class="hidden">
