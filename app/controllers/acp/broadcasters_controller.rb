@@ -7,23 +7,37 @@ class Acp::BroadcastersController < Acp::ApplicationController
 	helper_method :replaceThumbCrop
 	
 	def replaceThumbCrop id, thumb
-	  if id.present? and thumb.present?
-	    if thumb.include?('Thumb_Crop_.jpg')
-	      new_thumb = 'Thumb_Crop_'+id.to_s+'.jpg'
-	      return thumb.gsub(/Thumb_Crop_.jpg/, new_thumb)
-	    end
-	    if thumb.include?('Thumb_Crop_.JPG')
-	      new_thumb = 'Thumb_Crop_'+id.to_s+'.JPG'
-	      return thumb.gsub(/Thumb_Crop_.JPG/, new_thumb)
-	    end
-	    if thumb.include?('Thumb_Crop_.png')
-	      new_thumb = 'Thumb_Crop_'+id.to_s+'.png'
-	      return thumb.gsub(/Thumb_Crop_.png/, new_thumb)
-	    end
-	    return thumb
-	  end
-	  return thumb
-	end
+    if id.present? and thumb.present?
+      if thumb.include?('Thumb_Crop_.jpg')
+        new_thumb = 'Thumb_Crop_'+id.to_s+'.jpg'
+        return thumb.gsub(/Thumb_Crop_.jpg/, new_thumb)
+      end
+      if thumb.include?('Thumb_Crop_.JPG')
+        new_thumb = 'Thumb_Crop_'+id.to_s+'.JPG'
+        return thumb.gsub(/Thumb_Crop_.JPG/, new_thumb)
+      end
+      if thumb.include?('Thumb_Crop_.png')
+        new_thumb = 'Thumb_Crop_'+id.to_s+'.png'
+        return thumb.gsub(/Thumb_Crop_.png/, new_thumb)
+      end
+
+      if thumb.include?('Thumb_Poster_.jpg')
+        new_thumb = 'Thumb_Poster_'+id.to_s+'.jpg'
+        return thumb.gsub(/Thumb_Poster_.jpg/, new_thumb)
+      end
+      if thumb.include?('Thumb_Poster_.JPG')
+        new_thumb = 'Thumb_Poster_'+id.to_s+'.JPG'
+        return thumb.gsub(/Thumb_Poster_.JPG/, new_thumb)
+      end
+      if thumb.include?('Thumb_Poster_.png')
+        new_thumb = 'Thumb_Poster_'+id.to_s+'.png'
+        return thumb.gsub(/Thumb_Poster_.png/, new_thumb)
+      end
+      return thumb
+    end
+    return thumb
+  end
+
 
 
 	def index
