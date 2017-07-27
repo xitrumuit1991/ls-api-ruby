@@ -50,6 +50,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @totalPage =  (Float(getAllRecord)/9).ceil
   end
 
+
   def comingSoon
     @user = check_authenticate
     offset = params[:page].nil? ? 0 : params[:page].to_i * 18
@@ -416,26 +417,26 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   end
 
   private
-  def checkIsBroadcaster
-    unless @user.is_broadcaster
-      render json: {message: t('error_not_bct')}, status: 400
+    def checkIsBroadcaster
+      unless @user.is_broadcaster
+        render json: {message: t('error_not_bct')}, status: 400
+      end
     end
-  end
 
-  def create_tmp_token
-    id = Time.now.to_i
-    name = Faker::Name.name
-    email = Faker::Internet.email(name)
-    exp = id + 24 * 3600
-    payload = {id: id, email: email, name: name, vip: 0, exp: exp, guest: true}
+    def create_tmp_token
+      id = Time.now.to_i
+      name = Faker::Name.name
+      email = Faker::Internet.email(name)
+      exp = id + 24 * 3600
+      payload = {id: id, email: email, name: name, vip: 0, exp: exp, guest: true}
 
-    @tmp_user = TmpUser.new
-    @tmp_user.id = id
-    @tmp_user.email = email
-    @tmp_user.name = name
-    @tmp_user.exp = exp
-    @tmp_token = JWT.encode payload, Settings.hmac_secret, 'HS256'
-    @tmp_user.token = @tmp_token
-  end
+      @tmp_user = TmpUser.new
+      @tmp_user.id = id
+      @tmp_user.email = email
+      @tmp_user.name = name
+      @tmp_user.exp = exp
+      @tmp_token = JWT.encode payload, Settings.hmac_secret, 'HS256'
+      @tmp_user.token = @tmp_token
+    end
 
 end

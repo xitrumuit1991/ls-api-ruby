@@ -15,10 +15,15 @@ json.rooms @rooms do |room|
 	json.thumb_w768h432     replaceThumbCrop(room.id, room.thumb_path[:thumb_w768h432] ) 
 	json.thumb_w960h540     replaceThumbCrop(room.id, room.thumb_path[:thumb_w960h540] ) 
 
+	json.thumb_poster               replaceThumbCrop(room.id, room.thumb_poster_path[:thumb] )
+	json.thumb_poster_w360h640      replaceThumbCrop(room.id, room.thumb_poster_path[:thumb_w360h640] )
+	json.thumb_poster_w720h1280     replaceThumbCrop(room.id, room.thumb_poster_path[:thumb_w720h1280] )
+	json.thumb_poster_w1080h1920    replaceThumbCrop(room.id, room.thumb_poster_path[:thumb_w1080h1920] )
+
 	json.broadcaster do
-		json.id									room.broadcaster.user.id
+		json.id								room.broadcaster.user.id
 		json.bct_id							room.broadcaster.id
-		json.name								room.broadcaster.user.name
+		json.name							room.broadcaster.user.name
 		json.avatar     				room.broadcaster.user.avatar_path[:avatar]
 		json.avatar_w60h60      room.broadcaster.user.avatar_path[:avatar_w60h60]
 		json.avatar_w100h100    room.broadcaster.user.avatar_path[:avatar_w100h100]
