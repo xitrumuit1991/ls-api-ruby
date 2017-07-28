@@ -57,18 +57,30 @@
               <th style="width:50%">Total</th>
             </tr>
           </thead>
-          <tbody>
-          <% @logs.each do |log| %>
-            <tr id="row_page_<%= log.id %>">
-              <td class="v-align-middle">
-                <p><%= log.room.title %></p>
-              </td>
-              <td class="v-align-middle">
-                <p><%= log.total %></p>
-              </td>
-            </tr>
+
+          <% if @logs and @logs.length > 0 %>
+              <tbody>
+              <% @logs.each do |log| %>
+                <tr id="row_page_<%= log.id %>">
+                  <td class="v-align-middle">
+                    <p><%= log.room.title %></p>
+                  </td>
+                  <td class="v-align-middle">
+                    <p><%= log.total %></p>
+                  </td>
+                </tr>
+              <% end %>
+              </tbody>
+          <% elsif %>
+                <tbody>
+                  <tr >
+                    <td class="v-align-middle" colspan="2">
+                      Không có dữ liệu. Vui lòng chọn ngày và chọn Action để lọc.
+                    </td>
+                  </tr>
+                </tbody>
           <% end %>
-          </tbody>
+
         </table>
       </form>
       <div class="row">

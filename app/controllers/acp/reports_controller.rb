@@ -283,7 +283,7 @@ class Acp::ReportsController < Acp::ApplicationController
 
   def action_logs
     where = Hash.new
-    where[:room_action_id] = params[:room_action_id].present? ? params[:room_action_id] : 0
+    where[:room_action_id] = params[:room_action_id] if params[:room_action_id].present?
 
     if params[:start_date].present? && params[:end_date].present?
       where[:created_at] = Time.parse(params[:start_date])..Time.parse(params[:end_date])
