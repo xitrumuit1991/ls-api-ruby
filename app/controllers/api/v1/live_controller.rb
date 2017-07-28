@@ -80,7 +80,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
         $emitter.of('/room').in(@room.id).emit('screen text', { message: message, sender: user })
 
         # insert log
-        @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
+        ScreenTextLog.create(user_id: @user.id, room_id: @room.id, content: message, cost: cost)
+        # @user.screen_text_logs.create(room_id: @room.id, content: message, cost: cost)
         UserLog.create(user_id: @user.id, room_id: @room.id, money: cost)
         return render json: {message: 'send screen text OK' }, status: 200
       rescue => e
@@ -240,8 +241,8 @@ class Api::V1::LiveController < Api::V1::ApplicationController
           $redis.set("lounges:#{@room.id}:#{lounge}", {user: user, cost: cost})
           $emitter.of('/room').in(@room.id).emit('buy lounge', { message: 'Mua ghé vip thành công.', lounge: lounge, user: user, cost: cost, vip: vip_data });
           # insert log
-          LoungeLog.create(user_id: @user.id, lounge: lounge, cost: cost)
-          UserLog.create(user_id: @user.id, room_id: @room.id, money: cost)
+          LoungeLog.create(user_id: @user.id, room_id: @room.id, lounge: lounge, cost: cost)
+          UserLog.create(user_id: @user.id,   room_id: @room.id,  money: cost)
           return render json: {message: 'Mua ghé vip thành công.'}, status: 200
         rescue => e
           return render json: {message: e.message}, status: 400
