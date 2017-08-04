@@ -173,15 +173,17 @@ class User < ActiveRecord::Base
 	end
 
 	def increaseMoney(money)
-		self.with_lock do
-			if money.to_i > 0
-				old = self.money
-				value = self.money + money.to_i
-				self.money = value
-				self.save!
-				NotificationChangeMoneyJob.perform_later(self.email, old, value)
-			else
-				raise "Số tiền không hợp lệ"
+		if money and money.to_i > 0
+			self.with_lock do
+				if money.to_i > 0
+					old = self.money
+					value = self.money + money.to_i
+					self.money = value
+					self.save!
+					NotificationChangeMoneyJob.perform_later(self.email, old, value)
+				# else
+					# raise "Số tiền không hợp lệ"
+				end
 			end
 		end
 	end
