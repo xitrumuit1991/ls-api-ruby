@@ -821,7 +821,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     graph = nil
     fb_id = nil
     # money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 5 : 0
-    money = 5
+    money = 0
     room = Room.find(params[:room_id])
     return render json: {message: 'Không lấy được thông tin phòng.'}, status: 400 if room.blank?
     return render json: {message: 'Phòng hiện tại đang đóng. Vui lòng thử lại sau.'}, status: 400 if room.present? and room.on_air == false
@@ -830,8 +830,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
       profile = graph.get_object("me?fields=id,name,email,birthday,gender")
       fb_id = profile['id']
       if params[:post_id].blank? and graph.present?
-        #@user.increaseMoney(money)  #off share + xu
-        #fb_logs(nil, money, fb_id, room.id, nil)
+        @user.increaseMoney(money)  #off share + xu
+        fb_logs(nil, money, fb_id, room.id, nil)
         render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get post_id from facebook'}, status: 200
         return
       end
@@ -842,8 +842,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
           render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, info: info}, status: 200
           return
         elsif FbShareLog.where('user_id = ? AND room_id = ? AND created_at > ?', @user.id, room.id, Time.now.beginning_of_day).count < 1
-          #@user.increaseMoney(money) #off share + xu
-          #fb_logs(params[:post_id], money, fb_id, room.id, nil)
+          @user.increaseMoney(money) #off share + xu
+          fb_logs(params[:post_id], money, fb_id, room.id, nil)
           # render json: {message: 'Đã cộng tiền thành công!!!', money: @user.money, info: info}, status: 200
           render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, info: info}, status: 200
           return
@@ -854,16 +854,17 @@ class Api::V1::UserController < Api::V1::ApplicationController
         end
       rescue Koala::Facebook::APIError => exc
         logger.info("----------ERROR 1: Koala::Facebook::APIError= #{exc.to_json}")
-        #@user.increaseMoney(money)  #off share + xu
-        #fb_logs(nil, money, fb_id, room.id, nil) 
+        @user.increaseMoney(money)  #off share + xu
+        #insert log fb share
+        fb_logs(nil, money, fb_id, room.id, nil) 
         render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get_object post_id', exc: exc}, status: 200
         return
       end
     rescue Koala::Facebook::APIError => exc
       logger.info("----------ERROR 2: Koala::Facebook::APIError= #{exc.to_json}")
       if graph.present?
-        #@user.increaseMoney(money) #off share tang xu 
-        #fb_logs(nil, money, fb_id, room.id, nil) 
+        @user.increaseMoney(money) #off share tang xu 
+        fb_logs(nil, money, fb_id, room.id, nil) 
         render json: {message: 'Chia sẽ lên tường nhà thành công.', money: @user.money, detail: 'Koala::Facebook::APIError can not get post_id from facebook', exc: exc}, status: 200
         return
       end
@@ -882,7 +883,7 @@ class Api::V1::UserController < Api::V1::ApplicationController
     return render json: {message: 'Không tìm thấy user đã share facebook.'}, status: 400 if @user.blank? 
     return render json: {message: 'Phòng hiện đang đóng. '}, status: 400 if room.present? and room.on_air == false
     # money = FbShareLog.where('user_id = ?', @user.id).count < 1 ? 20 : 10
-    money = 5
+    money = 0
     begin
       dvToken = DeviceToken.find_by_device_id(params[:device_id])
       return render json: {message: "Bạn phải cài app trước khi share!!!", detail: 'khong tim thay deviceToken trong db' } , status: 400 if dvToken.blank?
@@ -891,20 +892,20 @@ class Api::V1::UserController < Api::V1::ApplicationController
           fb_id = @user.fb_id
           if FbShareLog.where('device_id = ? AND room_id = ? AND created_at > ?', params[:device_id], room.id, Time.now.beginning_of_day).count > 10
             #1 device share qua 10 lan
-            #@user.increaseMoney(money) #off share + xu
-            #fb_logs(nil, money, fb_id, room.id, params[:device_id])
+            @user.increaseMoney(money) #off share + xu
+            fb_logs(nil, money, fb_id, room.id, params[:device_id])
             # render json: {message: "Đã cộng tiền thành công!!!", user_money: @user.money } , status: 200
             render json: {message: "Chia sẽ lên tường nhà thành công.", user_money: @user.money } , status: 200
             return
           elsif FbShareLog.where('user_id = ? AND device_id = ? AND room_id = ? AND created_at > ?', @user.id, params[:device_id], room.id, Time.now.beginning_of_day).count < 1
             #user chua share room nay lan nao
-            #@user.increaseMoney(money) #off share + xu
-            #fb_logs(nil, money, fb_id, room.id, params[:device_id])
+            @user.increaseMoney(money) #off share + xu
+            fb_logs(nil, money, fb_id, room.id, params[:device_id])
             render json: {message: "Chia sẽ lên tường nhà thành công.", user_money: @user.money } , status: 200
             return
           else
-          	#@user.increaseMoney(money)
-            #fb_logs(nil, money, fb_id, room.id, params[:device_id])
+          	@user.increaseMoney(money)
+            fb_logs(nil, money, fb_id, room.id, params[:device_id])
             render json: {message: "Chia sẽ lên tường nhà thành công.", user_money: @user.money } , status: 200
             return
           end
