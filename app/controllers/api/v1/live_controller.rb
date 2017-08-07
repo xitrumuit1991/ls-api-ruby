@@ -308,6 +308,23 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       _bctTimeLog()
       DeviceNotificationJob.perform_later(@user)
       start_stream @room
+
+      #remove redis lounges
+      list_keys = $redis.keys("lounges:#{@room.id}:*")
+      Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
+      Rails.logger.error(list_keys.to_json)
+      if list_keys and list_keys.present?
+        list_keys.each do |key|
+          dataKey = $redis.get(key) 
+          Rails.logger.error("----key=#{key}")
+          Rails.logger.error("----dataKey=")
+          Rails.logger.error(dataKey.to_json)
+          if key and dataKey
+            $redis.del(key)
+          end
+        end
+      end
+
       $emitter.of('/room').in(@room.id).emit('room on-air')
       render json: {message: 'Start room thành công', room: @room.to_json}, status: 200
       return
@@ -316,9 +333,12 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     end
   end
 
+  
+
   def endRoom
     @room.on_air = false
     if @room.present? and @room.save
+      Rails.logger.error("++++++++++++END ROOM+++++++++++++")
       _bctTimeLog()
       $emitter.of('/room').in(@room.id).emit('room off')
       end_stream @room

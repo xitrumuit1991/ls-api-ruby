@@ -369,6 +369,7 @@ class Api::V1::RoomController < Api::V1::ApplicationController
 
   def getLounges
   	return render json: {message: 'miss param room_id '}, status: 400 unless params[:room_id]
+    @room = Room.find(params[:room_id])
     keys = $redis.keys("lounges:#{params[:room_id]}:*")
     Rails.logger.error("-----------get lounges----------")
     Rails.logger.error("----keys=")
@@ -382,10 +383,17 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     end
     if keys and keys.present?
     	keys.each do |key|
-    	  split = key.split(':')
-    	  if split[0].present? and split[1].present? and split[2].present?
-    	  	status[split[2].to_i] = eval($redis.get(key))
-    		end 
+        if @room and @room.on_air == false
+          dataKey = $redis.get(key) 
+          if key and dataKey
+            $redis.del(key)
+          end
+        else
+          split = key.split(':')
+          if split[0].present? and split[1].present? and split[2].present?
+            status[split[2].to_i] = eval($redis.get(key))
+          end 
+        end
     	end
   	end
   	Rails.logger.error("-----list lounges")
