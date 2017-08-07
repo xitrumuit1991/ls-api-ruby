@@ -304,8 +304,6 @@ class Api::V1::LiveController < Api::V1::ApplicationController
     @room.on_air = true
     if @room.save
       Rails.logger.info("++++++++++++START ROOM+++++++++++++")
-      Rails.logger.info("++++++++++++START ROOM+++++++++++++")
-      Rails.logger.info("++++++++++++START ROOM+++++++++++++")
       Rails.logger.info(@room.to_json)
       _bctTimeLog()
       DeviceNotificationJob.perform_later(@user)
@@ -336,6 +334,22 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       if $redis.keys("VirtualUsers:#{@room.id}:*").present?
         $redis.del( $redis.keys("VirtualUsers:#{@room.id}:*") )
       end
+      #remove redis lounges
+      list_keys = $redis.keys("lounges:#{@room.id}:*")
+      Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
+      Rails.logger.error(list_keys.to_json)
+      if list_keys and list_keys.present?
+        list_keys.each do |key|
+          dataKey = $redis.get(key) 
+          Rails.logger.error("----key=#{key}")
+          Rails.logger.error("----dataKey=")
+          Rails.logger.error(dataKey.to_json)
+          if key and dataKey
+            $redis.del(key)
+          end
+        end
+      end
+
       render json: {message: 'End room thành công'}, status: 200
       return
     else

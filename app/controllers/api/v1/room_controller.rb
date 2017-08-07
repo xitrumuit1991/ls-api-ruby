@@ -366,18 +366,33 @@ class Api::V1::RoomController < Api::V1::ApplicationController
     @bct_gifts = BctGift.where('room_id = ?',  params[:room_id].to_i)
   end
 
+
   def getLounges
+  	return render json: {message: 'miss param room_id '}, status: 400 unless params[:room_id]
     keys = $redis.keys("lounges:#{params[:room_id]}:*")
+    Rails.logger.error("-----------get lounges----------")
+    Rails.logger.error("----keys=")
+    Rails.logger.error(keys)
+    Rails.logger.error("---------")
+    Rails.logger.error("lounges:#{params[:room_id]}:*")
+    Rails.logger.error(keys.to_json)
     status = []
     12.times do |n|
       status[n] = {user: {id: 0, name: ''}, cost: 50}
     end
-    keys.each do |key|
-      split = key.split(':')
-      status[split[2].to_i] = eval($redis.get(key))
-    end
+    if keys and keys.present?
+    	keys.each do |key|
+    	  split = key.split(':')
+    	  if split[0].present? and split[1].present? and split[2].present?
+    	  	status[split[2].to_i] = eval($redis.get(key))
+    		end 
+    	end
+  	end
+  	Rails.logger.error("-----list lounges")
+  	Rails.logger.error(status.to_json) 
     render json: status, status: 200
   end
+
 
   def getThumb
     begin
