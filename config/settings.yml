@@ -16,7 +16,7 @@ chargingPartnerId:    'CTT_livestar'
 chargingPartnerCode:  '00174'
 chargingWebservice:   'http://cttcorp.net/ChargingGW/services/Services?wsdl'
 
-# magebanks
+# magebanks mega epay - vnpt epay
 magebankWS: 'http://bank.megapay.net.vn:10001/service.asmx?wsdl'
 magebankMerchantid: '88000095'
 magebankIssuerID: 'Livestar'

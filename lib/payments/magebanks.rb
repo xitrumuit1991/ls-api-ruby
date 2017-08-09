@@ -2,6 +2,8 @@ module Megabanks
 	class Service
 		attr_accessor :respUrl, :merchantid, :issuerID, :send_key, :received_key, :txnAmount, :fee, :userName, :bankID, :soapClient, :responCodeConfirm, :transidConfirm
 		def _deposit
+			Rails.logger.error("-------------------")
+			Rails.logger.error("-------------------")
 			time 					= Time.now
 			tranID 					= time.to_i.to_s + time.usec.to_s
 			stan 					= time.to_i.to_s[4..time.to_i.to_s.length]
@@ -20,8 +22,15 @@ module Megabanks
 			data["bankID"] 			= bankID
 			data["mac"] 			= mac
 			data["respUrl"] 		= respUrl
+			Rails.logger.error("--------Megabanks; _deposit-----------")
+			Rails.logger.error("Megabanks; data=")
+      Rails.logger.error(data)
 			begin
 				result 					= soapClient.call(:deposit,  message: data )
+				Rails.logger.error("Megabanks call soapClient; result=")
+	      Rails.logger.error(result)
+	      Rails.logger.error("result.body=")
+	      Rails.logger.error(result.body)
 				return result.body
 			rescue
 				return false
@@ -29,6 +38,8 @@ module Megabanks
 		end
 
 		def _confirm
+			Rails.logger.error("-------------------")
+			Rails.logger.error("-------------------")
 			data 					= Hash.new
 			data["merchantcode"] 	= merchantid.to_s
 			data["txnAmount"]		= txnAmount.to_s
@@ -37,8 +48,15 @@ module Megabanks
 			macData					= data["merchantcode"] + data["tranid"] + data["txnAmount"] + data["confirmCode"]
 			mac 					= mDESMAC_3des(macData, send_key)
 			data["mackey"]				= mac
+			Rails.logger.error("--------Megabanks; _confirm-----------")
+			Rails.logger.error("data=")
+      Rails.logger.error(data)
 			begin
 				result 				= soapClient.call(:comfirm,  message: data )
+				Rails.logger.error("Megabanks call confirm soapClient; result=")
+	      Rails.logger.error(result)
+	      Rails.logger.error("result.body=")
+	      Rails.logger.error(result.body)
 				return result.body
 			rescue
 				return false

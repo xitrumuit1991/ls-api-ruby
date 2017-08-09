@@ -368,6 +368,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
   def internetBank
     # epay cung cap
+    Rails.logger.error("-----------------------------------------------------")
+    Rails.logger.error("------------goi link thanh toan internetBank---------")
     if params[:key_megabank].present?
       checkCaptcha = eval(checkCaptcha(params[:key_megabank]))
       if checkCaptcha[:success]
@@ -394,6 +396,8 @@ class Api::V1::UserController < Api::V1::ApplicationController
         paramDeposit.bankID           = params[:bank_id].to_s
 
         @result = paramDeposit._deposit
+        Rails.logger.error("result=")
+        Rails.logger.error(@result)
       else
         render json: {error: "Vui lòng kiểm tra Captcha" }, status: 400
       end
@@ -403,10 +407,12 @@ class Api::V1::UserController < Api::V1::ApplicationController
   end
 
   def confirmEbay
+    Rails.logger.error("-----------------------------------------------------")
+    Rails.logger.error("------------goi confirm thanh toan internetBank---------")
     responCode    = params[:responCode]
     if responCode == "00"
       megabanklog         = MegabankLog::find_by_id(params[:id])
-      Rails.logger.info "ANGCO DEBUG megabanklog: #{megabanklog}"
+      Rails.logger.error " megabanklog: #{megabanklog}"
       if !megabanklog.nil?
         transid             = params[:transid]
         megabanklog.transid = transid
@@ -421,11 +427,11 @@ class Api::V1::UserController < Api::V1::ApplicationController
         paramConfirm.soapClient         = soapClient
         paramConfirm.send_key           = Settings.magebankSend_key
         @result                         = paramConfirm._confirm
-        Rails.logger.info "ANGCO DEBUG result: #{@result}"
+        Rails.logger.error "confirmEbay: #{@result}"
         @price                          = megabanklog.megabank.price.to_s
         @coin                           = megabanklog.megabank.coin.to_s
-        Rails.logger.info "ANGCO DEBUG price: #{@price}"
-        Rails.logger.info "ANGCO DEBUG coin: #{@coin}"
+        Rails.logger.error "confirmEbay price: #{@price}"
+        Rails.logger.error "confirmEbay coin: #{@coin}"
         if @result[:comfirm_response][:comfirm_result][:responsecode] == "00" && @result != false
           megabanklog.descriptionvn     = @result[:comfirm_response][:comfirm_result][:descriptionvn]
           megabanklog.descriptionen     = @result[:comfirm_response][:comfirm_result][:descriptionen]
