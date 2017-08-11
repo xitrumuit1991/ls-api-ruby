@@ -285,38 +285,38 @@ Rails.application.routes.draw do
 
       # users
       scope '/users' do
-        post '/set-user-money' => 'user#setMoneyForUser'
-        get '/get-no-heart' => 'user#getNoHeart' 	#get number heart of user
-        get '/get-money' => 'user#getMoney'				#get current money of user
-        get '/:id/avatar' => 'user#getAvatar'		
-        get '/:id/real-avatar' => 'user#real_avatar'
-        get '/:id/cover' => 'user#getBanner'
-        get '/trades' => 'user#getTradeHistory' #history nap card cua user
-        post '/active' => 'user#active' #
-        post '/active-fb-gp' => 'user#activeFBGP'
-        get '/sms' => 'user#sms'  #xu ly MT/MO khi nhan tin SMS nap xu mang Viettel, Vinaphone, Mobifone
-        get '/room' => 'room#getPublicRoom'			#get room of user if user is bct
-        get '/' => 'user#profile' #
-        get '/expense-records' => 'user#expenseRecords' #get all list item user buy
-        get '/get-providers' => 'user#getProviders'
-        get '/get-sms' => 'user#getSms' # de sau, chua doi
-        get '/get-banks' => 'user#getBanks'
-        get '/get-megabanks' => 'user#getMegabanks'
-        get '/count-share' => 'user#countShare' #
-        get '/:username' => 'user#publicProfile' #
-        put '/' => 'user#update' #
+        post '/set-user-money' 	=> 'user#setMoneyForUser'
+        get '/get-no-heart' 		=> 'user#getNoHeart' 	#get number heart of user
+        get '/get-money' 				=> 'user#getMoney'				#get current money of user
+        get '/:id/avatar' 			=> 'user#getAvatar'		
+        get '/:id/real-avatar' 	=> 'user#real_avatar'
+        get '/:id/cover' 				=> 'user#getBanner'
+        get '/trades' 					=> 'user#getTradeHistory' #history nap card cua user
+        post '/active' 					=> 'user#active' #
+        post '/active-fb-gp' 		=> 'user#activeFBGP'
+        get '/sms' 							=> 'user#sms'  #xu ly MT/MO khi nhan tin SMS nap xu mang Viettel, Vinaphone, Mobifone
+        get '/room' 						=> 'room#getPublicRoom'			#get room of user if user is bct
+        get '/' 								=> 'user#profile' #
+        get '/expense-records' 	=> 'user#expenseRecords' #get all list item user buy
+        get '/get-providers' 		=> 'user#getProviders'
+        get '/get-sms' 					=> 'user#getSms' # de sau, chua doi
+        get '/get-banks' 				=> 'user#getBanks'
+        get '/get-megabanks' 		=> 'user#getMegabanks'
+        get '/count-share' 			=> 'user#countShare' #
+        get '/:username' 				=> 'user#publicProfile' #
+        put '/' 								=> 'user#update' #
         post '/share-fb-received-coin' => 'user#shareFBReceivedCoin' #share fb tren web
         post '/app-share-fb-received-coin' => 'user#appShareFBReceivedCoin' #share fb tren app
         post '/update-password' => 'user#updatePassword'
-        post '/avatar' => 'user#uploadAvatar' #
-        post '/redeem' => 'user#userRevcivedCoin' #
-        post '/cover' => 'user#uploadCover' #
-        post '/cover-crop' => 'user#coverCrop'
-        post '/avatar-crop' => 'user#avatarCrop'
-        post '/payments' => 'user#payments' # Để sau, chưa đổi
+        post '/avatar' 					=> 'user#uploadAvatar' #
+        post '/redeem' 					=> 'user#userRevcivedCoin' #
+        post '/cover' 					=> 'user#uploadCover' #
+        post '/cover-crop' 			=> 'user#coverCrop'
+        post '/avatar-crop' 		=> 'user#avatarCrop'
+        post '/payments' 				=> 'user#payments' # Để sau, chưa đổi
         post '/internet-banking' => 'user#internetBank' # Để sau, chưa đổi
-        post '/mega-card' => 'user#cttCard' # nap card Viettel, mobifone, vinafone,...
-        post '/confirm' => 'user#confirmEbay' # Để sau, chưa đổi
+        post '/mega-card' 			=> 'user#cttCard' # nap card Viettel, mobifone, vinafone,...
+        post '/confirm' 				=> 'user#confirmEbay' # Để sau, chưa đổi
       end
 
       # broadcasters
