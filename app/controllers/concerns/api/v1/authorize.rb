@@ -24,9 +24,7 @@ module Api::V1::Authorize extend ActiveSupport::Concern
 
   def check_mbf_auth
     msisdn = nil
-    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
-    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
-    Rails.logger.info('+++++++++++++++auto login 3g ++++++++++++++++')
+    Rails.logger.info('+++++++++++++++check_mbf_auth++++++++++++++++')
     Rails.logger.info("request.headers['HTTP_MSISDN']=#{request.headers['HTTP_MSISDN']}")
     if request.headers
       msisdn = request.headers['HTTP_MSISDN']

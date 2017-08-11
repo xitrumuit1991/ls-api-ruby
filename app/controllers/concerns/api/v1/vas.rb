@@ -2,6 +2,7 @@ module Api::V1::Vas extend ActiveSupport::Concern
 
   def vas_sms phone, content
     begin
+      return {is_error: true, message: 'Không có phone hay content!', error: 'vas_sms missing params phone or content'} if !phone or !content
       # call VAS webservice
       soapClient = Savon.client do |variable|
         variable.proxy Settings.vas_proxy
@@ -15,12 +16,32 @@ module Api::V1::Vas extend ActiveSupport::Concern
         "tns:pkg_id"      => 0,
         "tns:channel"     => "APP"
       }
+      Rails.logger.error("Api::V1::Vas; message=")
+      Rails.logger.error(message)
       # call api send sms
       send_sms_response = soapClient.call(:send_sms, message: message)
       # get response
+      Rails.logger.error("send_sms_response=")
+      Rails.logger.error(send_sms_response)
       send_sms_response.body[:send_sms_response][:send_sms_result]
-    rescue Savon::SOAPFault
-      return {is_error: true, message: 'System error!'}
+
+    rescue Savon::InvalidResponseError
+      Logger.log "Invalid server response"
+      return {is_error: true, message: 'Có lỗi khi gọi SOAP Service!', error: 'Invalid server response'}
+
+    rescue Savon::HTTPError => error
+      Rails.logger.error("Savon::HTTPError=")
+      Rails.logger.error("error=#{error}")
+      Rails.logger.error("error.http=#{error.http}")
+      Rails.logger.error("error.http.code=#{error.http.code}")
+      return {is_error: true, message: 'Có lỗi khi gọi SOAP Service!', error: error}
+
+    rescue Savon::SOAPFault => error
+      Rails.logger.error("Savon::SOAPFault=")
+      Rails.logger.error(error)
+      Rails.logger.error(error.http)
+      Rails.logger.error(error.http.code)
+      return {is_error: true, message: 'Có lỗi khi gọi SOAP Service!', error: error}
     end
   end
 

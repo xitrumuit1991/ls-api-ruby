@@ -34,34 +34,52 @@ class Api::V1::AuthController < Api::V1::ApplicationController
 
   def mbf_register
     # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
+    Rails.logger.error("-----------------------------------------------")
+    Rails.logger.error("------------------MBF register-----------------------------")
+    Rails.logger.error("------------------MBF register; params.inspect=-----------------------------")
+    Rails.logger.error params.inspect
     if params[:phone].present?
       @msisdn = params[:phone]
       if MobifoneUser.where(sub_id: @msisdn).exists?
         @mbf_user = MobifoneUser.find_by_sub_id(@msisdn)
       end
+      Rails.logger.error("@mbf_user=")
+      Rails.logger.error(@mbf_user.to_json)
     else
-      mbf_auth
+      tmpHeader ||= []
+      request.headers.each do |key,value|
+        tmpHeader.push( key.to_s+':'+value.to_s )
+      end
+      if check_mbf_auth == false
+        return render json: { 
+          message: "Request not from Mobifone 3G", 
+          detail: ((request.headers and request.headers['HTTP_MSISDN']) ? request.headers['HTTP_MSISDN'] : 'not have key HTTP_MSISDN in hearders'), 
+          HTTP_MSISDN: request.headers['HTTP_MSISDN'],
+          fullheaders: tmpHeader
+          }, status: 400
+      end
     end
 
+    Rails.logger.error("-----Goi qua vas_sms cua MBF ------")
     if !@mbf_user.present?
       # generate otp
       otp = SecureRandom.hex(4)
       sms_content = "Sử dụng mã OTP sao để kích hoạt tài khoản của bạn #{otp}";
-      send_sms_result = vas_sms @msisdn, sms_content
-      if !send_sms_result[:is_error]
+      send_sms_result = vas_sms(@msisdn, sms_content)
+      if send_sms_result and send_sms_result[:is_error] != true
         user = User.find_by_phone(@msisdn)
         if user.present?
           if user.otps.find_by_service('mbf').present?
             if user.actived
               user.otps.find_by_service('mbf').update(code: otp)
-              render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
+              return render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
             else
               user.otps.find_by_service('mbf').update(code: otp)
-              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
+              return render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
             end
           else
             user.otps.create(code: otp, service: 'mbf')
-            render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
+            return render json: { message: "Số điện thoại này đã có trong hệ thống Livestar, bạn có muốn đồng bộ với tài khoản Livestar không ?" }, status: 200
           end
         else
           activeCode = SecureRandom.hex(3).upcase
@@ -81,21 +99,25 @@ class Api::V1::AuthController < Api::V1::ApplicationController
             user.no_heart       = 0
             if user.save
               user.otps.create(code: otp, service: 'mbf')
-              render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
+              return render json: { message: "Vui lòng nhập mã OTP để kích hoạt tài khoản của bạn !" }, status: 201
             else
-              render json: { error: "System error !" }, status: 400
+              return render json: { message: "System error !" }, status: 400
             end
           else
-            render json: { error: user.errors.full_messages }, status: 400
+            return render json: { message: user.errors.full_messages }, status: 400
           end
         end
       else
-        render json: { error: "Có lổi xảy ra, bạn đăng ký lại !" }, status: 400
+        render json: { message: "Có lỗi xảy ra, bạn đăng ký lại !", error: send_sms_result }, status: 400
+        return
       end
     else
-      render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
+      return render json: { message: "Tài khoản này đã được đăng ký !" }, status: 403
     end
   end
+
+
+
 
   def mbf_verify
     # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
@@ -148,6 +170,8 @@ class Api::V1::AuthController < Api::V1::ApplicationController
       render json: { error: "Tài khoản này đã được đăng ký !" }, status: 403
     end
   end
+
+
 
   def mbf_sync
     # Trường hợp số điện thoại khác, thì giả lập msisdn bằng params phone
