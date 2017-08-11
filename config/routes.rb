@@ -294,7 +294,7 @@ Rails.application.routes.draw do
         get '/trades' => 'user#getTradeHistory' #history nap card cua user
         post '/active' => 'user#active' #
         post '/active-fb-gp' => 'user#activeFBGP'
-        get '/sms' => 'user#sms'
+        get '/sms' => 'user#sms'  #xu ly MT/MO khi nhan tin SMS nap xu mang Viettel, Vinaphone, Mobifone
         get '/room' => 'room#getPublicRoom'			#get room of user if user is bct
         get '/' => 'user#profile' #
         get '/expense-records' => 'user#expenseRecords' #get all list item user buy
