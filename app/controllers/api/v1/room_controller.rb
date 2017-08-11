@@ -371,12 +371,12 @@ class Api::V1::RoomController < Api::V1::ApplicationController
   	return render json: {message: 'miss param room_id '}, status: 400 unless params[:room_id]
     @room = Room.find(params[:room_id])
     keys = $redis.keys("lounges:#{params[:room_id]}:*")
-    Rails.logger.error("-----------get lounges----------")
-    Rails.logger.error("----keys=")
-    Rails.logger.error(keys)
-    Rails.logger.error("---------")
-    Rails.logger.error("lounges:#{params[:room_id]}:*")
-    Rails.logger.error(keys.to_json)
+    # Rails.logger.error("-----------get lounges----------")
+    # Rails.logger.error("----keys=")
+    # Rails.logger.error(keys)
+    # Rails.logger.error("---------")
+    # Rails.logger.error("lounges:#{params[:room_id]}:*")
+    # Rails.logger.error(keys.to_json)
     status = []
     12.times do |n|
       status[n] = {user: {id: 0, name: ''}, cost: 50}
@@ -396,8 +396,8 @@ class Api::V1::RoomController < Api::V1::ApplicationController
         end
     	end
   	end
-  	Rails.logger.error("-----list lounges")
-  	Rails.logger.error(status.to_json) 
+  	# Rails.logger.error("-----list lounges")
+  	# Rails.logger.error(status.to_json) 
     render json: status, status: 200
   end
 
