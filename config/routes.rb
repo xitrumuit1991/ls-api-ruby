@@ -286,7 +286,8 @@ Rails.application.routes.draw do
       # users
       scope '/users' do
         post '/set-user-money' 	=> 'user#setMoneyForUser'
-        get '/get-no-heart' 		=> 'user#getNoHeart' 	#get number heart of user
+        get '/get-no-heart'         => 'user#getNoHeart'    #get number heart of user
+        get '/get-vip' 		=> 'user#getVipPackage' 	#get package vip cua user
         get '/get-money' 				=> 'user#getMoney'				#get current money of user
         get '/:id/avatar' 			=> 'user#getAvatar'		
         get '/:id/real-avatar' 	=> 'user#real_avatar'

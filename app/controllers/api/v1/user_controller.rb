@@ -35,6 +35,41 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
 
+  def getVipPackage
+    return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
+    vipPackage = nil
+    vipInfo = nil
+    userHasVip = nil
+    if @user.present?
+      if @user.user_has_vip_packages.present?
+        if @user.user_has_vip_packages.find_by_actived(true).present?
+          userHasVip = @user.user_has_vip_packages.find_by_actived(true)
+          if userHasVip.present? and @user.user_has_vip_packages.find_by_actived(true).vip_package.present?
+            vipPackage = @user.user_has_vip_packages.find_by_actived(true).vip_package
+            vipInfo = @user.user_has_vip_packages.find_by_actived(true).vip_package.vip
+            # Rails.logger.error("-----------getVipPackage-----------")
+            # Rails.logger.error("vipPackage=")
+            # Rails.logger.error(vipPackage)
+            # Rails.logger.error(vipPackage.to_json)
+            # Rails.logger.error("vipInfo=")
+            # Rails.logger.error(vipInfo)
+            # Rails.logger.error(vipInfo.to_json)
+            return render json: {message: 'Thông tin gói vip của user', vipInfo: vipInfo, vipPackage: vipPackage, userHasVip: userHasVip}, status: 200
+          else
+            return render json: {message: 'Không tìm thấy Vip Package của user!', error: 'not found any record with condition [vip_package by user_has_vip_packages]',  vipInfo: vipInfo, vipPackage: vipPackage, userHasVip: userHasVip}, status: 400
+          end
+        else
+          return render json: {message: 'User chưa đăng kí gói VIP.', error: 'not found any record with condition [user_has_vip_packages.find_by_actived(true)]', vipInfo: vipInfo, vipPackage: vipPackage}, status: 400
+        end
+      else
+        return render json: {message: 'User chưa đăng kí gói VIP.', vipInfo: vipInfo, vipPackage: vipPackage}, status: 400
+      end
+    end
+    return render json: {message: 'User chưa đăng kí gói VIP.', vipInfo: vipInfo, vipPackage: vipPackage}, status: 400
+  end
+
+
+
   def getMoney
     return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
     if @user.present?
