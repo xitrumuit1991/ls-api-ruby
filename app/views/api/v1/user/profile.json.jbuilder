@@ -33,13 +33,16 @@ json.max_heart		@user.user_level.heart_per_day
 json.active_code	@user.active_code
 json.is_mbf       @user.mobifone_user.present?
 json.apple_payment true
+
 if !@vipInfo.nil?
   json.vip do
     json.vip 			    @vipInfo.weight
+    json.image 			    "http://api.livestar.vn"+@vipInfo.image.url
     json.no_char 	    @vipInfo.no_char
     json.screen_time 	@vipInfo.screen_text_time
   end
 end
+
 if @user.present? and @user.is_broadcaster
 	json.room do
     if @user.broadcaster.present? and @user.broadcaster.public_room.present?
@@ -57,5 +60,13 @@ if @userHasVip.present?
 		json.actived   				@userHasVip.actived
 		json.active_date   		@userHasVip.active_date
 		json.expiry_date   		@userHasVip.expiry_date
+	end
+end
+
+if @vipPackage.present?
+	json.vipPackage do
+		json.name @vipPackage.name
+		json.code @vipPackage.code
+		json.no_day @vipPackage.no_day
 	end
 end
