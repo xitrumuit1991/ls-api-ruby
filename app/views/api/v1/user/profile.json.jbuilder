@@ -49,3 +49,13 @@ if @user.present? and @user.is_broadcaster
     end
 	end
 end
+
+
+if @userHasVip.present?
+	json.userHasVip do
+		json.vip_package_id   @userHasVip.vip_package_id
+		json.actived   				@userHasVip.actived
+		json.active_date   		@userHasVip.active_date
+		json.expiry_date   		@userHasVip.expiry_date
+	end
+end

@@ -47,13 +47,6 @@ class Api::V1::UserController < Api::V1::ApplicationController
           if userHasVip.present? and @user.user_has_vip_packages.find_by_actived(true).vip_package.present?
             vipPackage = @user.user_has_vip_packages.find_by_actived(true).vip_package
             vipInfo = @user.user_has_vip_packages.find_by_actived(true).vip_package.vip
-            # Rails.logger.error("-----------getVipPackage-----------")
-            # Rails.logger.error("vipPackage=")
-            # Rails.logger.error(vipPackage)
-            # Rails.logger.error(vipPackage.to_json)
-            # Rails.logger.error("vipInfo=")
-            # Rails.logger.error(vipInfo)
-            # Rails.logger.error(vipInfo.to_json)
             return render json: {message: 'Thông tin gói vip của user', vipInfo: vipInfo, vipPackage: vipPackage, userHasVip: userHasVip}, status: 200
           else
             return render json: {message: 'Không tìm thấy Vip Package của user!', error: 'not found any record with condition [vip_package by user_has_vip_packages]',  vipInfo: vipInfo, vipPackage: vipPackage, userHasVip: userHasVip}, status: 400
@@ -81,24 +74,24 @@ class Api::V1::UserController < Api::V1::ApplicationController
 
 
   def profile
+    return render json: {message: 'Không lấy được thông tin user'}, status: 400 if @user.blank?
     vipInfo = nil
+    vipPackage = nil
+    userHasVip = nil 
     if @user.present?
       if @user.user_has_vip_packages.present?
         if @user.user_has_vip_packages.find_by_actived(true).present?
+          userHasVip = @user.user_has_vip_packages.find_by_actived(true)
           if @user.user_has_vip_packages.find_by_actived(true).vip_package.present?
+            vipPackage = @user.user_has_vip_packages.find_by_actived(true).vip_package
             vipInfo = @user.user_has_vip_packages.find_by_actived(true).vip_package.vip
-          else
-            @vipInfo = vipInfo
           end
         end
-        @vipInfo = vipInfo
-      else
-        @vipInfo = vipInfo
       end
-    else
-      render json: {message: 'Không lấy được thông tin user '}, status: 400
+      @vipInfo = vipInfo
+      @userHasVip = userHasVip
+      @vipPackage = vipPackage
     end
-    # @vipInfo = @user.user_has_vip_packages.find_by_actived(true).present? ? @user.user_has_vip_packages.find_by_actived(true).vip_package.vip : nil
   end
 
 
