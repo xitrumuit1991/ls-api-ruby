@@ -311,14 +311,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
 
       #remove redis lounges
       list_keys = $redis.keys("lounges:#{@room.id}:*")
-      Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
-      Rails.logger.error(list_keys.to_json)
+      # Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
+      # Rails.logger.error(list_keys.to_json)
       if list_keys and list_keys.present?
         list_keys.each do |key|
           dataKey = $redis.get(key) 
-          Rails.logger.error("----key=#{key}")
-          Rails.logger.error("----dataKey=")
-          Rails.logger.error(dataKey.to_json)
+          # Rails.logger.error("----key=#{key}")
+          # Rails.logger.error("----dataKey=")
+          # Rails.logger.error(dataKey.to_json)
           if key and dataKey
             $redis.del(key)
           end
@@ -356,14 +356,14 @@ class Api::V1::LiveController < Api::V1::ApplicationController
       end
       #remove redis lounges
       list_keys = $redis.keys("lounges:#{@room.id}:*")
-      Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
-      Rails.logger.error(list_keys.to_json)
+      # Rails.logger.error("-----------get list_keys lounges of room_id=#{@room.id}----------")
+      # Rails.logger.error(list_keys.to_json)
       if list_keys and list_keys.present?
         list_keys.each do |key|
           dataKey = $redis.get(key) 
-          Rails.logger.error("----key=#{key}")
-          Rails.logger.error("----dataKey=")
-          Rails.logger.error(dataKey.to_json)
+          # Rails.logger.error("----key=#{key}")
+          # Rails.logger.error("----dataKey=")
+          # Rails.logger.error(dataKey.to_json)
           if key and dataKey
             $redis.del(key)
           end

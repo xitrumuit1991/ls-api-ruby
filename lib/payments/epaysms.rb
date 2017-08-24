@@ -44,10 +44,19 @@ module Ebaysms
 		end
 
 		def confirm
+			#lay url MT
 			url = getUrl
+			Rails.logger.info "url MT ; MT= #{url}"
 			str = Curl::Easy.perform(url)
-			Rails.logger.info "Ebaysms; MT confirm_str: #{str}"
-			Rails.logger.info "Ebaysms; MT confirm_str body_str: #{str.body_str}"
+			Rails.logger.error 'Confirm MT; Curl [url -> total_time -> header_str -> headers -> body_str ] '
+			Rails.logger.error str.url
+			Rails.logger.error str.total_time
+			Rails.logger.error str.header_str
+			Rails.logger.error str.headers
+			Rails.logger.error str.body_str
+
+			Rails.logger.error "Ebaysms; MT confirm_str: #{str}"
+			Rails.logger.error "Ebaysms; MT confirm_str body_str: #{str.body_str}"
 			return str.body_str
 		end
 	end
